@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}H.C. Lombardo Application{% endblock %}</title>
+    
+    <!-- H.C. Lombardo App CSS Framework -->
+    <link rel="stylesheet" href="/static/css/base.css">
+    <link rel="stylesheet" href="/static/css/navigation.css">
+    <link rel="stylesheet" href="/static/css/themes.css">
+    
+    {% block extra_css %}{% endblock %}
+    
+    <!-- Custom CSS for specific themes -->
+    <style>
+        /* Dynamic background gradient */
+        body.theme-nfl {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        }
+        
+        body.theme-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        /* Template-specific overrides */
+        {% block inline_styles %}
+        body {
+            background: {% block background %}linear-gradient(135deg, #667eea 0%, #764ba2 100%){% endblock %};
+        }
+        {% endblock %}
+    </style>
+</head>
+<body class="{% block body_class %}theme-default{% endblock %}">
+    {% block template_badge %}
+    <div class="template-badge">
+        🔧 {% block template_type %}H.C. Lombardo Base{% endblock %}
+    </div>
+    {% endblock %}
+    
+    <div class="container glass-effect-strong">
+        {% block status %}
+        <div class="api-status status-online" id="api-status">
+            🟢 {% block status_text %}H.C. Lombardo API Active{% endblock %}
+        </div>
+        {% endblock %}
+        
+        {% block header %}
+        <header class="fade-in">
+            <h1>{% block icon %}🚀{% endblock %} {% block app_title %}H.C. Lombardo App{% endblock %}</h1>
+            <p class="subtitle">{% block description %}Professional application by H.C. Lombardo{% endblock %}</p>
+        </header>
+        {% endblock %}
+        
+        {% block content %}
+        <div class="feature-highlight">
+            <strong>✨ H.C. Lombardo Professional Framework</strong><br>
+            Modern web application • FastAPI backend • Jinja2 templates • Professional CSS
+        </div>
+        {% endblock %}
+        
+        {% block footer %}
+        <footer class="footer">
+            <p>{% block footer_main %}🚀 Built by H.C. Lombardo with FastAPI & Jinja2{% endblock %}</p>
+            <p>{% block footer_sub %}Professional template architecture by H.C. Lombardo{% endblock %}</p>
+        </footer>
+        {% endblock %}
+    </div>
+
+    <!-- H.C. Lombardo App JavaScript -->
+    <script src="/static/js/main.js"></script>
+    <script src="/static/js/api-client.js"></script>
+    {% block extra_js %}{% endblock %}
+    
+    <!-- Initialize theme -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set theme based on template
+            const themeClass = '{% block theme_class %}default{% endblock %}';
+            if (themeClass !== 'default') {
+                document.body.classList.add('theme-' + themeClass);
+            }
+            
+            // Initialize H.C. Lombardo app
+            if (window.HCLombardo) {
+                HCLombardo.config.currentTheme = themeClass;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,129 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "H.C. Lombardo - Start NFL API (Live Server)",
+            "type": "shell",
+            "command": "python",
+            "args": [
+                "-m",
+                "uvicorn",
+                "apis.nfl_betting_api:app",
+                "--reload",
+                "--host",
+                "127.0.0.1",
+                "--port",
+                "8001"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "new",
+                "showReuseMessage": true,
+                "clear": false,
+                "group": "H.C. Lombardo APIs"
+            },
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "runOptions": {
+                "runOn": "folderOpen"
+            },
+            "detail": "Start H.C. Lombardo NFL Betting API with live reload on port 8001"
+        },
+        {
+            "label": "H.C. Lombardo - Start NFL Betting API",
+            "type": "shell",
+            "command": "python",
+            "args": [
+                "-m",
+                "uvicorn",
+                "apis.nfl_betting_api:app",
+                "--host",
+                "127.0.0.1",
+                "--port",
+                "8002",
+                "--reload"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "new",
+                "showReuseMessage": true,
+                "clear": false,
+                "group": "H.C. Lombardo APIs"
+            },
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "detail": "Start H.C. Lombardo NFL Betting API with live reload on port 8002"
+        },
+        {
+            "label": "H.C. Lombardo - Start Text Classification API",
+            "type": "shell",
+            "command": "python",
+            "args": [
+                "-m",
+                "uvicorn",
+                "apis.text_classification_api:app",
+                "--host",
+                "127.0.0.1",
+                "--port",
+                "8003",
+                "--reload"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "new",
+                "showReuseMessage": true,
+                "clear": false,
+                "group": "H.C. Lombardo APIs"
+            },
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "detail": "Start H.C. Lombardo Text Classification API with live reload on port 8003"
+        },
+        {
+            "label": "H.C. Lombardo - Test All APIs",
+            "type": "shell",
+            "command": "python",
+            "args": [
+                "apis/test_hc_lombardo.py"
+            ],
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": true,
+                "group": "H.C. Lombardo APIs"
+            },
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "detail": "Run comprehensive tests for all H.C. Lombardo APIs"
+        }
+    ]
+}

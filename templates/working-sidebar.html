@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>H.C. Lombardo - Working Sidebar</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        
+        .hamburger {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1001;
+            background: #FFD700;
+            color: black;
+            font-size: 2rem;
+            font-weight: bold;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .hamburger:hover {
+            background: #FFA500;
+            transform: scale(1.1);
+        }
+        
+        .sidebar {
+            position: fixed;
+            left: -300px;
+            top: 0;
+            width: 300px;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.95);
+            transition: left 0.3s ease;
+            z-index: 1000;
+            padding: 80px 20px 20px 20px;
+        }
+        
+        .sidebar.open { left: 0; }
+        
+        .sidebar h2 {
+            color: #FFD700;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .nav-link {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            background: rgba(255, 215, 0, 0.2);
+            color: #FFD700;
+            transform: translateX(10px);
+        }
+        
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .main-content {
+            padding: 100px 20px 20px 20px;
+            text-align: center;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+            backdrop-filter: blur(10px);
+        }
+        
+        .status {
+            background: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Hamburger Menu -->
+    <button class="hamburger" onclick="toggleSidebar()">☰</button>
+    
+    <!-- Overlay -->
+    <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+    
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+        <h2>H.C. Lombardo</h2>
+        <a href="/" class="nav-link">🏠 Home</a>
+        <a href="/simple-test" class="nav-link">🔧 Simple Test</a>
+        <a href="/sidebar-test" class="nav-link">📱 Sidebar Test</a>
+        <a href="/predict" class="nav-link">🎯 NFL Predictions</a>
+        <a href="/teams" class="nav-link">🏈 Team Stats</a>
+        <a href="/docs" class="nav-link">📚 API Docs</a>
+    </nav>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="card">
+            <div class="status">✅ Sidebar WORKING!</div>
+            <h1>🚀 H.C. Lombardo App</h1>
+            <h2>{{ title | default('Working Sidebar Test') }}</h2>
+            <p>{{ description | default('Click the bright gold hamburger menu (☰) in the top-left corner to open the navigation sidebar!') }}</p>
+            
+            <div style="margin-top: 30px;">
+                <strong>🎯 Instructions:</strong><br>
+                1. Click the gold ☰ button<br>
+                2. Sidebar slides in from left<br>
+                3. Click any menu item to navigate<br>
+                4. Click outside to close
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            
+            if (sidebar.classList.contains('open')) {
+                closeSidebar();
+            } else {
+                openSidebar();
+            }
+        }
+        
+        function openSidebar() {
+            document.getElementById('sidebar').classList.add('open');
+            document.getElementById('overlay').classList.add('active');
+        }
+        
+        function closeSidebar() {
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('overlay').classList.remove('active');
+        }
+        
+        // Test the sidebar immediately
+        console.log('🔧 Sidebar script loaded successfully!');
+        console.log('🍔 Hamburger button:', document.querySelector('.hamburger'));
+        console.log('📱 Sidebar element:', document.getElementById('sidebar'));
+    </script>
+</body>
+</html>

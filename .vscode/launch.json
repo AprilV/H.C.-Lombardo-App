@@ -1,0 +1,130 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Run FastAPI (Live Server)",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "uvicorn",
+            "args": [
+                "apis.nfl_betting_api:app",
+                "--reload",
+                "--host",
+                "127.0.0.1",
+                "--port",
+                "8001"
+            ],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            },
+            "jinja": true
+        },
+        {
+            "name": "H.C. Lombardo FastAPI - Template App",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "uvicorn",
+            "args": [
+                "apis.fastapi_template_inheritance:app",
+                "--host",
+                "127.0.0.1",
+                "--port",
+                "8001",
+                "--reload"
+            ],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            },
+            "presentation": {
+                "group": "H.C. Lombardo APIs",
+                "order": 1
+            }
+        },
+        {
+            "name": "H.C. Lombardo FastAPI - NFL Betting API",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "uvicorn",
+            "args": [
+                "apis.nfl_betting_api:app",
+                "--host",
+                "127.0.0.1",
+                "--port",
+                "8002",
+                "--reload"
+            ],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            },
+            "presentation": {
+                "group": "H.C. Lombardo APIs",
+                "order": 2
+            }
+        },
+        {
+            "name": "H.C. Lombardo FastAPI - Text Classification API",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "uvicorn",
+            "args": [
+                "apis.text_classification_api:app",
+                "--host",
+                "127.0.0.1",
+                "--port",
+                "8003",
+                "--reload"
+            ],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            },
+            "presentation": {
+                "group": "H.C. Lombardo APIs",
+                "order": 3
+            }
+        },
+        {
+            "name": "H.C. Lombardo - All APIs (Multi-target)",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/scripts/launcher.py",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            },
+            "presentation": {
+                "group": "H.C. Lombardo APIs",
+                "order": 4
+            }
+        }
+    ],
+    "compounds": [
+        {
+            "name": "H.C. Lombardo - Start All APIs",
+            "configurations": [
+                "H.C. Lombardo FastAPI - Template App",
+                "H.C. Lombardo FastAPI - NFL Betting API", 
+                "H.C. Lombardo FastAPI - Text Classification API"
+            ],
+            "presentation": {
+                "group": "H.C. Lombardo APIs",
+                "order": 5
+            },
+            "stopAll": true
+        }
+    ]
+}

@@ -1,0 +1,54 @@
+🔑 GET YOUR LIVE API KEY - STEP BY STEP
+=====================================
+
+📍 CURRENT STATUS: You have the placeholder "PASTE_YOUR_API_KEY_HERE" 
+   The system detects this and tries live API calls, but gets 403 Forbidden
+
+🎯 TO GET LIVE DATA:
+
+1️⃣ GO TO RAPIDAPI:
+   🌐 https://rapidapi.com/api-sports/api/american-football/
+
+2️⃣ CREATE FREE ACCOUNT:
+   📝 Sign up (free)
+   ✉️ Verify your email
+
+3️⃣ SUBSCRIBE TO API:
+   🏈 Find "American Football API" by API-SPORTS
+   📊 Choose subscription:
+      • FREE: 100 calls/day (perfect for testing)
+      • BASIC: $10/month, 1000 calls/day
+      • PRO: $25/month, 10,000 calls/day
+
+4️⃣ GET YOUR KEY:
+   🏠 Go to RapidAPI Dashboard
+   📋 Click "My Apps" or "Default Application"
+   🔑 Copy your API key (long string of letters/numbers)
+
+5️⃣ UPDATE CONFIG:
+   📁 Open: external_apis\api_config.py
+   🔍 Find: "PASTE_YOUR_API_KEY_HERE"
+   ✏️ Replace with your real key
+   💾 Save file
+
+6️⃣ TEST LIVE DATA:
+   🧪 Run: python external_apis\nfl_data_integration.py
+   ✅ Should see: "✅ Live data from API-SPORTS!"
+
+🎯 WHAT YOUR KEY LOOKS LIKE:
+   Example: "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0"
+   Length: Usually 32-64 characters
+   Format: Letters and numbers only
+
+💡 FREE TIER LIMITS:
+   • 100 API calls per day
+   • Perfect for development and testing
+   • Upgrade if you need more
+
+🛡️ SECURITY TIP:
+   Keep your API key private! Don't share it or commit it to public repos.
+
+❓ ALTERNATIVE - TEMPORARY TEST:
+   You can also set environment variable:
+   PowerShell: $env:API_SPORTS_NFL_KEY = "your_key_here"
+   Then run: python nfl_data_integration.py

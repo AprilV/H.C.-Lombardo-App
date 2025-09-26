@@ -1,0 +1,14 @@
+# Core ML libraries for text classification
+transformers>=4.21.0
+torch>=1.12.0
+numpy>=1.21.0
+
+# API framework and dependencies
+fastapi>=0.68.0
+uvicorn>=0.15.0
+pydantic>=1.8.0
+requests>=2.25.0
+
+# Optional but recommended for better performance
+# accelerate>=0.20.0  # For faster inference
+# datasets>=2.0.0    # If working with datasets
