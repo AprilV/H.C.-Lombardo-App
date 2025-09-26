@@ -1,106 +1,92 @@
-{% extends "base_modern.html" %}
+{% extends "base_modern.html" %} {% block title %}{{ title }}{% endblock %} {%
+block template_type %}H.C. Lombardo Modern{% endblock %} {% block theme_class
+%}{{ theme | default('nfl') }}{% endblock %} {% block background
+%}linear-gradient(135deg, {{ gradient_from | default('#1e3c72') }} 0%, {{
+gradient_to | default('#2a5298') }} 100%){% endblock %} {% block icon %}{{ icon
+| default('🚀') }}{% endblock %} {% block app_title %}{{ title }}{% endblock %}
+{% block description %}{{ description }}{% endblock %} {% block content %} {% if
+features %}
+<section class="feature-list glass-effect fade-in">
+  <h3 style="margin-top: 0; color: #ffd700">✨ H.C. Lombardo Features</h3>
+  {% for feature in features %}
+  <div class="feature-item slide-in-left">{{ feature }}</div>
+  {% endfor %}
+</section>
+{% endif %}
 
-{% block title %}{{ title }}{% endblock %}
+<nav class="nav-grid">
+  {% for link in navigation_links %}
+  <a
+    href="{{ link.url }}"
+    class="nav-card hover-lift"
+    data-category="{{ link.category | default('general') }}"
+  >
+    <h3><span class="icon">{{ link.icon }}</span> {{ link.name }}</h3>
+    <p>{{ link.description }}</p>
+  </a>
+  {% endfor %}
+</nav>
 
-{% block template_type %}H.C. Lombardo Modern{% endblock %}
+{% if extra_links %}
+<section class="nav-category">
+  <h2>Additional Resources</h2>
+  <div class="nav-grid">
+    {% for link in extra_links %}
+    <a href="{{ link.url }}" class="nav-card secondary hover-glow">
+      <h3><span class="icon">{{ link.icon }}</span> {{ link.name }}</h3>
+      <p>{{ link.description }}</p>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
 
-{% block theme_class %}{{ theme | default('nfl') }}{% endblock %}
-
-{% block background %}linear-gradient(135deg, {{ gradient_from | default('#1e3c72') }} 0%, {{ gradient_to | default('#2a5298') }} 100%){% endblock %}
-
-{% block icon %}{{ icon | default('🚀') }}{% endblock %}
-{% block app_title %}{{ title }}{% endblock %}
-{% block description %}{{ description }}{% endblock %}
-
-{% block content %}
-    {% if features %}
-    <section class="feature-list glass-effect fade-in">
-        <h3 style="margin-top: 0; color: #FFD700;">✨ H.C. Lombardo Features</h3>
-        {% for feature in features %}
-        <div class="feature-item slide-in-left">{{ feature }}</div>
-        {% endfor %}
-    </section>
-    {% endif %}
-    
-    <nav class="nav-grid">
-        {% for link in navigation_links %}
-        <a href="{{ link.url }}" class="nav-card hover-lift" data-category="{{ link.category | default('general') }}">
-            <h3><span class="icon">{{ link.icon }}</span> {{ link.name }}</h3>
-            <p>{{ link.description }}</p>
-        </a>
-        {% endfor %}
-    </nav>
-    
-    {% if extra_links %}
-    <section class="nav-category">
-        <h2>Additional Resources</h2>
-        <div class="nav-grid">
-            {% for link in extra_links %}
-            <a href="{{ link.url }}" class="nav-card secondary hover-glow">
-                <h3><span class="icon">{{ link.icon }}</span> {{ link.name }}</h3>
-                <p>{{ link.description }}</p>
-            </a>
-            {% endfor %}
-        </div>
-    </section>
-    {% endif %}
-    
-    <section class="quick-actions">
-        <a href="/docs" class="quick-action-btn" data-action="docs">
-            📚 API Docs
-        </a>
-        <a href="/redoc" class="quick-action-btn" data-action="redoc">
-            📖 ReDoc
-        </a>
-        <button class="quick-action-btn" data-action="refresh">
-            🔄 Refresh
-        </button>
-    </section>
-{% endblock %}
-
-{% block extra_css %}
+<section class="quick-actions">
+  <a href="/docs" class="quick-action-btn" data-action="docs"> 📚 API Docs </a>
+  <a href="/redoc" class="quick-action-btn" data-action="redoc"> 📖 ReDoc </a>
+  <button class="quick-action-btn" data-action="refresh">🔄 Refresh</button>
+</section>
+{% endblock %} {% block extra_css %}
 <style>
-    /* Page-specific styles */
-    .feature-item {
-        animation-delay: calc(var(--item-index, 0) * 0.1s);
-    }
-    
-    .nav-card {
-        animation-delay: calc(var(--card-index, 0) * 0.15s);
-    }
-    
-    /* Interactive enhancements */
-    .nav-card[data-category="api"] {
-        border-left: 4px solid #FFD700;
-    }
-    
-    .nav-card[data-category="docs"] {
-        border-left: 4px solid #17a2b8;
-    }
-    
-    .nav-card[data-category="tools"] {
-        border-left: 4px solid #28a745;
-    }
+  /* Page-specific styles */
+  .feature-item {
+    animation-delay: calc(var(--item-index, 0) * 0.1s);
+  }
+
+  .nav-card {
+    animation-delay: calc(var(--card-index, 0) * 0.15s);
+  }
+
+  /* Interactive enhancements */
+  .nav-card[data-category="api"] {
+    border-left: 4px solid #ffd700;
+  }
+
+  .nav-card[data-category="docs"] {
+    border-left: 4px solid #17a2b8;
+  }
+
+  .nav-card[data-category="tools"] {
+    border-left: 4px solid #28a745;
+  }
 </style>
-{% endblock %}
-
-{% block extra_js %}
+{% endblock %} {% block extra_js %}
 <script>
-    // Page-specific JavaScript
-    document.addEventListener('DOMContentLoaded', function() {
-        // Add index-based CSS variables for animations
-        document.querySelectorAll('.feature-item').forEach((item, index) => {
-            item.style.setProperty('--item-index', index);
-        });
-        
-        document.querySelectorAll('.nav-card').forEach((card, index) => {
-            card.style.setProperty('--card-index', index);
-        });
-        
-        console.log('🏠 H.C. Lombardo Homepage Loaded');
+  // Page-specific JavaScript
+  document.addEventListener("DOMContentLoaded", function () {
+    // Add index-based CSS variables for animations
+    document.querySelectorAll(".feature-item").forEach((item, index) => {
+      item.style.setProperty("--item-index", index);
     });
-</script>
-{% endblock %}
 
-{% block footer_main %}{{ footer_text | default('🚀 Built by H.C. Lombardo with FastAPI & Jinja2') }}{% endblock %}
-{% block footer_sub %}{{ footer_sub | default('Modern web application framework by H.C. Lombardo') }}{% endblock %}
+    document.querySelectorAll(".nav-card").forEach((card, index) => {
+      card.style.setProperty("--card-index", index);
+    });
+
+    console.log("🏠 H.C. Lombardo Homepage Loaded");
+  });
+</script>
+{% endblock %} {% block footer_main %}{{ footer_text | default('🚀 Built by H.C.
+Lombardo with FastAPI & Jinja2') }}{% endblock %} {% block footer_sub %}{{
+footer_sub | default('Modern web application framework by H.C. Lombardo') }}{%
+endblock %}

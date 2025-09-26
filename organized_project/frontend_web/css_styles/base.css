@@ -1,0 +1,164 @@
+/* H.C. Lombardo App - Base Styles */
+/* Professional CSS framework for the H.C. Lombardo application */
+
+/* Reset and Base Styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    color: white;
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+/* Dynamic background - can be overridden */
+body.gradient-nfl {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+}
+
+body.gradient-text {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+body.gradient-default {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+/* Container Styles */
+.container {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+}
+
+/* Typography */
+h1 {
+    text-align: center;
+    font-size: 3rem;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    background: linear-gradient(45deg, #FFD700, #FFA500);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.subtitle {
+    text-align: center;
+    font-size: 1.2rem;
+    margin-bottom: 40px;
+    opacity: 0.9;
+}
+
+/* Icon Styles */
+.icon {
+    font-size: 1.5rem;
+}
+
+/* Status and Badge Styles */
+.api-status {
+    display: inline-block;
+    background: #28a745;
+    color: white;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.template-badge {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Feature Highlight */
+.feature-highlight {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    padding: 15px;
+    margin: 20px 0;
+    text-align: center;
+    border-left: 4px solid #FFD700;
+}
+
+.feature-list {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 20px;
+    margin: 20px 0;
+}
+
+.feature-item {
+    margin: 10px 0;
+    padding: 8px 15px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    border-left: 3px solid #FFD700;
+}
+
+/* Footer */
+.footer {
+    text-align: center;
+    margin-top: 40px;
+    opacity: 0.7;
+    font-size: 0.9rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+    
+    .container {
+        padding: 20px;
+    }
+    
+    h1 {
+        font-size: 2rem;
+    }
+    
+    .nav-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .template-badge {
+        position: static;
+        display: inline-block;
+        margin-bottom: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 1.5rem;
+    }
+    
+    .subtitle {
+        font-size: 1rem;
+    }
+    
+    .nav-card {
+        padding: 20px;
+    }
+}

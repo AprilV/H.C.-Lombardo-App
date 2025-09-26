@@ -1,65 +1,54 @@
-{% extends "base.html" %}
+{% extends "base.html" %} {% block title %}{{ title }}{% endblock %} {% block
+template_type %}Jinja2 Extended{% endblock %} {% block background
+%}linear-gradient(135deg, {{ gradient_from | default('#667eea') }} 0%, {{
+gradient_to | default('#764ba2') }} 100%){% endblock %} {% block icon %}{{ icon
+| default('🚀') }}{% endblock %} {% block app_title %}{{ title }}{% endblock %}
+{% block description %}{{ description }}{% endblock %} {% block content %} {% if
+features %}
+<div class="feature-list">
+  <h3 style="margin-top: 0; color: #ffd700">✨ Features</h3>
+  {% for feature in features %}
+  <div class="feature-item">{{ feature }}</div>
+  {% endfor %}
+</div>
+{% endif %}
 
-{% block title %}{{ title }}{% endblock %}
+<div class="nav-grid">
+  {% for link in navigation_links %}
+  <a href="{{ link.url }}" class="nav-card">
+    <h3><span class="icon">{{ link.icon }}</span> {{ link.name }}</h3>
+    <p>{{ link.description }}</p>
+  </a>
+  {% endfor %}
+</div>
 
-{% block template_type %}Jinja2 Extended{% endblock %}
-
-{% block background %}linear-gradient(135deg, {{ gradient_from | default('#667eea') }} 0%, {{ gradient_to | default('#764ba2') }} 100%){% endblock %}
-
-{% block icon %}{{ icon | default('🚀') }}{% endblock %}
-{% block app_title %}{{ title }}{% endblock %}
-{% block description %}{{ description }}{% endblock %}
-
-{% block content %}
-    {% if features %}
-    <div class="feature-list">
-        <h3 style="margin-top: 0; color: #FFD700;">✨ Features</h3>
-        {% for feature in features %}
-        <div class="feature-item">{{ feature }}</div>
-        {% endfor %}
-    </div>
-    {% endif %}
-    
-    <div class="nav-grid">
-        {% for link in navigation_links %}
-        <a href="{{ link.url }}" class="nav-card">
-            <h3><span class="icon">{{ link.icon }}</span> {{ link.name }}</h3>
-            <p>{{ link.description }}</p>
-        </a>
-        {% endfor %}
-    </div>
-    
-    {% if extra_links %}
-    <div class="nav-grid">
-        {% for link in extra_links %}
-        <a href="{{ link.url }}" class="nav-card">
-            <h3><span class="icon">{{ link.icon }}</span> {{ link.name }}</h3>
-            <p>{{ link.description }}</p>
-        </a>
-        {% endfor %}
-    </div>
-    {% endif %}
-{% endblock %}
-
-{% block styles %}
-{{ super() }}
+{% if extra_links %}
+<div class="nav-grid">
+  {% for link in extra_links %}
+  <a href="{{ link.url }}" class="nav-card">
+    <h3><span class="icon">{{ link.icon }}</span> {{ link.name }}</h3>
+    <p>{{ link.description }}</p>
+  </a>
+  {% endfor %}
+</div>
+{% endif %} {% endblock %} {% block styles %} {{ super() }}
 <style>
-    .feature-list {
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 10px;
-        padding: 20px;
-        margin: 20px 0;
-    }
-    
-    .feature-item {
-        margin: 10px 0;
-        padding: 8px 15px;
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 5px;
-        border-left: 3px solid #FFD700;
-    }
-</style>
-{% endblock %}
+  .feature-list {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 20px;
+    margin: 20px 0;
+  }
 
-{% block footer_main %}{{ footer_text | default('🚀 Built by H.C. Lombardo with FastAPI & Jinja2') }}{% endblock %}
-{% block footer_sub %}{{ footer_sub | default('Professional template rendering with inheritance by H.C. Lombardo') }}{% endblock %}
+  .feature-item {
+    margin: 10px 0;
+    padding: 8px 15px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    border-left: 3px solid #ffd700;
+  }
+</style>
+{% endblock %} {% block footer_main %}{{ footer_text | default('🚀 Built by H.C.
+Lombardo with FastAPI & Jinja2') }}{% endblock %} {% block footer_sub %}{{
+footer_sub | default('Professional template rendering with inheritance by H.C.
+Lombardo') }}{% endblock %}

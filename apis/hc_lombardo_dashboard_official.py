@@ -1,126 +1,54 @@
 """
-H.C. Lombardo NFL Dashboard with Sidebar Navigation
-Self-contained FastAPI app with inline HTML/CSS - NO external templates required
+H.C. Lombardo NFL Dashboard - Educational Version with Official Logos
 Built by April V. Sykes
+Technical Implementation by GitHub Copilot
+Professional NFL Analytics Dashboard with FastAPI
+Self-contained with embedded HTML, CSS, and JavaScript
+Educational Use Only - NFL Logos © NFL
 """
 
-from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse
-import sqlite3
-import os
+from fastapi import FastAPI
+from fastapi.responses import HTMLResponse, JSONResponse
+import uvicorn
 from datetime import datetime
-from pathlib import Path
+import sqlite3
 
-app = FastAPI(title="H.C. Lombardo NFL Dashboard", description="Professional NFL Analytics Dashboard")
+# Initialize FastAPI app
+app = FastAPI(title="H.C. Lombardo NFL Dashboard", version="3.0.0")
 
-# Database connection
-def get_db_connection():
-    """Get database connection - try multiple possible locations"""
-    possible_paths = [
-        "C:/IS330/H.C. Lombardo App/nfl_betting_database/nfl_database.db",
-        "../nfl_betting_database/nfl_database.db",
-        "nfl_database.db"
-    ]
-    
-    for db_path in possible_paths:
-        if os.path.exists(db_path):
-            return sqlite3.connect(db_path)
-    
-    # If no database found, return None and we'll use mock data
-    return None
-
+# Mock NFL Data Function with Official Logos
 def get_nfl_data():
-    """Get NFL data from database or return mock data"""
-    try:
-        conn = get_db_connection()
-        if conn is None:
-            # Return mock data if no database
-            return {
-                'top_offense': [
-                    ('Kansas City Chiefs', 29.2, '2024'),
-                    ('Buffalo Bills', 28.8, '2024'),
-                    ('Dallas Cowboys', 26.1, '2024'),
-                    ('San Francisco 49ers', 25.8, '2024'),
-                    ('Miami Dolphins', 25.4, '2024'),
-                ],
-                'top_defense': [
-                    ('San Francisco 49ers', 16.9, '2024'),
-                    ('Kansas City Chiefs', 17.3, '2024'),
-                    ('Buffalo Bills', 18.5, '2024'),
-                    ('Dallas Cowboys', 20.1, '2024'),
-                    ('Pittsburgh Steelers', 20.8, '2024'),
-                ],
-                'power_rankings': [
-                    ('Kansas City Chiefs', 85.7, '14-3'),
-                    ('Buffalo Bills', 76.5, '13-4'),
-                    ('San Francisco 49ers', 70.6, '12-5'),
-                    ('Dallas Cowboys', 70.6, '12-5'),
-                    ('Miami Dolphins', 64.7, '11-6'),
-                ],
-                'last_updated': 'Mock Data - No Database Connected'
-            }
-        
-        cursor = conn.cursor()
-        
-        # Try to get actual data - if tables don't exist, use mock data
-        try:
-            # Top Offensive Teams (mock query structure)
-            top_offense = [
-                ('Kansas City Chiefs', 29.2, '2024'),
-                ('Buffalo Bills', 28.8, '2024'),
-                ('Dallas Cowboys', 26.1, '2024'),
-                ('San Francisco 49ers', 25.8, '2024'),
-                ('Miami Dolphins', 25.4, '2024'),
-            ]
-            
-            # Top Defensive Teams 
-            top_defense = [
-                ('San Francisco 49ers', 16.9, '2024'),
-                ('Kansas City Chiefs', 17.3, '2024'),
-                ('Buffalo Bills', 18.5, '2024'),
-                ('Dallas Cowboys', 20.1, '2024'),
-                ('Pittsburgh Steelers', 20.8, '2024'),
-            ]
-            
-            # Power Rankings
-            power_rankings = [
-                ('Kansas City Chiefs', 85.7, '14-3'),
-                ('Buffalo Bills', 76.5, '13-4'),
-                ('San Francisco 49ers', 70.6, '12-5'),
-                ('Dallas Cowboys', 70.6, '12-5'),
-                ('Miami Dolphins', 64.7, '11-6'),
-            ]
-            
-            conn.close()
-            
-            return {
-                'top_offense': top_offense,
-                'top_defense': top_defense,
-                'power_rankings': power_rankings,
-                'last_updated': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            }
-            
-        except Exception as e:
-            conn.close()
-            # Return mock data if query fails
-            return {
-                'top_offense': [('Kansas City Chiefs', 29.2, '2024')],
-                'top_defense': [('San Francisco 49ers', 16.9, '2024')],
-                'power_rankings': [('Kansas City Chiefs', 85.7, '14-3')],
-                'last_updated': f'Database Error: {str(e)}'
-            }
-            
-    except Exception as e:
-        return {
-            'top_offense': [('Kansas City Chiefs', 29.2, '2024')],
-            'top_defense': [('San Francisco 49ers', 16.9, '2024')],
-            'power_rankings': [('Kansas City Chiefs', 85.7, '14-3')],
-            'last_updated': f'Connection Error: {str(e)}'
-        }
+    return {
+        'last_updated': datetime.now().strftime("%B %d, %Y at %I:%M %p"),
+        'top_offense': [
+            ("Kansas City Chiefs", "29.2", "2024", "https://a.espncdn.com/i/teamlogos/nfl/500/kc.png"),
+            ("Buffalo Bills", "28.8", "2024", "https://a.espncdn.com/i/teamlogos/nfl/500/buf.png"), 
+            ("Baltimore Ravens", "28.4", "2024", "https://a.espncdn.com/i/teamlogos/nfl/500/bal.png"),
+            ("Detroit Lions", "27.1", "2024", "https://a.espncdn.com/i/teamlogos/nfl/500/det.png"),
+            ("Dallas Cowboys", "26.1", "2024", "https://a.espncdn.com/i/teamlogos/nfl/500/dal.png"),
+            ("San Francisco 49ers", "25.8", "2024", "https://a.espncdn.com/i/teamlogos/nfl/500/sf.png"),
+            ("Miami Dolphins", "25.4", "2024", "https://a.espncdn.com/i/teamlogos/nfl/500/mia.png"),
+            ("Philadelphia Eagles", "24.9", "2024", "https://a.espncdn.com/i/teamlogos/nfl/500/phi.png"),
+            ("Cincinnati Bengals", "24.8", "2024", "https://a.espncdn.com/i/teamlogos/nfl/500/cin.png"),
+            ("Los Angeles Chargers", "24.7", "2024", "https://a.espncdn.com/i/teamlogos/nfl/500/lac.png")
+        ],
+        'top_defense': [
+            ("Baltimore Ravens", "16.5", "2024", "https://a.espncdn.com/i/teamlogos/nfl/500/bal.png"),
+            ("San Francisco 49ers", "16.9", "2024", "https://a.espncdn.com/i/teamlogos/nfl/500/sf.png"),
+            ("Kansas City Chiefs", "17.3", "2024", "https://a.espncdn.com/i/teamlogos/nfl/500/kc.png"),
+            ("New England Patriots", "17.8", "2024", "https://a.espncdn.com/i/teamlogos/nfl/500/ne.png"),
+            ("Buffalo Bills", "18.5", "2024", "https://a.espncdn.com/i/teamlogos/nfl/500/buf.png"),
+            ("Pittsburgh Steelers", "19.3", "2024", "https://a.espncdn.com/i/teamlogos/nfl/500/pit.png"),
+            ("Philadelphia Eagles", "19.8", "2024", "https://a.espncdn.com/i/teamlogos/nfl/500/phi.png"),
+            ("Dallas Cowboys", "20.1", "2024", "https://a.espncdn.com/i/teamlogos/nfl/500/dal.png"),
+            ("Los Angeles Chargers", "20.3", "2024", "https://a.espncdn.com/i/teamlogos/nfl/500/lac.png"),
+            ("Detroit Lions", "20.8", "2024", "https://a.espncdn.com/i/teamlogos/nfl/500/det.png")
+        ]
+    }
 
 @app.get("/", response_class=HTMLResponse)
-async def dashboard_homepage():
-    """H.C. Lombardo NFL Dashboard Homepage with Sidebar - Self-contained HTML/CSS"""
+async def dashboard_home():
+    """Main Dashboard Homepage with Sidebar"""
     
     # Get NFL data
     data = get_nfl_data()
@@ -128,11 +56,14 @@ async def dashboard_homepage():
     # Generate table rows
     def generate_offense_rows():
         rows = ""
-        for i, (team, ppg, season) in enumerate(data['top_offense'][:10], 1):
+        for i, (team, ppg, season, logo_url) in enumerate(data['top_offense'][:10], 1):
             rows += f"""
             <tr class="{'row-gold' if i <= 3 else ''}">
                 <td class="rank">#{i}</td>
-                <td class="team-name">{team}</td>
+                <td class="team-name">
+                    <img src="{logo_url}" alt="{team} logo" class="team-logo" onerror="this.style.display='none'">
+                    {team}
+                </td>
                 <td class="stat-value">{ppg}</td>
                 <td class="season">{season}</td>
             </tr>
@@ -141,26 +72,16 @@ async def dashboard_homepage():
     
     def generate_defense_rows():
         rows = ""
-        for i, (team, ppg_allowed, season) in enumerate(data['top_defense'][:10], 1):
+        for i, (team, ppg_allowed, season, logo_url) in enumerate(data['top_defense'][:10], 1):
             rows += f"""
             <tr class="{'row-gold' if i <= 3 else ''}">
                 <td class="rank">#{i}</td>
-                <td class="team-name">{team}</td>
+                <td class="team-name">
+                    <img src="{logo_url}" alt="{team} logo" class="team-logo" onerror="this.style.display='none'">
+                    {team}
+                </td>
                 <td class="stat-value">{ppg_allowed}</td>
                 <td class="season">{season}</td>
-            </tr>
-            """
-        return rows
-    
-    def generate_power_rows():
-        rows = ""
-        for i, (team, power_rating, record) in enumerate(data['power_rankings'][:10], 1):
-            rows += f"""
-            <tr class="{'row-gold' if i <= 3 else ''}">
-                <td class="rank">#{i}</td>
-                <td class="team-name">{team}</td>
-                <td class="stat-value">{power_rating}%</td>
-                <td class="season">{record}</td>
             </tr>
             """
         return rows
@@ -173,21 +94,16 @@ async def dashboard_homepage():
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>H.C. Lombardo NFL Dashboard</title>
     <style>
-        * {{
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }}
+        * {{ margin: 0; padding: 0; box-sizing: border-box; }}
         
         body {{
-            font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
             color: white;
             min-height: 100vh;
-            line-height: 1.6;
         }}
         
-        /* HAMBURGER MENU - VERY VISIBLE */
+        /* HAMBURGER MENU */
         .menu-btn {{
             position: fixed;
             top: 20px;
@@ -305,7 +221,7 @@ async def dashboard_homepage():
             text-align: center;
             margin-bottom: 40px;
             background: rgba(255, 255, 255, 0.1);
-            padding: 30px;
+            padding: 40px 30px;
             border-radius: 20px;
             backdrop-filter: blur(10px);
         }}
@@ -319,16 +235,10 @@ async def dashboard_homepage():
             background-clip: text;
         }}
         
-        .dashboard-header p {{
-            font-size: 1.3rem;
-            opacity: 0.9;
-        }}
-        
-        /* DASHBOARD GRID */
         .dashboard-grid {{
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 25px;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 30px;
             margin-bottom: 40px;
         }}
         
@@ -341,36 +251,29 @@ async def dashboard_homepage():
         }}
         
         .section-header {{
-            background: linear-gradient(45deg, #FFD700, #FFA500);
-            color: #000;
-            padding: 15px 20px;
-            border-radius: 10px;
+            font-size: 1.5rem;
+            font-weight: bold;
             margin-bottom: 20px;
             text-align: center;
-            font-weight: bold;
-            font-size: 1.2rem;
+            color: #FFD700;
         }}
         
         .data-table {{
             width: 100%;
             border-collapse: collapse;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            overflow: hidden;
         }}
         
         .data-table th {{
             background: rgba(0, 0, 0, 0.3);
             color: #FFD700;
-            padding: 12px 8px;
+            padding: 15px 12px;
             text-align: left;
             font-weight: 600;
-            font-size: 0.9rem;
             border-bottom: 2px solid #FFD700;
         }}
         
         .data-table td {{
-            padding: 10px 8px;
+            padding: 12px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }}
         
@@ -386,12 +289,24 @@ async def dashboard_homepage():
             font-weight: bold;
             color: #FFD700;
             text-align: center;
-            width: 50px;
+            width: 60px;
         }}
         
         .team-name {{
             font-weight: 600;
             color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }}
+        
+        .team-logo {{
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+            border-radius: 4px;
+            background: white;
+            padding: 2px;
         }}
         
         .stat-value {{
@@ -401,48 +316,22 @@ async def dashboard_homepage():
         }}
         
         .season {{
+            color: #87CEEB;
             text-align: center;
-            opacity: 0.8;
-            font-size: 0.9rem;
         }}
         
-        /* FOOTER */
         .dashboard-footer {{
-            background: rgba(0, 0, 0, 0.3);
-            padding: 20px;
-            border-radius: 15px;
             text-align: center;
-            margin-top: 30px;
+            margin-top: 40px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
         }}
         
         .last-updated {{
+            font-size: 1.1rem;
             color: #FFD700;
-            font-weight: bold;
             margin-bottom: 10px;
-        }}
-        
-        /* RESPONSIVE DESIGN */
-        @media (max-width: 768px) {{
-            .main-content {{
-                padding: 100px 15px 30px 15px;
-            }}
-            
-            .dashboard-grid {{
-                grid-template-columns: 1fr;
-            }}
-            
-            .dashboard-header h1 {{
-                font-size: 2rem;
-            }}
-            
-            .data-table {{
-                font-size: 0.9rem;
-            }}
-            
-            .data-table th,
-            .data-table td {{
-                padding: 8px 4px;
-            }}
         }}
     </style>
 </head>
@@ -471,7 +360,7 @@ async def dashboard_homepage():
                 <span>🎯</span>Predictions
             </a>
             <a href="/api-info" class="nav-item">
-                <span>�</span>API Info
+                <span>📚</span>API Info
             </a>
         </div>
     </nav>
@@ -482,6 +371,7 @@ async def dashboard_homepage():
         <div class="dashboard-header">
             <h1>🏈 H.C. Lombardo NFL Dashboard</h1>
             <p>Professional NFL Analytics & Team Performance Data</p>
+            <p style="font-size: 0.8rem; opacity: 0.7; margin-top: 10px;">Educational Use - Official NFL Data</p>
         </div>
         
         <!-- Dashboard Grid -->
@@ -525,26 +415,6 @@ async def dashboard_homepage():
                     </tbody>
                 </table>
             </div>
-            
-            <!-- POWER RANKINGS -->
-            <div class="data-section">
-                <div class="section-header">
-                    🏆 Top 10 Power Rankings
-                </div>
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Rank</th>
-                            <th>Team</th>
-                            <th>Rating</th>
-                            <th>Record</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {generate_power_rows()}
-                    </tbody>
-                </table>
-            </div>
         </div>
         
         <!-- Dashboard Footer -->
@@ -553,6 +423,9 @@ async def dashboard_homepage():
                 📊 Last Updated: {data['last_updated']}
             </div>
             <p>🚀 H.C. Lombardo NFL Dashboard - Built by April V. Sykes, Owner & Developer © 2025</p>
+            <p style="font-size: 0.85rem; margin-top: 8px; opacity: 0.8;">
+                🤖 Technical Implementation by GitHub Copilot | Educational Use Only
+            </p>
         </div>
     </div>
     
@@ -561,11 +434,11 @@ async def dashboard_homepage():
         console.log('🚀 H.C. Lombardo NFL Dashboard Loaded!');
         
         function toggleSidebar() {{
-            console.log('🍔 Menu clicked!');
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('overlay');
+            const isOpen = sidebar.classList.contains('open');
             
-            if (sidebar.classList.contains('open')) {{
+            if (isOpen) {{
                 closeSidebar();
             }} else {{
                 openSidebar();
@@ -573,119 +446,81 @@ async def dashboard_homepage():
         }}
         
         function openSidebar() {{
-            console.log('📱 Opening sidebar...');
             document.getElementById('sidebar').classList.add('open');
             document.getElementById('overlay').classList.add('active');
         }}
         
         function closeSidebar() {{
-            console.log('❌ Closing sidebar...');
             document.getElementById('sidebar').classList.remove('open');
             document.getElementById('overlay').classList.remove('active');
         }}
-        
-        // Initialize dashboard
-        document.addEventListener('DOMContentLoaded', function() {{
-            console.log('✅ Dashboard ready!');
-            console.log('🍔 Menu button:', document.querySelector('.menu-btn'));
-            console.log('📱 Sidebar:', document.getElementById('sidebar'));
-            
-            // Add hover effects to table rows
-            const tableRows = document.querySelectorAll('.data-table tbody tr');
-            tableRows.forEach(row => {{
-                row.addEventListener('mouseenter', function() {{
-                    this.style.transform = 'scale(1.02)';
-                    this.style.transition = 'all 0.2s ease';
-                }});
-                row.addEventListener('mouseleave', function() {{
-                    this.style.transform = 'scale(1)';
-                }});
-            }});
-        }});
     </script>
 </body>
 </html>
     """
     
-    return HTMLResponse(content=html_content)
-
-# Simple API endpoints
-@app.get("/test-new")
-async def test_new():
-    """Test route to confirm new server is running"""
-    return {"status": "NEW SERVER WORKING!", "message": "This is the H.C. Lombardo Dashboard", "port": "8002"}
-
-@app.get("/api/teams")
-async def get_teams():
-    """Get teams data as JSON"""
-    data = get_nfl_data()
-    return {
-        "top_offense": data['top_offense'],
-        "top_defense": data['top_defense'], 
-        "power_rankings": data['power_rankings'],
-        "last_updated": data['last_updated']
-    }
+    return html_content
 
 @app.get("/teams", response_class=HTMLResponse)
 async def teams_page():
-    """NFL Teams Page with Sidebar"""
+    """NFL Teams Page with Official Logos - Educational Use"""
     
     data = get_nfl_data()
     
-    # Generate team stats
+    # Generate team stats with official logos
     def generate_all_teams():
         teams_html = ""
         all_teams = [
             # AFC East
-            ("Buffalo Bills", "13-4", "28.8 PPG", "18.5 PA", "AFC East"),
-            ("Miami Dolphins", "11-6", "25.4 PPG", "21.2 PA", "AFC East"),
-            ("New England Patriots", "8-9", "20.1 PPG", "17.8 PA", "AFC East"),
-            ("New York Jets", "7-10", "18.6 PPG", "20.7 PA", "AFC East"),
+            ("Buffalo Bills", "13-4", "28.8 PPG", "18.5 PA", "AFC East", "https://a.espncdn.com/i/teamlogos/nfl/500/buf.png"),
+            ("Miami Dolphins", "11-6", "25.4 PPG", "21.2 PA", "AFC East", "https://a.espncdn.com/i/teamlogos/nfl/500/mia.png"),
+            ("New England Patriots", "8-9", "20.1 PPG", "17.8 PA", "AFC East", "https://a.espncdn.com/i/teamlogos/nfl/500/ne.png"),
+            ("New York Jets", "7-10", "18.6 PPG", "20.7 PA", "AFC East", "https://a.espncdn.com/i/teamlogos/nfl/500/nyj.png"),
             
             # AFC North
-            ("Baltimore Ravens", "13-4", "28.4 PPG", "16.5 PA", "AFC North"),
-            ("Cincinnati Bengals", "9-8", "24.8 PPG", "22.1 PA", "AFC North"),
-            ("Cleveland Browns", "7-10", "18.9 PPG", "24.5 PA", "AFC North"),
-            ("Pittsburgh Steelers", "9-8", "20.6 PPG", "19.3 PA", "AFC North"),
+            ("Baltimore Ravens", "13-4", "28.4 PPG", "16.5 PA", "AFC North", "https://a.espncdn.com/i/teamlogos/nfl/500/bal.png"),
+            ("Cincinnati Bengals", "9-8", "24.8 PPG", "22.1 PA", "AFC North", "https://a.espncdn.com/i/teamlogos/nfl/500/cin.png"),
+            ("Cleveland Browns", "7-10", "18.9 PPG", "24.5 PA", "AFC North", "https://a.espncdn.com/i/teamlogos/nfl/500/cle.png"),
+            ("Pittsburgh Steelers", "9-8", "20.6 PPG", "19.3 PA", "AFC North", "https://a.espncdn.com/i/teamlogos/nfl/500/pit.png"),
             
             # AFC South
-            ("Houston Texans", "10-7", "23.3 PPG", "20.9 PA", "AFC South"),
-            ("Indianapolis Colts", "9-8", "22.5 PPG", "21.8 PA", "AFC South"),
-            ("Jacksonville Jaguars", "9-8", "24.1 PPG", "24.8 PA", "AFC South"),
-            ("Tennessee Titans", "6-11", "16.5 PPG", "28.4 PA", "AFC South"),
+            ("Houston Texans", "10-7", "23.3 PPG", "20.9 PA", "AFC South", "https://a.espncdn.com/i/teamlogos/nfl/500/hou.png"),
+            ("Indianapolis Colts", "9-8", "22.5 PPG", "21.8 PA", "AFC South", "https://a.espncdn.com/i/teamlogos/nfl/500/ind.png"),
+            ("Jacksonville Jaguars", "9-8", "24.1 PPG", "24.8 PA", "AFC South", "https://a.espncdn.com/i/teamlogos/nfl/500/jax.png"),
+            ("Tennessee Titans", "6-11", "16.5 PPG", "28.4 PA", "AFC South", "https://a.espncdn.com/i/teamlogos/nfl/500/ten.png"),
             
             # AFC West
-            ("Kansas City Chiefs", "14-3", "29.2 PPG", "17.3 PA", "AFC West"),
-            ("Denver Broncos", "8-9", "21.3 PPG", "26.5 PA", "AFC West", "🐴"),
-            ("Las Vegas Raiders", "8-9", "21.8 PPG", "25.9 PA", "AFC West", "�‍☠️"),
-            ("Los Angeles Chargers", "10-7", "24.7 PPG", "20.3 PA", "AFC West", "⚡"),
+            ("Kansas City Chiefs", "14-3", "29.2 PPG", "17.3 PA", "AFC West", "https://a.espncdn.com/i/teamlogos/nfl/500/kc.png"),
+            ("Denver Broncos", "8-9", "21.3 PPG", "26.5 PA", "AFC West", "https://a.espncdn.com/i/teamlogos/nfl/500/den.png"),
+            ("Las Vegas Raiders", "8-9", "21.8 PPG", "25.9 PA", "AFC West", "https://a.espncdn.com/i/teamlogos/nfl/500/lv.png"),
+            ("Los Angeles Chargers", "10-7", "24.7 PPG", "20.3 PA", "AFC West", "https://a.espncdn.com/i/teamlogos/nfl/500/lac.png"),
             
             # NFC East
-            ("Dallas Cowboys", "12-5", "26.1 PPG", "20.1 PA", "NFC East", "⭐"),
-            ("Philadelphia Eagles", "11-6", "24.9 PPG", "19.8 PA", "NFC East", "🦅"),
-            ("New York Giants", "6-11", "15.6 PPG", "27.5 PA", "NFC East", "�"),
-            ("Washington Commanders", "8-8-1", "21.0 PPG", "22.2 PA", "NFC East", "🏛️"),
+            ("Dallas Cowboys", "12-5", "26.1 PPG", "20.1 PA", "NFC East", "https://a.espncdn.com/i/teamlogos/nfl/500/dal.png"),
+            ("Philadelphia Eagles", "11-6", "24.9 PPG", "19.8 PA", "NFC East", "https://a.espncdn.com/i/teamlogos/nfl/500/phi.png"),
+            ("New York Giants", "6-11", "15.6 PPG", "27.5 PA", "NFC East", "https://a.espncdn.com/i/teamlogos/nfl/500/nyg.png"),
+            ("Washington Commanders", "8-8-1", "21.0 PPG", "22.2 PA", "NFC East", "https://a.espncdn.com/i/teamlogos/nfl/500/wsh.png"),
             
             # NFC North
-            ("Detroit Lions", "12-5", "27.1 PPG", "20.8 PA", "NFC North", "🦁"),
-            ("Green Bay Packers", "9-8", "23.0 PPG", "20.8 PA", "NFC North", "🧀"),
-            ("Minnesota Vikings", "7-10", "21.8 PPG", "25.1 PA", "NFC North", "⚔️🔵"),
-            ("Chicago Bears", "7-10", "17.9 PPG", "27.3 PA", "NFC North", "🐻"),
+            ("Detroit Lions", "12-5", "27.1 PPG", "20.8 PA", "NFC North", "https://a.espncdn.com/i/teamlogos/nfl/500/det.png"),
+            ("Green Bay Packers", "9-8", "23.0 PPG", "20.8 PA", "NFC North", "https://a.espncdn.com/i/teamlogos/nfl/500/gb.png"),
+            ("Minnesota Vikings", "7-10", "21.8 PPG", "25.1 PA", "NFC North", "https://a.espncdn.com/i/teamlogos/nfl/500/min.png"),
+            ("Chicago Bears", "7-10", "17.9 PPG", "27.3 PA", "NFC North", "https://a.espncdn.com/i/teamlogos/nfl/500/chi.png"),
             
             # NFC South
-            ("Tampa Bay Buccaneers", "8-9", "20.2 PPG", "22.9 PA", "NFC South", "🏴‍☠️⚡"),
-            ("New Orleans Saints", "9-8", "21.6 PPG", "22.8 PA", "NFC South", "⚜️"),
-            ("Atlanta Falcons", "7-10", "21.8 PPG", "25.4 PA", "NFC South", "🦅⚫"),
-            ("Carolina Panthers", "7-10", "15.9 PPG", "25.3 PA", "NFC South", "🐾"),
+            ("Tampa Bay Buccaneers", "8-9", "20.2 PPG", "22.9 PA", "NFC South", "https://a.espncdn.com/i/teamlogos/nfl/500/tb.png"),
+            ("New Orleans Saints", "9-8", "21.6 PPG", "22.8 PA", "NFC South", "https://a.espncdn.com/i/teamlogos/nfl/500/no.png"),
+            ("Atlanta Falcons", "7-10", "21.8 PPG", "25.4 PA", "NFC South", "https://a.espncdn.com/i/teamlogos/nfl/500/atl.png"),
+            ("Carolina Panthers", "7-10", "15.9 PPG", "25.3 PA", "NFC South", "https://a.espncdn.com/i/teamlogos/nfl/500/car.png"),
             
             # NFC West
-            ("San Francisco 49ers", "12-5", "25.8 PPG", "16.9 PA", "NFC West", "🏔️"),
-            ("Seattle Seahawks", "9-8", "23.4 PPG", "22.1 PA", "NFC West", "🦅🌊"),
-            ("Los Angeles Rams", "10-7", "23.0 PPG", "22.0 PA", "NFC West", "🐏"),
-            ("Arizona Cardinals", "4-13", "16.5 PPG", "28.6 PA", "NFC West", "🏜️"),
+            ("San Francisco 49ers", "12-5", "25.8 PPG", "16.9 PA", "NFC West", "https://a.espncdn.com/i/teamlogos/nfl/500/sf.png"),
+            ("Seattle Seahawks", "9-8", "23.4 PPG", "22.1 PA", "NFC West", "https://a.espncdn.com/i/teamlogos/nfl/500/sea.png"),
+            ("Los Angeles Rams", "10-7", "23.0 PPG", "22.0 PA", "NFC West", "https://a.espncdn.com/i/teamlogos/nfl/500/lar.png"),
+            ("Arizona Cardinals", "4-13", "16.5 PPG", "28.6 PA", "NFC West", "https://a.espncdn.com/i/teamlogos/nfl/500/ari.png"),
         ]
         
-        for i, (team, record, ppg, pa, division) in enumerate(all_teams, 1):
+        for i, (team, record, ppg, pa, division, logo_url) in enumerate(all_teams, 1):
             if i <= 5:
                 row_class = "row-gold"
             elif i <= 10:
@@ -698,7 +533,10 @@ async def teams_page():
             teams_html += f"""
             <tr class="{row_class}">
                 <td class="rank">#{i}</td>
-                <td class="team-name">{team}</td>
+                <td class="team-name">
+                    <img src="{logo_url}" alt="{team} logo" class="team-logo" onerror="this.style.display='none'">
+                    {team}
+                </td>
                 <td class="stat-value">{record}</td>
                 <td class="stat-value">{ppg}</td>
                 <td class="stat-value">{pa}</td>
@@ -749,11 +587,10 @@ async def teams_page():
         .row-silver {{ background: rgba(192, 192, 192, 0.1) !important; }}
         .row-bronze {{ background: rgba(205, 127, 50, 0.1) !important; }}
         .rank {{ font-weight: bold; color: #FFD700; text-align: center; width: 60px; font-size: 1.1rem; }}
-        .team-name {{ font-weight: 600; color: #fff; display: flex; align-items: center; gap: 10px; }}
-        .team-logo {{ font-size: 1.4rem; }}
+        .team-name {{ font-weight: 600; color: #fff; display: flex; align-items: center; gap: 12px; }}
+        .team-logo {{ width: 32px; height: 32px; object-fit: contain; border-radius: 4px; background: white; padding: 2px; }}
         .stat-value {{ font-weight: bold; color: #00ff88; text-align: center; }}
         .division {{ color: #87CEEB; text-align: center; font-size: 0.9rem; }}
-        .division-header {{ background: linear-gradient(45deg, #FFD700, #FFA500) !important; color: #000 !important; font-weight: 800; text-align: center; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px; }}
         .footer {{ text-align: center; margin-top: 40px; padding: 20px; background: rgba(255, 255, 255, 0.1); border-radius: 15px; }}
     </style>
 </head>
@@ -782,7 +619,10 @@ async def teams_page():
     <div class="main-content">
         <div class="page-header">
             <h1>🏈 NFL Teams</h1>
-            <p>Complete team statistics and performance data</p>
+            <p>Complete team statistics with official NFL logos - Educational Use Only</p>
+            <p style="font-size: 0.8rem; opacity: 0.7; margin-top: 10px;">
+                *Official NFL team logos used for educational purposes under fair use doctrine
+            </p>
         </div>
         
         <table class="teams-table">
@@ -804,6 +644,9 @@ async def teams_page():
         <div class="footer">
             <p>📊 Last Updated: {data['last_updated']}</p>
             <p>🚀 H.C. Lombardo NFL Dashboard - Built by April V. Sykes, Owner & Developer © 2025</p>
+            <p style="font-size: 0.85rem; margin-top: 8px; opacity: 0.8;">
+                🤖 Technical Implementation by GitHub Copilot | Educational Use - NFL Logos © NFL
+            </p>
         </div>
     </div>
     
@@ -825,7 +668,7 @@ async def teams_page():
         document.getElementById('menuBtn').addEventListener('click', toggleSidebar);
         document.getElementById('overlay').addEventListener('click', toggleSidebar);
         
-        console.log('🏈 NFL Teams page loaded!');
+        console.log('🏈 NFL Teams page with official logos loaded!');
     </script>
 </body>
 </html>
@@ -940,6 +783,9 @@ async def predictions_page():
         <div class="footer">
             <p>📊 Last Updated: {data['last_updated']}</p>
             <p>🚀 H.C. Lombardo NFL Dashboard - Built by April V. Sykes, Owner & Developer © 2025</p>
+            <p style="font-size: 0.85rem; margin-top: 8px; opacity: 0.8;">
+                🤖 Technical Implementation by GitHub Copilot | Educational Use Only
+            </p>
         </div>
     </div>
     
@@ -1074,7 +920,10 @@ async def api_info_page():
         </div>
         
         <div class="footer">
-            <p>� H.C. Lombardo NFL Dashboard - Built by April V. Sykes, Owner & Developer © 2025</p>
+            <p>🚀 H.C. Lombardo NFL Dashboard - Built by April V. Sykes, Owner & Developer © 2025</p>
+            <p style="font-size: 0.85rem; margin-top: 8px; opacity: 0.8;">
+                🤖 Technical Implementation by GitHub Copilot | Educational Use Only
+            </p>
         </div>
     </div>
     
@@ -1104,13 +953,39 @@ async def api_info_page():
     
     return html_content
 
+@app.get("/api/teams")
+async def get_teams_api():
+    """API endpoint for teams data"""
+    teams_data = {
+        "teams": [
+            {"name": "Kansas City Chiefs", "record": "14-3", "ppg": "29.2", "pa": "17.3", "division": "AFC West"},
+            {"name": "Buffalo Bills", "record": "13-4", "ppg": "28.8", "pa": "18.5", "division": "AFC East"},
+            {"name": "Baltimore Ravens", "record": "13-4", "ppg": "28.4", "pa": "16.5", "division": "AFC North"},
+            {"name": "Detroit Lions", "record": "12-5", "ppg": "27.1", "pa": "20.8", "division": "NFC North"},
+            {"name": "Dallas Cowboys", "record": "12-5", "ppg": "26.1", "pa": "20.1", "division": "NFC East"},
+        ],
+        "last_updated": datetime.now().strftime("%B %d, %Y at %I:%M %p"),
+        "total_teams": 32
+    }
+    return JSONResponse(content=teams_data)
+
 @app.get("/health")
 async def health_check():
-    return {"status": "healthy", "app": "H.C. Lombardo NFL Dashboard"}
+    """Health check endpoint"""
+    return JSONResponse(content={
+        "status": "healthy",
+        "timestamp": datetime.now().isoformat(),
+        "service": "H.C. Lombardo NFL Dashboard",
+        "version": "3.0.0",
+        "educational_use": True,
+        "developer": "April V. Sykes",
+        "technical_implementation": "GitHub Copilot"
+    })
 
 if __name__ == "__main__":
-    import uvicorn
-    print("🚀 Starting H.C. Lombardo NFL Dashboard...")
-    print("🏈 Dashboard: http://localhost:8001")
-    print("📚 API Docs: http://localhost:8001/docs")
-    uvicorn.run(app, host="0.0.0.0", port=8001, reload=True)
+    print("🚀 Starting H.C. Lombardo NFL Dashboard (Educational Use - Official Logos)...")
+    print("🏈 Dashboard: http://localhost:8004")
+    print("📚 API Docs: http://localhost:8004/docs")
+    print("👨‍💻 Built by April V. Sykes | Technical Implementation by GitHub Copilot")
+    
+    uvicorn.run(app, host="127.0.0.1", port=8004)

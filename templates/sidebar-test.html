@@ -1,153 +1,160 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>H.C. Lombardo - Sidebar Test</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            min-height: 100vh;
-        }
-        
-        .menu-toggle {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            z-index: 1001;
-            background: #FFD700;
-            border: none;
-            color: #000;
-            font-size: 2rem;
-            font-weight: bold;
-            padding: 15px;
-            border-radius: 10px;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-        }
-        
-        .sidebar {
-            position: fixed;
-            left: -300px;
-            top: 0;
-            width: 300px;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.9);
-            transition: left 0.3s ease;
-            z-index: 1000;
-            padding: 20px;
-        }
-        
-        .sidebar.open { left: 0; }
-        
-        .sidebar-header {
-            color: #FFD700;
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin-bottom: 20px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #FFD700;
-        }
-        
-        .nav-item {
-            display: block;
-            color: white;
-            text-decoration: none;
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.1);
-            transition: background 0.3s ease;
-        }
-        
-        .nav-item:hover {
-            background: rgba(255, 215, 0, 0.2);
-            color: #FFD700;
-        }
-        
-        .sidebar-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 999;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-        }
-        
-        .sidebar-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-        
-        .main-content {
-            padding: 100px 20px 20px 20px;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        
-        .test-card {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 30px;
-            border-radius: 15px;
-            backdrop-filter: blur(10px);
-            text-align: center;
-        }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        min-height: 100vh;
+      }
+
+      .menu-toggle {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        z-index: 1001;
+        background: #ffd700;
+        border: none;
+        color: #000;
+        font-size: 2rem;
+        font-weight: bold;
+        padding: 15px;
+        border-radius: 10px;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      }
+
+      .sidebar {
+        position: fixed;
+        left: -300px;
+        top: 0;
+        width: 300px;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.9);
+        transition: left 0.3s ease;
+        z-index: 1000;
+        padding: 20px;
+      }
+
+      .sidebar.open {
+        left: 0;
+      }
+
+      .sidebar-header {
+        color: #ffd700;
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin-bottom: 20px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #ffd700;
+      }
+
+      .nav-item {
+        display: block;
+        color: white;
+        text-decoration: none;
+        padding: 15px;
+        margin: 10px 0;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.1);
+        transition: background 0.3s ease;
+      }
+
+      .nav-item:hover {
+        background: rgba(255, 215, 0, 0.2);
+        color: #ffd700;
+      }
+
+      .sidebar-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+      }
+
+      .sidebar-overlay.active {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .main-content {
+        padding: 100px 20px 20px 20px;
+        max-width: 800px;
+        margin: 0 auto;
+      }
+
+      .test-card {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 30px;
+        border-radius: 15px;
+        backdrop-filter: blur(10px);
+        text-align: center;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <!-- Hamburger Menu Toggle -->
     <button class="menu-toggle" id="menuToggle">☰</button>
-    
+
     <!-- Sidebar Overlay -->
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
-    
+
     <!-- Sidebar Navigation -->
     <nav class="sidebar" id="sidebar">
-        <div class="sidebar-header">H.C. Lombardo</div>
-        <div class="sidebar-nav">
-            <a href="/" class="nav-item">🏠 Home</a>
-            <a href="/text-classifier" class="nav-item">🤖 Text Analysis</a>
-            <a href="/predict" class="nav-item">🎯 NFL Predictions</a>
-            <a href="/teams" class="nav-item">🏈 Team Stats</a>
-            <a href="/docs" class="nav-item">📚 API Docs</a>
-        </div>
+      <div class="sidebar-header">H.C. Lombardo</div>
+      <div class="sidebar-nav">
+        <a href="/" class="nav-item">🏠 Home</a>
+        <a href="/text-classifier" class="nav-item">🤖 Text Analysis</a>
+        <a href="/predict" class="nav-item">🎯 NFL Predictions</a>
+        <a href="/teams" class="nav-item">🏈 Team Stats</a>
+        <a href="/docs" class="nav-item">📚 API Docs</a>
+      </div>
     </nav>
-    
+
     <!-- Main Content -->
     <div class="main-content">
-        <div class="test-card">
-            <h1>🚀 H.C. Lombardo Sidebar Test</h1>
-            <p>Click the ☰ button in the top-left corner to open the sidebar!</p>
-            <p style="margin-top: 20px; font-size: 1.2rem; color: #FFD700;">
-                The bright gold hamburger menu should be clearly visible in the top-left corner.
-            </p>
-        </div>
+      <div class="test-card">
+        <h1>🚀 H.C. Lombardo Sidebar Test</h1>
+        <p>Click the ☰ button in the top-left corner to open the sidebar!</p>
+        <p style="margin-top: 20px; font-size: 1.2rem; color: #ffd700">
+          The bright gold hamburger menu should be clearly visible in the
+          top-left corner.
+        </p>
+      </div>
     </div>
-    
+
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const menuToggle = document.getElementById('menuToggle');
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebarOverlay');
-            
-            function toggleSidebar() {
-                sidebar.classList.toggle('open');
-                overlay.classList.toggle('active');
-            }
-            
-            menuToggle.addEventListener('click', toggleSidebar);
-            overlay.addEventListener('click', toggleSidebar);
-            
-            console.log('Sidebar script loaded successfully!');
-        });
+      document.addEventListener("DOMContentLoaded", function () {
+        const menuToggle = document.getElementById("menuToggle");
+        const sidebar = document.getElementById("sidebar");
+        const overlay = document.getElementById("sidebarOverlay");
+
+        function toggleSidebar() {
+          sidebar.classList.toggle("open");
+          overlay.classList.toggle("active");
+        }
+
+        menuToggle.addEventListener("click", toggleSidebar);
+        overlay.addEventListener("click", toggleSidebar);
+
+        console.log("Sidebar script loaded successfully!");
+      });
     </script>
-</body>
+  </body>
 </html>
