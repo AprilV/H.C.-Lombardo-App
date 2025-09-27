@@ -233,6 +233,16 @@ async def dashboard_home():
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }}
+        
+        .nfl-logo {{
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
         }}
         
         .dashboard-grid {{
@@ -256,6 +266,16 @@ async def dashboard_home():
             margin-bottom: 20px;
             text-align: center;
             color: #FFD700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }}
+        
+        .section-logo {{
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
         }}
         
         .data-table {{
@@ -369,9 +389,12 @@ async def dashboard_home():
     <div class="main-content">
         <!-- Dashboard Header -->
         <div class="dashboard-header">
-            <h1>🏈 H.C. Lombardo NFL Dashboard</h1>
-            <p>Professional NFL Analytics & Team Performance Data</p>
-            <p style="font-size: 0.8rem; opacity: 0.7; margin-top: 10px;">Educational Use - Official NFL Data</p>
+            <h1>
+                <img src="https://a.espncdn.com/combiner/i?img=/i/teamlogos/leagues/500/nfl.png" alt="NFL Logo" class="nfl-logo" onerror="this.style.display='none'">
+                H.C. Lombardo Dashboard
+            </h1>
+            <p>Professional Analytics & Team Performance Data</p>
+            <p style="font-size: 0.8rem; opacity: 0.7; margin-top: 10px;">Educational Use - Official Data</p>
         </div>
         
         <!-- Dashboard Grid -->
@@ -379,7 +402,8 @@ async def dashboard_home():
             <!-- TOP OFFENSIVE TEAMS -->
             <div class="data-section">
                 <div class="section-header">
-                    🎯 Top 10 Offensive Teams
+                    <img src="https://a.espncdn.com/combiner/i?img=/i/teamlogos/leagues/500/nfl.png" alt="NFL Logo" class="section-logo" onerror="this.style.display='none'">
+                    Top 10 Offensive Teams
                 </div>
                 <table class="data-table">
                     <thead>
@@ -399,7 +423,8 @@ async def dashboard_home():
             <!-- TOP DEFENSIVE TEAMS -->
             <div class="data-section">
                 <div class="section-header">
-                    🛡️ Top 10 Defensive Teams
+                    <img src="https://a.espncdn.com/combiner/i?img=/i/teamlogos/leagues/500/nfl.png" alt="NFL Logo" class="section-logo" onerror="this.style.display='none'">
+                    Top 10 Defensive Teams
                 </div>
                 <table class="data-table">
                     <thead>
@@ -422,7 +447,7 @@ async def dashboard_home():
             <div class="last-updated">
                 📊 Last Updated: {data['last_updated']}
             </div>
-            <p>🚀 H.C. Lombardo NFL Dashboard - Built by April V. Sykes, Owner & Developer © 2025</p>
+            <p>🚀 H.C. Lombardo Dashboard - Built by April V. Sykes, Owner & Developer © 2025</p>
             <p style="font-size: 0.85rem; margin-top: 8px; opacity: 0.8;">
                 🤖 Technical Implementation by GitHub Copilot | Educational Use Only
             </p>
@@ -577,7 +602,8 @@ async def teams_page():
         /* MAIN CONTENT */
         .main-content {{ padding: 100px 30px 30px 30px; max-width: 1400px; margin: 0 auto; }}
         .page-header {{ text-align: center; margin-bottom: 40px; background: rgba(255, 255, 255, 0.1); padding: 30px; border-radius: 20px; backdrop-filter: blur(10px); }}
-        .page-header h1 {{ font-size: 3rem; margin-bottom: 10px; background: linear-gradient(45deg, #FFD700, #FFA500); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }}
+        .page-header h1 {{ font-size: 3rem; margin-bottom: 10px; background: linear-gradient(45deg, #FFD700, #FFA500); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; display: flex; align-items: center; justify-content: center; gap: 15px; }}
+        .nfl-logo {{ width: 50px; height: 50px; object-fit: contain; }}
         
         .teams-table {{ width: 100%; border-collapse: collapse; background: rgba(255, 255, 255, 0.05); border-radius: 15px; overflow: hidden; margin: 20px 0; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); }}
         .teams-table th {{ background: linear-gradient(45deg, #000000, #1a1a1a); color: #FFD700; padding: 15px 12px; text-align: left; font-weight: 600; border-bottom: 2px solid #FFD700; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px; }}
@@ -618,10 +644,13 @@ async def teams_page():
     <!-- Main Content -->
     <div class="main-content">
         <div class="page-header">
-            <h1>🏈 NFL Teams</h1>
-            <p>Complete team statistics with official NFL logos - Educational Use Only</p>
+            <h1>
+                <img src="https://a.espncdn.com/combiner/i?img=/i/teamlogos/leagues/500/nfl.png" alt="NFL Logo" class="nfl-logo" onerror="this.style.display='none'">
+                Teams
+            </h1>
+            <p>Complete team statistics with official team logos - Educational Use Only</p>
             <p style="font-size: 0.8rem; opacity: 0.7; margin-top: 10px;">
-                *Official NFL team logos used for educational purposes under fair use doctrine
+                *Official team logos used for educational purposes under fair use doctrine
             </p>
         </div>
         
@@ -691,7 +720,7 @@ async def predictions_page():
     <title>H.C. Lombardo NFL Predictions</title>
     <style>
         * {{ margin: 0; padding: 0; box-sizing: border-box; }}
-        body {{ font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%); color: white; min-height: 100vh; }}
+        body {{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; min-height: 100vh; }}
         
         /* HAMBURGER MENU */
         .menu-btn {{ position: fixed; top: 20px; left: 20px; z-index: 2000; background: #FFD700; color: #000; font-size: 2rem; font-weight: 900; padding: 15px; border: 3px solid #FFA500; border-radius: 12px; cursor: pointer; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4); transition: all 0.3s ease; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; }}
@@ -714,11 +743,16 @@ async def predictions_page():
         /* MAIN CONTENT */
         .main-content {{ padding: 100px 30px 30px 30px; max-width: 1400px; margin: 0 auto; }}
         .page-header {{ text-align: center; margin-bottom: 40px; background: rgba(255, 255, 255, 0.1); padding: 30px; border-radius: 20px; backdrop-filter: blur(10px); }}
-        .page-header h1 {{ font-size: 3rem; margin-bottom: 10px; background: linear-gradient(45deg, #FFD700, #FFA500); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }}
+        .page-header h1 {{ font-size: 3rem; margin-bottom: 10px; background: linear-gradient(45deg, #FFD700, #FFA500); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; display: flex; align-items: center; justify-content: center; gap: 15px; }}
+        .nfl-logo {{ width: 50px; height: 50px; object-fit: contain; }}
         
         .predictions-grid {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 25px; margin: 30px 0; }}
         .prediction-card {{ background: rgba(255, 255, 255, 0.1); border-radius: 15px; padding: 25px; border: 1px solid rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px); }}
         .game-header {{ display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid rgba(255, 255, 255, 0.2); }}
+        .game-title {{ display: flex; align-items: center; gap: 10px; }}
+        .team-logos {{ display: flex; align-items: center; gap: 8px; }}
+        .team-logo {{ width: 32px; height: 32px; object-fit: contain; border-radius: 4px; background: white; padding: 2px; }}
+        .vs-text {{ margin: 0 8px; font-weight: bold; color: #FFD700; }}
         .confidence-badge {{ background: #28a745; color: white; padding: 8px 15px; border-radius: 20px; font-size: 0.9rem; font-weight: bold; }}
         .prediction-details div {{ margin-bottom: 12px; padding: 10px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }}
         .footer {{ text-align: center; margin-top: 40px; padding: 20px; background: rgba(255, 255, 255, 0.1); border-radius: 15px; }}
@@ -748,14 +782,24 @@ async def predictions_page():
     <!-- Main Content -->
     <div class="main-content">
         <div class="page-header">
-            <h1>🎯 NFL Predictions</h1>
+            <h1>
+                <img src="https://a.espncdn.com/combiner/i?img=/i/teamlogos/leagues/500/nfl.png" alt="NFL Logo" class="nfl-logo" onerror="this.style.display='none'">
+                Predictions
+            </h1>
             <p>Advanced statistical analysis and betting predictions</p>
         </div>
         
         <div class="predictions-grid">
             <div class="prediction-card">
                 <div class="game-header">
-                    <h3>🏈 Chiefs vs Bills</h3>
+                    <div class="game-title">
+                        <div class="team-logos">
+                            <img src="https://a.espncdn.com/i/teamlogos/nfl/500/kc.png" alt="Chiefs logo" class="team-logo" onerror="this.style.display='none'">
+                            <span class="vs-text">vs</span>
+                            <img src="https://a.espncdn.com/i/teamlogos/nfl/500/buf.png" alt="Bills logo" class="team-logo" onerror="this.style.display='none'">
+                        </div>
+                        <h3>Chiefs vs Bills</h3>
+                    </div>
                     <span class="confidence-badge">85% Confidence</span>
                 </div>
                 <div class="prediction-details">
@@ -768,7 +812,14 @@ async def predictions_page():
             
             <div class="prediction-card">
                 <div class="game-header">
-                    <h3>🏈 Cowboys vs 49ers</h3>
+                    <div class="game-title">
+                        <div class="team-logos">
+                            <img src="https://a.espncdn.com/i/teamlogos/nfl/500/dal.png" alt="Cowboys logo" class="team-logo" onerror="this.style.display='none'">
+                            <span class="vs-text">vs</span>
+                            <img src="https://a.espncdn.com/i/teamlogos/nfl/500/sf.png" alt="49ers logo" class="team-logo" onerror="this.style.display='none'">
+                        </div>
+                        <h3>Cowboys vs 49ers</h3>
+                    </div>
                     <span class="confidence-badge">78% Confidence</span>
                 </div>
                 <div class="prediction-details">
@@ -776,6 +827,66 @@ async def predictions_page():
                     <div><strong>Over/Under:</strong> 48.5 (UNDER) 📉</div>
                     <div><strong>Moneyline:</strong> 49ers -245 💰</div>
                     <div><strong>Score Prediction:</strong> 49ers 27, Cowboys 17</div>
+                </div>
+            </div>
+            
+            <div class="prediction-card">
+                <div class="game-header">
+                    <div class="game-title">
+                        <div class="team-logos">
+                            <img src="https://a.espncdn.com/i/teamlogos/nfl/500/bal.png" alt="Ravens logo" class="team-logo" onerror="this.style.display='none'">
+                            <span class="vs-text">vs</span>
+                            <img src="https://a.espncdn.com/i/teamlogos/nfl/500/pit.png" alt="Steelers logo" class="team-logo" onerror="this.style.display='none'">
+                        </div>
+                        <h3>Ravens vs Steelers</h3>
+                    </div>
+                    <span class="confidence-badge">82% Confidence</span>
+                </div>
+                <div class="prediction-details">
+                    <div><strong>Spread:</strong> Ravens -4.5 ⭐</div>
+                    <div><strong>Over/Under:</strong> 45.5 (OVER) 📈</div>
+                    <div><strong>Moneyline:</strong> Ravens -185 💰</div>
+                    <div><strong>Score Prediction:</strong> Ravens 28, Steelers 21</div>
+                </div>
+            </div>
+            
+            <div class="prediction-card">
+                <div class="game-header">
+                    <div class="game-title">
+                        <div class="team-logos">
+                            <img src="https://a.espncdn.com/i/teamlogos/nfl/500/det.png" alt="Lions logo" class="team-logo" onerror="this.style.display='none'">
+                            <span class="vs-text">vs</span>
+                            <img src="https://a.espncdn.com/i/teamlogos/nfl/500/gb.png" alt="Packers logo" class="team-logo" onerror="this.style.display='none'">
+                        </div>
+                        <h3>Lions vs Packers</h3>
+                    </div>
+                    <span class="confidence-badge">75% Confidence</span>
+                </div>
+                <div class="prediction-details">
+                    <div><strong>Spread:</strong> Lions -3.0 ⭐</div>
+                    <div><strong>Over/Under:</strong> 52.5 (OVER) 📈</div>
+                    <div><strong>Moneyline:</strong> Lions -155 💰</div>
+                    <div><strong>Score Prediction:</strong> Lions 31, Packers 24</div>
+                </div>
+            </div>
+            
+            <div class="prediction-card">
+                <div class="game-header">
+                    <div class="game-title">
+                        <div class="team-logos">
+                            <img src="https://a.espncdn.com/i/teamlogos/nfl/500/phi.png" alt="Eagles logo" class="team-logo" onerror="this.style.display='none'">
+                            <span class="vs-text">vs</span>
+                            <img src="https://a.espncdn.com/i/teamlogos/nfl/500/nyg.png" alt="Giants logo" class="team-logo" onerror="this.style.display='none'">
+                        </div>
+                        <h3>Eagles vs Giants</h3>
+                    </div>
+                    <span class="confidence-badge">88% Confidence</span>
+                </div>
+                <div class="prediction-details">
+                    <div><strong>Spread:</strong> Eagles -9.5 ⭐</div>
+                    <div><strong>Over/Under:</strong> 44.5 (UNDER) 📉</div>
+                    <div><strong>Moneyline:</strong> Eagles -420 💰</div>
+                    <div><strong>Score Prediction:</strong> Eagles 35, Giants 14</div>
                 </div>
             </div>
         </div>
@@ -828,7 +939,7 @@ async def api_info_page():
     <title>H.C. Lombardo API Information</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; min-height: 100vh; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; min-height: 100vh; }
         
         /* HAMBURGER MENU */
         .menu-btn { position: fixed; top: 20px; left: 20px; z-index: 2000; background: #FFD700; color: #000; font-size: 2rem; font-weight: 900; padding: 15px; border: 3px solid #FFA500; border-radius: 12px; cursor: pointer; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4); transition: all 0.3s ease; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; }
@@ -851,7 +962,8 @@ async def api_info_page():
         /* MAIN CONTENT */
         .main-content { padding: 100px 30px 30px 30px; max-width: 1400px; margin: 0 auto; }
         .page-header { text-align: center; margin-bottom: 40px; background: rgba(255, 255, 255, 0.1); padding: 30px; border-radius: 20px; backdrop-filter: blur(10px); }
-        .page-header h1 { font-size: 3rem; margin-bottom: 10px; background: linear-gradient(45deg, #FFD700, #FFA500); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .page-header h1 { font-size: 3rem; margin-bottom: 10px; background: linear-gradient(45deg, #FFD700, #FFA500); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; display: flex; align-items: center; justify-content: center; gap: 15px; }
+        .nfl-logo { width: 50px; height: 50px; object-fit: contain; }
         
         .api-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; margin: 30px 0; }
         .api-card { background: rgba(255, 255, 255, 0.1); border-radius: 15px; padding: 25px; border: 1px solid rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px); }
@@ -885,8 +997,11 @@ async def api_info_page():
     <!-- Main Content -->
     <div class="main-content">
         <div class="page-header">
-            <h1>📚 API Information</h1>
-            <p>Explore our NFL analytics APIs and documentation</p>
+            <h1>
+                <img src="https://a.espncdn.com/combiner/i?img=/i/teamlogos/leagues/500/nfl.png" alt="NFL Logo" class="nfl-logo" onerror="this.style.display='none'">
+                API Information
+            </h1>
+            <p>Explore our analytics APIs and documentation</p>
         </div>
         
         <div class="api-grid">
