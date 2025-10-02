@@ -66,18 +66,18 @@ def check_service_status():
             'response_time': 'N/A'
         }
     
-    # Test Failure Endpoint
+    # Text Classification API
     try:
-        response = requests.get("http://localhost:8004/test-fail", timeout=2)
-        services['test_endpoint'] = {
-            'name': 'Test Endpoint',
+        response = requests.get("http://localhost:8003/", timeout=2)
+        services['text_classification'] = {
+            'name': 'Text Classification API',
             'status': 'online' if response.status_code == 200 else 'offline',
             'details': f"HTTP {response.status_code}" if response.status_code == 200 else f"Error {response.status_code}",
             'response_time': f"{response.elapsed.total_seconds():.2f}s"
         }
     except Exception as e:
-        services['test_endpoint'] = {
-            'name': 'Test Endpoint',
+        services['text_classification'] = {
+            'name': 'Text Classification API',
             'status': 'offline',
             'details': 'Connection failed',
             'response_time': 'N/A'

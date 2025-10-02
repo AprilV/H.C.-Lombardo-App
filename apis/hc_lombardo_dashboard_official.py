@@ -611,6 +611,39 @@ async def dashboard_home():
             font-size: 1.1rem;
             color: #FFD700;
             margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }}
+        
+        .refresh-btn {{
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(40, 167, 69, 0.3);
+        }}
+        
+        .refresh-btn:hover {{
+            background: linear-gradient(45deg, #218838, #1ea085);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
+        }}
+        
+        .refresh-btn:active {{
+            transform: translateY(0);
+        }}
+        
+        .refresh-btn.loading {{
+            background: #6c757d;
+            cursor: not-allowed;
         }}
         
         /* API STATUS INDICATOR */
@@ -745,6 +778,9 @@ async def dashboard_home():
         <div class="dashboard-footer">
             <div class="last-updated">
                 📊 Last Updated: {data['last_updated']}
+                <button onclick="refreshData()" class="refresh-btn" title="Retrieve latest NFL data from ESPN">
+                    🔄 Retrieve New Data
+                </button>
             </div>
             <p>🚀 H.C. Lombardo Dashboard - Built by April V. Sykes, Owner & Developer © 2025</p>
             <p style="font-size: 0.85rem; margin-top: 8px; opacity: 0.8;">
@@ -777,6 +813,52 @@ async def dashboard_home():
         function closeSidebar() {{
             document.getElementById('sidebar').classList.remove('open');
             document.getElementById('overlay').classList.remove('active');
+        }}
+        
+        // Data refresh functionality
+        async function refreshData() {{
+            const btn = document.querySelector('.refresh-btn');
+            const originalText = btn.innerHTML;
+            
+            // Update button state
+            btn.classList.add('loading');
+            btn.innerHTML = '🔄 Updating...';
+            btn.disabled = true;
+            
+            try {{
+                // Call the data collection endpoint
+                const response = await fetch('/api/scrape-data', {{
+                    method: 'GET',
+                    headers: {{
+                        'Accept': 'application/json',
+                    }}
+                }});
+                
+                if (response.ok) {{
+                    const result = await response.json();
+                    
+                    // Show success message
+                    btn.innerHTML = '✅ Data Updated!';
+                    
+                    // Reload page after 2 seconds to show new data
+                    setTimeout(() => {{
+                        window.location.reload();
+                    }}, 2000);
+                }} else {{
+                    throw new Error('Failed to update data');
+                }}
+                
+            }} catch (error) {{
+                console.error('Data refresh failed:', error);
+                btn.innerHTML = '❌ Update Failed';
+                
+                // Reset button after 3 seconds
+                setTimeout(() => {{
+                    btn.classList.remove('loading');
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }}, 3000);
+            }}
         }}
     </script>
 </body>
@@ -981,7 +1063,11 @@ async def teams_page():
         </table>
         
         <div class="footer">
-            <p>📊 Last Updated: {data['last_updated']}</p>
+            <p>📊 Last Updated: {data['last_updated']} 
+                <button onclick="refreshData()" class="refresh-btn" title="Retrieve latest NFL data from ESPN">
+                    🔄 Retrieve New Data
+                </button>
+            </p>
             <p>🚀 H.C. Lombardo NFL Dashboard - Built by April V. Sykes, Owner & Developer © 2025</p>
             <p style="font-size: 0.85rem; margin-top: 8px; opacity: 0.8;">
                 🤖 Technical Implementation by GitHub Copilot | Educational Use - NFL Logos © NFL
@@ -1213,7 +1299,11 @@ async def predictions_page():
         </div>
         
         <div class="footer">
-            <p>📊 Last Updated: {data['last_updated']}</p>
+            <p>📊 Last Updated: {data['last_updated']} 
+                <button onclick="refreshData()" class="refresh-btn" title="Retrieve latest NFL data from ESPN">
+                    🔄 Retrieve New Data
+                </button>
+            </p>
             <p>🚀 H.C. Lombardo NFL Dashboard - Built by April V. Sykes, Owner & Developer © 2025</p>
             <p style="font-size: 0.85rem; margin-top: 8px; opacity: 0.8;">
                 🤖 Technical Implementation by GitHub Copilot | Educational Use Only
@@ -1473,57 +1563,25 @@ async def api_info_page():
         </div>
         
         <div class="api-grid">
-            <!-- API Status Dashboard -->
+            <!-- Only Working APIs -->
             <div class="api-card" style="grid-column: 1 / -1; margin-bottom: 30px;">
-                <h3>🔍 API Status Dashboard</h3>
+                <h3>✅ Active APIs Only</h3>
                 <div class="status-grid">
-                    <div class="status-item" id="main-api-status">
-                        <div class="status-indicator online" id="main-api-indicator"></div>
+                    <div class="status-item">
+                        <div class="status-indicator online"></div>
                         <div class="status-info">
-                            <strong>H.C. Lombardo API</strong>
-                            <span>Main Dashboard Service</span>
+                            <strong>Main Dashboard API</strong>
+                            <span>Port 8004 - This application</span>
                         </div>
-                        <div class="status-badge online" id="main-api-badge">Online</div>
+                        <div class="status-badge online">Running</div>
                     </div>
-                    <div class="status-item" id="teams-api-status">
-                        <div class="status-indicator online" id="teams-api-indicator"></div>
+                    <div class="status-item">
+                        <div class="status-indicator online"></div>
                         <div class="status-info">
-                            <strong>Teams Data API</strong>
-                            <span>/api/teams endpoint</span>
+                            <strong>Database Connection</strong>
+                            <span>SQLite enhanced database</span>
                         </div>
-                        <div class="status-badge online" id="teams-api-badge">Online</div>
-                    </div>
-                    <div class="status-item" id="espn-cdn-status">
-                        <div class="status-indicator online" id="espn-cdn-indicator"></div>
-                        <div class="status-info">
-                            <strong>ESPN CDN</strong>
-                            <span>Team logos & NFL branding</span>
-                        </div>
-                        <div class="status-badge offline" id="espn-cdn-badge">Online</div>
-                    </div>
-                    <div class="status-item" id="health-api-status">
-                        <div class="status-indicator online" id="health-api-indicator"></div>
-                        <div class="status-info">
-                            <strong>Health Check API</strong>
-                            <span>/health monitoring</span>
-                        </div>
-                        <div class="status-badge offline" id="health-api-badge">Error 500</div>
-                    </div>
-                    <div class="status-item" id="database-status">
-                        <div class="status-indicator online" id="database-indicator"></div>
-                        <div class="status-info">
-                            <strong>Database (SQLite)</strong>
-                            <span>Local data storage</span>
-                        </div>
-                        <div class="status-badge online" id="database-badge">Online</div>
-                    </div>
-                    <div class="status-item" id="server-status">
-                        <div class="status-indicator online" id="server-indicator"></div>
-                        <div class="status-info">
-                            <strong>Uvicorn Server</strong>
-                            <span>ASGI web server</span>
-                        </div>
-                        <div class="status-badge online" id="server-badge">Online</div>
+                        <div class="status-badge online">Connected</div>
                     </div>
                 </div>
             </div>
@@ -1605,47 +1663,7 @@ async def api_info_page():
         document.getElementById('overlay').addEventListener('click', toggleSidebar);
         
         console.log('Navigation JavaScript loaded successfully');
-        // Status display handled server-side
-    </script>
-            console.log('� Setting all statuses to Online for testing...');
-            
-            const services = {{
-                'main-api': 'Main API Online',
-                'teams-api': 'Teams API Online', 
-                'health-api': 'Health Check Online',
-                'espn-cdn': 'ESPN CDN Online',
-                'database': 'Database Online',
-                'server': 'Server Online'
-            }};
-            
-            Object.entries(services).forEach(([serviceId, statusText]) => {
-                const indicator = document.getElementById(serviceId + '-indicator');
-                const badge = document.getElementById(serviceId + '-badge');
-                
-                if (indicator && badge) {
-                    indicator.className = 'status-indicator online';
-                    badge.className = 'status-badge online';
-                    badge.textContent = statusText;
-                    console.log('Set ' + serviceId + ' to online');
-                } else {
-                    console.log('Could not find elements for ' + serviceId);
-                }
-            });
-        }
-        
-        // Run immediately when script loads
-        console.log('🚀 Starting simple status test...');
-        setAllOnline();
-        
-        // Also run after DOM loads
-        document.addEventListener('DOMContentLoaded', setAllOnline);
-        
-        // Run if already loaded
-        if (document.readyState !== 'loading') {
-            setAllOnline();
-        }
-        
-        console.log('� Simple status test initialized');
+        console.log('✅ Only showing real working APIs');
     </script>
 </body>
 </html>

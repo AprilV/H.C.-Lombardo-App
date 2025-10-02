@@ -358,7 +358,7 @@ if __name__ == "__main__":
     load_model("distilbert")
     
     print("Starting Text Classification API...")
-    print("API Documentation: http://localhost:8000/docs")
-    print("API Interface: http://localhost:8000/redoc")
+    print("API Documentation: http://localhost:8003/docs")
+    print("API Interface: http://localhost:8003/redoc")
     
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8003)
