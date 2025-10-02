@@ -10,7 +10,7 @@
 ## 🎯 **PROJECT OVERVIEW**
 
 This project implements a complete AI-powered NFL analytics platform that combines machine learning, live data integration, and web-based dashboards. The system analyzes NFL team performance and provides sentiment analysis capabilities for sports commentary.
-
+Work in Progress.
 ---
 
 ## ✅ **DEVELOPMENT ENVIRONMENT SETUP**
