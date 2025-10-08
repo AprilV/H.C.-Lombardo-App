@@ -1,51 +1,86 @@
 """
-H.C. Lombardo - Simple Web Dashboard
-Displays Top 10 NFL Offense and Defense
+H.C. Lombardo - NFL Analytics Dashboard
+Displays Top 10 NFL Offense and Defense using PostgreSQL
 """
 from flask import Flask, render_template
-import sqlite3
+import psycopg2
+from psycopg2.extras import RealDictCursor
+from dotenv import load_dotenv
+import os
+
+# Load environment variables
+load_dotenv()
 
 app = Flask(__name__)
 
+def get_espn_logo_url(abbreviation):
+    """Generate ESPN CDN logo URL from team abbreviation"""
+    # ESPN uses lowercase abbreviations
+    abbr_lower = abbreviation.lower()
+    return f"https://a.espncdn.com/i/teamlogos/nfl/500/{abbr_lower}.png"
+
+def get_db_connection():
+    """Get PostgreSQL database connection"""
+    return psycopg2.connect(
+        host=os.getenv('DB_HOST', 'localhost'),
+        port=os.getenv('DB_PORT', '5432'),
+        database=os.getenv('DB_NAME', 'nfl_analytics'),
+        user=os.getenv('DB_USER', 'postgres'),
+        password=os.getenv('DB_PASSWORD', '')
+    )
+
 def get_top_offense():
-    """Get top 10 offensive teams"""
-    conn = sqlite3.connect('data/nfl_teams.db')
-    conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
+    """Get all offensive teams sorted by PPG"""
+    conn = get_db_connection()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
     
     cursor.execute("""
         SELECT name, abbreviation, ppg, wins, losses 
         FROM teams 
-        ORDER BY ppg DESC 
-        LIMIT 10
+        ORDER BY ppg DESC
     """)
     
-    teams = [dict(row) for row in cursor.fetchall()]
+    teams = cursor.fetchall()
     conn.close()
+    
+    # Add logo URLs to each team
+    for team in teams:
+        team['logo'] = get_espn_logo_url(team['abbreviation'])
+    
     return teams
 
 def get_top_defense():
-    """Get top 10 defensive teams"""
-    conn = sqlite3.connect('data/nfl_teams.db')
-    conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
+    """Get all defensive teams sorted by PA"""
+    conn = get_db_connection()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
     
     cursor.execute("""
         SELECT name, abbreviation, pa, wins, losses 
         FROM teams 
-        ORDER BY pa ASC 
-        LIMIT 10
+        ORDER BY pa ASC
     """)
     
-    teams = [dict(row) for row in cursor.fetchall()]
+    teams = cursor.fetchall()
     conn.close()
+    
+    # Add logo URLs to each team
+    for team in teams:
+        team['logo'] = get_espn_logo_url(team['abbreviation'])
+    
     return teams
 
 @app.route('/')
 def home():
-    """Homepage with top 10 lists"""
+    """Homepage with all 32 teams"""
     offense = get_top_offense()
     defense = get_top_defense()
+    
+    # Debug: print first team to verify logo URL
+    if offense:
+        print(f"\n🔍 DEBUG - First offense team: {offense[0]['name']}")
+        print(f"   Abbreviation: {offense[0]['abbreviation']}")
+        print(f"   Logo URL: {offense[0].get('logo', 'NO LOGO')}\n")
+    
     return render_template('index.html', offense=offense, defense=defense)
 
 if __name__ == '__main__':

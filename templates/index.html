@@ -12,16 +12,23 @@
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
             color: #fff;
             min-height: 100vh;
             padding: 20px;
+            line-height: 1.6;
         }
         
         .container {
             max-width: 1400px;
             margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
         
         header {
@@ -32,12 +39,34 @@
         h1 {
             font-size: 3rem;
             margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .nfl-logo {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.3));
         }
         
         .subtitle {
             font-size: 1.2rem;
             opacity: 0.9;
+        }
+        
+        .team-count {
+            text-align: center;
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-top: 5px;
         }
         
         .lists-container {
@@ -48,11 +77,18 @@
         }
         
         .list-section {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.15);
             backdrop-filter: blur(10px);
             border-radius: 15px;
             padding: 30px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .list-section:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
         }
         
         .list-section h2 {
@@ -61,18 +97,47 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            color: #FFD700;
         }
         
         .icon {
             font-size: 2rem;
         }
         
+        .section-logo {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+            filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.3));
+        }
+        
         .team-list {
             list-style: none;
+            max-height: 600px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        
+        .team-list::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .team-list::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        
+        .team-list::-webkit-scrollbar-thumb {
+            background: rgba(255, 215, 0, 0.5);
+            border-radius: 10px;
+        }
+        
+        .team-list::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 215, 0, 0.7);
         }
         
         .team-item {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.15);
             margin-bottom: 12px;
             padding: 15px 20px;
             border-radius: 10px;
@@ -80,11 +145,23 @@
             justify-content: space-between;
             align-items: center;
             transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .team-item.top-5 {
+            background: rgba(255, 215, 0, 0.2);
+            border: 2px solid rgba(255, 215, 0, 0.4);
         }
         
         .team-item:hover {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.25);
             transform: translateX(5px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            border-color: rgba(255, 215, 0, 0.3);
+        }
+        
+        .team-item.top-5:hover {
+            background: rgba(255, 215, 0, 0.3);
         }
         
         .rank {
@@ -97,6 +174,19 @@
         .team-info {
             flex: 1;
             margin: 0 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .team-logo {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+            border-radius: 4px;
+            background: white;
+            padding: 3px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
         
         .team-name {
@@ -134,22 +224,27 @@
 <body>
     <div class="container">
         <header>
-            <h1>🏈 H.C. Lombardo NFL Analytics</h1>
-            <p class="subtitle">2025 Season - Top 10 Rankings</p>
+            <h1>
+                <img src="https://a.espncdn.com/combiner/i?img=/i/teamlogos/leagues/500/nfl.png" alt="NFL Logo" class="nfl-logo" onerror="this.style.display='none'">
+                H.C. Lombardo NFL Analytics
+            </h1>
+            <p class="subtitle">2025 Season - All 32 NFL Teams</p>
+            <p class="team-count">✨ Top 5 teams highlighted in gold</p>
         </header>
         
         <div class="lists-container">
-            <!-- Top 10 Offense -->
+            <!-- All Teams by Offense -->
             <div class="list-section">
                 <h2>
-                    <span class="icon">🔥</span>
-                    Top 10 Offense (Points Per Game)
+                    <img src="https://a.espncdn.com/combiner/i?img=/i/teamlogos/leagues/500/nfl.png" alt="NFL Logo" class="section-logo" onerror="this.style.display='none'">
+                    Offense Rankings (PPG)
                 </h2>
                 <ul class="team-list">
                     {% for team in offense %}
-                    <li class="team-item">
+                    <li class="team-item{% if loop.index <= 5 %} top-5{% endif %}">
                         <span class="rank">#{{ loop.index }}</span>
                         <div class="team-info">
+                            <img src="{{ team.logo }}" alt="{{ team.name }} logo" class="team-logo" onerror="this.style.display='none'">
                             <div class="team-name">
                                 {{ team.name }}
                                 <span class="team-abbr">{{ team.abbreviation }}</span>
@@ -163,17 +258,18 @@
                 </ul>
             </div>
             
-            <!-- Top 10 Defense -->
+            <!-- All Teams by Defense -->
             <div class="list-section">
                 <h2>
-                    <span class="icon">🛡️</span>
-                    Top 10 Defense (Fewest Points Allowed)
+                    <img src="https://a.espncdn.com/combiner/i?img=/i/teamlogos/leagues/500/nfl.png" alt="NFL Logo" class="section-logo" onerror="this.style.display='none'">
+                    Defense Rankings (PA)
                 </h2>
                 <ul class="team-list">
                     {% for team in defense %}
-                    <li class="team-item">
+                    <li class="team-item{% if loop.index <= 5 %} top-5{% endif %}">
                         <span class="rank">#{{ loop.index }}</span>
                         <div class="team-info">
+                            <img src="{{ team.logo }}" alt="{{ team.name }} logo" class="team-logo" onerror="this.style.display='none'">
                             <div class="team-name">
                                 {{ team.name }}
                                 <span class="team-abbr">{{ team.abbreviation }}</span>

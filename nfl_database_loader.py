@@ -1,9 +1,14 @@
 """
-H.C. Lombardo - Assignment: Database + ML Project
-Simple program to answer questions about NFL data
+H.C. Lombardo - NFL Analytics with PostgreSQL
+Loads NFL team statistics into PostgreSQL database
 """
-import sqlite3
-from pathlib import Path
+import psycopg2
+from psycopg2 import sql
+from dotenv import load_dotenv
+import os
+
+# Load environment variables
+load_dotenv()
 
 # NFL 2025 Season Data - REAL CURRENT STATS from TeamRankings.com (10/8/2025)
 NFL_TEAMS_2025 = [
@@ -41,18 +46,25 @@ NFL_TEAMS_2025 = [
     ('New Orleans Saints', 'NO', 0, 0, 14.6, 25.3, 5),
 ]
 
+def get_db_connection():
+    """Get PostgreSQL database connection"""
+    return psycopg2.connect(
+        host=os.getenv('DB_HOST', 'localhost'),
+        port=os.getenv('DB_PORT', '5432'),
+        database=os.getenv('DB_NAME', 'nfl_analytics'),
+        user=os.getenv('DB_USER', 'postgres'),
+        password=os.getenv('DB_PASSWORD', '')
+    )
+
 def setup_database():
-    """Create database and load NFL data"""
-    db_path = Path("data/nfl_teams.db")
-    db_path.parent.mkdir(exist_ok=True)
-    
-    conn = sqlite3.connect(db_path)
+    """Create database tables and load NFL data"""
+    conn = get_db_connection()
     cursor = conn.cursor()
     
-    # Create table
+    # Create table (PostgreSQL syntax)
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS teams (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             name TEXT NOT NULL,
             abbreviation TEXT,
             wins INTEGER,
@@ -66,20 +78,20 @@ def setup_database():
     # Clear existing data
     cursor.execute("DELETE FROM teams")
     
-    # Insert NFL data
+    # Insert NFL data (PostgreSQL uses %s instead of ?)
     cursor.executemany("""
         INSERT INTO teams (name, abbreviation, wins, losses, ppg, pa, games_played)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        VALUES (%s, %s, %s, %s, %s, %s, %s)
     """, NFL_TEAMS_2025)
     
     conn.commit()
     conn.close()
     
-    print("✅ Database created and loaded with 2025 NFL data")
+    print("✅ PostgreSQL database loaded with 2025 NFL data")
 
 def answer_questions():
     """Answer the assignment questions"""
-    conn = sqlite3.connect("data/nfl_teams.db")
+    conn = get_db_connection()
     cursor = conn.cursor()
     
     print("\n" + "="*70)

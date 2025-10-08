@@ -1,11 +1,28 @@
-import sqlite3
+import psycopg2
+from dotenv import load_dotenv
+import os
 
-conn = sqlite3.connect('data/nfl_teams.db')
+# Load environment variables
+load_dotenv()
+
+# Connect to PostgreSQL
+conn = psycopg2.connect(
+    host=os.getenv('DB_HOST', 'localhost'),
+    port=os.getenv('DB_PORT', '5432'),
+    database=os.getenv('DB_NAME', 'nfl_analytics'),
+    user=os.getenv('DB_USER', 'postgres'),
+    password=os.getenv('DB_PASSWORD')
+)
 cursor = conn.cursor()
 
 print("\nDATABASE TABLE STRUCTURE:")
 print("="*60)
-cursor.execute("PRAGMA table_info(teams)")
+cursor.execute("""
+    SELECT column_name, data_type, character_maximum_length 
+    FROM information_schema.columns 
+    WHERE table_name = 'teams'
+    ORDER BY ordinal_position
+""")
 for row in cursor.fetchall():
     print(row)
 
