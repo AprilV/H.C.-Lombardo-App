@@ -1,0 +1,404 @@
+2025-10-07 19:58:32,597 - HCLombardo - INFO - ==================================================
+2025-10-07 19:58:32,597 - HCLombardo - INFO - H.C. Lombardo App - Starting Up
+2025-10-07 19:58:32,597 - HCLombardo - INFO - Log file: logs\hc_lombardo_20251007.log
+2025-10-07 19:58:32,597 - HCLombardo - INFO - Log level: INFO
+2025-10-07 19:58:32,597 - HCLombardo - INFO - ==================================================
+2025-10-07 19:58:32,598 - HCLombardo.main - INFO - Initializing application components...
+2025-10-07 19:58:32,620 - src.database - INFO - Database initialized successfully
+2025-10-07 19:58:32,620 - src.ml_model - INFO - Loading HuggingFace model: cardiffnlp/twitter-roberta-base-sentiment-latest
+2025-10-07 19:58:33,768 - src.ml_model - INFO - HuggingFace model loaded successfully
+2025-10-07 20:00:14,304 - HCLombardo - INFO - ==================================================
+2025-10-07 20:00:14,305 - HCLombardo - INFO - H.C. Lombardo App - Starting Up
+2025-10-07 20:00:14,305 - HCLombardo - INFO - Log file: logs\hc_lombardo_20251007.log
+2025-10-07 20:00:14,305 - HCLombardo - INFO - Log level: INFO
+2025-10-07 20:00:14,305 - HCLombardo - INFO - ==================================================
+2025-10-07 20:00:14,306 - HCLombardo.main - INFO - Initializing application components...
+2025-10-07 20:00:14,307 - src.database - INFO - Database initialized successfully
+2025-10-07 20:00:14,308 - src.ml_model - INFO - Loading HuggingFace model: cardiffnlp/twitter-roberta-base-sentiment-latest
+2025-10-07 20:00:15,583 - src.ml_model - INFO - HuggingFace model loaded successfully
+2025-10-07 20:00:15,584 - HCLombardo.main - INFO - Starting H.C. Lombardo App server...
+2025-10-07 20:00:21,971 - HCLombardo - INFO - ==================================================
+2025-10-07 20:00:21,971 - HCLombardo - INFO - H.C. Lombardo App - Starting Up
+2025-10-07 20:00:21,972 - HCLombardo - INFO - Log file: logs\hc_lombardo_20251007.log
+2025-10-07 20:00:21,972 - HCLombardo - INFO - Log level: INFO
+2025-10-07 20:00:21,972 - HCLombardo - INFO - ==================================================
+2025-10-07 20:00:21,972 - HCLombardo.main - INFO - Initializing application components...
+2025-10-07 20:00:21,974 - src.database - INFO - Database initialized successfully
+2025-10-07 20:00:21,974 - src.ml_model - INFO - Loading HuggingFace model: cardiffnlp/twitter-roberta-base-sentiment-latest
+2025-10-07 20:00:23,182 - src.ml_model - INFO - HuggingFace model loaded successfully
+2025-10-07 20:00:23,269 - HCLombardo - INFO - ==================================================
+2025-10-07 20:00:23,271 - HCLombardo - INFO - H.C. Lombardo App - Starting Up
+2025-10-07 20:00:23,271 - HCLombardo - INFO - Log file: logs\hc_lombardo_20251007.log
+2025-10-07 20:00:23,271 - HCLombardo - INFO - Log level: INFO
+2025-10-07 20:00:23,271 - HCLombardo - INFO - ==================================================
+2025-10-07 20:00:23,272 - HCLombardo.main - INFO - Initializing application components...
+2025-10-07 20:00:23,273 - src.database - INFO - Database initialized successfully
+2025-10-07 20:00:23,275 - src.ml_model - INFO - Loading HuggingFace model: cardiffnlp/twitter-roberta-base-sentiment-latest
+2025-10-07 20:00:24,306 - src.ml_model - INFO - HuggingFace model loaded successfully
+2025-10-07 20:00:24,311 - HCLombardo.main - INFO - H.C. Lombardo App starting up...
+2025-10-07 20:00:24,314 - HCLombardo.main - INFO - Refreshing NFL data...
+2025-10-07 20:00:24,315 - src.espn_client - INFO - Fetching NFL teams data from ESPN...
+2025-10-07 20:00:25,444 - src.espn_client - INFO - Successfully fetched 32 teams
+2025-10-07 20:00:25,454 - src.database - INFO - Saved 32 teams to database
+2025-10-07 20:00:25,455 - HCLombardo.main - INFO - Successfully updated 32 teams
+2025-10-07 20:00:32,635 - HCLombardo.main - INFO - Loading homepage with NFL analytics
+2025-10-07 20:00:32,638 - HCLombardo.main - INFO - Answering assignment questions:
+2025-10-07 20:00:32,638 - HCLombardo.main - INFO - Top offensive team: Houston Texans
+2025-10-07 20:00:32,638 - HCLombardo.main - INFO - Top defensive team: Atlanta Falcons
+2025-10-07 20:03:52,709 - HCLombardo - INFO - ==================================================
+2025-10-07 20:03:52,709 - HCLombardo - INFO - H.C. Lombardo App - Starting Up
+2025-10-07 20:03:52,709 - HCLombardo - INFO - Log file: logs\hc_lombardo_20251007.log
+2025-10-07 20:03:52,709 - HCLombardo - INFO - Log level: INFO
+2025-10-07 20:03:52,709 - HCLombardo - INFO - ==================================================
+2025-10-07 20:03:52,711 - HCLombardo.main - INFO - Initializing application components...
+2025-10-07 20:03:52,711 - src.database - INFO - Database initialized successfully
+2025-10-07 20:03:52,711 - src.ml_model - INFO - Loading HuggingFace model: cardiffnlp/twitter-roberta-base-sentiment-latest
+2025-10-07 20:03:54,126 - src.ml_model - INFO - HuggingFace model loaded successfully
+2025-10-07 20:03:54,172 - HCLombardo - INFO - ==================================================
+2025-10-07 20:03:54,172 - HCLombardo - INFO - H.C. Lombardo App - Starting Up
+2025-10-07 20:03:54,172 - HCLombardo - INFO - Log file: logs\hc_lombardo_20251007.log
+2025-10-07 20:03:54,172 - HCLombardo - INFO - Log level: INFO
+2025-10-07 20:03:54,172 - HCLombardo - INFO - ==================================================
+2025-10-07 20:03:54,174 - HCLombardo.main - INFO - Initializing application components...
+2025-10-07 20:03:54,174 - src.database - INFO - Database initialized successfully
+2025-10-07 20:03:54,174 - src.ml_model - INFO - Loading HuggingFace model: cardiffnlp/twitter-roberta-base-sentiment-latest
+2025-10-07 20:03:54,820 - src.ml_model - INFO - HuggingFace model loaded successfully
+2025-10-07 20:03:54,820 - HCLombardo.main - INFO - H.C. Lombardo App starting up...
+2025-10-07 20:03:54,820 - HCLombardo.main - INFO - Refreshing NFL data...
+2025-10-07 20:03:54,820 - src.espn_client - INFO - Fetching NFL teams data from ESPN...
+2025-10-07 20:03:55,311 - src.espn_client - INFO - Successfully fetched 32 teams
+2025-10-07 20:03:55,323 - src.database - INFO - Saved 32 teams to database
+2025-10-07 20:03:55,325 - HCLombardo.main - INFO - Successfully updated 32 teams
+2025-10-07 20:03:59,213 - HCLombardo.main - INFO - Refreshing NFL data...
+2025-10-07 20:03:59,214 - src.espn_client - INFO - Fetching NFL teams data from ESPN...
+2025-10-07 20:03:59,245 - src.espn_client - INFO - Successfully fetched 32 teams
+2025-10-07 20:03:59,254 - src.database - INFO - Saved 32 teams to database
+2025-10-07 20:03:59,254 - HCLombardo.main - INFO - Successfully updated 32 teams
+2025-10-07 20:04:02,992 - HCLombardo.main - INFO - Loading homepage with NFL analytics
+2025-10-07 20:04:02,992 - HCLombardo.main - INFO - Answering assignment questions:
+2025-10-07 20:04:02,992 - HCLombardo.main - INFO - Top offensive team: Houston Texans
+2025-10-07 20:04:02,992 - HCLombardo.main - INFO - Top defensive team: Atlanta Falcons
+2025-10-07 20:06:17,815 - HCLombardo - INFO - ==================================================
+2025-10-07 20:06:17,815 - HCLombardo - INFO - H.C. Lombardo App - Starting Up
+2025-10-07 20:06:17,815 - HCLombardo - INFO - Log file: logs\hc_lombardo_20251007.log
+2025-10-07 20:06:17,815 - HCLombardo - INFO - Log level: INFO
+2025-10-07 20:06:17,815 - HCLombardo - INFO - ==================================================
+2025-10-07 20:06:17,816 - HCLombardo.main - INFO - Initializing application components...
+2025-10-07 20:06:17,817 - src.database - INFO - Database initialized successfully
+2025-10-07 20:06:17,818 - src.ml_model - INFO - Loading HuggingFace model: cardiffnlp/twitter-roberta-base-sentiment-latest
+2025-10-07 20:06:19,019 - src.ml_model - INFO - HuggingFace model loaded successfully
+2025-10-07 20:06:19,059 - HCLombardo - INFO - ==================================================
+2025-10-07 20:06:19,059 - HCLombardo - INFO - H.C. Lombardo App - Starting Up
+2025-10-07 20:06:19,059 - HCLombardo - INFO - Log file: logs\hc_lombardo_20251007.log
+2025-10-07 20:06:19,059 - HCLombardo - INFO - Log level: INFO
+2025-10-07 20:06:19,059 - HCLombardo - INFO - ==================================================
+2025-10-07 20:06:19,059 - HCLombardo.main - INFO - Initializing application components...
+2025-10-07 20:06:19,065 - src.database - INFO - Database initialized successfully
+2025-10-07 20:06:19,065 - src.ml_model - INFO - Loading HuggingFace model: cardiffnlp/twitter-roberta-base-sentiment-latest
+2025-10-07 20:06:19,747 - src.ml_model - INFO - HuggingFace model loaded successfully
+2025-10-07 20:06:19,748 - HCLombardo.main - INFO - H.C. Lombardo App starting up...
+2025-10-07 20:06:19,748 - HCLombardo.main - INFO - Refreshing NFL data...
+2025-10-07 20:06:19,748 - src.espn_client - INFO - Fetching LIVE NFL teams data from ESPN API...
+2025-10-07 20:06:19,749 - src.espn_client - INFO - Trying endpoint: https://site.web.api.espn.com/apis/site/v2/sports/football/nfl/teams
+2025-10-07 20:06:20,229 - src.espn_client - INFO - Trying endpoint: https://site.web.api.espn.com/apis/site/v2/sports/football/nfl/standings
+2025-10-07 20:06:20,253 - src.espn_client - INFO - Trying endpoint: https://site.web.api.espn.com/apis/site/v2/sports/football/nfl/teams
+2025-10-07 20:06:20,289 - src.espn_client - INFO - ESPN teams endpoint failed, trying scoreboard data...
+2025-10-07 20:06:20,289 - src.espn_client - INFO - Fetching data from ESPN scoreboard...
+2025-10-07 20:06:20,321 - src.espn_client - INFO - Extracted 28 teams from scoreboard data
+2025-10-07 20:06:20,341 - src.database - INFO - Saved 28 teams to database
+2025-10-07 20:06:20,341 - HCLombardo.main - INFO - Successfully updated 28 teams
+2025-10-07 20:06:54,913 - HCLombardo - INFO - ==================================================
+2025-10-07 20:06:54,913 - HCLombardo - INFO - H.C. Lombardo App - Starting Up
+2025-10-07 20:06:54,914 - HCLombardo - INFO - Log file: logs\hc_lombardo_20251007.log
+2025-10-07 20:06:54,914 - HCLombardo - INFO - Log level: INFO
+2025-10-07 20:06:54,914 - HCLombardo - INFO - ==================================================
+2025-10-07 20:06:54,914 - HCLombardo.main - INFO - Initializing application components...
+2025-10-07 20:06:54,916 - src.database - INFO - Database initialized successfully
+2025-10-07 20:06:54,916 - src.ml_model - INFO - Loading HuggingFace model: cardiffnlp/twitter-roberta-base-sentiment-latest
+2025-10-07 20:06:56,048 - src.ml_model - INFO - HuggingFace model loaded successfully
+2025-10-07 20:06:56,096 - HCLombardo - INFO - ==================================================
+2025-10-07 20:06:56,096 - HCLombardo - INFO - H.C. Lombardo App - Starting Up
+2025-10-07 20:06:56,096 - HCLombardo - INFO - Log file: logs\hc_lombardo_20251007.log
+2025-10-07 20:06:56,096 - HCLombardo - INFO - Log level: INFO
+2025-10-07 20:06:56,098 - HCLombardo - INFO - ==================================================
+2025-10-07 20:06:56,098 - HCLombardo.main - INFO - Initializing application components...
+2025-10-07 20:06:56,098 - src.database - INFO - Database initialized successfully
+2025-10-07 20:06:56,098 - src.ml_model - INFO - Loading HuggingFace model: cardiffnlp/twitter-roberta-base-sentiment-latest
+2025-10-07 20:06:56,827 - src.ml_model - INFO - HuggingFace model loaded successfully
+2025-10-07 20:06:56,829 - HCLombardo.main - INFO - H.C. Lombardo App starting up...
+2025-10-07 20:06:56,830 - HCLombardo.main - INFO - Refreshing NFL data...
+2025-10-07 20:06:56,830 - src.espn_client - INFO - Fetching LIVE NFL teams data from ESPN API...
+2025-10-07 20:06:56,830 - src.espn_client - INFO - Trying endpoint: https://site.web.api.espn.com/apis/site/v2/sports/football/nfl/teams
+2025-10-07 20:06:57,284 - src.espn_client - INFO - Trying endpoint: https://site.web.api.espn.com/apis/site/v2/sports/football/nfl/standings
+2025-10-07 20:06:57,310 - src.espn_client - INFO - Trying endpoint: https://site.web.api.espn.com/apis/site/v2/sports/football/nfl/teams
+2025-10-07 20:06:57,339 - src.espn_client - INFO - ESPN teams endpoint failed, trying scoreboard data...
+2025-10-07 20:06:57,339 - src.espn_client - INFO - Fetching data from ESPN scoreboard...
+2025-10-07 20:06:57,363 - src.espn_client - INFO - Extracted 28 teams from scoreboard data
+2025-10-07 20:06:57,373 - src.database - INFO - Saved 28 teams to database
+2025-10-07 20:06:57,373 - HCLombardo.main - INFO - Successfully updated 28 teams
+2025-10-07 20:07:00,420 - HCLombardo.main - INFO - Refreshing NFL data...
+2025-10-07 20:07:00,420 - src.espn_client - INFO - Fetching LIVE NFL teams data from ESPN API...
+2025-10-07 20:07:00,420 - src.espn_client - INFO - Trying endpoint: https://site.web.api.espn.com/apis/site/v2/sports/football/nfl/teams
+2025-10-07 20:07:00,452 - src.espn_client - INFO - Trying endpoint: https://site.web.api.espn.com/apis/site/v2/sports/football/nfl/standings
+2025-10-07 20:07:00,480 - src.espn_client - INFO - Trying endpoint: https://site.web.api.espn.com/apis/site/v2/sports/football/nfl/teams
+2025-10-07 20:07:00,503 - src.espn_client - INFO - ESPN teams endpoint failed, trying scoreboard data...
+2025-10-07 20:07:00,503 - src.espn_client - INFO - Fetching data from ESPN scoreboard...
+2025-10-07 20:07:00,531 - src.espn_client - INFO - Extracted 28 teams from scoreboard data
+2025-10-07 20:07:00,551 - src.database - INFO - Saved 28 teams to database
+2025-10-07 20:07:00,552 - HCLombardo.main - INFO - Successfully updated 28 teams
+2025-10-07 20:07:03,693 - HCLombardo.main - INFO - Loading homepage with NFL analytics
+2025-10-07 20:07:03,695 - HCLombardo.main - INFO - Answering assignment questions:
+2025-10-07 20:07:03,695 - HCLombardo.main - INFO - Top offensive team: Houston Texans
+2025-10-07 20:07:03,695 - HCLombardo.main - INFO - Top defensive team: Indianapolis Colts
+2025-10-07 20:11:16,561 - HCLombardo - INFO - ==================================================
+2025-10-07 20:11:16,562 - HCLombardo - INFO - H.C. Lombardo App - Starting Up
+2025-10-07 20:11:16,562 - HCLombardo - INFO - Log file: logs\hc_lombardo_20251007.log
+2025-10-07 20:11:16,562 - HCLombardo - INFO - Log level: INFO
+2025-10-07 20:11:16,562 - HCLombardo - INFO - ==================================================
+2025-10-07 20:11:16,564 - HCLombardo.main - INFO - Initializing application components...
+2025-10-07 20:11:16,565 - src.database - INFO - Database initialized successfully
+2025-10-07 20:11:16,565 - src.ml_model - INFO - Loading HuggingFace model: cardiffnlp/twitter-roberta-base-sentiment-latest
+2025-10-07 20:11:17,736 - src.ml_model - INFO - HuggingFace model loaded successfully
+2025-10-07 20:11:17,737 - HCLombardo.main - INFO - Starting H.C. Lombardo App server...
+2025-10-07 20:11:23,598 - HCLombardo - INFO - ==================================================
+2025-10-07 20:11:23,600 - HCLombardo - INFO - H.C. Lombardo App - Starting Up
+2025-10-07 20:11:23,600 - HCLombardo - INFO - Log file: logs\hc_lombardo_20251007.log
+2025-10-07 20:11:23,600 - HCLombardo - INFO - Log level: INFO
+2025-10-07 20:11:23,600 - HCLombardo - INFO - ==================================================
+2025-10-07 20:11:23,600 - HCLombardo.main - INFO - Initializing application components...
+2025-10-07 20:11:23,601 - src.database - INFO - Database initialized successfully
+2025-10-07 20:11:23,602 - src.ml_model - INFO - Loading HuggingFace model: cardiffnlp/twitter-roberta-base-sentiment-latest
+2025-10-07 20:11:24,711 - src.ml_model - INFO - HuggingFace model loaded successfully
+2025-10-07 20:11:24,754 - HCLombardo - INFO - ==================================================
+2025-10-07 20:11:24,755 - HCLombardo - INFO - H.C. Lombardo App - Starting Up
+2025-10-07 20:11:24,755 - HCLombardo - INFO - Log file: logs\hc_lombardo_20251007.log
+2025-10-07 20:11:24,755 - HCLombardo - INFO - Log level: INFO
+2025-10-07 20:11:24,755 - HCLombardo - INFO - ==================================================
+2025-10-07 20:11:24,755 - HCLombardo.main - INFO - Initializing application components...
+2025-10-07 20:11:24,755 - src.database - INFO - Database initialized successfully
+2025-10-07 20:11:24,755 - src.ml_model - INFO - Loading HuggingFace model: cardiffnlp/twitter-roberta-base-sentiment-latest
+2025-10-07 20:11:25,403 - src.ml_model - INFO - HuggingFace model loaded successfully
+2025-10-07 20:11:25,405 - HCLombardo.main - INFO - H.C. Lombardo App starting up...
+2025-10-07 20:11:25,405 - HCLombardo.main - INFO - Refreshing NFL data...
+2025-10-07 20:11:25,405 - src.espn_client - INFO - Fetching LIVE NFL teams data from ESPN API...
+2025-10-07 20:11:25,405 - src.espn_client - INFO - Trying endpoint: https://site.web.api.espn.com/apis/site/v2/sports/football/nfl/teams
+2025-10-07 20:11:25,864 - src.espn_client - INFO - Trying endpoint: https://site.web.api.espn.com/apis/site/v2/sports/football/nfl/standings
+2025-10-07 20:11:25,896 - src.espn_client - INFO - Trying endpoint: https://site.web.api.espn.com/apis/site/v2/sports/football/nfl/teams
+2025-10-07 20:11:25,923 - src.espn_client - INFO - ESPN teams endpoint failed, trying scoreboard data...
+2025-10-07 20:11:25,923 - src.espn_client - INFO - Fetching data from ESPN scoreboard...
+2025-10-07 20:11:25,948 - src.espn_client - INFO - Extracted 28 teams from scoreboard data
+2025-10-07 20:11:25,954 - src.database - INFO - Saved 28 teams to database
+2025-10-07 20:11:25,954 - HCLombardo.main - INFO - Successfully updated 28 teams
+2025-10-07 20:11:47,004 - HCLombardo - INFO - ==================================================
+2025-10-07 20:11:47,004 - HCLombardo - INFO - H.C. Lombardo App - Starting Up
+2025-10-07 20:11:47,004 - HCLombardo - INFO - Log file: logs\hc_lombardo_20251007.log
+2025-10-07 20:11:47,004 - HCLombardo - INFO - Log level: INFO
+2025-10-07 20:11:47,004 - HCLombardo - INFO - ==================================================
+2025-10-07 20:11:47,020 - HCLombardo.main - INFO - Initializing application components...
+2025-10-07 20:11:47,020 - src.database - INFO - Database initialized successfully
+2025-10-07 20:11:47,020 - src.ml_model - INFO - Loading HuggingFace model: cardiffnlp/twitter-roberta-base-sentiment-latest
+2025-10-07 20:11:48,159 - src.ml_model - INFO - HuggingFace model loaded successfully
+2025-10-07 20:11:48,220 - HCLombardo - INFO - ==================================================
+2025-10-07 20:11:48,220 - HCLombardo - INFO - H.C. Lombardo App - Starting Up
+2025-10-07 20:11:48,220 - HCLombardo - INFO - Log file: logs\hc_lombardo_20251007.log
+2025-10-07 20:11:48,220 - HCLombardo - INFO - Log level: INFO
+2025-10-07 20:11:48,220 - HCLombardo - INFO - ==================================================
+2025-10-07 20:11:48,220 - HCLombardo.main - INFO - Initializing application components...
+2025-10-07 20:11:48,220 - src.database - INFO - Database initialized successfully
+2025-10-07 20:11:48,220 - src.ml_model - INFO - Loading HuggingFace model: cardiffnlp/twitter-roberta-base-sentiment-latest
+2025-10-07 20:11:48,934 - src.ml_model - INFO - HuggingFace model loaded successfully
+2025-10-07 20:11:48,936 - HCLombardo.main - INFO - H.C. Lombardo App starting up...
+2025-10-07 20:11:48,936 - HCLombardo.main - INFO - Refreshing NFL data...
+2025-10-07 20:11:48,936 - src.espn_client - INFO - Fetching LIVE NFL teams data from ESPN API...
+2025-10-07 20:11:49,415 - src.espn_client - INFO - Successfully parsed 32 teams from ESPN
+2025-10-07 20:11:49,427 - src.database - INFO - Saved 32 teams to database
+2025-10-07 20:11:49,428 - HCLombardo.main - INFO - Successfully updated 32 teams
+2025-10-07 20:12:47,582 - HCLombardo.main - INFO - Refreshing NFL data...
+2025-10-07 20:12:47,582 - src.espn_client - INFO - Fetching LIVE NFL teams data from ESPN API...
+2025-10-07 20:12:48,099 - src.espn_client - INFO - Successfully parsed 32 teams from ESPN
+2025-10-07 20:12:48,118 - src.database - INFO - Saved 32 teams to database
+2025-10-07 20:12:48,118 - HCLombardo.main - INFO - Successfully updated 32 teams
+2025-10-07 20:12:51,207 - HCLombardo.main - INFO - Loading homepage with NFL analytics
+2025-10-07 20:12:51,209 - HCLombardo.main - INFO - Answering assignment questions:
+2025-10-07 20:12:51,210 - HCLombardo.main - INFO - Top offensive team: Arizona Cardinals
+2025-10-07 20:12:51,210 - HCLombardo.main - INFO - Top defensive team: Arizona Cardinals
+2025-10-07 20:18:56,899 - HCLombardo - INFO - ==================================================
+2025-10-07 20:18:56,899 - HCLombardo - INFO - H.C. Lombardo App - Starting Up
+2025-10-07 20:18:56,904 - HCLombardo - INFO - Log file: logs\hc_lombardo_20251007.log
+2025-10-07 20:18:56,904 - HCLombardo - INFO - Log level: INFO
+2025-10-07 20:18:56,904 - HCLombardo - INFO - ==================================================
+2025-10-07 20:18:56,905 - HCLombardo.main - INFO - Initializing application components...
+2025-10-07 20:18:56,905 - src.database - INFO - Database initialized successfully
+2025-10-07 20:18:56,905 - src.ml_model - INFO - Loading HuggingFace model: cardiffnlp/twitter-roberta-base-sentiment-latest
+2025-10-07 20:18:58,038 - src.ml_model - INFO - HuggingFace model loaded successfully
+2025-10-07 20:18:58,039 - HCLombardo.main - INFO - Starting H.C. Lombardo App server...
+2025-10-07 20:19:04,062 - HCLombardo - INFO - ==================================================
+2025-10-07 20:19:04,063 - HCLombardo - INFO - H.C. Lombardo App - Starting Up
+2025-10-07 20:19:04,063 - HCLombardo - INFO - Log file: logs\hc_lombardo_20251007.log
+2025-10-07 20:19:04,063 - HCLombardo - INFO - Log level: INFO
+2025-10-07 20:19:04,063 - HCLombardo - INFO - ==================================================
+2025-10-07 20:19:04,064 - HCLombardo.main - INFO - Initializing application components...
+2025-10-07 20:19:04,065 - src.database - INFO - Database initialized successfully
+2025-10-07 20:19:04,065 - src.ml_model - INFO - Loading HuggingFace model: cardiffnlp/twitter-roberta-base-sentiment-latest
+2025-10-07 20:19:05,189 - src.ml_model - INFO - HuggingFace model loaded successfully
+2025-10-07 20:19:05,238 - HCLombardo - INFO - ==================================================
+2025-10-07 20:19:05,238 - HCLombardo - INFO - H.C. Lombardo App - Starting Up
+2025-10-07 20:19:05,238 - HCLombardo - INFO - Log file: logs\hc_lombardo_20251007.log
+2025-10-07 20:19:05,238 - HCLombardo - INFO - Log level: INFO
+2025-10-07 20:19:05,238 - HCLombardo - INFO - ==================================================
+2025-10-07 20:19:05,238 - HCLombardo.main - INFO - Initializing application components...
+2025-10-07 20:19:05,238 - src.database - INFO - Database initialized successfully
+2025-10-07 20:19:05,238 - src.ml_model - INFO - Loading HuggingFace model: cardiffnlp/twitter-roberta-base-sentiment-latest
+2025-10-07 20:19:05,875 - src.ml_model - INFO - HuggingFace model loaded successfully
+2025-10-07 20:19:05,880 - HCLombardo.main - INFO - H.C. Lombardo App starting up...
+2025-10-07 20:19:05,880 - HCLombardo.main - INFO - Refreshing NFL data...
+2025-10-07 20:19:05,880 - src.espn_client - INFO - Fetching LIVE NFL teams data from ESPN API...
+2025-10-07 20:19:06,354 - src.espn_client - INFO - Successfully parsed 32 teams from ESPN
+2025-10-07 20:19:06,374 - src.database - INFO - Saved 32 teams to database
+2025-10-07 20:19:06,374 - HCLombardo.main - INFO - Successfully updated 32 teams
+2025-10-07 20:19:08,497 - HCLombardo.main - INFO - Loading homepage with NFL analytics
+2025-10-07 20:19:08,499 - HCLombardo.main - INFO - Answering assignment questions:
+2025-10-07 20:19:08,499 - HCLombardo.main - INFO - Top offensive team: Buffalo Bills
+2025-10-07 20:19:08,499 - HCLombardo.main - INFO - Top defensive team: San Francisco 49ers
+2025-10-07 20:33:57,614 - HCLombardo - INFO - ==================================================
+2025-10-07 20:33:57,614 - HCLombardo - INFO - H.C. Lombardo App - Starting Up
+2025-10-07 20:33:57,615 - HCLombardo - INFO - Log file: logs\hc_lombardo_20251007.log
+2025-10-07 20:33:57,615 - HCLombardo - INFO - Log level: INFO
+2025-10-07 20:33:57,615 - HCLombardo - INFO - ==================================================
+2025-10-07 20:33:57,615 - HCLombardo.main - INFO - Initializing application components...
+2025-10-07 20:33:57,616 - src.database - INFO - Database initialized successfully
+2025-10-07 20:33:57,617 - src.ml_model - INFO - Loading HuggingFace model: cardiffnlp/twitter-roberta-base-sentiment-latest
+2025-10-07 20:33:58,733 - src.ml_model - INFO - HuggingFace model loaded successfully
+2025-10-07 20:33:58,733 - HCLombardo.main - INFO - Starting H.C. Lombardo App server...
+2025-10-07 20:34:04,659 - HCLombardo - INFO - ==================================================
+2025-10-07 20:34:04,659 - HCLombardo - INFO - H.C. Lombardo App - Starting Up
+2025-10-07 20:34:04,659 - HCLombardo - INFO - Log file: logs\hc_lombardo_20251007.log
+2025-10-07 20:34:04,659 - HCLombardo - INFO - Log level: INFO
+2025-10-07 20:34:04,659 - HCLombardo - INFO - ==================================================
+2025-10-07 20:34:04,660 - HCLombardo.main - INFO - Initializing application components...
+2025-10-07 20:34:04,661 - src.database - INFO - Database initialized successfully
+2025-10-07 20:34:04,661 - src.ml_model - INFO - Loading HuggingFace model: cardiffnlp/twitter-roberta-base-sentiment-latest
+2025-10-07 20:34:05,771 - src.ml_model - INFO - HuggingFace model loaded successfully
+2025-10-07 20:34:05,836 - HCLombardo - INFO - ==================================================
+2025-10-07 20:34:05,836 - HCLombardo - INFO - H.C. Lombardo App - Starting Up
+2025-10-07 20:34:05,836 - HCLombardo - INFO - Log file: logs\hc_lombardo_20251007.log
+2025-10-07 20:34:05,837 - HCLombardo - INFO - Log level: INFO
+2025-10-07 20:34:05,837 - HCLombardo - INFO - ==================================================
+2025-10-07 20:34:05,837 - HCLombardo.main - INFO - Initializing application components...
+2025-10-07 20:34:05,839 - src.database - INFO - Database initialized successfully
+2025-10-07 20:34:05,840 - src.ml_model - INFO - Loading HuggingFace model: cardiffnlp/twitter-roberta-base-sentiment-latest
+2025-10-07 20:34:06,506 - src.ml_model - INFO - HuggingFace model loaded successfully
+2025-10-07 20:34:06,508 - HCLombardo.main - INFO - H.C. Lombardo App starting up...
+2025-10-07 20:34:06,508 - HCLombardo.main - INFO - Refreshing NFL data...
+2025-10-07 20:34:06,508 - src.nfl_data_client - INFO - Fetching REAL NFL data from NFL.com API...
+2025-10-07 20:34:06,508 - src.nfl_data_client - INFO - Fetching from: https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams
+2025-10-07 20:34:07,089 - src.nfl_data_client - INFO - Enriched 32 teams with game stats
+2025-10-07 20:34:07,090 - src.nfl_data_client - INFO - Successfully fetched 32 teams with REAL stats from NFL.com
+2025-10-07 20:34:07,101 - src.database - ERROR - Failed to save team data: 'points_for'
+2025-10-07 20:34:07,102 - HCLombardo.main - ERROR - Failed to refresh NFL data: 'points_for'
+2025-10-07 20:34:37,776 - HCLombardo - INFO - ==================================================
+2025-10-07 20:34:37,776 - HCLombardo - INFO - H.C. Lombardo App - Starting Up
+2025-10-07 20:34:37,776 - HCLombardo - INFO - Log file: logs\hc_lombardo_20251007.log
+2025-10-07 20:34:37,776 - HCLombardo - INFO - Log level: INFO
+2025-10-07 20:34:37,777 - HCLombardo - INFO - ==================================================
+2025-10-07 20:34:37,777 - HCLombardo.main - INFO - Initializing application components...
+2025-10-07 20:34:37,778 - src.database - INFO - Database initialized successfully
+2025-10-07 20:34:37,779 - src.ml_model - INFO - Loading HuggingFace model: cardiffnlp/twitter-roberta-base-sentiment-latest
+2025-10-07 20:34:38,882 - src.ml_model - INFO - HuggingFace model loaded successfully
+2025-10-07 20:34:38,884 - HCLombardo.main - INFO - Starting H.C. Lombardo App server...
+2025-10-07 20:35:01,104 - HCLombardo - INFO - ==================================================
+2025-10-07 20:35:01,105 - HCLombardo - INFO - H.C. Lombardo App - Starting Up
+2025-10-07 20:35:01,105 - HCLombardo - INFO - Log file: logs\hc_lombardo_20251007.log
+2025-10-07 20:35:01,105 - HCLombardo - INFO - Log level: INFO
+2025-10-07 20:35:01,105 - HCLombardo - INFO - ==================================================
+2025-10-07 20:35:01,105 - HCLombardo.main - INFO - Initializing application components...
+2025-10-07 20:35:01,108 - src.database - INFO - Database initialized successfully
+2025-10-07 20:35:01,108 - src.ml_model - INFO - Loading HuggingFace model: cardiffnlp/twitter-roberta-base-sentiment-latest
+2025-10-07 20:35:02,246 - src.ml_model - INFO - HuggingFace model loaded successfully
+2025-10-07 20:35:02,247 - HCLombardo.main - INFO - H.C. Lombardo App starting up...
+2025-10-07 20:35:02,247 - HCLombardo.main - INFO - Refreshing NFL data...
+2025-10-07 20:35:02,247 - src.nfl_data_client - INFO - Fetching REAL NFL data from NFL.com API...
+2025-10-07 20:35:02,247 - src.nfl_data_client - INFO - Fetching from: https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams
+2025-10-07 20:35:02,738 - src.nfl_data_client - INFO - Enriched 32 teams with game stats
+2025-10-07 20:35:02,738 - src.nfl_data_client - INFO - Successfully fetched 32 teams with REAL stats from NFL.com
+2025-10-07 20:35:02,747 - src.database - INFO - Saved 32 teams to database
+2025-10-07 20:35:02,747 - HCLombardo.main - INFO - Successfully updated 32 teams
+2025-10-07 20:35:21,178 - HCLombardo - INFO - ==================================================
+2025-10-07 20:35:21,179 - HCLombardo - INFO - H.C. Lombardo App - Starting Up
+2025-10-07 20:35:21,179 - HCLombardo - INFO - Log file: logs\hc_lombardo_20251007.log
+2025-10-07 20:35:21,179 - HCLombardo - INFO - Log level: INFO
+2025-10-07 20:35:21,179 - HCLombardo - INFO - ==================================================
+2025-10-07 20:35:21,180 - HCLombardo.main - INFO - Initializing application components...
+2025-10-07 20:35:21,181 - src.database - INFO - Database initialized successfully
+2025-10-07 20:35:21,181 - src.ml_model - INFO - Loading HuggingFace model: cardiffnlp/twitter-roberta-base-sentiment-latest
+2025-10-07 20:35:22,248 - src.ml_model - INFO - HuggingFace model loaded successfully
+2025-10-07 20:35:22,249 - HCLombardo.main - INFO - H.C. Lombardo App starting up...
+2025-10-07 20:35:22,249 - HCLombardo.main - INFO - Refreshing NFL data...
+2025-10-07 20:35:22,249 - src.nfl_data_client - INFO - Fetching REAL NFL data from NFL.com API...
+2025-10-07 20:35:22,249 - src.nfl_data_client - INFO - Fetching from: https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams
+2025-10-07 20:35:22,743 - src.nfl_data_client - INFO - Enriched 32 teams with game stats
+2025-10-07 20:35:22,744 - src.nfl_data_client - INFO - Successfully fetched 32 teams with REAL stats from NFL.com
+2025-10-07 20:35:22,763 - src.database - INFO - Saved 32 teams to database
+2025-10-07 20:35:22,763 - HCLombardo.main - INFO - Successfully updated 32 teams
+2025-10-07 20:38:57,278 - HCLombardo - INFO - ==================================================
+2025-10-07 20:38:57,278 - HCLombardo - INFO - H.C. Lombardo App - Starting Up
+2025-10-07 20:38:57,278 - HCLombardo - INFO - Log file: logs\hc_lombardo_20251007.log
+2025-10-07 20:38:57,278 - HCLombardo - INFO - Log level: INFO
+2025-10-07 20:38:57,279 - HCLombardo - INFO - ==================================================
+2025-10-07 20:38:57,279 - HCLombardo.main - INFO - Initializing application components...
+2025-10-07 20:38:57,280 - src.database - INFO - Database initialized successfully with live API schema
+2025-10-07 20:38:57,281 - src.ml_model - INFO - Loading HuggingFace model: cardiffnlp/twitter-roberta-base-sentiment-latest
+2025-10-07 20:38:58,405 - src.ml_model - INFO - HuggingFace model loaded successfully
+2025-10-07 20:38:58,407 - HCLombardo.main - INFO - H.C. Lombardo App starting up...
+2025-10-07 20:38:58,407 - HCLombardo.main - INFO - Refreshing NFL data...
+2025-10-07 20:38:58,407 - src.nfl_data_client - INFO - Fetching REAL NFL data from NFL.com API...
+2025-10-07 20:38:58,407 - src.nfl_data_client - INFO - Fetching from: https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams
+2025-10-07 20:38:58,911 - src.nfl_data_client - INFO - Enriched 32 teams with game stats
+2025-10-07 20:38:58,911 - src.nfl_data_client - INFO - Successfully fetched 32 teams with REAL stats from NFL.com
+2025-10-07 20:38:58,933 - src.database - INFO - Saved 32 teams to database for 2025 season
+2025-10-07 20:38:58,934 - HCLombardo.main - INFO - Successfully updated 32 teams
+2025-10-07 20:39:21,676 - HCLombardo - INFO - ==================================================
+2025-10-07 20:39:21,677 - HCLombardo - INFO - H.C. Lombardo App - Starting Up
+2025-10-07 20:39:21,677 - HCLombardo - INFO - Log file: logs\hc_lombardo_20251007.log
+2025-10-07 20:39:21,677 - HCLombardo - INFO - Log level: INFO
+2025-10-07 20:39:21,677 - HCLombardo - INFO - ==================================================
+2025-10-07 20:39:21,678 - HCLombardo.main - INFO - Initializing application components...
+2025-10-07 20:39:21,678 - src.database - INFO - Database initialized successfully with live API schema
+2025-10-07 20:39:21,679 - src.ml_model - INFO - Loading HuggingFace model: cardiffnlp/twitter-roberta-base-sentiment-latest
+2025-10-07 20:39:22,733 - src.ml_model - INFO - HuggingFace model loaded successfully
+2025-10-07 20:39:22,733 - HCLombardo.main - INFO - H.C. Lombardo App starting up...
+2025-10-07 20:39:22,733 - HCLombardo.main - INFO - Refreshing NFL data...
+2025-10-07 20:39:22,733 - src.nfl_data_client - INFO - Fetching REAL NFL data from NFL.com API...
+2025-10-07 20:39:22,733 - src.nfl_data_client - INFO - Fetching from: https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams
+2025-10-07 20:39:23,337 - src.nfl_data_client - INFO - Enriched 32 teams with game stats
+2025-10-07 20:39:23,337 - src.nfl_data_client - INFO - Successfully fetched 32 teams with REAL stats from NFL.com
+2025-10-07 20:39:23,353 - src.database - INFO - Saved 32 teams to database for 2025 season
+2025-10-07 20:39:23,353 - HCLombardo.main - INFO - Successfully updated 32 teams
+2025-10-07 20:39:29,785 - HCLombardo.main - INFO - Loading homepage with NFL analytics
+2025-10-07 20:39:29,787 - HCLombardo.main - INFO - Answering assignment questions:
+2025-10-07 20:39:29,787 - HCLombardo.main - INFO - Top offensive team: Houston Texans
+2025-10-07 20:39:29,788 - HCLombardo.main - INFO - Top defensive team: Indianapolis Colts
+2025-10-07 20:46:03,719 - HCLombardo - INFO - ==================================================
+2025-10-07 20:46:03,725 - HCLombardo - INFO - H.C. Lombardo App - Starting Up
+2025-10-07 20:46:03,725 - HCLombardo - INFO - Log file: logs\hc_lombardo_20251007.log
+2025-10-07 20:46:03,725 - HCLombardo - INFO - Log level: INFO
+2025-10-07 20:46:03,725 - HCLombardo - INFO - ==================================================
+2025-10-07 20:46:03,725 - HCLombardo.main - INFO - Initializing application components...
+2025-10-07 20:46:03,725 - src.database - INFO - Database initialized successfully with live API schema
+2025-10-07 20:46:03,725 - src.ml_model - INFO - Loading HuggingFace model: cardiffnlp/twitter-roberta-base-sentiment-latest
+2025-10-07 20:46:04,956 - src.ml_model - INFO - HuggingFace model loaded successfully
+2025-10-07 20:46:04,957 - HCLombardo.main - INFO - H.C. Lombardo App starting up...
+2025-10-07 20:46:04,958 - HCLombardo.main - INFO - Refreshing NFL data...
+2025-10-07 20:46:04,958 - src.tank01_client - INFO - Fetching from Tank01 API...
+2025-10-07 20:46:06,419 - HCLombardo.main - INFO - Loading homepage with NFL analytics
+2025-10-07 20:46:06,421 - HCLombardo.main - INFO - Answering assignment questions:
+2025-10-07 20:46:06,421 - HCLombardo.main - INFO - Top offensive team: Houston Texans
+2025-10-07 20:46:06,422 - HCLombardo.main - INFO - Top defensive team: Indianapolis Colts
+2025-10-07 20:46:07,122 - src.tank01_client - INFO - Successfully fetched 32 teams with season stats
+2025-10-07 20:46:07,132 - src.database - INFO - Saved 32 teams to database for 2025 season
+2025-10-07 20:46:07,132 - HCLombardo.main - INFO - Successfully updated 32 teams
+2025-10-07 20:48:38,300 - HCLombardo.main - INFO - Loading homepage with NFL analytics
+2025-10-07 20:48:38,305 - HCLombardo.main - INFO - Answering assignment questions:
+2025-10-07 20:48:38,305 - HCLombardo.main - INFO - Top offensive team: Arizona Cardinals
+2025-10-07 20:48:38,306 - HCLombardo.main - INFO - Top defensive team: Arizona Cardinals
+2025-10-07 20:48:38,306 - HCLombardo.main - ERROR - Homepage error: 'homepage.html' not found in search path: 'templates'
