@@ -9,9 +9,14 @@ import psycopg2
 from dotenv import load_dotenv
 import os
 from datetime import datetime
+from logging_config import setup_logging, log_activity
 
 # Load environment variables
 load_dotenv()
+
+# Initialize logging
+loggers = setup_logging()
+log_activity('scraper', 'info', 'Scraper module initialized', source='TeamRankings.com')
 
 def get_db_connection():
     """Get PostgreSQL database connection"""
@@ -28,6 +33,8 @@ def scrape_offense_stats():
     url = "https://www.teamrankings.com/nfl/stat/points-per-game"
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
     
+    log_activity('scraper', 'info', 'Starting offensive stats scrape', url=url)
+    
     response = requests.get(url, headers=headers)
     soup = BeautifulSoup(response.content, 'html.parser')
     
@@ -43,13 +50,16 @@ def scrape_offense_stats():
                 ppg = float(cells[2].get_text(strip=True))
                 teams.append({'name': team_name, 'ppg': ppg})
     
-    print(f"✓ Scraped {len(teams)} teams - Offense (PPG)")
+    log_activity('scraper', 'info', 'Offensive stats scraped successfully', 
+                teams_count=len(teams), stat_type='PPG')
     return teams
 
 def scrape_defense_stats():
     """Scrape PA from TeamRankings.com"""
     url = "https://www.teamrankings.com/nfl/stat/opponent-points-per-game"
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
+    
+    log_activity('scraper', 'info', 'Starting defensive stats scrape', url=url)
     
     response = requests.get(url, headers=headers)
     soup = BeautifulSoup(response.content, 'html.parser')
