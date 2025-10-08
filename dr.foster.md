@@ -1,3 +1,45 @@
+# H.C. Lombardo NFL Analytics Platform
+
+## Project Overview
+
+**What This App Is:**
+The H.C. Lombardo NFL Analytics Platform is a comprehensive sports analytics application designed for professional NFL gambling analysis. Named after H.C. Lombardo, a professional gambler who is developing proprietary betting formulas, this platform serves as the technical infrastructure to support data-driven sports betting decisions.
+
+**Core Purpose:**
+This application collects, processes, and analyzes extensive NFL statistical data to generate "honest lines" for NFL games - mathematical predictions that can be compared against Vegas betting lines to identify value betting opportunities.
+
+**Target User:**
+Professional gamblers and serious sports bettors who need:
+- Comprehensive historical and current NFL statistics
+- Automated data collection and processing
+- Custom formula implementation capabilities
+- Line generation and value identification tools
+- Performance tracking and analysis
+
+**Key Features:**
+1. **Comprehensive Database** - PostgreSQL-powered storage of NFL team statistics, game data, and betting information
+2. **Automated Data Collection** - Web scraping from TeamRankings.com and other sources for daily stat updates
+3. **Statistical Analysis Engine** - Framework for implementing custom betting formulas and mathematical models
+4. **Line Generation System** - Tools to create weekly betting lines for all NFL games
+5. **Value Detection** - Compare generated lines against Vegas lines to identify profitable betting opportunities
+6. **Professional Logging** - Complete activity tracking for debugging and performance analysis
+7. **Testbed Environment** - Safe development space for testing new features and data sources
+
+**Technical Architecture:**
+- **Backend:** Python Flask web framework
+- **Database:** PostgreSQL 18 with advanced statistical schemas
+- **Data Sources:** TeamRankings.com (primary), ESPN API (backup)
+- **Frontend:** Bootstrap-responsive web interface
+- **Infrastructure:** Automated refresh cycles, comprehensive logging, version control
+
+**Development Philosophy:**
+Built with professional gambling in mind - reliability, accuracy, and comprehensive data coverage are paramount. The platform is designed to handle the rigorous demands of daily betting analysis while providing the flexibility to implement and test new statistical approaches.
+
+**Academic Context:**
+Developed as part of IS330 coursework to demonstrate database design, web development, API integration, and data analysis capabilities in a real-world application scenario.
+
+---
+
 # H.C. Lombardo NFL Analytics - Dr. Foster Assignment
 
 **Student:** April V  
