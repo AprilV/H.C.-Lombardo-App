@@ -36,3 +36,8 @@ logs/
 *.db
 *.sqlite
 *.sqlite3
+
+# Testbed (keep structure, ignore temp files)
+testbed/**/*.tmp
+testbed/**/test_output_*
+testbed/**/__pycache__/
