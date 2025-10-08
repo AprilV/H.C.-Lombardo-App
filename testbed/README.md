@@ -28,7 +28,25 @@ testbed/
 5. **Clean up** - Archive or delete test files
 
 ## Current Tests
-- None yet
+- `experiments/test_espn_api.py` - ESPN API endpoint testing (scoreboard + teams)
+
+## Main App Features (Production)
+See `dr.foster.md` in root for complete documentation.
+
+**Current Production Stack:**
+- PostgreSQL 18 database (nfl_analytics)
+- Flask web dashboard
+- TeamRankings.com live data scraper
+- 24-hour automatic refresh
+- All 32 NFL teams with logos
+- Professional UI with glassmorphism
+
+**When to Use Testbed:**
+- Testing new data sources before replacing TeamRankings
+- Experimenting with alternative UI designs
+- Trying different database queries
+- Validating API endpoints before integration
+- Prototyping new features without risk
 
 ## Notes
 - This folder is excluded from production deployment
