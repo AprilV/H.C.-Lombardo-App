@@ -86,6 +86,46 @@
 - Experiments folder for API testing
 - Prototypes folder for UI testing
 
+#### 5. Comprehensive Logging System ✅
+**Implementation Date:** October 8, 2025
+
+**Purpose:** Complete activity tracking stored locally for analysis and debugging
+
+**Files Created:**
+- `logging_config.py` - Central logging configuration with rotation
+- `log_viewer.py` - Interactive log analysis tool
+- `quick_logs.py` - Simple command-line log viewer
+
+**Enhanced Files:**
+- `app.py` - Logs all Flask activities, database queries, page views
+- `scrape_teamrankings.py` - Logs all scraping activities and performance
+
+**Features:**
+- Daily log files with automatic rotation (10MB max, keeps 5 files)
+- Color-coded output (🟢 Info, 🟡 Warning, 🔴 Error)
+- Component-based logging (app, database, scraper, api)
+- Professional timestamping and structured format
+- Built-in viewers requiring no external applications
+
+**What Gets Logged:**
+- Application startup/shutdown events
+- User page access and interactions
+- Database connection attempts and query results
+- Data refresh cycles and performance metrics
+- TeamRankings.com scraping activities
+- Error conditions with detailed context
+- System performance and component interactions
+
+**Usage:**
+```bash
+python quick_logs.py        # View recent activity
+python quick_logs.py 50     # View last 50 lines
+python quick_logs.py errors # View only errors
+python log_viewer.py        # Interactive menu
+```
+
+**Log Storage:** `logs/hc_lombardo_YYYYMMDD.log`
+
 ### Current Architecture
 
 ```
@@ -93,6 +133,7 @@
 │         Flask Web Application (app.py)          │
 │  • Auto-checks data age every page load         │
 │  • Triggers refresh if data > 24 hours old      │
+│  • Logs all activities and user interactions    │
 └─────────────────────────────────────────────────┘
                       ↓
 ┌─────────────────────────────────────────────────┐
@@ -100,6 +141,7 @@
 │  • Scrapes TeamRankings.com                     │
 │  • Combines PPG + PA data                       │
 │  • Updates PostgreSQL                           │
+│  • Logs scraping performance and results        │
 └─────────────────────────────────────────────────┘
                       ↓
 ┌─────────────────────────────────────────────────┐
@@ -107,6 +149,14 @@
 │  • 32 NFL teams                                 │
 │  • Real-time statistics                         │
 │  • Update metadata tracking                     │
+└─────────────────────────────────────────────────┘
+                      ↓
+┌─────────────────────────────────────────────────┐
+│           Logging System (logs/)                │
+│  • Daily rotated log files                      │
+│  • Component-based activity tracking            │
+│  • Built-in viewers and analysis tools          │
+│  • Complete audit trail of all operations       │
 └─────────────────────────────────────────────────┘
 ```
 
@@ -151,16 +201,19 @@ CREATE TABLE update_metadata (
 );
 ```
 
-### Project Structure (Updated)
+### Project Structure (Updated October 8, 2025)
 
 ```
 H.C Lombardo App/
-├── app.py                          # Flask web application
+├── app.py                          # Flask web application (with logging)
 ├── nfl_database_loader.py          # PostgreSQL data loader
-├── scrape_teamrankings.py          # Live data scraper
+├── scrape_teamrankings.py          # Live data scraper (with logging)
 ├── espn_data_fetcher.py            # ESPN API (backup)
 ├── check_database.py               # Database verification
 ├── db_config.py                    # Database configuration
+├── logging_config.py               # Comprehensive logging system
+├── log_viewer.py                   # Interactive log analysis tool
+├── quick_logs.py                   # Simple command-line log viewer
 ├── test_apis.py                    # API testing utilities
 ├── dr.foster.md                    # This assignment document
 ├── .env                            # Environment variables (secure)
@@ -168,6 +221,9 @@ H.C Lombardo App/
 ├── .gitignore                      # Git ignore rules
 ├── templates/
 │   └── index.html                  # Dashboard template
+├── logs/                           # Daily activity logs
+│   ├── hc_lombardo_20251008.log    # Today's activity log
+│   └── hc_lombardo_YYYYMMDD.log    # Historical logs (auto-rotated)
 ├── testbed/                        # Safe experimentation zone
 │   ├── README.md
 │   ├── test_template.py
