@@ -1,12 +1,14 @@
 """
 H.C. Lombardo - NFL Analytics Dashboard
-Displays Top 10 NFL Offense and Defense using PostgreSQL
+Displays All 32 NFL Teams with Auto-Refresh from TeamRankings.com
+Updates data automatically every 24 hours
 """
 from flask import Flask, render_template
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from dotenv import load_dotenv
 import os
+from datetime import datetime, timedelta
 
 # Load environment variables
 load_dotenv()
@@ -28,6 +30,58 @@ def get_db_connection():
         user=os.getenv('DB_USER', 'postgres'),
         password=os.getenv('DB_PASSWORD', '')
     )
+
+def should_refresh_data():
+    """Check if data needs refresh (older than 24 hours)"""
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # Check if metadata table exists
+        cursor.execute("""
+            SELECT EXISTS (
+                SELECT FROM information_schema.tables 
+                WHERE table_name = 'update_metadata'
+            )
+        """)
+        
+        if not cursor.fetchone()[0]:
+            conn.close()
+            return True  # No metadata, need refresh
+        
+        # Get last update time
+        cursor.execute("SELECT last_update FROM update_metadata ORDER BY id DESC LIMIT 1")
+        result = cursor.fetchone()
+        conn.close()
+        
+        if not result:
+            return True
+        
+        last_update = result[0]
+        time_diff = datetime.now() - last_update
+        
+        # Refresh if older than 24 hours
+        return time_diff > timedelta(hours=24)
+        
+    except Exception as e:
+        print(f"⚠️  Error checking data age: {e}")
+        return False
+
+def refresh_data_if_needed():
+    """Refresh data from TeamRankings if needed"""
+    if should_refresh_data():
+        print("\n🔄 Data is stale (>24 hours old), refreshing from TeamRankings.com...")
+        try:
+            from scrape_teamrankings import update_database
+            success = update_database()
+            if success:
+                print("✅ Data refreshed successfully!")
+            else:
+                print("⚠️  Data refresh failed, using existing data")
+        except Exception as e:
+            print(f"⚠️  Error during refresh: {e}")
+    else:
+        print("✅ Data is fresh (<24 hours old), no refresh needed")
 
 def get_top_offense():
     """Get all offensive teams sorted by PPG"""
@@ -72,6 +126,9 @@ def get_top_defense():
 @app.route('/')
 def home():
     """Homepage with all 32 teams"""
+    # Check if data needs refresh (24-hour check)
+    refresh_data_if_needed()
+    
     offense = get_top_offense()
     defense = get_top_defense()
     

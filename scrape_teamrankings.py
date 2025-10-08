@@ -1,10 +1,27 @@
 """
-H.C. Lombardo - Live Data Scraper
+H.C. Lombardo - Live Data Scraper with Auto-Update
 Scrapes REAL NFL stats from TeamRankings.com
+Updates PostgreSQL database automatically
 """
 import requests
 from bs4 import BeautifulSoup
-import re
+import psycopg2
+from dotenv import load_dotenv
+import os
+from datetime import datetime
+
+# Load environment variables
+load_dotenv()
+
+def get_db_connection():
+    """Get PostgreSQL database connection"""
+    return psycopg2.connect(
+        host=os.getenv('DB_HOST', 'localhost'),
+        port=os.getenv('DB_PORT', '5432'),
+        database=os.getenv('DB_NAME', 'nfl_analytics'),
+        user=os.getenv('DB_USER', 'postgres'),
+        password=os.getenv('DB_PASSWORD', '')
+    )
 
 def scrape_offense_stats():
     """Scrape PPG from TeamRankings.com"""
@@ -54,9 +71,10 @@ def scrape_defense_stats():
 
 def combine_stats():
     """Combine offense and defense stats"""
-    print("\n" + "="*60)
+    print("\n" + "="*70)
     print("SCRAPING LIVE NFL DATA FROM TEAMRANKINGS.COM")
-    print("="*60 + "\n")
+    print(f"Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print("="*70 + "\n")
     
     offense = scrape_offense_stats()
     defense = scrape_defense_stats()
@@ -77,11 +95,99 @@ def combine_stats():
     print(f"\n✓ Combined data for {len(combined)} teams")
     return combined
 
-if __name__ == "__main__":
+def get_team_abbreviation(team_name):
+    """Map full team name to abbreviation"""
+    abbr_map = {
+        'Detroit Lions': 'DET', 'Indianapolis Colts': 'IND', 'Buffalo Bills': 'BUF',
+        'Dallas Cowboys': 'DAL', 'San Francisco 49ers': 'SF', 'Baltimore Ravens': 'BAL',
+        'Tampa Bay Buccaneers': 'TB', 'Washington Commanders': 'WAS', 'Green Bay Packers': 'GB',
+        'Jacksonville Jaguars': 'JAX', 'Chicago Bears': 'CHI', 'New England Patriots': 'NE',
+        'Kansas City Chiefs': 'KC', 'Philadelphia Eagles': 'PHI', 'Los Angeles Rams': 'LAR',
+        'Minnesota Vikings': 'MIN', 'Pittsburgh Steelers': 'PIT', 'Denver Broncos': 'DEN',
+        'New York Jets': 'NYJ', 'Houston Texans': 'HOU', 'Miami Dolphins': 'MIA',
+        'Arizona Cardinals': 'ARI', 'Carolina Panthers': 'CAR', 'Atlanta Falcons': 'ATL',
+        'Seattle Seahawks': 'SEA', 'Las Vegas Raiders': 'LV', 'Cincinnati Bengals': 'CIN',
+        'Tennessee Titans': 'TEN', 'New York Giants': 'NYG', 'Cleveland Browns': 'CLE',
+        'New Orleans Saints': 'NO', 'Los Angeles Chargers': 'LAC'
+    }
+    return abbr_map.get(team_name, team_name[:3].upper())
+
+def update_database():
+    """Scrape data and update PostgreSQL database"""
     teams = combine_stats()
     
-    print("\n" + "="*60)
-    print("SAMPLE DATA (First 5 teams):")
-    print("="*60)
-    for team in teams[:5]:
-        print(f"{team['name']:30} PPG: {team['ppg']:5.1f}  PA: {team['pa']:5.1f}")
+    if not teams:
+        print("❌ No data scraped, database not updated")
+        return False
+    
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # Clear existing data
+        cursor.execute("DELETE FROM teams")
+        
+        # Insert fresh data
+        for team in teams:
+            cursor.execute("""
+                INSERT INTO teams (name, abbreviation, wins, losses, ppg, pa, games_played)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
+            """, (
+                team['name'],
+                get_team_abbreviation(team['name']),
+                0,  # Wins not scraped (would need separate page)
+                0,  # Losses not scraped
+                round(team['ppg'], 1),
+                round(team['pa'], 1),
+                5   # Assuming 5 games played (current 2025 season)
+            ))
+        
+        conn.commit()
+        conn.close()
+        
+        print(f"\n✅ Database updated with {len(teams)} teams")
+        print("="*70 + "\n")
+        
+        # Record update time
+        record_update()
+        
+        return True
+        
+    except Exception as e:
+        print(f"❌ Database update failed: {e}")
+        return False
+
+def record_update():
+    """Record that an update occurred"""
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # Create metadata table if it doesn't exist
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS update_metadata (
+                id SERIAL PRIMARY KEY,
+                last_update TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+        
+        cursor.execute("""
+            INSERT INTO update_metadata (last_update) 
+            VALUES (CURRENT_TIMESTAMP)
+        """)
+        
+        conn.commit()
+        conn.close()
+        
+    except Exception as e:
+        print(f"⚠️  Error recording update: {e}")
+
+if __name__ == "__main__":
+    # Update database with fresh data
+    success = update_database()
+    
+    if success:
+        print("✅ TeamRankings data refresh complete!")
+    else:
+        print("❌ Data refresh failed!")
+
