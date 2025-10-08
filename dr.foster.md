@@ -1,12 +1,16 @@
-# H.C. Lombardo NFL Analytics - Assignment Solution
+# H.C. Lombardo NFL Analytics - Dr. Foster Assignment
 
 **Student:** April V  
 **Course:** IS330  
+**Date:** October 8, 2025  
 **GitHub:** https://github.com/AprilV/H.C.-Lombardo-App
-**Week 1-2**
+
 ---
 
-## Weeks 2-4: Database Migration & Live Data Integration (October 8, 2025)
+# Weeks 2-4: Database Migration & Live Data Integration
+
+**Date:** October 8, 2025  
+**Student:** April V
 
 ### Major Upgrades Completed ✅
 
@@ -224,8 +228,12 @@ python app.py
 - Testing infrastructure
 
 ---
+---
 
-## Week 1: Initial Assignment (Original Requirements)
+# Week 1: Initial Assignment (Original Requirements)
+
+**Date:** September 2025  
+**Student:** April V
 
 ### Assignment Requirements Completed ✅
 
