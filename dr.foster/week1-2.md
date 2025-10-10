@@ -1,5 +1,8 @@
 # Week 1-2: Initial Assignment
 
+> **💡 TIP: For a beautiful interactive view of this assignment, double-click `index.html` in this folder!**  
+> Or open `README.md` for instructions.
+
 **Date:** September 2025  
 **Student:** April V  
 **Course:** IS330

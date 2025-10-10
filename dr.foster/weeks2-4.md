@@ -1,5 +1,8 @@
 # Weeks 2-4: Database Migration & Live Data Integration
 
+> **💡 TIP: For a beautiful interactive view of this assignment, double-click `index.html` in this folder!**  
+> Or open `README.md` for instructions.
+
 **Latest Update:** October 9, 2025  
 **Student:** April V  
 **Course:** IS330
