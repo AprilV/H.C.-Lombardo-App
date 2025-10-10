@@ -1,0 +1,326 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e22ce 100%);
+  min-height: 100vh;
+}
+
+.App {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.App-header {
+  background-color: rgba(0, 0, 0, 0.9);
+  padding: 2rem;
+  color: white;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  border-bottom: 3px solid #7e22ce;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.nfl-logo {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.5));
+}
+
+.App-header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.subtitle {
+  font-size: 1rem;
+  opacity: 0.8;
+  font-weight: 300;
+}
+
+.App-main {
+  flex: 1;
+  padding: 2rem;
+  max-width: 1600px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.status-section,
+.error-section,
+.teams-section,
+.actions-section {
+  margin-bottom: 2rem;
+}
+
+.status-section h2,
+.teams-section .section-header {
+  color: white;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.team-count {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1.2rem;
+  font-weight: normal;
+}
+
+.status-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.status-card.success {
+  border-left: 5px solid #10b981;
+}
+
+.status-card.error {
+  border-left: 5px solid #ef4444;
+  background: #fee;
+  color: #c00;
+}
+
+.status-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.status-item:last-child {
+  border-bottom: none;
+}
+
+.status-label {
+  font-weight: 600;
+  color: #4b5563;
+}
+
+.status-value {
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+}
+
+.status-value.good {
+  color: #10b981;
+}
+
+.error-card {
+  background: #fee;
+  border: 2px solid #ef4444;
+  padding: 1rem;
+  border-radius: 12px;
+  color: #c00;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+}
+
+.error-card h3 {
+  margin-bottom: 0.5rem;
+}
+
+.loading {
+  text-align: center;
+  color: white;
+  font-size: 1.2rem;
+  padding: 2rem;
+}
+
+.teams-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.team-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  border-left: 5px solid #6b7280;
+}
+
+.team-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.team-card.winning {
+  border-left-color: #10b981;
+}
+
+.team-card.even {
+  border-left-color: #f59e0b;
+}
+
+.team-card.losing {
+  border-left-color: #ef4444;
+}
+
+.team-card.neutral {
+  border-left-color: #6b7280;
+}
+
+.team-header {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.team-logo {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+}
+
+.team-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.team-header h3 {
+  color: #1f2937;
+  font-size: 1.25rem;
+  margin: 0 0 0.25rem 0;
+}
+
+.team-abbr {
+  background: #f3f4f6;
+  color: #4b5563;
+  font-weight: bold;
+  font-size: 0.9rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 6px;
+  align-self: flex-start;
+}
+
+.team-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: #6b7280;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.25rem;
+}
+
+.stat-value {
+  font-size: 1.25rem;
+  color: #1f2937;
+  font-weight: bold;
+}
+
+.actions-section {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.refresh-btn {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border: none;
+  padding: 1rem 2.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.refresh-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.5);
+}
+
+.refresh-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.refresh-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.App-footer {
+  background-color: rgba(0, 0, 0, 0.9);
+  color: white;
+  text-align: center;
+  padding: 1.5rem;
+  border-top: 3px solid #7e22ce;
+}
+
+.App-footer p {
+  margin: 0.25rem 0;
+}
+
+.footer-note {
+  opacity: 0.6;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+  .App-header h1 {
+    font-size: 1.75rem;
+  }
+  
+  .teams-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .App-main {
+    padding: 1rem;
+  }
+  
+  .team-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .team-stats {
+    grid-template-columns: 1fr;
+  }
+}

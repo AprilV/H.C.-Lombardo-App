@@ -79,6 +79,50 @@ def scrape_defense_stats():
     print(f"✓ Scraped {len(teams)} teams - Defense (PA)")
     return teams
 
+def scrape_standings():
+    """Scrape team standings (wins/losses) from ESPN Standings API"""
+    url = "https://site.web.api.espn.com/apis/v2/sports/football/nfl/standings"
+    
+    log_activity('scraper', 'info', 'Starting standings scrape from ESPN', url=url)
+    
+    try:
+        response = requests.get(url)
+        data = response.json()
+        
+        teams = {}  # Use dict to avoid duplicates
+        
+        # Get standings from children (conferences/divisions)
+        if 'children' in data:
+            for conference in data['children']:
+                if 'standings' in conference and 'entries' in conference['standings']:
+                    for entry in conference['standings']['entries']:
+                        team_name = entry['team']['displayName']
+                        stats = entry['stats']
+                        # Find wins and losses in stats
+                        wins = 0
+                        losses = 0
+                        for stat in stats:
+                            if stat['name'] == 'wins':
+                                wins = int(stat['value'])
+                            elif stat['name'] == 'losses':
+                                losses = int(stat['value'])
+                        
+                        teams[team_name] = {
+                            'name': team_name,
+                            'wins': wins,
+                            'losses': losses
+                        }
+        
+        teams_list = list(teams.values())
+        log_activity('scraper', 'info', f'Scraped standings for {len(teams_list)} teams')
+        print(f"✓ Scraped {len(teams_list)} teams - Standings (W-L) from ESPN")
+        return teams_list
+    
+    except Exception as e:
+        log_activity('scraper', 'error', f'Standings scrape failed: {str(e)}')
+        print(f"⚠️  Standings scrape failed: {e}")
+        return []
+
 def combine_stats():
     """Combine offense and defense stats"""
     print("\n" + "="*70)
@@ -88,22 +132,71 @@ def combine_stats():
     
     offense = scrape_offense_stats()
     defense = scrape_defense_stats()
+    standings = scrape_standings()
+    
+    # Normalize TeamRankings names to match ESPN
+    for team in offense:
+        team['name'] = normalize_team_name(team['name'])
+    for team in defense:
+        team['name'] = normalize_team_name(team['name'])
     
     # Combine by team name
     combined = []
     for off_team in offense:
         # Find matching defense stats
         def_team = next((d for d in defense if d['name'] == off_team['name']), None)
+        # Find matching standings
+        stand_team = next((s for s in standings if s['name'] == off_team['name']), None)
         
         if def_team:
             combined.append({
                 'name': off_team['name'],
                 'ppg': off_team['ppg'],
-                'pa': def_team['pa']
+                'pa': def_team['pa'],
+                'wins': stand_team['wins'] if stand_team else 0,
+                'losses': stand_team['losses'] if stand_team else 0
             })
     
     print(f"\n✓ Combined data for {len(combined)} teams")
     return combined
+
+def normalize_team_name(short_name):
+    """Convert TeamRankings short names to ESPN full names"""
+    name_map = {
+        'Detroit': 'Detroit Lions',
+        'Indianapolis': 'Indianapolis Colts',
+        'Buffalo': 'Buffalo Bills',
+        'Dallas': 'Dallas Cowboys',
+        'Seattle': 'Seattle Seahawks',
+        'Baltimore': 'Baltimore Ravens',
+        'Tampa Bay': 'Tampa Bay Buccaneers',
+        'Washington': 'Washington Commanders',
+        'Green Bay': 'Green Bay Packers',
+        'Jacksonville': 'Jacksonville Jaguars',
+        'Chicago': 'Chicago Bears',
+        'New England': 'New England Patriots',
+        'Kansas City': 'Kansas City Chiefs',
+        'Philadelphia': 'Philadelphia Eagles',
+        'LA Rams': 'Los Angeles Rams',
+        'Minnesota': 'Minnesota Vikings',
+        'Pittsburgh': 'Pittsburgh Steelers',
+        'Denver': 'Denver Broncos',
+        'NY Jets': 'New York Jets',
+        'Houston': 'Houston Texans',
+        'Miami': 'Miami Dolphins',
+        'San Francisco': 'San Francisco 49ers',
+        'Arizona': 'Arizona Cardinals',
+        'Carolina': 'Carolina Panthers',
+        'Atlanta': 'Atlanta Falcons',
+        'LA Chargers': 'Los Angeles Chargers',
+        'New Orleans': 'New Orleans Saints',
+        'NY Giants': 'New York Giants',
+        'Cincinnati': 'Cincinnati Bengals',
+        'Las Vegas': 'Las Vegas Raiders',
+        'Tennessee': 'Tennessee Titans',
+        'Cleveland': 'Cleveland Browns'
+    }
+    return name_map.get(short_name, short_name)
 
 def get_team_abbreviation(team_name):
     """Map full team name to abbreviation"""
@@ -145,11 +238,11 @@ def update_database():
             """, (
                 team['name'],
                 get_team_abbreviation(team['name']),
-                0,  # Wins not scraped (would need separate page)
-                0,  # Losses not scraped
+                team['wins'],
+                team['losses'],
                 round(team['ppg'], 1),
                 round(team['pa'], 1),
-                5   # Assuming 5 games played (current 2025 season)
+                team['wins'] + team['losses']  # Total games played
             ))
         
         conn.commit()
