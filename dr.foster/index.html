@@ -1291,6 +1291,65 @@ npm start  # Runs on port 3000</code></pre>
         `;
         document.head.appendChild(style);
 
+        // Show data mode modal with connection details
+        function showDataModeModal(isLive, message) {
+            const modalOverlay = document.createElement('div');
+            modalOverlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.7);
+                z-index: 20000;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            `;
+            
+            const modalContent = document.createElement('div');
+            modalContent.style.cssText = `
+                background: linear-gradient(135deg, #1e3a5f 0%, #2d4a6f 100%);
+                padding: 30px;
+                border-radius: 15px;
+                max-width: 500px;
+                color: white;
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            `;
+            
+            modalContent.innerHTML = `
+                <h2 style="margin: 0 0 20px 0; color: ${isLive ? '#10b981' : '#3b82f6'};">
+                    ${isLive ? '🟢 Live Data Mode' : '📊 Static Data Mode'}
+                </h2>
+                <p style="margin: 10px 0; line-height: 1.6;">
+                    <strong>Status:</strong> ${isLive ? 'Connected to Flask API' : 'API Server Offline'}<br>
+                    <strong>Endpoint:</strong> http://localhost:5000/api/teams/count<br>
+                    <strong>Data Source:</strong> ${isLive ? 'PostgreSQL Database (32 teams)' : 'Static Demo Data'}<br>
+                    <strong>Last Update:</strong> ${new Date().toLocaleString()}
+                </p>
+                ${isLive ? 
+                    '<p style="color: #10b981; margin: 15px 0;">✅ All systems operational</p>' : 
+                    '<p style="color: #f59e0b; margin: 15px 0;">⚠️ Using cached data - Start API server to enable live mode</p>'
+                }
+                <button onclick="this.parentElement.parentElement.remove()" style="
+                    background: ${isLive ? '#10b981' : '#3b82f6'};
+                    color: white;
+                    border: none;
+                    padding: 10px 20px;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    font-weight: 600;
+                    margin-top: 15px;
+                ">Close</button>
+            `;
+            
+            modalOverlay.appendChild(modalContent);
+            modalOverlay.onclick = (e) => {
+                if (e.target === modalOverlay) modalOverlay.remove();
+            };
+            document.body.appendChild(modalOverlay);
+        }
+
         // Update data mode indicator
         function updateDataModeIndicator(isLive, message = '') {
             let indicator = document.getElementById('dataModeIndicator');
@@ -1335,22 +1394,26 @@ npm start  # Runs on port 3000</code></pre>
             const monitor = scene.getObjectByName('apiStatusMonitor');
             if (!monitor) return; // Monitor not found
             
-            // Find the materials to update (only use .color, not .emissive for MeshBasicMaterial)
+            // Find the materials to update - MUST update both color AND emissive!
             monitor.traverse((child) => {
                 if (child.isMesh) {
                     if (child.name === 'statusLED') {
                         // Update LED sphere - bright colors for visibility
                         if (isLive) {
                             child.material.color.setHex(0x44ff44); // Bright green
+                            child.material.emissive.setHex(0x44ff44); // Green glow
                         } else {
                             child.material.color.setHex(0xff4444); // Bright red
+                            child.material.emissive.setHex(0xff4444); // Red glow
                         }
                     } else if (child.geometry && child.geometry.type === 'ExtrudeGeometry') {
                         // Update main tower body
                         if (isLive) {
                             child.material.color.setHex(0x50c878); // Professional green
+                            child.material.emissive.setHex(0x50c878); // Green glow
                         } else {
                             child.material.color.setHex(0xe63946); // Red/orange
+                            child.material.emissive.setHex(0xe63946); // Red glow
                         }
                     }
                 } else if (child.isLine && child.name === 'towerLine') {
@@ -1484,6 +1547,12 @@ npm start  # Runs on port 3000</code></pre>
                 labelRenderer.render(scene, camera);
             }
             animate();
+            
+            // Apply initial color state based on current live mode
+            // This ensures the tower colors match the current API connection status
+            setTimeout(() => {
+                update3DMonitorColors(isLiveMode);
+            }, 100);
 
             // Handle window resize
             window.addEventListener('resize', () => {
