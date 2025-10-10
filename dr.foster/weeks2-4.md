@@ -1,7 +1,11 @@
 # Weeks 2-4: Database Migration & Live Data Integration
 
-> **💡 TIP: For a beautiful interactive view of this assignment, double-click `index.html` in this folder!**  
-> Or open `README.md` for instructions.
+> **💡 TIP: For a beautiful interactive GUI view:**
+> 1. In VS Code Explorer (left sidebar), find `dr.foster` folder
+> 2. Right-click `index.html` → "Reveal in File Explorer"  
+> 3. Double-click `index.html` in the window that opens
+> 
+> This opens a gorgeous tabbed dashboard in your browser!
 
 **Latest Update:** October 9, 2025  
 **Student:** April V  

@@ -6,11 +6,19 @@
 
 ---
 
-## 🎯 **START HERE - Click to View Assignment**
+## 🎯 **HOW TO VIEW THE INTERACTIVE DASHBOARD**
 
-### **[📊 Click Here to Open Interactive Assignment Dashboard](index.html)**
+### **Step-by-Step Instructions:**
 
-*This opens a beautiful tabbed interface with all assignment details organized by week, database info, architecture diagrams, and GitHub links.*
+1. **In VS Code Explorer** (left sidebar), find the `dr.foster` folder
+2. **Right-click** on `index.html`
+3. Select **"Reveal in File Explorer"**
+4. **Double-click** `index.html` in the Windows Explorer window that opens
+5. Your browser will open showing a beautiful tabbed dashboard!
+
+**Alternative:** Navigate to `C:\IS330\H.C Lombardo App\dr.foster\` in Windows File Explorer and double-click `index.html`
+
+*This opens a beautiful purple/blue gradient interface with 6 tabs: Overview, Week 1-2, Weeks 2-4, Database, Architecture, and GitHub.*
 
 ---
 
