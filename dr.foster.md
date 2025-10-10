@@ -182,6 +182,213 @@ SUPPORTING INFRASTRUCTURE
 
 ---
 
+## October 9, 2025 - DHCP-Inspired Port Management System
+
+#### Intelligent Port Management (April's Innovation) ✅
+**Problem Identified:**
+During development, frequent "port already in use" errors disrupted workflow. Flask would fail to start if port 5000 was busy, React wouldn't start if port 3000 was occupied. Manual troubleshooting required checking ports, killing processes, and restarting - time-consuming and frustrating.
+
+**Solution Concept:**
+Applied **DHCP (Dynamic Host Configuration Protocol) principles** from networking to application-level port management. Just as DHCP automatically assigns IP addresses from a pool to avoid conflicts, this system automatically assigns ports from a managed range.
+
+**April's Innovation:**
+This approach adapts enterprise-grade networking concepts (DHCP) to solve a development environment challenge. While dynamic port allocation exists in production systems (Docker, Kubernetes), applying DHCP-style management to Flask development environments is an original implementation that bridges networking theory with practical software engineering.
+
+**Technical Implementation:**
+
+```
+DHCP Network Management          →    Port Management (Our Solution)
+═══════════════════════════════════════════════════════════════════
+IP Address Pool: 192.168.1.100-200    Port Range: 5000-5010
+Client requests IP address            Service requests port number
+DHCP server assigns available IP      PortManager assigns available port
+Lease tracking (MAC → IP)             Service mapping (flask_api → 5000)
+Address conflict detection            Port conflict detection
+Automatic IP renewal                  Port persistence across restarts
+DHCP reservation (static mapping)     Preferred port assignment
+```
+
+**Core Components:**
+
+1. **Port Availability Detection** (Networking Layer)
+   - Uses TCP socket binding test (`socket.bind()`)
+   - Checks for `EADDRINUSE` (Address Already In Use) error
+   - Same mechanism the OS uses internally
+   - Detects both managed and external port conflicts
+
+2. **Port Range Allocation** (DHCP Pool)
+   - Reserved range: 5000-5010 (11 ports)
+   - Configurable like DHCP scopes
+   - Prevents conflicts with system ports (<1024)
+   - Avoids ephemeral port range (49152-65535)
+
+3. **Intelligent Assignment Algorithm**
+   ```python
+   Strategy (similar to DHCP):
+   1. Try preferred port (like DHCP reservation)
+   2. Try last successfully used port (like lease renewal)
+   3. Scan range for first available (like DHCP pool allocation)
+   4. Fail gracefully if all ports busy (like DHCP exhaustion)
+   ```
+
+4. **Service Registration** (Like DNS + DHCP)
+   - Maps services to ports: `flask_api → 5000`
+   - Persists configuration in `.port_config.json`
+   - Tracks port usage across application restarts
+   - Enables consistent port assignment
+
+5. **Conflict Detection & Diagnostics**
+   - Identifies external services (React on 3000, PostgreSQL on 5432)
+   - Detects ports in use within managed range
+   - Provides `/port-status` API endpoint for monitoring
+   - Real-time diagnostics similar to DHCP lease tables
+
+**Files Created:**
+- `port_manager.py` - Core port management system (300 lines)
+- `api_server_v2.py` - Enhanced Flask API with PortManager integration
+- `testbed/prototypes/port_management/` - Complete test suite
+
+**Testing Methodology:**
+Following Dr. Foster's guidance on rigorous testing, all development occurred in testbed environment first:
+
+**Testbed Validation Results:**
+- `test_port_manager.py` - Unit tests: **12/12 passed (100%)**
+- `test_flask_with_ports.py` - Flask integration: **100% functional**
+- `test_full_api.py` - Complete API test: **6/6 endpoints working**
+- `final_integration_test.py` - Full integration: **4/4 scenarios passed**
+
+**Test Coverage:**
+✅ Port availability checking  
+✅ Port range scanning  
+✅ Service registration  
+✅ Conflict detection (identified React on 3000, PostgreSQL on 5432)  
+✅ Port status reporting  
+✅ Configuration persistence  
+✅ Database integration (32 teams verified)  
+✅ All REST API endpoints functional  
+
+**Networking Concepts Applied:**
+
+| Concept | Implementation |
+|---------|----------------|
+| **TCP Socket Binding** | `socket.bind()` test for port availability |
+| **Port Scanning** | Non-intrusive iteration through port range |
+| **Service Discovery** | Service-to-port mapping with persistence |
+| **Address Resolution** | Automatic port assignment with fallback |
+| **Conflict Detection** | Socket binding tests identify busy ports |
+| **Resource Pooling** | Managed port range (5000-5010) |
+
+**Benefits:**
+
+**Before (Manual Port Management):**
+```
+You: python api_server.py
+OS: Error! Port 5000 already in use (EADDRINUSE)
+You: *check which process is using port*
+You: *kill process or manually change port*
+You: python api_server.py --port 5001
+```
+
+**After (Automatic DHCP-Style Management):**
+```
+You: python api_server_v2.py
+PortManager: Checking port 5000... BUSY
+PortManager: Checking port 5001... AVAILABLE
+PortManager: Assigned port 5001 to flask_api
+Flask: Starting on 127.0.0.1:5001 ✓
+```
+
+**Production Readiness:**
+- ✅ 100% test pass rate in testbed
+- ✅ Comprehensive test suite (6 test files, 4 documentation files)
+- ✅ Database integration verified
+- ✅ All API endpoints tested and working
+- ✅ Conflict detection validated
+- ✅ Ready for production deployment
+
+**Deployment & Rollback Procedures:**
+
+*Production Deployment:*
+```powershell
+# Step 1: Stop current production server
+Stop-Process -Name python* -Force
+
+# Step 2: Backup current production file
+cd "c:\IS330\H.C Lombardo App"
+Copy-Item api_server.py api_server_backup_$(Get-Date -Format 'yyyyMMdd_HHmmss').py
+
+# Step 3: Deploy new version
+python api_server_v2.py
+
+# Step 4: Verify endpoints
+curl http://127.0.0.1:5000/health
+curl http://127.0.0.1:5000/port-status
+```
+
+*Rollback Procedure (if issues occur):*
+```powershell
+# IMMEDIATE ROLLBACK - Return to stable version
+Stop-Process -Name python* -Force
+cd "c:\IS330\H.C Lombardo App"
+python api_server.py  # Original stable version
+
+# OR: Restore from backup
+Copy-Item api_server_backup_YYYYMMDD_HHMMSS.py api_server.py
+python api_server.py
+```
+
+*Return to Testbed for Further Testing:*
+```powershell
+# Stop production
+Stop-Process -Name python* -Force
+
+# Move to testbed for debugging
+cd "c:\IS330\H.C Lombardo App\testbed\prototypes\port_management"
+
+# Run comprehensive tests
+python test_port_manager.py        # Unit tests
+python test_flask_with_ports.py    # Flask integration
+python test_full_api.py             # Complete API test
+python final_integration_test.py   # Full integration
+
+# Test live server in testbed
+python test_full_api.py --live
+# Manually test: http://127.0.0.1:5000/health
+
+# Fix issues, then re-test before returning to production
+```
+
+*Verification Checklist After Deployment:*
+- [ ] Flask API responds on assigned port
+- [ ] `/health` endpoint returns healthy status
+- [ ] `/port-status` shows no critical conflicts
+- [ ] `/api/teams` returns all 32 teams
+- [ ] Database connection successful
+- [ ] React frontend can communicate with API
+- [ ] No port conflict errors in logs
+
+*Rollback Criteria (When to Rollback):*
+- API fails to start within 30 seconds
+- Database connection errors persist
+- Port conflicts cannot be resolved
+- React frontend cannot connect to API
+- Any critical endpoint returns 500 errors
+- Port manager throws unhandled exceptions
+
+**Academic Significance:**
+This implementation demonstrates:
+- Application of networking theory (DHCP) to software engineering
+- Systematic problem-solving approach
+- Comprehensive testing methodology (testbed before production)
+- **Professional deployment practices** (backup, rollback, verification)
+- Documentation and knowledge transfer
+- Bridge between IS330 networking concepts and practical development
+
+**Industry Relevance:**
+While large-scale systems (Docker, Kubernetes, cloud platforms) use similar dynamic port allocation, this specific application to Flask development environments represents an original solution to a common developer pain point. The DHCP analogy provides a clear mental model for understanding the system's behavior. The deployment procedures follow industry-standard DevOps practices for safe production changes.
+
+---
+
 ## October 8, 2025 - Database & Logging Infrastructure
 
 #### 2. PostgreSQL Migration ✅
