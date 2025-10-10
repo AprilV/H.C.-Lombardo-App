@@ -8,6 +8,12 @@
 
 ## 🎯 **HOW TO VIEW THE INTERACTIVE 3D DASHBOARD**
 
+### ⚠️ **IMPORTANT: Use the NEW v2.0 Dashboard**
+The old dashboard (`index_OLD_v1.html`) has been replaced. Please use the **NEW v2.0** dashboard at:
+```
+testbed/dr_foster_interface_v2/index.html
+```
+
 ### **Step-by-Step Instructions:**
 
 1. **In VS Code Explorer** (left sidebar), navigate to `testbed/dr_foster_interface_v2/`
