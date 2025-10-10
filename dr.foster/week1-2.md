@@ -1,4 +1,4 @@
-# Week 1: Initial Assignment
+# Week 1-2: Initial Assignment
 
 **Date:** September 2025  
 **Student:** April V  
