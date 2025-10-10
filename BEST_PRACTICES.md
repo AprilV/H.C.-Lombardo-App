@@ -699,27 +699,173 @@ def calc(w, t):
 - ✅ Git committed with clear message
 - ✅ Code cleaned up (no debug prints, unused imports removed)
 - ✅ Files organized properly (testbed vs production)
+- ✅ **Cleanup and final testing complete**
 
 **Production Readiness Score:**
 ```
-11/11 checks passed = DEPLOY ✅
-9-10/11 checks = Fix issues first ⚠️
-<9/11 checks = NOT READY ❌
+12/12 checks passed = DEPLOY ✅
+10-11/12 checks = Fix issues first ⚠️
+<10/12 checks = NOT READY ❌
 ```
+
+---
+
+## 🧹 STEP 6: CLEANUP & FINAL TESTING (NEW!)
+
+**This is your last chance to catch issues before deployment!**
+
+### Code Cleanup Checklist
+- [ ] Remove all `console.log()` / `print()` debug statements
+- [ ] Remove commented-out code blocks
+- [ ] Remove unused imports/libraries
+- [ ] Remove temporary test files
+- [ ] Check for hardcoded values (passwords, URLs, etc.)
+- [ ] Verify all file paths are correct
+- [ ] Remove any TODO comments or implement them
+- [ ] Format code consistently (indentation, spacing)
+
+### Final Testing Checklist
+- [ ] Run full test suite one more time (100% pass required)
+- [ ] Test with fresh data (not cached)
+- [ ] Test error scenarios (what if API is down? Database offline?)
+- [ ] Test on a clean browser (clear cache, try incognito)
+- [ ] Test all user workflows from start to finish
+- [ ] Verify all links work
+- [ ] Check all tabs/navigation
+- [ ] Test responsive design (resize browser window)
+- [ ] Review browser console for errors (F12)
+- [ ] Check network tab for failed requests
+
+### File Organization Check
+- [ ] Production files in root directory
+- [ ] Test files in testbed/
+- [ ] Backups in backups/
+- [ ] Documentation up to date
+- [ ] No duplicate files
+- [ ] No orphaned files (unused code)
+
+### Performance Check
+- [ ] Page loads in under 3 seconds
+- [ ] No memory leaks (monitor browser memory)
+- [ ] API responses under 1 second
+- [ ] Database queries optimized
+- [ ] No unnecessary network requests
+
+### Security Check
+- [ ] No passwords in code
+- [ ] No sensitive data exposed
+- [ ] CORS configured properly
+- [ ] Input validation in place
+- [ ] SQL injection prevention verified
+
+**April's Final Rule:** "Clean code is professional code. Take the extra 10 minutes to clean up - it saves hours of debugging later!"
+
+---
+
+## 🔧 AprilPMGR (April Port Manager)
+
+**The April Port Management System for DHCP-Style Port Allocation**
+
+### What is AprilPMGR?
+AprilPMGR is April's custom port management system that treats ports like DHCP treats IP addresses - automatic allocation, conflict detection, and graceful failover.
+
+### Core Concept
+Instead of hardcoding ports, AprilPMGR:
+- Automatically scans for available ports in a defined range
+- Detects port conflicts before they crash your app
+- Gracefully fails over to alternate ports
+- Logs all port assignments for debugging
+- Provides health check endpoints
+
+### Port Ranges (Professional Standard)
+```python
+# AprilPMGR Port Allocation Strategy
+FLASK_API_RANGE = range(5000, 5010)      # Flask backend services
+REACT_DEV_RANGE = range(3000, 3010)      # React development servers
+DATABASE_RANGE = range(5432, 5442)       # PostgreSQL instances
+MONITORING_RANGE = range(8000, 8010)     # Health checks & monitoring
+```
+
+### Key Features
+1. **Conflict Detection**: Scans ports before binding
+2. **Auto-Failover**: Tries next available port automatically
+3. **Health Checks**: Built-in `/health` endpoint
+4. **Logging**: Detailed port assignment logs
+5. **Graceful Shutdown**: Releases ports properly
+
+### Implementation Example
+```python
+# port_manager.py (AprilPMGR Core)
+import socket
+from contextlib import closing
+
+def check_port_available(port):
+    """Check if port is available (like DHCP lease check)"""
+    with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as sock:
+        return sock.connect_ex(('localhost', port)) != 0
+
+def get_available_port(port_range):
+    """Get first available port in range (like DHCP allocation)"""
+    for port in port_range:
+        if check_port_available(port):
+            print(f"✅ AprilPMGR: Allocated port {port}")
+            return port
+    raise RuntimeError("❌ AprilPMGR: No ports available in range")
+
+# Usage in Flask app
+from flask import Flask
+app = Flask(__name__)
+
+# AprilPMGR allocates port dynamically
+PORT = get_available_port(range(5000, 5010))
+app.run(host='0.0.0.0', port=PORT)
+```
+
+### Why AprilPMGR?
+Traditional approach: `app.run(port=5000)` → Crashes if port 5000 busy  
+AprilPMGR approach: `app.run(port=get_available_port(...))` → Auto-finds open port ✅
+
+### Benefits
+- ✅ No more "Address already in use" errors
+- ✅ Multiple instances can run simultaneously
+- ✅ Professional production-ready approach
+- ✅ Easy to scale (just expand port range)
+- ✅ Built-in monitoring and health checks
+
+### Best Practices with AprilPMGR
+1. Always use port ranges, never single ports
+2. Log every port allocation
+3. Include health check endpoints
+4. Document which services use which ranges
+5. Monitor port usage in production
+
+**April's Motto:** "Let the system manage the ports, so you can focus on the code!"
 
 ---
 
 ## 🎯 WORKFLOW SUMMARY
 
 ```
-IDEA → TESTBED → TEST (100%) → BACKUP → DEPLOY → VERIFY → MONITOR
-   ↑                                                             ↓
-   └─────────────────── ROLLBACK (if issues) ──────────────────┘
+IDEA → TESTBED → TEST (100%) → BACKUP → DEPLOY → VERIFY → CLEANUP & FINAL TEST → MONITOR
+   ↑                                                                                    ↓
+   └──────────────────────────── ROLLBACK (if issues) ────────────────────────────────┘
 ```
+
+**The Complete April Development Cycle:**
+1. **IDEA** - Concept in testbed
+2. **TESTBED** - Build & experiment safely
+3. **TEST (100%)** - All tests must pass
+4. **BACKUP** - Timestamped safety net
+5. **DEPLOY** - Push to production
+6. **VERIFY** - Confirm it works
+7. **CLEANUP & FINAL TEST** - Polish & double-check ⭐ NEW!
+8. **MONITOR** - Watch for issues
+9. **ROLLBACK** - If anything fails, restore immediately
 
 ---
 
-**Last Updated:** October 9, 2025  
+**Last Updated:** October 10, 2025  
 **Author:** April V  
 **Purpose:** Ensure consistent, professional development practices  
 **Status:** Living document - add new practices as we discover them!
+**Version:** 2.0 - Now with AprilPMGR and Cleanup & Final Testing step!

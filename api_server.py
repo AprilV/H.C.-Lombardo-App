@@ -16,14 +16,22 @@ logger = loggers['api']
 
 app = Flask(__name__)
 
-# Enable CORS for React frontend
+# Enable CORS for React frontend and local HTML files
 CORS(app, resources={
     r"/*": {
-        "origins": ["http://localhost:3000", "http://127.0.0.1:3000"],
+        "origins": ["http://localhost:3000", "http://127.0.0.1:3000", "null"],  # "null" allows file:// protocol
         "methods": ["GET", "POST", "PUT", "DELETE"],
         "allow_headers": ["Content-Type"]
     }
 })
+
+# Additional CORS headers for file:// protocol
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
+    response.headers.add('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE')
+    return response
 
 # Database configuration
 DB_CONFIG = {
