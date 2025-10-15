@@ -1,0 +1,28 @@
+{
+  "port_range": {
+    "start": 5000,
+    "end": 5010,
+    "description": "Reserved port range for H.C. Lombardo App"
+  },
+  "services": {
+    "flask_api": {
+      "preferred_port": 5000,
+      "required": true,
+      "description": "Flask REST API"
+    },
+    "react_dev": {
+      "preferred_port": 3000,
+      "required": true,
+      "description": "React Development Server"
+    },
+    "postgresql": {
+      "preferred_port": 5432,
+      "required": true,
+      "description": "PostgreSQL Database"
+    }
+  },
+  "reserved_ports": {
+    "flask_api": 5000
+  },
+  "last_updated": "2025-10-10T01:43:13.031182"
+}
