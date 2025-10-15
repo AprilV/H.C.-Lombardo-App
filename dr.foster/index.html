@@ -1148,40 +1148,97 @@ START.bat
                     <ul>
                         <li>✅ <strong>Scalability:</strong> Handles concurrent connections from multiple API servers</li>
                         <li>✅ <strong>ACID Compliance:</strong> Ensures data integrity during high-frequency updates</li>
-                        <li>✅ <strong>Advanced Features:</strong> JSON support, full-text search, window functions</li>
+                        <li>✅ <strong>Advanced Features:</strong> JSONB support for flexible schema, full-text search</li>
                         <li>✅ <strong>Production Ready:</strong> Industry-standard RDBMS with proven reliability</li>
                         <li>✅ <strong>Concurrent Access:</strong> Multiple users can query simultaneously</li>
                     </ul>
                 </div>
 
-                <h3>📊 Current Schema (PostgreSQL)</h3>
+                <h3>📊 Current Schema (PostgreSQL) - Actual Database</h3>
+                <div style="background: rgba(16, 185, 129, 0.1); padding: 1.5rem; border-radius: 10px; border-left: 4px solid #10b981; margin: 1rem 0;">
+                    <p style="color: #10b981;"><strong>✅ Simple, Efficient Design - 3 Tables Total</strong></p>
+                    <p style="color: #cbd5e1; font-size: 0.95rem;">Optimized for the PWA application with focus on team standings and stats. Uses JSONB for flexible stat storage.</p>
+                </div>
+
                 <div class="chart-container">
                     <canvas id="schema-chart"></canvas>
                 </div>
 
-                <h3>🗃️ Key Tables</h3>
+                <h3>🗃️ Database Tables (3 Total)</h3>
+                
+                <div style="background: rgba(30, 41, 59, 0.6); padding: 1.5rem; border-radius: 10px; margin: 1rem 0;">
+                    <h4 style="color: #3b82f6;">1. teams (Primary Data Table)</h4>
+                    <p style="color: #94a3b8; font-size: 0.9rem;"><strong>Records:</strong> 32 NFL teams | <strong>Columns:</strong> 11</p>
+                    <ul style="color: #cbd5e1; font-size: 0.95rem;">
+                        <li><code>id</code> (integer) - Primary key</li>
+                        <li><code>name</code> (text) - Full team name (e.g., "Buffalo Bills")</li>
+                        <li><code>abbreviation</code> (text) - Team code (e.g., "BUF")</li>
+                        <li><code>wins</code> (integer) - Total wins this season</li>
+                        <li><code>losses</code> (integer) - Total losses this season</li>
+                        <li><code>ties</code> (integer) - Total ties this season</li>
+                        <li><code>ppg</code> (real) - Points per game (offense)</li>
+                        <li><code>pa</code> (real) - Points allowed (defense)</li>
+                        <li><code>games_played</code> (integer) - Total games played</li>
+                        <li><code>stats</code> (jsonb) - Flexible JSON storage for additional stats</li>
+                        <li><code>last_updated</code> (timestamp) - Last data refresh</li>
+                    </ul>
+                    <p style="color: #10b981; margin-top: 0.5rem;">✅ <strong>Status:</strong> All 32 teams loaded with Week 6 data</p>
+                </div>
+
+                <div style="background: rgba(30, 41, 59, 0.6); padding: 1.5rem; border-radius: 10px; margin: 1rem 0;">
+                    <h4 style="color: #8b5cf6;">2. stats_metadata (Stat Type Definitions)</h4>
+                    <p style="color: #94a3b8; font-size: 0.9rem;">Tracks available stat types and their metadata</p>
+                    <ul style="color: #cbd5e1; font-size: 0.95rem;">
+                        <li>Defines stat categories (offense, defense, special teams)</li>
+                        <li>Stores stat display names and descriptions</li>
+                        <li>Used for dynamic stat selection in TeamStats page</li>
+                    </ul>
+                </div>
+
+                <div style="background: rgba(30, 41, 59, 0.6); padding: 1.5rem; border-radius: 10px; margin: 1rem 0;">
+                    <h4 style="color: #06b6d4;">3. update_metadata (Data Refresh Tracking)</h4>
+                    <p style="color: #94a3b8; font-size: 0.9rem;">Tracks last data refresh timestamps</p>
+                    <ul style="color: #cbd5e1; font-size: 0.95rem;">
+                        <li>Records when ESPN API was last queried</li>
+                        <li>Prevents excessive API calls</li>
+                        <li>Ensures data freshness</li>
+                    </ul>
+                </div>
+
+                <h3>📈 Current Data Status</h3>
                 <ul>
-                    <li><strong>teams:</strong> 32 NFL teams with conference/division data</li>
-                    <li><strong>games:</strong> Historical and upcoming game data</li>
-                    <li><strong>standings:</strong> Current season standings with win/loss records</li>
-                    <li><strong>scoreboard:</strong> Live game scores and status</li>
-                    <li><strong>injuries:</strong> Player injury reports</li>
-                    <li><strong>weather:</strong> Game day weather conditions</li>
-                    <li><strong>update_metadata:</strong> Tracks last data refresh timestamps</li>
+                    <li>✅ <strong>32 NFL Teams:</strong> Complete 2025 season data</li>
+                    <li>✅ <strong>Week 6 Standings:</strong> Ravens 1-5, Bills 4-2, Chiefs 3-3</li>
+                    <li>✅ <strong>Win/Loss Records:</strong> All teams current</li>
+                    <li>✅ <strong>Points Stats:</strong> PPG and PA for all 32 teams</li>
+                    <li>✅ <strong>JSONB Stats:</strong> Flexible storage for additional metrics</li>
                 </ul>
 
-                <h3>🔗 Database Connection</h3>
+                <h3>🔗 Database Connection Code</h3>
                 <pre><code>import psycopg2
-from db_config import DB_CONFIG
+from db_config import DATABASE_CONFIG
 
 def get_db_connection():
-    return psycopg2.connect(
-        host=DB_CONFIG['host'],
-        port=DB_CONFIG['port'],
-        database=DB_CONFIG['database'],
-        user=DB_CONFIG['user'],
-        password=DB_CONFIG['password']
-    )</code></pre>
+    return psycopg2.connect(**DATABASE_CONFIG)
+
+# Query all teams
+cursor = conn.cursor()
+cursor.execute("SELECT * FROM teams ORDER BY name")
+teams = cursor.fetchall()
+
+# Result: 32 NFL teams with complete data</code></pre>
+
+                <h3>💡 Design Philosophy</h3>
+                <div style="background: rgba(59, 130, 246, 0.1); padding: 1.5rem; border-radius: 10px; border-left: 4px solid #3b82f6; margin: 1rem 0;">
+                    <p style="color: #cbd5e1;"><strong>Keep It Simple, Keep It Working</strong></p>
+                    <ul style="color: #94a3b8; font-size: 0.95rem;">
+                        <li>✅ <strong>Single Source of Truth:</strong> One teams table with all essential data</li>
+                        <li>✅ <strong>JSONB Flexibility:</strong> Additional stats stored as JSON without schema changes</li>
+                        <li>✅ <strong>Fast Queries:</strong> Simple structure = faster API responses</li>
+                        <li>✅ <strong>Easy Maintenance:</strong> Minimal tables = easier to manage and backup</li>
+                        <li>✅ <strong>Scalable:</strong> Can add tables as needed (games, injuries, etc.) in future</li>
+                    </ul>
+                </div>
             </div>
         </div>
 
@@ -2508,12 +2565,20 @@ START.bat</code></pre>
             new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: ['teams', 'games', 'standings', 'scoreboard', 'injuries', 'weather', 'metadata'],
+                    labels: ['teams', 'stats_metadata', 'update_metadata'],
                     datasets: [{
                         label: 'Number of Columns',
-                        data: [8, 12, 15, 10, 9, 7, 5],
-                        backgroundColor: 'rgba(139, 92, 246, 0.6)',
-                        borderColor: 'rgba(139, 92, 246, 1)',
+                        data: [11, 4, 3],
+                        backgroundColor: [
+                            'rgba(59, 130, 246, 0.6)',   // Blue for teams
+                            'rgba(139, 92, 246, 0.6)',   // Purple for stats_metadata
+                            'rgba(6, 182, 212, 0.6)'     // Cyan for update_metadata
+                        ],
+                        borderColor: [
+                            'rgba(59, 130, 246, 1)',
+                            'rgba(139, 92, 246, 1)',
+                            'rgba(6, 182, 212, 1)'
+                        ],
                         borderWidth: 2
                     }]
                 },
@@ -2523,17 +2588,36 @@ START.bat</code></pre>
                     plugins: {
                         legend: {
                             labels: { color: '#e2e8f0' }
+                        },
+                        title: {
+                            display: true,
+                            text: 'PostgreSQL Database Schema - 3 Tables, 18 Total Columns',
+                            color: '#e2e8f0',
+                            font: { size: 14 }
                         }
                     },
                     scales: {
                         y: {
                             beginAtZero: true,
-                            ticks: { color: '#94a3b8' },
-                            grid: { color: 'rgba(148, 163, 184, 0.1)' }
+                            ticks: { 
+                                color: '#94a3b8',
+                                stepSize: 2
+                            },
+                            grid: { color: 'rgba(148, 163, 184, 0.1)' },
+                            title: {
+                                display: true,
+                                text: 'Number of Columns',
+                                color: '#cbd5e1'
+                            }
                         },
                         x: {
                             ticks: { color: '#94a3b8' },
-                            grid: { color: 'rgba(148, 163, 184, 0.1)' }
+                            grid: { color: 'rgba(148, 163, 184, 0.1)' },
+                            title: {
+                                display: true,
+                                text: 'Table Name',
+                                color: '#cbd5e1'
+                            }
                         }
                     }
                 }

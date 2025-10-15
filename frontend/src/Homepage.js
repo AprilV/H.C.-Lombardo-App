@@ -43,7 +43,33 @@ function Homepage() {
   };
 
   const getTeamByAbbr = (abbr) => {
-    return teams.find(t => t.abbreviation === abbr) || { name: abbr, abbreviation: abbr, wins: 0, losses: 0 };
+    return teams.find(t => t.abbreviation === abbr) || { name: abbr, abbreviation: abbr, wins: 0, losses: 0, ties: 0 };
+  };
+
+  // Sort teams by NFL standings rules (simplified)
+  const sortTeamsByStandings = (teamAbbrs) => {
+    return teamAbbrs.map(abbr => getTeamByAbbr(abbr))
+      .sort((a, b) => {
+        // Calculate win percentage
+        const aGames = a.wins + a.losses + (a.ties || 0);
+        const bGames = b.wins + b.losses + (b.ties || 0);
+        const aWinPct = aGames > 0 ? (a.wins + (a.ties || 0) * 0.5) / aGames : 0;
+        const bWinPct = bGames > 0 ? (b.wins + (b.ties || 0) * 0.5) / bGames : 0;
+        
+        // Primary: Win percentage (descending)
+        if (Math.abs(aWinPct - bWinPct) > 0.001) {
+          return bWinPct - aWinPct;
+        }
+        
+        // Secondary: Total wins (descending)
+        if (a.wins !== b.wins) {
+          return b.wins - a.wins;
+        }
+        
+        // Tertiary: Alphabetical by team name
+        return a.name.localeCompare(b.name);
+      })
+      .map(team => team.abbreviation);
   };
 
   const handleTeamClick = (abbr) => {
@@ -78,34 +104,37 @@ function Homepage() {
           </div>
           
           <div className="divisions-grid">
-            {Object.entries(divisions).map(([divisionName, teamAbbrs]) => (
-              <div key={divisionName} className="division-card">
-                <h3 className="division-title">{divisionName}</h3>
-                <div className="teams-list">
-                  {teamAbbrs.map(abbr => {
-                    const team = getTeamByAbbr(abbr);
-                    return (
-                      <div 
-                        key={abbr} 
-                        className="team-row"
-                        onClick={() => handleTeamClick(abbr)}
-                      >
-                        <img 
-                          src={`/images/teams/${abbr.toLowerCase()}.png`}
-                          alt={team.name}
-                          className="team-logo-small"
-                          onError={(e) => {e.target.style.display='none'}}
-                        />
-                        <span className="team-name-short">{team.name}</span>
-                        <span className="team-record">
-                          {team.wins}-{team.losses}{team.ties > 0 ? `-${team.ties}` : ''}
-                        </span>
-                      </div>
-                    );
-                  })}
+            {Object.entries(divisions).map(([divisionName, teamAbbrs]) => {
+              const sortedTeams = sortTeamsByStandings(teamAbbrs);
+              return (
+                <div key={divisionName} className="division-card">
+                  <h3 className="division-title">{divisionName}</h3>
+                  <div className="teams-list">
+                    {sortedTeams.map(abbr => {
+                      const team = getTeamByAbbr(abbr);
+                      return (
+                        <div 
+                          key={abbr} 
+                          className="team-row"
+                          onClick={() => handleTeamClick(abbr)}
+                        >
+                          <img 
+                            src={`/images/teams/${abbr.toLowerCase()}.png`}
+                            alt={team.name}
+                            className="team-logo-small"
+                            onError={(e) => {e.target.style.display='none'}}
+                          />
+                          <span className="team-name-short">{team.name}</span>
+                          <span className="team-record">
+                            {team.wins}-{team.losses}{team.ties > 0 ? `-${team.ties}` : ''}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       ))}
