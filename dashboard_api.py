@@ -44,12 +44,18 @@ def get_dashboard_stats():
         last_refresh = cursor.fetchone()[0]
         
         # Calculate current week (simple estimation based on date)
-        # NFL season started Sep 5, 2024
+        # NFL 2025 season started Sep 4, 2025 (typical Thursday after Labor Day)
         from datetime import date
-        season_start = date(2024, 9, 5)
+        season_start = date(2025, 9, 4)
         today = date.today()
         days_since_start = (today - season_start).days
-        current_week = min(18, max(1, (days_since_start // 7) + 1))
+        
+        # Week calculation: If before season start, show Week 1
+        # Otherwise calculate week (1-18 for regular season)
+        if days_since_start < 0:
+            current_week = 1  # Preseason/not started yet
+        else:
+            current_week = min(18, max(1, (days_since_start // 7) + 1))
         
         cursor.close()
         conn.close()
