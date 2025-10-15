@@ -2,60 +2,233 @@
 
 **Student:** April V. Sykes  
 **Course:** IS330  
-**Date:** October 10, 2025
+**Latest Update:** October 14, 2025
 
 ---
 
-## 🎯 **HOW TO VIEW THE INTERACTIVE 3D DASHBOARD**
+## 🚀 **LATEST: Week 5+ PWA Conversion Complete!**
 
-### ⚠️ **IMPORTANT: Use the NEW v2.0 Dashboard**
-The old dashboard (`index_OLD_v1.html`) has been replaced. Please use the **NEW v2.0** dashboard at:
+### **NEW: Progressive Web App (PWA) - October 14, 2025**
+The application has been fully converted to a **Progressive Web App** with:
+- ✅ Installable to desktop/mobile
+- ✅ Offline capability (all assets local - 1.69 MB)
+- ✅ Dual startup modes (dev + production)
+- ✅ AFC/NFC themed UI
+- ✅ Complete NFL standings with sorting
+
+**📄 [View Week 5+ PWA Conversion Report](week5-pwa-conversion.md)** - Complete technical documentation
+
+---
+
+## 📚 **Assignment Documentation**
+
+### View by Week:
+
+1. **[Week 1-2: ML Model & SQLite Database](week1-2.md)**
+   - Machine learning predictions
+   - SQLite database creation
+   - Assignment questions answered
+
+2. **[Weeks 2-4: React & PostgreSQL Migration](weeks2-4.md)**
+   - Three-tier architecture
+   - PostgreSQL production database
+   - Port management system
+   - Logging infrastructure
+
+3. **[Week 5+: PWA Conversion & Production Deployment](week5-pwa-conversion.md)** ⭐ NEW
+   - Progressive Web App implementation
+   - Local asset storage (34 images, 1.69 MB)
+   - Dual startup modes (dev + production)
+   - AFC/NFC theming and sorting
+   - ESPN API fixes
+   - Complete production readiness
+
+---
+
+## 🎯 **Quick Start Guide**
+
+### Development Mode (Hot Reload)
+```batch
+cd "C:\IS330\H.C Lombardo App"
+START-DEV.bat
 ```
-testbed/dr_foster_interface_v2/index.html
+- React: http://localhost:3000 (instant changes)
+- Flask API: http://localhost:5000
+
+### Production Mode (Optimized)
+```batch
+cd "C:\IS330\H.C Lombardo App"
+START.bat
+```
+- Everything: http://localhost:5000 (single port, fast)
+
+### Stop Everything
+```batch
+STOP.bat
 ```
 
-### **Step-by-Step Instructions:**
+---
 
-1. **In VS Code Explorer** (left sidebar), navigate to `testbed/dr_foster_interface_v2/`
-2. **Right-click** on `index.html`
-3. Select **"Reveal in File Explorer"**
-4. **Double-click** `index.html` in the Windows Explorer window that opens
-5. Your browser will open showing a stunning 3D interactive dashboard!
+## 🌟 **Current Application Features**
 
-**Alternative:** Navigate to `C:\IS330\H.C Lombardo App\testbed\dr_foster_interface_v2\` in Windows File Explorer and double-click `index.html`
+### Progressive Web App
+- **Installable** - Add to home screen (desktop/mobile)
+- **Offline Capable** - Works without internet after first load
+- **Fast** - 62.18 KB gzipped, <2 second load times
+- **Responsive** - Mobile-first design
 
-*This opens a professional dark-themed interface with **live 3D network visualization**, dynamic API status monitoring, auto-updating date/time, and 7 comprehensive tabs.*
+### UI Components
+- **Homepage** - Complete NFL standings (AFC + NFC)
+  - 8 divisions with 32 teams
+  - Sorted by win percentage
+  - Color-coded by conference (red/blue)
+- **Team Stats** - Detailed statistics view
+- **Navigation** - Hamburger menu with smooth drawer
+
+### Data Management
+- **Local Assets** - 34 images (2 conference + 32 team logos)
+- **PostgreSQL** - 32 teams with Week 6 data
+- **ESPN API** - Real-time standings updates
+- **Sorting** - Proper NFL win percentage calculation
 
 ---
 
-## 🌟 **NEW: 3D Interactive Features**
+## � **Visual Features**
 
-The latest dashboard version includes:
+### Conference Theming
+- **AFC**: Red gradients and hover effects
+- **NFC**: Blue gradients and hover effects
+- **Logos**: All stored locally, high quality
 
-- **🎨 Dynamic 3D Network Visualization** - Interactive THREE.js architecture with 5 network components
-- **📡 Live API Status Monitoring** - 3D tower that changes color (red=offline, green=online) in real-time
-- **⏰ Auto-Updating Date/Time** - Header displays current date and live clock
-- **📊 7 Comprehensive Tabs** - Overview, Week 1-2, Weeks 2-4, Database, Architecture, Testing, GitHub
-- **🎯 90% Zoom Optimized** - Perfect viewing experience at 90% browser zoom
-- **🔄 Static/Live Data Modes** - Works offline with cached data or live with API server
-
----
-
-## Alternative: View Markdown Files
-
-If you prefer to read the raw markdown files:
-
-- **[Week 1-2 Assignment](week1-2.md)** - ML Model, SQLite Database, Questions
-- **[Weeks 2-4 Assignment](weeks2-4.md)** - React, PostgreSQL, Port Management, Logging
-
----
-
-## Quick Links
-
-- **GitHub Repository:** https://github.com/AprilV/H.C.-Lombardo-App
-- **Production Frontend:** http://localhost:3000 (requires running `npm start` in frontend/)
-- **Production API:** http://127.0.0.1:5000 (requires running `python api_server.py`)
+### Layout
+```
+📱 Homepage
+├── 🏈 2025 NFL Season Header
+├── 🔴 AFC Conference (Red theme)
+│   ├── AFC East (4 teams)
+│   ├── AFC North (4 teams)
+│   ├── AFC South (4 teams)
+│   └── AFC West (4 teams)
+└── 🔵 NFC Conference (Blue theme)
+    ├── NFC East (4 teams)
+    ├── NFC North (4 teams)
+    ├── NFC South (4 teams)
+    └── NFC West (4 teams)
+```
 
 ---
 
-**Recommended:** Click the dashboard link above for the best viewing experience! 🚀
+## � **Database Status**
+
+```sql
+Database: nfl_betting
+Host: localhost:5432
+Teams: 32
+Data: Week 6 (October 2025)
+Status: ✅ 100% Complete
+```
+
+**Sample Teams:**
+- Buffalo Bills: 4-2 ✅
+- Baltimore Ravens: 1-5 ✅
+- Kansas City Chiefs: 3-3 ✅
+- Detroit Lions: 4-2 ✅
+
+---
+
+## 🎓 **Technical Skills Demonstrated**
+
+### Frontend
+- React.js (hooks, router, components)
+- Progressive Web Apps (PWA)
+- Responsive CSS
+- Client-side routing
+- State management
+
+### Backend
+- Flask REST API
+- PostgreSQL integration
+- CORS configuration
+- Static file serving
+- Production deployment
+
+### DevOps
+- Dual startup systems
+- Build optimization
+- Version control (Git)
+- Backup automation
+- Documentation
+
+---
+
+## 📦 **Project Structure**
+
+```
+H.C Lombardo App/
+├── START-DEV.bat          # Development mode
+├── START.bat              # Production mode
+├── STOP.bat               # Shutdown
+├── STARTUP_MODES.md       # Complete guide
+├── api_server.py          # Flask API
+├── frontend/
+│   ├── public/
+│   │   ├── manifest.json  # PWA config
+│   │   └── images/        # 34 local images
+│   └── src/
+│       ├── Homepage.js    # Standings
+│       ├── TeamStats.js   # Details
+│       └── SideMenu.js    # Navigation
+├── dr.foster/             # 📚 You are here
+│   ├── README.md          # This file
+│   ├── week1-2.md         # ML & SQLite
+│   ├── weeks2-4.md        # React & PostgreSQL
+│   └── week5-pwa-conversion.md  # PWA (NEW!)
+└── backups/               # Automated backups
+```
+
+---
+
+## 📈 **Progress Summary**
+
+### Week 1-2: Foundation ✅
+- Machine learning model
+- SQLite database
+- Basic Flask API
+
+### Weeks 2-4: Architecture ✅
+- React frontend
+- PostgreSQL migration
+- Three-tier architecture
+- Port management
+
+### Week 5+: Production ✅
+- PWA conversion
+- Local asset storage
+- Dual startup modes
+- Conference theming
+- NFL sorting algorithm
+- ESPN API fixes
+- Complete documentation
+
+---
+
+## 🔗 **Important Links**
+
+- **GitHub:** https://github.com/AprilV/H.C.-Lombardo-App
+- **Latest Commit:** `0b5f428` (Oct 14, 2025)
+- **Commits:** 250 files changed, 71,265+ lines
+
+---
+
+## 📞 **Contact**
+
+**Student:** April V  
+**Course:** IS330  
+**Semester:** Fall 2025
+
+---
+
+**📄 For complete technical details, see:**
+- [Week 5+ PWA Conversion Report](week5-pwa-conversion.md) ⭐ RECOMMENDED
+
+**Status:** ✅ PRODUCTION READY | 📱 PWA ENABLED | 🚀 DEPLOYABLE
