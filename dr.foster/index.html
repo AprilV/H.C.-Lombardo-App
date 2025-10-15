@@ -546,21 +546,32 @@
 
             <div class="stats-grid">
                 <div class="stat-card">
-                    <div class="stat-value" id="stat-weeks">5+</div>
-                    <div class="stat-label">Weeks of Development</div>
+                    <div class="stat-value" id="current-week">Week 6</div>
+                    <div class="stat-label">Current NFL Week</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value" id="stat-teams">32</div>
+                    <div class="stat-value" id="total-teams">32 Teams</div>
                     <div class="stat-label">NFL Teams Tracked</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value" id="stat-tiers">3</div>
-                    <div class="stat-label">Tier Architecture</div>
+                    <div class="stat-value" id="db-status">🟢 Database</div>
+                    <div class="stat-label">Live Connection</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value" id="stat-tables">📱 PWA</div>
-                    <div class="stat-label">Installable App</div>
+                    <div class="stat-value" id="api-status">🟢 API</div>
+                    <div class="stat-label">Flask Server</div>
                 </div>
+            </div>
+
+            <div class="card" style="background: rgba(15, 23, 42, 0.6); padding: 1rem; margin-bottom: 1.5rem;">
+                <p style="margin: 0; display: flex; align-items: center; gap: 0.75rem; justify-content: space-between;">
+                    <span style="color: #94a3b8;">
+                        <strong>Last Updated:</strong> <span id="last-update">Loading...</span>
+                    </span>
+                    <span style="font-size: 0.85rem; color: #64748b;">
+                        ⚡ Auto-refreshes every 30 seconds
+                    </span>
+                </p>
             </div>
 
             <div class="card">
@@ -1164,7 +1175,22 @@ START.bat
                     <canvas id="schema-chart"></canvas>
                 </div>
 
-                <h3>🗃️ Database Tables (3 Total)</h3>
+                <h3>🗃️ Database Tables (<span id="tables-count">3</span> Total)</h3>
+                
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1.5rem 0;">
+                    <div style="background: rgba(59, 130, 246, 0.15); padding: 1rem; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 2rem; font-weight: 700; color: #3b82f6;"><span id="tables-count-display">3</span></div>
+                        <div style="font-size: 0.9rem; color: #94a3b8;">Tables</div>
+                    </div>
+                    <div style="background: rgba(139, 92, 246, 0.15); padding: 1rem; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 2rem; font-weight: 700; color: #8b5cf6;"><span id="columns-count">18</span></div>
+                        <div style="font-size: 0.9rem; color: #94a3b8;">Columns</div>
+                    </div>
+                    <div style="background: rgba(6, 182, 212, 0.15); padding: 1rem; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 2rem; font-weight: 700; color: #06b6d4;"><span id="records-count">32</span></div>
+                        <div style="font-size: 0.9rem; color: #94a3b8;">Records</div>
+                    </div>
+                </div>
                 
                 <div style="background: rgba(30, 41, 59, 0.6); padding: 1.5rem; border-radius: 10px; margin: 1rem 0;">
                     <h4 style="color: #3b82f6;">1. teams (Primary Data Table)</h4>
@@ -1245,25 +1271,37 @@ teams = cursor.fetchall()
         <!-- Analytics Tab -->
         <div id="analytics" class="tab-content">
             <div class="card">
-                <h2>📈 Data Analytics & Visualizations</h2>
+                <h2>� Real-Time NFL Analytics</h2>
+                <p style="color: #94a3b8; margin-bottom: 1.5rem;">
+                    Live statistics from your PostgreSQL database, updated every 30 seconds.
+                </p>
                 
-                <h3>📊 Model Performance Metrics</h3>
+                <h3>🏆 AFC vs NFC Conference Stats</h3>
                 <div class="chart-container">
-                    <canvas id="performance-chart"></canvas>
+                    <canvas id="conference-chart"></canvas>
                 </div>
 
-                <h3>🏈 NFL Teams by Division</h3>
+                <h3>🏈 Division Breakdown</h3>
                 <div class="chart-container">
                     <canvas id="division-chart"></canvas>
                 </div>
 
-                <h3>📉 Key Insights</h3>
-                <ul>
-                    <li>Machine Learning model achieved <strong>85% accuracy</strong> on validation set</li>
-                    <li>Home field advantage adds ~7% to win probability</li>
-                    <li>Recent form (last 3 games) is strongest predictor</li>
-                    <li>Division matchups show 12% higher variance in outcomes</li>
-                    <li>Weather conditions impact outdoor games by ~5%</li>
+                <h3>� Top Teams by Points Per Game</h3>
+                <div id="top-teams-list" style="background: rgba(15, 23, 42, 0.6); padding: 1rem; border-radius: 10px; margin-top: 1rem;">
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="padding: 0.5rem; background: rgba(59, 130, 246, 0.1); margin: 0.5rem 0; border-radius: 5px;">
+                            Loading top teams...
+                        </li>
+                    </ul>
+                </div>
+
+                <h3>📈 Live Data Features</h3>
+                <ul style="color: #cbd5e1;">
+                    <li>✅ Auto-refreshes every 30 seconds</li>
+                    <li>✅ Shows current season standings</li>
+                    <li>✅ Real ESPN API data</li>
+                    <li>✅ Conference & division breakdowns</li>
+                    <li>✅ Points per game rankings</li>
                 </ul>
             </div>
         </div>
@@ -1450,25 +1488,428 @@ START.bat</code></pre>
         };
 
         // ============================================
-        // LIVE DATA INTEGRATION (Hybrid Approach)
+        // AUTO-UPDATING DASHBOARD SYSTEM
         // ============================================
         
         const API_BASE_URL = 'http://localhost:5000';
         let isLiveMode = false;
-        let dataUpdateInterval = null;
+        let autoRefreshInterval = null;
+        let lastUpdateTime = null;
+        let refreshCountdown = 30; // seconds
 
         // Static fallback data
         const staticData = {
-            teams: 32,
-            games: 256,
-            predictions: 150,
-            accuracy: 85,
-            lastUpdate: 'Static Demo Data',
-            databaseTables: 15
+            stats: {
+                current_week: 6,
+                total_teams: 32,
+                conferences: 2,
+                divisions: 8,
+                last_update: "Static Demo Data"
+            },
+            database: {
+                total_tables: 3,
+                total_columns: 18,
+                total_records: 32,
+                tables: [
+                    { name: "teams", columns: 11, records: 32 },
+                    { name: "stats_metadata", columns: 4, records: 0 },
+                    { name: "update_metadata", columns: 3, records: 0 }
+                ]
+            },
+            analytics: {
+                conferences: [
+                    { name: "AFC", teams: 16, wins: 0, losses: 0, avg_ppg: 22.5 },
+                    { name: "NFC", teams: 16, wins: 0, losses: 0, avg_ppg: 21.8 }
+                ],
+                divisions: [],
+                top_teams: []
+            },
+            github: {
+                commits: [
+                    { sha: "2a9116b", message: "Fix database accuracy", author: "AprilV", date: "2025-10-14" }
+                ]
+            },
+            status: {
+                overall: "static",
+                database: { status: "unknown", message: "API offline" },
+                api: { status: "offline", message: "Not connected" }
+            }
         };
 
-        // Try to fetch live data from Flask API
-        async function fetchLiveData() {
+        // Fetch data from all dashboard endpoints
+        async function fetchAllDashboardData() {
+            const endpoints = ['stats', 'database', 'analytics', 'github', 'status'];
+            const data = { ...staticData };
+            let anySuccess = false;
+
+            console.log('🔄 Fetching dashboard data...');
+
+            for (const endpoint of endpoints) {
+                try {
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 5000);
+                    
+                    const response = await fetch(`${API_BASE_URL}/api/dashboard/${endpoint}`, {
+                        signal: controller.signal,
+                        mode: 'cors'
+                    });
+                    
+                    clearTimeout(timeoutId);
+                    
+                    if (response.ok) {
+                        const result = await response.json();
+                        if (result.success && result.data) {
+                            data[endpoint] = result.data;
+                            anySuccess = true;
+                            console.log(`✅ ${endpoint} data loaded`);
+                        }
+                    }
+                } catch (error) {
+                    console.log(`⚠️ ${endpoint} offline, using static data`);
+                }
+            }
+
+            isLiveMode = anySuccess;
+            lastUpdateTime = new Date();
+            updateStatusIndicator();
+            
+            return data;
+        }
+
+        // Update all dashboard components
+        async function updateDashboard() {
+            const data = await fetchAllDashboardData();
+            
+            // Update Overview tab
+            updateOverviewTab(data.stats, data.status);
+            
+            // Update Database tab
+            updateDatabaseTab(data.database);
+            
+            // Update Analytics tab
+            updateAnalyticsTab(data.analytics);
+            
+            // Update GitHub tab
+            updateGitHubTab(data.github);
+            
+            console.log('📊 Dashboard updated successfully');
+        }
+
+        // Update Overview Tab
+        function updateOverviewTab(stats, status) {
+            const weekEl = document.getElementById('current-week');
+            const teamsEl = document.getElementById('total-teams');
+            const lastUpdateEl = document.getElementById('last-update');
+            
+            if (weekEl) weekEl.textContent = `Week ${stats.current_week}`;
+            if (teamsEl) teamsEl.textContent = `${stats.total_teams} Teams`;
+            if (lastUpdateEl) {
+                const updateTime = stats.last_update ? new Date(stats.last_update).toLocaleString() : 'Demo Data';
+                lastUpdateEl.textContent = updateTime;
+            }
+            
+            // Update status indicators
+            const dbStatusEl = document.getElementById('db-status');
+            const apiStatusEl = document.getElementById('api-status');
+            
+            if (dbStatusEl) {
+                const isOnline = status.database.status === 'online';
+                dbStatusEl.innerHTML = isOnline ? 
+                    '🟢 <strong>Database:</strong> Connected' : 
+                    '🔴 <strong>Database:</strong> Offline';
+                dbStatusEl.style.color = isOnline ? '#10b981' : '#ef4444';
+            }
+            
+            if (apiStatusEl) {
+                const isOnline = status.api.status === 'online';
+                apiStatusEl.innerHTML = isOnline ? 
+                    '🟢 <strong>API:</strong> Running' : 
+                    '🔴 <strong>API:</strong> Offline';
+                apiStatusEl.style.color = isOnline ? '#10b981' : '#ef4444';
+            }
+        }
+
+        // Update Database Tab
+        function updateDatabaseTab(database) {
+            const tablesCountEl = document.getElementById('tables-count');
+            const columnsCountEl = document.getElementById('columns-count');
+            const recordsCountEl = document.getElementById('records-count');
+            
+            if (tablesCountEl) tablesCountEl.textContent = database.total_tables;
+            if (columnsCountEl) columnsCountEl.textContent = database.total_columns;
+            if (recordsCountEl) recordsCountEl.textContent = database.total_records;
+            
+            // Update database chart
+            if (window.databaseChart) {
+                window.databaseChart.data.labels = database.tables.map(t => t.name);
+                window.databaseChart.data.datasets[0].data = database.tables.map(t => t.columns);
+                window.databaseChart.update('none'); // No animation for live updates
+            }
+        }
+
+        // Update Analytics Tab
+        function updateAnalyticsTab(analytics) {
+            // Update conference chart
+            if (window.conferenceChart && analytics.conferences.length > 0) {
+                window.conferenceChart.data.labels = analytics.conferences.map(c => c.name);
+                window.conferenceChart.data.datasets[0].data = analytics.conferences.map(c => c.teams);
+                window.conferenceChart.update('none');
+            }
+            
+            // Update division chart  
+            if (window.divisionChart && analytics.divisions.length > 0) {
+                window.divisionChart.data.labels = analytics.divisions.map(d => d.division);
+                window.divisionChart.data.datasets[0].data = analytics.divisions.map(d => d.teams);
+                window.divisionChart.update('none');
+            }
+            
+            // Update top teams list
+            const topTeamsEl = document.getElementById('top-teams-list');
+            if (topTeamsEl && analytics.top_teams.length > 0) {
+                topTeamsEl.innerHTML = analytics.top_teams.map((team, index) => `
+                    <li style="padding: 0.5rem; background: rgba(59, 130, 246, 0.1); margin: 0.5rem 0; border-radius: 5px;">
+                        <strong>${index + 1}. ${team.name}</strong> (${team.abbreviation})<br>
+                        Record: ${team.wins}-${team.losses} | PPG: ${team.ppg}
+                    </li>
+                `).join('');
+            }
+        }
+
+        // Update GitHub Tab
+        function updateGitHubTab(github) {
+            const commitsEl = document.getElementById('latest-commits');
+            if (commitsEl && github.commits.length > 0) {
+                commitsEl.innerHTML = github.commits.map(commit => `
+                    <div style="border-left: 4px solid #10b981; padding-left: 1rem; margin-bottom: 1rem;">
+                        <p style="color: #10b981;"><strong>Commit ${commit.sha}</strong> - ${commit.message}</p>
+                        <p style="font-size: 0.85rem; color: #94a3b8;">
+                            ${commit.author} • ${new Date(commit.date).toLocaleString()}
+                        </p>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Create status indicator
+        function createStatusIndicator() {
+            const indicator = document.createElement('div');
+            indicator.id = 'status-indicator';
+            indicator.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                padding: 12px 20px;
+                border-radius: 30px;
+                font-size: 0.9rem;
+                font-weight: 600;
+                z-index: 10000;
+                backdrop-filter: blur(10px);
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+                transition: all 0.3s ease;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            `;
+            
+            indicator.addEventListener('click', showStatusModal);
+            document.body.appendChild(indicator);
+            
+            // Create countdown display
+            const countdown = document.createElement('div');
+            countdown.id = 'refresh-countdown';
+            countdown.style.cssText = `
+                position: fixed;
+                bottom: 70px;
+                right: 20px;
+                padding: 8px 16px;
+                border-radius: 20px;
+                font-size: 0.8rem;
+                font-weight: 500;
+                z-index: 10000;
+                backdrop-filter: blur(10px);
+                background: rgba(15, 23, 42, 0.8);
+                color: #94a3b8;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+                display: none;
+            `;
+            document.body.appendChild(countdown);
+        }
+
+        // Update status indicator
+        function updateStatusIndicator() {
+            const indicator = document.getElementById('status-indicator');
+            if (!indicator) return;
+            
+            if (isLiveMode) {
+                indicator.innerHTML = `
+                    <span style="font-size: 1.2rem;">🟢</span>
+                    <span>Live Data</span>
+                    <span style="font-size: 0.7rem; opacity: 0.8;">Auto-Refresh</span>
+                `;
+                indicator.style.background = 'linear-gradient(135deg, rgba(16, 185, 129, 0.95) 0%, rgba(5, 150, 105, 0.95) 100%)';
+                indicator.style.color = '#ffffff';
+                indicator.style.animation = 'pulse 2s infinite';
+                indicator.title = 'Connected to Flask API\nAuto-refresh every 30 seconds\nClick for details';
+                
+                // Show countdown
+                const countdown = document.getElementById('refresh-countdown');
+                if (countdown) countdown.style.display = 'block';
+            } else {
+                indicator.innerHTML = `
+                    <span style="font-size: 1.2rem;">📊</span>
+                    <span>Static Data</span>
+                `;
+                indicator.style.background = 'linear-gradient(135deg, rgba(59, 130, 246, 0.95) 0%, rgba(37, 99, 235, 0.95) 100%)';
+                indicator.style.color = '#ffffff';
+                indicator.style.animation = 'none';
+                indicator.title = 'API offline - using demo data\nClick for details';
+                
+                // Hide countdown
+                const countdown = document.getElementById('refresh-countdown');
+                if (countdown) countdown.style.display = 'none';
+            }
+        }
+
+        // Update countdown timer
+        function updateCountdown() {
+            const countdown = document.getElementById('refresh-countdown');
+            if (countdown && isLiveMode) {
+                if (refreshCountdown > 0) {
+                    countdown.textContent = `Next refresh in ${refreshCountdown}s`;
+                    countdown.style.display = 'block';
+                    refreshCountdown--;
+                } else {
+                    countdown.textContent = 'Refreshing...';
+                    refreshCountdown = 30;
+                }
+            }
+        }
+
+        // Show status modal
+        function showStatusModal() {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+                padding: 2rem;
+                border-radius: 15px;
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+                z-index: 10001;
+                max-width: 500px;
+                border: 2px solid ${isLiveMode ? '#10b981' : '#3b82f6'};
+                color: #e2e8f0;
+            `;
+            
+            const lastUpdate = lastUpdateTime ? lastUpdateTime.toLocaleTimeString() : 'Never';
+            
+            modal.innerHTML = `
+                <h3 style="margin-top: 0; color: ${isLiveMode ? '#10b981' : '#3b82f6'}; display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 1.5rem;">${isLiveMode ? '🟢' : '📊'}</span>
+                    ${isLiveMode ? 'Live Data Mode' : 'Static Data Mode'}
+                </h3>
+                
+                ${isLiveMode ? `
+                    <p><strong>Status:</strong> ✅ Connected to Flask API</p>
+                    <p><strong>API Endpoint:</strong> <code style="color: #10b981;">http://localhost:5000</code></p>
+                    <p><strong>Data Sources:</strong></p>
+                    <ul style="margin: 0.5rem 0;">
+                        <li>PostgreSQL Database (live stats)</li>
+                        <li>GitHub API (latest commits)</li>
+                        <li>ESPN API (team data)</li>
+                    </ul>
+                    <p><strong>Auto-Refresh:</strong> Every 30 seconds</p>
+                    <p><strong>Last Update:</strong> ${lastUpdate}</p>
+                    <hr style="border-color: rgba(16, 185, 129, 0.3); margin: 1rem 0;">
+                    <p style="font-size: 0.9rem; color: #94a3b8;">
+                        All dashboard tabs are pulling real-time data from your Flask API. 
+                        Stats update automatically - no manual refresh needed! 🎉
+                    </p>
+                ` : `
+                    <p><strong>Status:</strong> ⚠️ API server offline</p>
+                    <p><strong>Data Source:</strong> Static demonstration data</p>
+                    <p><strong>Refresh:</strong> Manual only</p>
+                    <p><strong>Benefits:</strong> Always accessible, perfect for demos</p>
+                    <hr style="border-color: rgba(59, 130, 246, 0.3); margin: 1rem 0;">
+                    <p style="font-size: 0.9rem; color: #94a3b8;">
+                        Dashboard is using cached data. To enable auto-updates, start your Flask API server:
+                    </p>
+                    <div style="background: rgba(59, 130, 246, 0.1); padding: 0.75rem; border-radius: 5px; margin-top: 0.75rem; border-left: 3px solid #3b82f6;">
+                        <strong>Windows:</strong><br>
+                        <code style="color: #3b82f6; font-size: 0.85rem;">START.bat</code> (production)<br>
+                        <code style="color: #3b82f6; font-size: 0.85rem;">START-DEV.bat</code> (development)
+                    </div>
+                `}
+                
+                <button onclick="this.parentElement.remove(); document.getElementById('modal-overlay').remove();" 
+                        style="margin-top: 1.5rem; padding: 0.75rem 1.5rem; background: ${isLiveMode ? '#10b981' : '#3b82f6'}; 
+                        border: none; border-radius: 8px; color: white; font-weight: 600; cursor: pointer; width: 100%;">
+                    Got it!
+                </button>
+            `;
+            
+            // Create overlay
+            const overlay = document.createElement('div');
+            overlay.id = 'modal-overlay';
+            overlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.7);
+                z-index: 10000;
+                backdrop-filter: blur(5px);
+            `;
+            overlay.onclick = () => {
+                modal.remove();
+                overlay.remove();
+            };
+            
+            document.body.appendChild(overlay);
+            document.body.appendChild(modal);
+        }
+
+        // Start auto-refresh
+        function startAutoRefresh() {
+            // Initial update
+            updateDashboard();
+            
+            // Auto-refresh every 30 seconds
+            if (autoRefreshInterval) clearInterval(autoRefreshInterval);
+            autoRefreshInterval = setInterval(() => {
+                updateDashboard();
+                refreshCountdown = 30;
+            }, 30000);
+            
+            // Countdown timer every second
+            setInterval(updateCountdown, 1000);
+        }
+
+        // Add CSS animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes pulse {
+                0%, 100% { box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4); }
+                50% { box-shadow: 0 4px 30px rgba(16, 185, 129, 0.6); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Initialize on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            createStatusIndicator();
+            startAutoRefresh();
+            console.log('🚀 Auto-updating dashboard initialized');
+        });
+
+        // ============================================
+        // END AUTO-UPDATE SYSTEM
+        // ============================================
+
             try {
                 const controller = new AbortController();
                 const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 second timeout
@@ -1814,20 +2255,6 @@ START.bat</code></pre>
             
             // Update 3D tower colors
             update3DMonitorColors(isLiveMode);
-            
-            // Set up auto-refresh every 5 minutes if in live mode
-            if (isLiveMode && !dataUpdateInterval) {
-                dataUpdateInterval = setInterval(async () => {
-                    console.log('🔄 Refreshing dashboard data...');
-                    const newData = await fetchLiveData();
-                    updateDashboardStats(newData);
-                    update3DMonitorColors(isLiveMode);
-                }, 300000); // 5 minutes
-            }
-        }
-
-        // Load data when page loads
-        window.addEventListener('load', initializeDashboard);
 
         // 3D Architecture Visualization
         let scene, camera, renderer, labelRenderer, controls;

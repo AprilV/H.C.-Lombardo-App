@@ -9,6 +9,7 @@ import psycopg2
 import sys
 import os
 from logging_config import setup_logging
+from dashboard_api import register_dashboard_routes
 
 # Initialize logger
 loggers = setup_logging()
@@ -28,6 +29,9 @@ CORS(app, resources={
         "allow_headers": ["Content-Type"]
     }
 })
+
+# Register dashboard API routes
+register_dashboard_routes(app)
 
 # Additional CORS headers for file:// protocol
 @app.after_request
