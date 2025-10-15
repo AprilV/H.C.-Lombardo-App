@@ -8,6 +8,13 @@ function App() {
   const [teams, setTeams] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  // New state for dropdown interface
+  const [selectedTeam, setSelectedTeam] = useState('');
+  const [selectedStat, setSelectedStat] = useState('');
+  const [showAllStats, setShowAllStats] = useState(true);
+  const [teamDetails, setTeamDetails] = useState(null);
+  const [detailsLoading, setDetailsLoading] = useState(false);
 
   // Test server connection on mount
   useEffect(() => {
@@ -55,6 +62,59 @@ function App() {
     return 'losing';
   };
 
+  // Fetch detailed team data
+  const fetchTeamDetails = async (abbreviation) => {
+    if (!abbreviation) return;
+    
+    try {
+      setDetailsLoading(true);
+      const response = await fetch(`${API_URL}/api/teams/${abbreviation}`);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      setTeamDetails(data);
+      setError(null);
+    } catch (err) {
+      console.error('Failed to fetch team details:', err);
+      setError('Failed to load team details: ' + err.message);
+    } finally {
+      setDetailsLoading(false);
+    }
+  };
+
+  // Handle view stats button click
+  const handleViewStats = () => {
+    if (selectedTeam) {
+      fetchTeamDetails(selectedTeam);
+    }
+  };
+
+  // Available stats for dropdown
+  const availableStats = [
+    { value: 'wins', label: 'Wins' },
+    { value: 'losses', label: 'Losses' },
+    { value: 'ties', label: 'Ties' },
+    { value: 'ppg', label: 'Points Per Game (PPG)' },
+    { value: 'pa', label: 'Points Against (PA)' },
+    { value: 'games_played', label: 'Games Played' },
+  ];
+
+  // Format stat value
+  const formatStatValue = (key, value) => {
+    if (value === null || value === undefined) return 'N/A';
+    if (key === 'ppg' || key === 'pa') return value.toFixed(1);
+    return value;
+  };
+
+  // Get stat label
+  const getStatLabel = (key) => {
+    const stat = availableStats.find(s => s.value === key);
+    return stat ? stat.label : key.replace('_', ' ').toUpperCase();
+  };
+
   return (
     <div className="App">
       <header className="App-header">
@@ -68,27 +128,43 @@ function App() {
       </header>
 
       <main className="App-main">
-        {/* Server Status */}
-        <section className="status-section">
-          <h2>System Status</h2>
+        {/* Scrolling NFL Logos Background */}
+        <div className="nfl-background">
+          <div className="nfl-scroll">
+            {[...Array(20)].map((_, i) => (
+              <img 
+                key={i}
+                src="https://a.espncdn.com/i/teamlogos/leagues/500/nfl.png" 
+                alt="" 
+                className="nfl-watermark"
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Compact Server Status Bar */}
+        <section className="status-bar">
           {serverStatus ? (
-            <div className="status-card success">
-              <div className="status-item">
-                <span className="status-label">Backend:</span>
-                <span className="status-value good">{serverStatus.status}</span>
+            <div className="status-bar-content">
+              <div className="status-indicator success">
+                <span className="status-dot"></span>
+                <span className="status-text">🚀 LIVE</span>
               </div>
-              <div className="status-item">
-                <span className="status-label">Database:</span>
-                <span className="status-value good">{serverStatus.database}</span>
+              <div className="status-indicator success">
+                <span className="status-dot"></span>
+                <span className="status-text">💾 DB Connected</span>
               </div>
-              <div className="status-item">
-                <span className="status-label">CORS:</span>
-                <span className="status-value good">{serverStatus.cors}</span>
+              <div className="status-indicator success">
+                <span className="status-dot"></span>
+                <span className="status-text">🔗 API Ready</span>
               </div>
             </div>
           ) : (
-            <div className="status-card error">
-              <p>⚠️ Backend not connected</p>
+            <div className="status-bar-content error">
+              <div className="status-indicator error">
+                <span className="status-dot"></span>
+                <span className="status-text">⚠️ Offline</span>
+              </div>
             </div>
           )}
         </section>
@@ -103,61 +179,142 @@ function App() {
           </section>
         )}
 
-        {/* Teams List */}
-        <section className="teams-section">
-          <div className="section-header">
-            <h2>NFL Teams</h2>
-            <span className="team-count">({teams.length} teams)</span>
-          </div>
-          
-          {loading ? (
-            <div className="loading">Loading teams...</div>
-          ) : teams.length > 0 ? (
-            <div className="teams-grid">
-              {teams.map((team, index) => (
-                <div key={index} className={`team-card ${getRecordColor(team.wins, team.losses)}`}>
-                  <div className="team-header">
-                    <img 
-                      src={`https://a.espncdn.com/i/teamlogos/nfl/500/${team.abbreviation?.toLowerCase()}.png`}
-                      alt={`${team.name} logo`}
-                      className="team-logo"
-                      onError={(e) => {e.target.style.display='none'}}
-                    />
-                    <div className="team-info">
-                      <h3>{team.name}</h3>
-                      <span className="team-abbr">{team.abbreviation}</span>
-                    </div>
-                  </div>
-                  <div className="team-stats">
-                    <div className="stat">
-                      <span className="stat-label">Record</span>
-                      <span className="stat-value">{team.wins}-{team.losses}</span>
-                    </div>
-                    <div className="stat">
-                      <span className="stat-label">PPG</span>
-                      <span className="stat-value">{team.ppg?.toFixed(1) || 'N/A'}</span>
-                    </div>
-                    <div className="stat">
-                      <span className="stat-label">PA</span>
-                      <span className="stat-value">{team.pa?.toFixed(1) || 'N/A'}</span>
-                    </div>
-                    <div className="stat">
-                      <span className="stat-label">Games</span>
-                      <span className="stat-value">{team.games_played}</span>
-                    </div>
-                  </div>
+        {/* NEW: Team Selection Interface */}
+        <section className="selection-section">
+          <div className="selection-card">
+            <h2 className="selection-title">🏈 Select Team & Stats</h2>
+            
+            <div className="selection-controls">
+              {/* Team Dropdown */}
+              <div className="control-group">
+                <label htmlFor="team-select">Select Team:</label>
+                <select 
+                  id="team-select"
+                  className="team-dropdown"
+                  value={selectedTeam}
+                  onChange={(e) => setSelectedTeam(e.target.value)}
+                  disabled={loading}
+                >
+                  <option value="">-- Choose a Team --</option>
+                  {teams
+                    .sort((a, b) => a.name.localeCompare(b.name))
+                    .map((team) => (
+                      <option key={team.abbreviation} value={team.abbreviation}>
+                        {team.name} ({team.abbreviation})
+                      </option>
+                    ))}
+                </select>
+              </div>
+
+              {/* Show All Stats Checkbox */}
+              <div className="control-group checkbox-group">
+                <label>
+                  <input 
+                    type="checkbox"
+                    checked={showAllStats}
+                    onChange={(e) => {
+                      setShowAllStats(e.target.checked);
+                      if (e.target.checked) setSelectedStat('');
+                    }}
+                  />
+                  <span className="checkbox-label">Show All Stats</span>
+                </label>
+              </div>
+
+              {/* Stat Dropdown (only if not showing all) */}
+              {!showAllStats && (
+                <div className="control-group">
+                  <label htmlFor="stat-select">Select Stat:</label>
+                  <select 
+                    id="stat-select"
+                    className="stat-dropdown"
+                    value={selectedStat}
+                    onChange={(e) => setSelectedStat(e.target.value)}
+                  >
+                    <option value="">-- Choose a Stat --</option>
+                    {availableStats.map((stat) => (
+                      <option key={stat.value} value={stat.value}>
+                        {stat.label}
+                      </option>
+                    ))}
+                  </select>
                 </div>
-              ))}
+              )}
+
+              {/* View Stats Button */}
+              <button 
+                className="view-stats-btn"
+                onClick={handleViewStats}
+                disabled={!selectedTeam || detailsLoading}
+              >
+                {detailsLoading ? '⏳ Loading...' : '📊 View Stats'}
+              </button>
             </div>
-          ) : (
-            <p>No teams found</p>
-          )}
+          </div>
         </section>
 
-        {/* Actions */}
+        {/* Team Details Display */}
+        {teamDetails && (
+          <section className="results-section">
+            <div className="results-card">
+              <div className="team-header-large">
+                <img 
+                  src={`https://a.espncdn.com/i/teamlogos/nfl/500/${teamDetails.abbreviation?.toLowerCase()}.png`}
+                  alt={`${teamDetails.name} logo`}
+                  className="team-logo-large"
+                  onError={(e) => {e.target.style.display='none'}}
+                />
+                <div className="team-info-large">
+                  <h2>{teamDetails.name}</h2>
+                  <span className="team-abbr-large">{teamDetails.abbreviation}</span>
+                  <div className="record-badge">
+                    {teamDetails.wins}-{teamDetails.losses}{teamDetails.ties > 0 ? `-${teamDetails.ties}` : ''}
+                  </div>
+                </div>
+              </div>
+
+              <div className="stats-display">
+                <h3>📊 Team Statistics</h3>
+                {showAllStats ? (
+                  <div className="stats-grid-large">
+                    {availableStats.map((stat) => (
+                      <div key={stat.value} className="stat-item-large">
+                        <span className="stat-label-large">{stat.label}</span>
+                        <span className="stat-value-large">
+                          {formatStatValue(stat.value, teamDetails[stat.value])}
+                        </span>
+                      </div>
+                    ))}
+                    {teamDetails.last_updated && (
+                      <div className="stat-item-large last-updated">
+                        <span className="stat-label-large">Last Updated</span>
+                        <span className="stat-value-large">
+                          {new Date(teamDetails.last_updated).toLocaleString()}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                ) : selectedStat ? (
+                  <div className="single-stat-display">
+                    <div className="stat-item-huge">
+                      <span className="stat-label-huge">{getStatLabel(selectedStat)}</span>
+                      <span className="stat-value-huge">
+                        {formatStatValue(selectedStat, teamDetails[selectedStat])}
+                      </span>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="no-stat-selected">Please select a stat to view</p>
+                )}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* Quick Actions */}
         <section className="actions-section">
           <button onClick={fetchTeams} className="refresh-btn" disabled={loading}>
-            {loading ? '⏳ Loading...' : '🔄 Refresh Data'}
+            {loading ? '⏳ Loading...' : '🔄 Refresh Teams'}
           </button>
         </section>
       </main>
