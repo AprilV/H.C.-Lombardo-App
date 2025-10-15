@@ -19,6 +19,10 @@
             padding: 0;
             box-sizing: border-box;
         }
+        
+        html {
+            scroll-behavior: auto; /* Prevent smooth scrolling on load */
+        }
 
         :root {
             --primary: #1e3a8a;
@@ -85,6 +89,15 @@
 
         .student-info strong {
             color: #e2e8f0;
+        }
+        
+        .student-info a {
+            transition: all 0.3s ease;
+        }
+        
+        .student-info a:hover {
+            color: #60a5fa !important;
+            text-decoration: underline !important;
         }
 
         /* Navigation Tabs */
@@ -509,7 +522,8 @@
                 <p style="color: #64748b; margin-top: 0.5rem;">Interactive 3D Assignment Dashboard</p>
             </div>
             <div class="student-info">
-                <strong>Student:</strong> April V. Sykes<br>
+                <strong>Student:</strong> <a href="https://www.aprilsykes.com" target="_blank" style="color: #3b82f6; text-decoration: none; transition: color 0.3s;">April V. Sykes</a><br>
+                <strong>Portfolio:</strong> <a href="https://www.aprilsykes.com" target="_blank" style="color: #06b6d4; text-decoration: underline;">aprilsykes.com</a><br>
                 <strong>Course:</strong> IS330<br>
                 <strong>Date:</strong> <span id="currentDate">October 10, 2025</span><br>
                 <strong>Time:</strong> <span id="currentTime">--:--:-- --</span>
@@ -519,7 +533,7 @@
 
     <!-- Navigation Tabs -->
     <div class="tabs">
-        <div class="tab active" onclick="showTab('overview', event)">📊 Overview</div>
+        <div class="tab" onclick="showTab('overview', event)">📊 Overview</div>
         <div class="tab" onclick="showTab('architecture', event)">🏗️ 3D Architecture</div>
         <div class="tab" onclick="showTab('week1-2', event)">📝 Week 1-2</div>
         <div class="tab" onclick="showTab('week2-4', event)">🚀 Weeks 2-4</div>
@@ -532,7 +546,7 @@
     <!-- Content Area -->
     <div class="content">
         <!-- Overview Tab -->
-        <div id="overview" class="tab-content active">
+        <div id="overview" class="tab-content">
             <div class="card">
                 <h2>🎯 Welcome, Dr. Foster</h2>
                 <p style="font-size: 1.1rem; line-height: 1.8; color: #cbd5e1;">
@@ -1171,6 +1185,33 @@ START.bat
                     <p style="color: #cbd5e1; font-size: 0.95rem;">Optimized for the PWA application with focus on team standings and stats. Uses JSONB for flexible stat storage.</p>
                 </div>
 
+                <h3>🎓 Third Normal Form (3NF) Compliance</h3>
+                <div style="background: rgba(139, 92, 246, 0.1); padding: 1.5rem; border-radius: 10px; border-left: 4px solid #8b5cf6; margin: 1rem 0;">
+                    <p style="color: #8b5cf6;"><strong>✅ Database Follows Third Normal Form (3NF)</strong></p>
+                    <div style="color: #cbd5e1; font-size: 0.95rem; margin-top: 1rem;">
+                        <p><strong>What is 3NF?</strong> A database normalization standard that ensures:</p>
+                        <ul style="margin: 1rem 0;">
+                            <li>✅ <strong>1NF (First Normal Form):</strong> All columns contain atomic (single) values</li>
+                            <li>✅ <strong>2NF (Second Normal Form):</strong> No partial dependencies - all non-key columns depend on the entire primary key</li>
+                            <li>✅ <strong>3NF (Third Normal Form):</strong> No transitive dependencies - non-key columns don't depend on other non-key columns</li>
+                        </ul>
+                        
+                        <p style="margin-top: 1rem;"><strong>How Our Database Achieves 3NF:</strong></p>
+                        <ul style="margin: 1rem 0;">
+                            <li><strong>teams table:</strong> Primary key is <code>id</code>. All other columns (name, wins, losses, ppg, pa) depend directly on the team's ID, not on each other.</li>
+                            <li><strong>stats_metadata table:</strong> Primary key is <code>stat_key</code>. Stat descriptions and categories depend only on the stat key itself.</li>
+                            <li><strong>update_metadata table:</strong> Primary key is <code>id</code>. Timestamp depends directly on the update record ID.</li>
+                            <li><strong>JSONB stats column:</strong> Treated as a single complex value - doesn't create dependencies between table columns, so it doesn't violate 3NF.</li>
+                        </ul>
+                        
+                        <p style="margin-top: 1rem; color: #10b981;"><strong>✅ Result:</strong> No data redundancy, efficient storage, fast queries, and easy maintenance!</p>
+                        
+                        <div style="background: rgba(30, 41, 59, 0.5); padding: 1rem; border-radius: 8px; margin-top: 1rem;">
+                            <p style="color: #94a3b8; font-size: 0.9rem; margin: 0;"><strong>📚 Additional Details:</strong> See <code>DATABASE_3NF_ANALYSIS.md</code> for complete normalization analysis, entity-relationship diagrams, and detailed table structure documentation.</p>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="chart-container">
                     <canvas id="schema-chart"></canvas>
                 </div>
@@ -1183,12 +1224,12 @@ START.bat
                         <div style="font-size: 0.9rem; color: #94a3b8;">Tables</div>
                     </div>
                     <div style="background: rgba(139, 92, 246, 0.15); padding: 1rem; border-radius: 8px; text-align: center;">
-                        <div style="font-size: 2rem; font-weight: 700; color: #8b5cf6;"><span id="columns-count">18</span></div>
-                        <div style="font-size: 0.9rem; color: #94a3b8;">Columns</div>
+                        <div style="font-size: 2rem; font-weight: 700; color: #8b5cf6;"><span id="columns-count">20</span></div>
+                        <div style="font-size: 0.9rem; color: #94a3b8;">Total Columns</div>
                     </div>
                     <div style="background: rgba(6, 182, 212, 0.15); padding: 1rem; border-radius: 8px; text-align: center;">
-                        <div style="font-size: 2rem; font-weight: 700; color: #06b6d4;"><span id="records-count">32</span></div>
-                        <div style="font-size: 0.9rem; color: #94a3b8;">Records</div>
+                        <div style="font-size: 2rem; font-weight: 700; color: #06b6d4;"><span id="records-count">50</span></div>
+                        <div style="font-size: 0.9rem; color: #94a3b8;">Total Records</div>
                     </div>
                 </div>
                 
@@ -1213,22 +1254,27 @@ START.bat
 
                 <div style="background: rgba(30, 41, 59, 0.6); padding: 1.5rem; border-radius: 10px; margin: 1rem 0;">
                     <h4 style="color: #8b5cf6;">2. stats_metadata (Stat Type Definitions)</h4>
-                    <p style="color: #94a3b8; font-size: 0.9rem;">Tracks available stat types and their metadata</p>
+                    <p style="color: #94a3b8; font-size: 0.9rem;"><strong>Records:</strong> 9 stat definitions | <strong>Columns:</strong> 7</p>
                     <ul style="color: #cbd5e1; font-size: 0.95rem;">
-                        <li>Defines stat categories (offense, defense, special teams)</li>
-                        <li>Stores stat display names and descriptions</li>
-                        <li>Used for dynamic stat selection in TeamStats page</li>
+                        <li><code>stat_key</code> (varchar) - Primary key, unique identifier (e.g., "offense.points_per_game")</li>
+                        <li><code>stat_name</code> (varchar) - Human-readable name (e.g., "Points Per Game")</li>
+                        <li><code>category</code> (varchar) - Grouping (offense, defense, record)</li>
+                        <li><code>data_type</code> (varchar) - Data type (integer, float, text)</li>
+                        <li><code>description</code> (text) - Full explanation of the stat</li>
+                        <li><code>source</code> (varchar) - Data source (ESPN, TeamRankings, Calculated)</li>
+                        <li><code>last_updated</code> (timestamp) - When definition was updated</li>
                     </ul>
+                    <p style="color: #10b981; margin-top: 0.5rem;">✅ <strong>Purpose:</strong> Documents all available statistics for dynamic stat selection</p>
                 </div>
 
                 <div style="background: rgba(30, 41, 59, 0.6); padding: 1.5rem; border-radius: 10px; margin: 1rem 0;">
                     <h4 style="color: #06b6d4;">3. update_metadata (Data Refresh Tracking)</h4>
-                    <p style="color: #94a3b8; font-size: 0.9rem;">Tracks last data refresh timestamps</p>
+                    <p style="color: #94a3b8; font-size: 0.9rem;"><strong>Records:</strong> 9 update logs | <strong>Columns:</strong> 2</p>
                     <ul style="color: #cbd5e1; font-size: 0.95rem;">
-                        <li>Records when ESPN API was last queried</li>
-                        <li>Prevents excessive API calls</li>
-                        <li>Ensures data freshness</li>
+                        <li><code>id</code> (integer) - Primary key, auto-incrementing</li>
+                        <li><code>last_update</code> (timestamp) - When data refresh occurred</li>
                     </ul>
+                    <p style="color: #10b981; margin-top: 0.5rem;">✅ <strong>Purpose:</strong> Tracks API refresh times to prevent excessive API calls</p>
                 </div>
 
                 <h3>📈 Current Data Status</h3>
@@ -1259,6 +1305,7 @@ teams = cursor.fetchall()
                     <p style="color: #cbd5e1;"><strong>Keep It Simple, Keep It Working</strong></p>
                     <ul style="color: #94a3b8; font-size: 0.95rem;">
                         <li>✅ <strong>Single Source of Truth:</strong> One teams table with all essential data</li>
+                        <li>✅ <strong>Third Normal Form (3NF):</strong> Properly normalized with no data redundancy or transitive dependencies</li>
                         <li>✅ <strong>JSONB Flexibility:</strong> Additional stats stored as JSON without schema changes</li>
                         <li>✅ <strong>Fast Queries:</strong> Simple structure = faster API responses</li>
                         <li>✅ <strong>Easy Maintenance:</strong> Minimal tables = easier to manage and backup</li>
@@ -1537,6 +1584,10 @@ START.bat</code></pre>
                     }
                 });
             }
+            
+            // Save the current tab to localStorage
+            localStorage.setItem('drFosterActiveTab', tabName);
+            console.log('💾 Saved active tab:', tabName);
 
             // Initialize 3D scene if architecture tab
             if (tabName === 'architecture') {
@@ -2131,9 +2182,28 @@ START.bat</code></pre>
 
         // Initialize on page load
         window.addEventListener('DOMContentLoaded', () => {
+            // Scroll to top on page load
+            window.scrollTo(0, 0);
+            
+            // Restore the last active tab from localStorage
+            const savedTab = localStorage.getItem('drFosterActiveTab');
+            if (savedTab) {
+                console.log('🔄 Restoring saved tab:', savedTab);
+                showTab(savedTab);
+            } else {
+                // Default to overview if no saved tab
+                console.log('📊 No saved tab, showing overview');
+                showTab('overview');
+            }
+            
             createStatusIndicator();
             startAutoRefresh();
             console.log('🚀 Auto-updating dashboard initialized');
+        });
+        
+        // Also scroll to top when page fully loads (including images)
+        window.addEventListener('load', () => {
+            window.scrollTo(0, 0);
         });
 
         // ============================================
@@ -3006,13 +3076,19 @@ START.bat</code></pre>
             const ctx = document.getElementById('schema-chart');
             if (!ctx) return;
 
-            new Chart(ctx, {
+            // Destroy existing chart if it exists
+            if (window.databaseChart) {
+                window.databaseChart.destroy();
+                console.log('🗑️ Destroyed previous database chart');
+            }
+
+            window.databaseChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: ['teams', 'stats_metadata', 'update_metadata'],
                     datasets: [{
                         label: 'Number of Columns',
-                        data: [11, 4, 3],
+                        data: [11, 7, 2],
                         backgroundColor: [
                             'rgba(59, 130, 246, 0.6)',   // Blue for teams
                             'rgba(139, 92, 246, 0.6)',   // Purple for stats_metadata
@@ -3035,7 +3111,7 @@ START.bat</code></pre>
                         },
                         title: {
                             display: true,
-                            text: 'PostgreSQL Database Schema - 3 Tables, 18 Total Columns',
+                            text: 'PostgreSQL Database Schema - 3 Tables, 20 Total Columns',
                             color: '#e2e8f0',
                             font: { size: 14 }
                         }

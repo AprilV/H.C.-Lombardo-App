@@ -144,6 +144,21 @@ function Homepage() {
           🔄 Refresh Standings
         </button>
       </div>
+
+      <div className="footer-credits">
+        <div className="credits-line">
+          <span>Developed by </span>
+          <a href="https://www.aprilsykes.com" target="_blank" rel="noopener noreferrer">
+            April V. Sykes
+          </a>
+          <span> • IS330 Project • October 2025</span>
+        </div>
+        <div className="credits-line credits-ai">
+          <span>Built with assistance from </span>
+          <strong>GitHub Copilot</strong>
+          <span> • Powered by AI</span>
+        </div>
+      </div>
     </div>
   );
 }
