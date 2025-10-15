@@ -1,0 +1,55 @@
+# Environment variables (contains passwords!)
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Database files (SQLite)
+*.db
+*.sqlite
+*.sqlite3
+
+# Testbed (keep structure, ignore temp files)
+testbed/**/*.tmp
+testbed/**/test_output_*
+testbed/**/__pycache__/
+testbed/**/node_modules/
+
+# Frontend node_modules
+frontend/node_modules/
+frontend/build/
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+

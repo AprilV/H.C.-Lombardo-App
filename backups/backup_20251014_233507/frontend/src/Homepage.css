@@ -1,0 +1,360 @@
+/* Homepage Container */
+.homepage {
+  position: relative;
+  z-index: 1;
+  padding-bottom: 1.5rem;
+}
+
+.homepage-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: 1rem;
+}
+
+.loading-spinner {
+  width: 60px;
+  height: 60px;
+  border: 6px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #D50A0A;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Homepage Header */
+.homepage-header {
+  text-align: center;
+  padding: 1rem 0.75rem;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(135deg, rgba(1, 51, 105, 0.95), rgba(213, 10, 10, 0.95));
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.homepage-header h1 {
+  font-size: 1.5rem;
+  color: white;
+  margin-bottom: 0.25rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.season-subtitle {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.9rem;
+  font-weight: 300;
+}
+
+/* Conference Section */
+.conference-section {
+  margin-bottom: 2rem;
+}
+
+.conference-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+/* AFC - Red Background */
+.conference-header.afc {
+  background: linear-gradient(135deg, #8B0000 0%, #D50A0A 100%);
+}
+
+/* NFC - Blue Background */
+.conference-header.nfc {
+  background: linear-gradient(135deg, #001F5B 0%, #013369 100%);
+}
+
+.conference-header::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  transform: rotate(45deg);
+  animation: shine 3s infinite;
+}
+
+@keyframes shine {
+  0%, 100% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+  50% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+}
+
+.conference-logo-image {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+  z-index: 1;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
+  background: transparent;
+}
+
+/* Remove white background from NFC logo specifically */
+.conference-header.nfc .conference-logo-image {
+  background: white;
+  border-radius: 12px;
+  padding: 8px;
+}
+
+.conference-logo {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.5));
+  z-index: 1;
+  background: white;
+  border-radius: 50%;
+  padding: 6px;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+}
+
+.conference-logo-circle {
+  width: 80px;
+  height: 80px;
+  background: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border: 3px solid rgba(255, 255, 255, 0.9);
+}
+
+.conference-logo-letter {
+  font-size: 3rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.conference-logo-circle.afc .conference-logo-letter {
+  color: #D50A0A; /* Red for AFC */
+}
+
+.conference-logo-circle.nfc .conference-logo-letter {
+  color: #013369; /* Blue for NFC */
+}
+
+.conference-logo-circle {
+  width: 60px;
+  height: 60px;
+  background: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+  z-index: 1;
+}
+
+.conference-logo-text {
+  font-size: 1.2rem;
+  font-weight: 900;
+  color: #013369;
+  letter-spacing: 1px;
+}
+
+.conference-title {
+  font-size: 2rem;
+  color: white;
+  margin: 0;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+  font-weight: 900;
+  letter-spacing: 3px;
+  z-index: 1;
+  text-transform: uppercase;
+}
+
+/* Divisions Grid */
+.divisions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Division Card */
+.division-card {
+  background: linear-gradient(145deg, #ffffff, #f8f9fa);
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border: 2px solid #013369;
+  transition: all 0.3s ease;
+}
+
+.division-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(213, 10, 10, 0.4);
+  border-color: #D50A0A;
+}
+
+.division-title {
+  font-size: 1.1rem;
+  color: #013369;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #D50A0A;
+  text-align: center;
+  font-weight: bold;
+}
+
+/* Teams List */
+.teams-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.team-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem;
+  background: linear-gradient(145deg, #f0f4ff, #ffffff);
+  border-radius: 8px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* AFC Teams - Red Hover */
+.afc-section .team-row:hover {
+  background: linear-gradient(145deg, #D50A0A, #A00808);
+  border-color: #8B0000;
+  transform: translateX(4px);
+  box-shadow: 0 3px 10px rgba(213, 10, 10, 0.4);
+}
+
+/* NFC Teams - Blue Hover */
+.nfc-section .team-row:hover {
+  background: linear-gradient(145deg, #013369, #001F5B);
+  border-color: #4169E1;
+  transform: translateX(4px);
+  box-shadow: 0 3px 10px rgba(1, 51, 105, 0.4);
+}
+
+.team-row:hover .team-name-short,
+.team-row:hover .team-record {
+  color: white;
+}
+
+.team-logo-small {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+  flex-shrink: 0;
+}
+
+.team-name-short {
+  flex: 1;
+  font-size: 0.9rem;
+  color: #013369;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.team-record {
+  font-size: 0.95rem;
+  font-weight: bold;
+  color: #D50A0A;
+  min-width: 50px;
+  text-align: right;
+  transition: color 0.3s ease;
+}
+
+/* Homepage Footer */
+.homepage-footer {
+  display: flex;
+  justify-content: center;
+  margin-top: 3rem;
+}
+
+.refresh-btn-home {
+  padding: 1rem 2.5rem;
+  font-size: 1.2rem;
+  font-weight: bold;
+  background: linear-gradient(145deg, #013369, #01254a);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 6px 20px rgba(1, 51, 105, 0.4);
+}
+
+.refresh-btn-home:hover {
+  background: linear-gradient(145deg, #D50A0A, #A00808);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(213, 10, 10, 0.6);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .divisions-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .homepage-header h1 {
+    font-size: 2rem;
+  }
+  
+  .divisions-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .conference-title {
+    font-size: 1.75rem;
+  }
+  
+  .division-card {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .homepage-header h1 {
+    font-size: 1.5rem;
+  }
+  
+  .season-subtitle {
+    font-size: 1rem;
+  }
+  
+  .team-name-short {
+    font-size: 0.9rem;
+  }
+  
+  .team-logo-small {
+    width: 32px;
+    height: 32px;
+  }
+}
