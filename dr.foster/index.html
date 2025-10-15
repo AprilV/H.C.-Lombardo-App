@@ -1664,7 +1664,7 @@ START.bat</code></pre>
 
         // Fetch data from all dashboard endpoints
         async function fetchAllDashboardData() {
-            const endpoints = ['stats', 'database', 'analytics', 'github', 'status'];
+            const endpoints = ['stats', 'database', 'analytics', 'status'];  // Removed 'github' - using static data
             const data = { ...staticData };
             let anySuccess = false;
 

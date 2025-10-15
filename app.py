@@ -3,7 +3,7 @@ H.C. Lombardo - NFL Analytics Dashboard
 Displays All 32 NFL Teams with Auto-Refresh from TeamRankings.com
 Updates data automatically every 24 hours
 """
-from flask import Flask, render_template
+from flask import Flask, render_template, send_from_directory
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from dotenv import load_dotenv
@@ -163,6 +163,11 @@ def home():
                 offense_teams=len(offense), defense_teams=len(defense))
     
     return render_template('index.html', offense=offense, defense=defense)
+
+@app.route('/favicon.ico')
+def favicon():
+    """Serve favicon"""
+    return send_from_directory('frontend/build', 'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 if __name__ == '__main__':
     log_activity('app', 'info', 'Starting H.C. Lombardo NFL Dashboard', 
