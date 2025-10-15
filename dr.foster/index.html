@@ -2639,6 +2639,30 @@ START.bat</code></pre>
             });
         }
 
+        // Helper function to update 3D tower colors based on API status
+        function update3DMonitorColors(isLive) {
+            // Only update if 3D scene is initialized
+            if (typeof scene === 'undefined' || !scene) return;
+            
+            const monitor = scene.getObjectByName('apiStatusMonitor');
+            if (!monitor) return;
+            
+            // Update tower colors
+            monitor.traverse((child) => {
+                if (child.isMesh) {
+                    if (child.name === 'statusLED') {
+                        if (isLive) {
+                            child.material.color.setHex(0x44ff44);
+                            child.material.emissive.setHex(0x44ff44);
+                        } else {
+                            child.material.color.setHex(0xff4444);
+                            child.material.emissive.setHex(0xff4444);
+                        }
+                    }
+                }
+            });
+        }
+
         function initDatabaseChart() {
             const ctx = document.getElementById('schema-chart');
             if (!ctx) return;
