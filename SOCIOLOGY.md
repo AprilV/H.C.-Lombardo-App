@@ -2,11 +2,17 @@
 ## SOC319 Research Project
 
 **Researcher**: April V. Sykes  
+**Age**: 56 (almost 57)  
+**Background**: 20+ years IT infrastructure (mainframes, networking, healthcare systems), Team Lead experience (12-person teams), CAPM candidate, BAS-IS student (graduation Spring 2026), President's Scholar (9 terms, 3.94 GPA)  
+**Previous Sociology**: SOC101 completed prior terms  
+**Current Course**: SOC319 - Sociology of Digital Media (2nd sociology course)  
 **Subject**: Human-AI Partnership in Software Development  
 **AI Partner**: GitHub Copilot  
 **Project**: H.C. Lombardo NFL Analytics Dashboard  
 **Study Period**: September 2025 - Present  
-**Last Updated**: October 15, 2025, 6:30 PM
+**Last Updated**: October 16, 2025
+
+**Note**: Full professional background at [aprilsykes.com](https://www.aprilsykes.com) - extensive technical expertise, project management education, healthcare IT operations leadership, and academic distinction provide unique lens for studying human-AI collaboration from both technical and sociological perspectives.
 
 ---
 
