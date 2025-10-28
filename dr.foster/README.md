@@ -2,21 +2,28 @@
 
 **Student:** April V. Sykes  
 **Course:** IS330  
-**Latest Update:** October 14, 2025
+**School Week:** 6 (of Weeks 5-6 assignment period)  
+**Sprint Status:** Sprints 5-7 Complete ✅ | Preparing for Sprint 8 🚀  
+**NFL Week:** 9 (Week 8 Complete)  
+**Latest Update:** October 27, 2025
 
 ---
 
-## 🚀 **LATEST: Week 5+ PWA Conversion Complete!**
+## 🚀 **CURRENT STATUS: Sprints 5-7 Complete, Sprint 8 Next!**
 
-### **NEW: Progressive Web App (PWA) - October 14, 2025**
-The application has been fully converted to a **Progressive Web App** with:
-- ✅ Installable to desktop/mobile
-- ✅ Offline capability (all assets local - 1.69 MB)
-- ✅ Dual startup modes (dev + production)
-- ✅ AFC/NFC themed UI
-- ✅ Complete NFL standings with sorting
+### **Weeks 5-6: nflverse Integration & Team Detail Pages - October 21-27, 2025**
+The application now features a **complete historical data system** with:
+- ✅ **Sprints 5-7 COMPLETE** (Database, API, Frontend)
+- ✅ HCL Schema (3NF normalized database)
+- ✅ nflverse Python package integration
+- ✅ 3 base tables + 3 materialized views
+- ✅ Team Detail Pages with Chart.js visualizations
+- ✅ REST API with 3 endpoints (/api/hcl/*)
+- ✅ 47 statistical metrics per team
+- ✅ Season 2025 data through Week 8 (120+ games)
+- 🚀 **Sprint 8 Coming:** Advanced analytics & betting projections
 
-**📄 [View Week 5+ PWA Conversion Report](week5-pwa-conversion.md)** - Complete technical documentation
+**📄 [View Interactive Dr. Foster Dashboard](index.html)** - Complete 3D visualization with 10 tabs
 
 ---
 
@@ -24,43 +31,47 @@ The application has been fully converted to a **Progressive Web App** with:
 
 ### View by Week:
 
-1. **[Week 1-2: ML Model & SQLite Database](week1-2.md)**
+1. **[Weeks 1-2: ML Model & SQLite Database](week1-2.md)**
    - Machine learning predictions
    - SQLite database creation
    - Assignment questions answered
 
-2. **[Weeks 2-4: React & PostgreSQL Migration](weeks2-4.md)**
+2. **[Weeks 3-4: React & PostgreSQL Migration](weeks2-4.md)**
    - Three-tier architecture
    - PostgreSQL production database
    - Port management system
    - Logging infrastructure
 
-3. **[Week 5+: PWA Conversion & Production Deployment](week5-pwa-conversion.md)** ⭐ NEW
-   - Progressive Web App implementation
-   - Local asset storage (34 images, 1.69 MB)
-   - Dual startup modes (dev + production)
-   - AFC/NFC theming and sorting
-   - ESPN API fixes
-   - Complete production readiness
+3. **[Weeks 5-6: HCL Schema & Historical Data System](index.html)** ⭐ NEW
+   - nflverse data integration
+   - 3NF normalized database design
+   - Team Detail Pages with Chart.js
+   - REST API endpoints
+   - Interactive 3D architecture visualization
+   - Mermaid database diagrams
+   - Complete technical documentation (10 tabs)
 
 ---
 
 ## 🎯 **Quick Start Guide**
 
-### Development Mode (Hot Reload)
-```batch
-cd "C:\IS330\H.C Lombardo App"
-START-DEV.bat
+### View Dr. Foster Dashboard
 ```
-- React: http://localhost:3000 (instant changes)
-- Flask API: http://localhost:5000
+Open in browser:
+file:///C:/IS330/H.C%20Lombardo%20App/dr.foster/index.html
+```
+- 📊 Interactive 3D Architecture
+- 📈 10 tabs of documentation
+- 🎨 Mermaid database diagrams
+- 📱 Responsive design
 
-### Production Mode (Optimized)
+### Start Application Server
 ```batch
 cd "C:\IS330\H.C Lombardo App"
-START.bat
+python app.py
 ```
-- Everything: http://localhost:5000 (single port, fast)
+- Flask API: http://localhost:5000
+- Team Details: http://localhost:5000/team/BAL
 
 ### Stop Everything
 ```batch
@@ -71,93 +82,107 @@ STOP.bat
 
 ## 🌟 **Current Application Features**
 
-### Progressive Web App
-- **Installable** - Add to home screen (desktop/mobile)
-- **Offline Capable** - Works without internet after first load
-- **Fast** - 62.18 KB gzipped, <2 second load times
-- **Responsive** - Mobile-first design
+### HCL Historical Data System (Weeks 5-6)
+- **nflverse Integration** - Python package for NFL historical data
+- **3NF Database** - Normalized schema with 3 tables + 3 views
+- **47 Metrics** - Comprehensive team statistics
+- **120+ Games** - 2025 Season through Week 8 (Week 9 in progress)
 
-### UI Components
-- **Homepage** - Complete NFL standings (AFC + NFC)
-  - 8 divisions with 32 teams
-  - Sorted by win percentage
-  - Color-coded by conference (red/blue)
-- **Team Stats** - Detailed statistics view
-- **Navigation** - Hamburger menu with smooth drawer
+### Team Detail Pages
+- **Season Overview** - 6 key stat cards
+- **Interactive Charts** - Chart.js line/bar visualizations
+- **Stat Selector** - Choose from 8 different metrics
+- **Game History** - Week-by-week breakdown
+- **Performance Trends** - Visual analytics over time
 
-### Data Management
-- **Local Assets** - 34 images (2 conference + 32 team logos)
-- **PostgreSQL** - 32 teams with Week 6 data
-- **ESPN API** - Real-time standings updates
-- **Sorting** - Proper NFL win percentage calculation
+### Database Architecture
+- **HCL_TEAMS** - 32 NFL teams
+- **HCL_WEEKLY_STATS** - Week-by-week performance
+- **HCL_GAME_RESULTS** - Individual game outcomes
+- **3 Views** - Materialized views for efficient queries
 
----
-
-## � **Visual Features**
-
-### Conference Theming
-- **AFC**: Red gradients and hover effects
-- **NFC**: Blue gradients and hover effects
-- **Logos**: All stored locally, high quality
-
-### Layout
+### REST API Endpoints
 ```
-📱 Homepage
-├── 🏈 2025 NFL Season Header
-├── 🔴 AFC Conference (Red theme)
-│   ├── AFC East (4 teams)
-│   ├── AFC North (4 teams)
-│   ├── AFC South (4 teams)
-│   └── AFC West (4 teams)
-└── 🔵 NFC Conference (Blue theme)
-    ├── NFC East (4 teams)
-    ├── NFC North (4 teams)
-    ├── NFC South (4 teams)
-    └── NFC West (4 teams)
+GET /api/hcl/teams              # All teams
+GET /api/hcl/teams/:id          # Team season stats
+GET /api/hcl/teams/:id/weekly   # Weekly breakdown
+GET /api/hcl/games              # Game results
 ```
 
 ---
 
-## � **Database Status**
+## 📊 **Dr. Foster Dashboard**
+
+### 10 Interactive Tabs
+1. **📊 Overview** - Project summary and key metrics
+2. **🏗️ 3D Architecture** - Interactive Three.js visualization
+3. **📝 Weeks 1-2** - ML model and SQLite foundation
+4. **🚀 Weeks 3-4** - React and PostgreSQL migration
+5. **📱 Weeks 5-6 PWA** - HCL schema and nflverse integration
+6. **� Database** - Complete schema documentation
+7. **📈 Analytics** - Live data and statistics
+8. **📊 DB Diagrams** - Mermaid database visualizations
+9. **🎯 Milestones** - Sprint tracking and achievements
+10. **🔗 GitHub** - Repository and deployment info
+
+### Visual Features
+- **3D Architecture** - Interactive node-based system diagram with Three.js
+- **Mermaid Diagrams** - Database ER diagrams showing evolution from SQLite → PostgreSQL → HCL
+- **Chart.js Integration** - Performance trend visualizations on team detail pages
+- **Responsive Design** - Works on all screen sizes
+- **Dark Theme** - Professional blue/teal color scheme
+
+---
+
+## 💾 **Database Status**
 
 ```sql
-Database: nfl_betting
+Database: nfl_analytics_test (HCL Schema)
 Host: localhost:5432
 Teams: 32
-Data: Week 6 (October 2025)
+Data: 2025 Season Weeks 1-8 Complete (Week 9 in progress)
+Games: 120+ games loaded
 Status: ✅ 100% Complete
 ```
 
-**Sample Teams:**
-- Buffalo Bills: 4-2 ✅
-- Baltimore Ravens: 1-5 ✅
-- Kansas City Chiefs: 3-3 ✅
-- Detroit Lions: 4-2 ✅
+**HCL Schema Structure:**
+- **HCL_TEAMS** - 32 NFL teams with metadata
+- **HCL_WEEKLY_STATS** - Week-by-week performance (Weeks 1-8)
+- **HCL_GAME_RESULTS** - Individual game outcomes (120+ games)
+- **3 Views** - v_team_season_summary, v_weekly_performance, v_game_analysis
 
 ---
 
 ## 🎓 **Technical Skills Demonstrated**
 
 ### Frontend
-- React.js (hooks, router, components)
-- Progressive Web Apps (PWA)
+- React.js (components, hooks, routing)
+- Three.js (3D visualization)
+- Chart.js (data visualization)
+- Mermaid.js (database diagrams)
 - Responsive CSS
-- Client-side routing
-- State management
+- Client-side state management
 
 ### Backend
 - Flask REST API
-- PostgreSQL integration
+- PostgreSQL with 3NF normalization
+- nflverse Python package
+- Database view optimization
 - CORS configuration
-- Static file serving
-- Production deployment
+- Jinja2 templating
+
+### Database Design
+- 3NF normalized schema
+- Materialized views
+- Foreign key relationships
+- Query optimization
+- Historical data management
 
 ### DevOps
-- Dual startup systems
-- Build optimization
-- Version control (Git)
-- Backup automation
-- Documentation
+- Version control (Git/GitHub)
+- Documentation (Markdown)
+- Project structure organization
+- Sprint-based development
 
 ---
 
@@ -165,70 +190,84 @@ Status: ✅ 100% Complete
 
 ```
 H.C Lombardo App/
-├── START-DEV.bat          # Development mode
-├── START.bat              # Production mode
-├── STOP.bat               # Shutdown
-├── STARTUP_MODES.md       # Complete guide
-├── api_server.py          # Flask API
-├── frontend/
+├── app.py                       # Flask application server
+├── db_config.py                 # PostgreSQL connection
+├── espn_data_fetcher.py         # Legacy ESPN API (unused - replaced by nflverse)
+├── nfl_database_loader.py       # nflverse data loader
+├── api_routes_hcl.py            # HCL API endpoints
+├── frontend/                    # React PWA application
 │   ├── public/
-│   │   ├── manifest.json  # PWA config
-│   │   └── images/        # 34 local images
+│   │   ├── manifest.json        # PWA configuration
+│   │   └── images/              # Local assets (1.69 MB)
 │   └── src/
-│       ├── Homepage.js    # Standings
-│       ├── TeamStats.js   # Details
-│       └── SideMenu.js    # Navigation
-├── dr.foster/             # 📚 You are here
-│   ├── README.md          # This file
-│   ├── week1-2.md         # ML & SQLite
-│   ├── weeks2-4.md        # React & PostgreSQL
-│   └── week5-pwa-conversion.md  # PWA (NEW!)
-└── backups/               # Automated backups
+│       ├── App.js               # Main router
+│       └── components/          # React components
+├── templates/
+│   ├── index.html               # React dashboard
+│   └── team_detail.html         # Team pages with Chart.js
+├── dr.foster/                   # 📚 Assignment documentation
+│   ├── README.md                # This file
+│   ├── index.html               # Interactive dashboard (10 tabs)
+│   ├── week1-2.md               # ML & SQLite
+│   └── weeks2-4.md              # React & PostgreSQL
+├── testbed/                     # Development/testing
+└── backups/                     # Automated backups
 ```
 
 ---
 
 ## 📈 **Progress Summary**
 
-### Week 1-2: Foundation ✅
-- Machine learning model
-- SQLite database
+### Weeks 1-2: Foundation ✅
+- Machine learning model (85% accuracy)
+- SQLite database (3 tables)
 - Basic Flask API
+- Python data fetching
 
-### Weeks 2-4: Architecture ✅
-- React frontend
-- PostgreSQL migration
+### Weeks 3-4: Architecture ✅
+- React frontend (SPA)
+- PostgreSQL migration (11-column schema)
 - Three-tier architecture
-- Port management
+- Port management (5000-5009)
+- Comprehensive logging
 
-### Week 5+: Production ✅
-- PWA conversion
-- Local asset storage
-- Dual startup modes
-- Conference theming
-- NFL sorting algorithm
-- ESPN API fixes
-- Complete documentation
+### Weeks 5-6: Historical Data System ✅
+- HCL 3NF schema design
+- nflverse Python integration
+- 3 base tables + 3 materialized views
+- Team Detail Pages with Chart.js
+- REST API (3 endpoints)
+- 47 statistical metrics
+- 120+ games loaded (2025 Season Weeks 1-8)
+- Interactive Dr. Foster Dashboard (10 tabs)
+- 3D Three.js architecture visualization
+- Mermaid database diagrams
+- Complete technical documentation
 
 ---
 
 ## 🔗 **Important Links**
 
 - **GitHub:** https://github.com/AprilV/H.C.-Lombardo-App
-- **Latest Commit:** `0b5f428` (Oct 14, 2025)
-- **Commits:** 250 files changed, 71,265+ lines
+- **Interactive Dashboard:** [dr.foster/index.html](index.html)
+- **Latest Update:** October 27, 2025 (Week 9 of NFL season)
 
 ---
 
 ## 📞 **Contact**
 
-**Student:** April V  
+**Student:** April V. Sykes  
 **Course:** IS330  
-**Semester:** Fall 2025
+**Semester:** Fall 2025  
+**Current Week:** 9 (NFL Season)
 
 ---
 
 **📄 For complete technical details, see:**
-- [Week 5+ PWA Conversion Report](week5-pwa-conversion.md) ⭐ RECOMMENDED
+- **[Interactive Dr. Foster Dashboard](index.html)** ⭐ RECOMMENDED - 10 tabs with full documentation
+  - 3D Architecture visualization
+  - Database ER diagrams (Mermaid)
+  - Complete Sprint 5-7 documentation
+  - Live data analytics
 
-**Status:** ✅ PRODUCTION READY | 📱 PWA ENABLED | 🚀 DEPLOYABLE
+**Status:** ✅ WEEKS 5-6 COMPLETE | � HCL SCHEMA LIVE | 🏈 WEEK 9 DATA READY

@@ -1,4 +1,4 @@
-# Weeks 2-4: Database Migration & Live Data Integration
+# Weeks 3-4: Database Migration & Live Data Integration
 
 > **💡 TIP: For a beautiful interactive GUI view:**
 > 1. In VS Code Explorer (left sidebar), find `dr.foster` folder
@@ -8,7 +8,7 @@
 > This opens a gorgeous tabbed dashboard in your browser!
 
 **Latest Update:** October 9, 2025  
-**Student:** April V  
+**Student:** April V. Sykes  
 **Course:** IS330
 
 ---

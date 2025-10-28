@@ -1,4 +1,4 @@
-# Week 1-2: Initial Assignment
+# Weeks 1-2: Initial Assignment
 
 > **💡 TIP: For a beautiful interactive GUI view:**
 > 1. In VS Code Explorer (left sidebar), find `dr.foster` folder
@@ -8,7 +8,7 @@
 > This opens a gorgeous tabbed dashboard in your browser!
 
 **Date:** September 2025  
-**Student:** April V  
+**Student:** April V. Sykes  
 **Course:** IS330
 
 ---

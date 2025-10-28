@@ -1,54 +1,61 @@
-# Week 5+: PWA Conversion & Production-Ready Architecture
+# Weeks 5-6: HCL Historical Data System & Team Detail Pages
 
-**Latest Update:** October 14, 2025  
-**Student:** April V  
+**Latest Update:** October 27, 2025 (Week 9 of NFL Season)  
+**Student:** April V. Sykes  
 **Course:** IS330
 
 ---
 
-## 🎯 Major Achievement: Full PWA Conversion Complete
+## 🎯 Major Achievement: Complete Historical Data System with nflverse
 
 ### Executive Summary
-The H.C. Lombardo NFL Analytics application has been successfully converted into a **Progressive Web App (PWA)** with complete offline capability, dual startup modes, and professional production deployment. All static assets are now stored locally (1.69 MB total), making the app fully self-contained with internet only required for API calls and data scraping.
+The H.C. Lombardo NFL Analytics application now features a **comprehensive historical data system** using the nflverse Python package, 3NF normalized database design, and interactive Team Detail Pages with Chart.js visualizations. The system tracks 47 statistical metrics across the 2025 NFL season (Weeks 1-8 complete, Week 9 in progress).
 
 ---
 
-## 📱 Progressive Web App (PWA) Implementation
+## � HCL Schema - 3NF Database Design
 
 ### What We Built
-- **manifest.json** - PWA configuration for installable app
-- **Multi-page React Router** - Homepage, Team Stats, and navigation
-- **Service Worker Ready** - Framework for offline functionality
-- **Mobile-First Design** - Responsive layout optimized for all devices
-- **Conference/Division Layout** - Complete NFL structure with 32 teams
+- **HCL_TEAMS** - 32 NFL teams with metadata (team_id, name, conference, division)
+- **HCL_WEEKLY_STATS** - Week-by-week performance tracking (wins, losses, points, differentials)
+- **HCL_GAME_RESULTS** - Individual game outcomes (120+ games loaded)
+- **3 Materialized Views** - Optimized queries for API efficiency
+  - v_team_season_summary
+  - v_weekly_performance
+  - v_game_analysis
 
 ### Key Features
-1. **Installable App** - Users can install directly to desktop/mobile
-2. **Offline Capable** - Works without internet (after initial load)
-3. **Fast Loading** - Optimized production build (62.18 KB gzipped)
-4. **Native Feel** - Full-screen mode, app icon, splash screen ready
+1. **3NF Normalization** - No data redundancy, efficient storage
+2. **nflverse Integration** - Python package for official NFL historical data
+3. **47 Statistical Metrics** - Comprehensive team performance tracking
+4. **REST API Endpoints** - 3 endpoints for data access
+5. **Scalable Design** - Easy to add new seasons/metrics
 
-### Files Created
+### Database Structure
+```sql
+-- Base Tables
+HCL_TEAMS (32 teams)
+├── team_id (PK) - 3-letter abbreviation
+├── team_name
+├── conference (AFC/NFC)
+└── division
+
+HCL_WEEKLY_STATS (240+ records)
+├── id (PK)
+├── team_id (FK)
+├── season, week
+├── wins, losses, ties
+├── points_for, points_against
+└── point_differential
+
+HCL_GAME_RESULTS (120+ games)
+├── id (PK)
+├── season, week
+├── home_team (FK), away_team (FK)
+├── home_score, away_score
+├── game_date, game_type
+└── loaded_at
 ```
-frontend/
-  public/
-    manifest.json (PWA config)
-    images/
-      afc.png (49 KB - conference logo)
-      nfc.png (2.8 KB - conference logo)
-      teams/ (32 team logos, ~1.6 MB total)
-  src/
-    Homepage.js & Homepage.css (main standings page)
-    TeamStats.js & TeamStats.css (detailed stats view)
-    SideMenu.js & SideMenu.css (hamburger navigation)
-```
-
----
-
-## 🎨 UI/UX Enhancements
-
-### Conference Theming
-- **AFC Sections**: Red gradient headers (`#8B0000` to `#D50A0A`)
 - **NFC Sections**: Blue gradient headers (`#001F5B` to `#013369`)
 - **Team Hover Effects**: Red for AFC teams, Blue for NFC teams
 - **Logo Management**: All logos stored locally, no external dependencies

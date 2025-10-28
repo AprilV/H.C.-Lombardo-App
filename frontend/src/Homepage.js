@@ -88,7 +88,47 @@ function Homepage() {
   return (
     <div className="homepage">
       <div className="homepage-header">
-        <h1>🏈 2025 NFL Season</h1>
+        <h1>🏈 H.C. Lombardo NFL Analytics Platform</h1>
+        <p className="season-subtitle">Full-Stack Sports Analytics • React + Flask + PostgreSQL</p>
+        <div className="project-badges">
+          <span className="badge badge-sprint">Sprint 7 Complete</span>
+          <span className="badge badge-data">108 Games • 2025 Weeks 1-7</span>
+          <span className="badge badge-tech">React 18 • Chart.js • 3NF Database</span>
+        </div>
+      </div>
+
+      <div className="features-showcase">
+        <div className="feature-card" onClick={() => navigate('/historical')}>
+          <div className="feature-icon">📊</div>
+          <h3>Historical Data</h3>
+          <p>32-team grid with advanced metrics: EPA/Play, Success Rate, Efficiency stats</p>
+          <span className="feature-tag">NEW - Sprint 7</span>
+        </div>
+
+        <div className="feature-card" onClick={() => navigate('/team-stats')}>
+          <div className="feature-icon">📈</div>
+          <h3>Team Analysis</h3>
+          <p>Interactive Chart.js visualizations, game-by-game breakdowns, season trends</p>
+          <span className="feature-tag">NEW - Sprint 7</span>
+        </div>
+
+        <div className="feature-card" onClick={() => navigate('/historical')}>
+          <div className="feature-icon">🎯</div>
+          <h3>Advanced Metrics</h3>
+          <p>EPA per play, 3rd down %, Red Zone efficiency, Yards/Play analytics</p>
+          <span className="feature-tag">Sprint 6 API</span>
+        </div>
+
+        <div className="feature-card">
+          <div className="feature-icon">🗄️</div>
+          <h3>3NF Database</h3>
+          <p>PostgreSQL with HCL schema, 3 views, 47 metrics per game, proper normalization</p>
+          <span className="feature-tag">Sprint 5 Design</span>
+        </div>
+      </div>
+
+      <div className="homepage-header" style={{marginTop: '40px'}}>
+        <h2>🏈 2025 NFL Season Standings</h2>
         <p className="season-subtitle">Conference & Division Standings</p>
       </div>
 

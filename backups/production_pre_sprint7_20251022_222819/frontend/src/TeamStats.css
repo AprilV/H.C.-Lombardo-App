@@ -1,0 +1,8 @@
+/* Team Stats Page Container */
+.team-stats-page {
+  position: relative;
+  z-index: 1;
+}
+
+/* Keep all existing styles from App.css for team stats functionality */
+/* These styles will be used by TeamStats component */

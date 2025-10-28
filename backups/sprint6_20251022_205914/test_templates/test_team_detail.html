@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sprint 6 Test - Team Detail</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .back-btn {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            margin-bottom: 15px;
+        }
+        
+        .back-btn:hover {
+            background: #5568d3;
+        }
+        
+        .team-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .team-name {
+            font-size: 32px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .badge {
+            background: #4CAF50;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        
+        .stats-overview {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .stat-box {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .chart-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .games-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th {
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .win {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+        
+        .loss {
+            color: #f44336;
+            font-weight: bold;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: white;
+            font-size: 18px;
+        }
+        
+        h2 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="/" class="back-btn">← Back to Teams</a>
+            <div class="team-header">
+                <div>
+                    <h1 class="team-name" id="teamName">{{ team_abbr }}</h1>
+                </div>
+                <span class="badge">TEST ENVIRONMENT</span>
+            </div>
+        </div>
+        
+        <div id="loading" class="loading">Loading team data...</div>
+        
+        <div id="content" style="display: none;">
+            <div class="stats-overview">
+                <h2>Season Overview</h2>
+                <div class="stats-grid" id="statsGrid"></div>
+            </div>
+            
+            <div class="chart-container">
+                <h2>Performance Trends</h2>
+                <canvas id="trendChart"></canvas>
+            </div>
+            
+            <div class="games-table">
+                <h2>Game History</h2>
+                <table id="gamesTable">
+                    <thead>
+                        <tr>
+                            <th>Week</th>
+                            <th>Opponent</th>
+                            <th>Result</th>
+                            <th>Score</th>
+                            <th>EPA/Play</th>
+                            <th>Success Rate</th>
+                            <th>Yards/Play</th>
+                        </tr>
+                    </thead>
+                    <tbody id="gamesBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const teamAbbr = '{{ team_abbr }}';
+        let trendChart = null;
+        
+        async function loadTeamData() {
+            try {
+                // Load team details
+                const detailsResponse = await fetch(`/api/hcl/teams/${teamAbbr}?season=2025`);
+                const detailsData = await detailsResponse.json();
+                
+                if (!detailsData.success) {
+                    throw new Error(detailsData.error || 'Failed to load team details');
+                }
+                
+                // Load games
+                const gamesResponse = await fetch(`/api/hcl/teams/${teamAbbr}/games?season=2025`);
+                const gamesData = await gamesResponse.json();
+                
+                if (!gamesData.success) {
+                    throw new Error(gamesData.error || 'Failed to load games');
+                }
+                
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('content').style.display = 'block';
+                
+                renderStats(detailsData.team);
+                renderGames(gamesData.games);
+                renderChart(gamesData.games);
+                
+            } catch (error) {
+                document.getElementById('loading').textContent = 'Error: ' + error.message;
+            }
+        }
+        
+        function renderStats(team) {
+            const statsGrid = document.getElementById('statsGrid');
+            
+            const stats = [
+                { label: 'Record', value: `${team.wins}-${team.losses}` },
+                { label: 'Games Played', value: team.games_played },
+                { label: 'PPG', value: team.ppg },
+                { label: 'EPA/Play', value: team.epa_per_play },
+                { label: 'Success Rate', value: team.success_rate },
+                { label: 'Yards/Play', value: team.yards_per_play },
+                { label: 'Home PPG', value: team.home_ppg || 'N/A' },
+                { label: 'Away PPG', value: team.away_ppg || 'N/A' }
+            ];
+            
+            statsGrid.innerHTML = stats.map(stat => `
+                <div class="stat-box">
+                    <div class="stat-label">${stat.label}</div>
+                    <div class="stat-value">${stat.value}</div>
+                </div>
+            `).join('');
+        }
+        
+        function renderGames(games) {
+            const tbody = document.getElementById('gamesBody');
+            
+            tbody.innerHTML = games.map(game => {
+                const won = game.team_points > game.opponent_points;
+                const resultClass = won ? 'win' : 'loss';
+                const result = won ? 'W' : 'L';
+                const location = game.is_home ? 'vs' : '@';
+                
+                return `
+                    <tr>
+                        <td>${game.week}</td>
+                        <td>${location} ${game.opponent}</td>
+                        <td class="${resultClass}">${result}</td>
+                        <td>${game.team_points}-${game.opponent_points}</td>
+                        <td>${game.epa_per_play}</td>
+                        <td>${game.success_rate}</td>
+                        <td>${game.yards_per_play}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+        
+        function renderChart(games) {
+            const ctx = document.getElementById('trendChart').getContext('2d');
+            
+            // Sort games by week
+            const sortedGames = [...games].sort((a, b) => a.week - b.week);
+            
+            trendChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: sortedGames.map(g => `Week ${g.week}`),
+                    datasets: [
+                        {
+                            label: 'EPA/Play',
+                            data: sortedGames.map(g => parseFloat(g.epa_per_play)),
+                            borderColor: '#667eea',
+                            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Success Rate',
+                            data: sortedGames.map(g => parseFloat(g.success_rate)),
+                            borderColor: '#4CAF50',
+                            backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Load data on page load
+        loadTeamData();
+    </script>
+</body>
+</html>

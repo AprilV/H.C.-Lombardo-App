@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sprint 6 Test - Team List</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .header .badge {
+            background: #4CAF50;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            display: inline-block;
+        }
+        
+        .header .info {
+            margin-top: 10px;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .teams-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .team-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .team-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px rgba(0,0,0,0.2);
+        }
+        
+        .team-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .team-name {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .team-abbr {
+            font-size: 18px;
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        .team-record {
+            background: #667eea;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        .stats-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .stat {
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            text-align: center;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .stat-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .stat-value.good {
+            color: #4CAF50;
+        }
+        
+        .stat-value.bad {
+            color: #f44336;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: white;
+            font-size: 18px;
+        }
+        
+        .error {
+            background: #f44336;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏈 Sprint 6 Test - Historical Team Data</h1>
+            <span class="badge">TEST ENVIRONMENT</span>
+            <div class="info">
+                Database: <strong>nfl_analytics_test</strong> | 
+                Data: <strong>Week 7 2024</strong> | 
+                Port: <strong>5001</strong>
+            </div>
+        </div>
+        
+        <div id="loading" class="loading">
+            Loading teams...
+        </div>
+        
+        <div id="error" class="error" style="display: none;"></div>
+        
+        <div id="teams" class="teams-grid"></div>
+    </div>
+
+    <script>
+        // Fetch teams from API
+        async function loadTeams() {
+            try {
+                const response = await fetch('/api/hcl/teams');
+                const data = await response.json();
+                
+                if (!data.success) {
+                    throw new Error(data.error || 'Failed to load teams');
+                }
+                
+                document.getElementById('loading').style.display = 'none';
+                
+                const teamsContainer = document.getElementById('teams');
+                teamsContainer.innerHTML = '';
+                
+                data.teams.forEach(team => {
+                    const card = createTeamCard(team);
+                    teamsContainer.appendChild(card);
+                });
+                
+            } catch (error) {
+                document.getElementById('loading').style.display = 'none';
+                const errorDiv = document.getElementById('error');
+                errorDiv.textContent = 'Error: ' + error.message;
+                errorDiv.style.display = 'block';
+            }
+        }
+        
+        function createTeamCard(team) {
+            const card = document.createElement('div');
+            card.className = 'team-card';
+            card.onclick = () => window.location.href = `/team/${team.team}`;
+            
+            const wins = team.wins || 0;
+            const losses = team.losses || 0;
+            const gp = team.games_played || 0;
+            const ppg = team.ppg || 0;
+            const epa = team.epa_per_play || 0;
+            const sr = team.success_rate || 0;
+            const ypp = team.yards_per_play || 0;
+            
+            card.innerHTML = `
+                <div class="team-header">
+                    <div>
+                        <div class="team-name">${team.team}</div>
+                        <div class="team-abbr">${team.team}</div>
+                    </div>
+                    <div class="team-record">${wins}-${losses}</div>
+                </div>
+                
+                <div class="stats-row">
+                    <div class="stat">
+                        <div class="stat-label">PPG</div>
+                        <div class="stat-value ${ppg > 25 ? 'good' : ppg < 20 ? 'bad' : ''}">${ppg}</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">EPA/Play</div>
+                        <div class="stat-value ${epa > 0.1 ? 'good' : epa < 0 ? 'bad' : ''}">${epa}</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Success Rate</div>
+                        <div class="stat-value ${sr > 0.5 ? 'good' : sr < 0.45 ? 'bad' : ''}">${sr}</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Yards/Play</div>
+                        <div class="stat-value ${ypp > 6 ? 'good' : ypp < 5 ? 'bad' : ''}">${ypp}</div>
+                    </div>
+                </div>
+                
+                <div style="text-align: center; margin-top: 15px; color: #667eea; font-size: 14px;">
+                    Click for details →
+                </div>
+            `;
+            
+            return card;
+        }
+        
+        // Load teams on page load
+        loadTeams();
+    </script>
+</body>
+</html>
