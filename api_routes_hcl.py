@@ -36,7 +36,7 @@ def get_teams():
         season: Season year (default: 2025)
     
     Returns:
-        JSON array of teams with abbreviation, name, wins, losses, PPG, EPA
+        JSON array of teams with abbreviation, name, wins, losses, PPG, yards
     """
     try:
         season = request.args.get('season', default=2025, type=int)
@@ -44,19 +44,22 @@ def get_teams():
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=RealDictCursor)
         
+        # Aggregate stats from team_game_stats table
         query = """
             SELECT 
                 team,
-                games_played,
-                wins,
-                losses,
-                ROUND(avg_ppg_for::numeric, 1) as ppg,
-                ROUND(avg_epa_offense::numeric, 3) as epa_per_play,
-                ROUND(avg_success_rate_offense::numeric, 3) as success_rate,
-                ROUND(avg_yards_per_play::numeric, 2) as yards_per_play
-            FROM hcl.v_team_season_stats
+                COUNT(*) as games_played,
+                SUM(CASE WHEN result = 'W' THEN 1 ELSE 0 END) as wins,
+                SUM(CASE WHEN result = 'L' THEN 1 ELSE 0 END) as losses,
+                ROUND(AVG(points)::numeric, 1) as ppg,
+                ROUND(AVG(total_yards)::numeric, 1) as yards_per_game,
+                ROUND(AVG(yards_per_play)::numeric, 2) as yards_per_play,
+                ROUND(AVG(completion_pct)::numeric, 1) as completion_pct,
+                SUM(turnovers) as total_turnovers
+            FROM hcl.team_game_stats
             WHERE season = %s
-            ORDER BY wins DESC, avg_epa_offense DESC
+            GROUP BY team
+            ORDER BY wins DESC, ppg DESC
         """
         
         cur.execute(query, (season,))
@@ -68,6 +71,7 @@ def get_teams():
         return jsonify({
             'success': True,
             'count': len(teams),
+            'season': season,
             'teams': teams
         })
         
@@ -99,29 +103,31 @@ def get_team_details(team_abbr):
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=RealDictCursor)
         
-        # Get season stats
+        # Get season stats from team_game_stats
         query = """
             SELECT 
                 team,
                 season,
-                games_played,
-                wins,
-                losses,
-                ROUND(avg_ppg_for::numeric, 1) as ppg,
-                ROUND(avg_epa_offense::numeric, 3) as epa_per_play,
-                ROUND(avg_success_rate_offense::numeric, 3) as success_rate,
-                ROUND(avg_yards_per_play::numeric, 2) as yards_per_play,
-                ROUND(avg_epa_offense::numeric, 3) as pass_epa,
-                ROUND(avg_epa_offense::numeric, 3) as rush_epa,
-                ROUND(avg_third_down_rate::numeric, 3) as third_down_rate,
-                ROUND(avg_red_zone_efficiency::numeric, 3) as red_zone_efficiency,
-                total_turnovers_lost as turnovers_lost,
-                total_turnovers_gained as turnovers_gained,
-                total_turnover_diff as turnover_differential,
-                ROUND(avg_epa_home::numeric, 3) as home_epa,
-                ROUND(avg_epa_away::numeric, 3) as away_epa
-            FROM hcl.v_team_season_stats
+                COUNT(*) as games_played,
+                SUM(CASE WHEN result = 'W' THEN 1 ELSE 0 END) as wins,
+                SUM(CASE WHEN result = 'L' THEN 1 ELSE 0 END) as losses,
+                ROUND(AVG(points)::numeric, 1) as ppg,
+                ROUND(AVG(total_yards)::numeric, 1) as total_yards_per_game,
+                ROUND(AVG(passing_yards)::numeric, 1) as passing_yards_per_game,
+                ROUND(AVG(rushing_yards)::numeric, 1) as rushing_yards_per_game,
+                ROUND(AVG(yards_per_play)::numeric, 2) as yards_per_play,
+                ROUND(AVG(completion_pct)::numeric, 1) as completion_pct,
+                ROUND(AVG(third_down_pct)::numeric, 1) as third_down_pct,
+                ROUND(AVG(red_zone_pct)::numeric, 1) as red_zone_pct,
+                SUM(turnovers) as turnovers,
+                -- Home/Away splits
+                ROUND(AVG(CASE WHEN is_home THEN points END)::numeric, 1) as ppg_home,
+                ROUND(AVG(CASE WHEN NOT is_home THEN points END)::numeric, 1) as ppg_away,
+                SUM(CASE WHEN is_home AND result = 'W' THEN 1 ELSE 0 END) as home_wins,
+                SUM(CASE WHEN NOT is_home AND result = 'W' THEN 1 ELSE 0 END) as away_wins
+            FROM hcl.team_game_stats
             WHERE team = %s AND season = %s
+            GROUP BY team, season
         """
         
         cur.execute(query, (team_abbr, season))
@@ -132,7 +138,7 @@ def get_team_details(team_abbr):
             conn.close()
             return jsonify({
                 'success': False,
-                'error': f'Team {team_abbr} not found'
+                'error': f'Team {team_abbr} not found for season {season}'
             }), 404
         
         cur.close()
@@ -153,17 +159,17 @@ def get_team_details(team_abbr):
 @hcl_bp.route('/teams/<team_abbr>/games', methods=['GET'])
 def get_team_games(team_abbr):
     """
-    Get game-by-game history for a specific team
+    Get game-by-game history for a specific team including betting lines and weather
     
     Args:
         team_abbr: Team abbreviation (e.g. 'BAL', 'KC')
     
     Query params:
-        season: Filter by season (default: all)
+        season: Filter by season (default: 2025)
         limit: Max games to return (default: 20)
     
     Returns:
-        JSON array of games with stats, opponent, result
+        JSON array of games with stats, opponent, result, betting lines, weather
     """
     try:
         team_abbr = team_abbr.upper()
@@ -178,28 +184,39 @@ def get_team_games(team_abbr):
                 tgs.game_id,
                 tgs.season,
                 tgs.week,
-                g.game_type,
-                g.kickoff_time_utc,
+                g.game_date,
                 tgs.team,
                 tgs.opponent,
                 tgs.is_home,
-                tgs.points_scored as team_points,
-                tgs.points_allowed as opponent_points,
-                tgs.won as result,
-                ROUND(tgs.epa_per_play::numeric, 3) as epa_per_play,
-                ROUND(tgs.success_rate::numeric, 3) as success_rate,
-                ROUND(tgs.yards_per_play::numeric, 2) as yards_per_play,
+                tgs.points as team_points,
+                g.home_score,
+                g.away_score,
+                tgs.result,
+                -- Team stats
                 tgs.total_yards,
-                tgs.passing_yards as pass_yards,
-                tgs.rushing_yards as rush_yards,
-                tgs.turnovers_lost,
-                tgs.turnovers_gained,
-                ROUND(tgs.third_down_rate::numeric, 3) as third_down_rate,
-                ROUND(tgs.red_zone_efficiency::numeric, 3) as red_zone_efficiency
+                tgs.passing_yards,
+                tgs.rushing_yards,
+                ROUND(tgs.yards_per_play::numeric, 2) as yards_per_play,
+                ROUND(tgs.completion_pct::numeric, 1) as completion_pct,
+                tgs.turnovers,
+                ROUND(tgs.third_down_pct::numeric, 1) as third_down_pct,
+                -- Betting lines
+                g.spread_line,
+                g.total_line,
+                g.home_moneyline,
+                g.away_moneyline,
+                -- Weather
+                g.roof,
+                g.temp,
+                g.wind,
+                -- Context
+                CASE WHEN tgs.is_home THEN g.home_rest ELSE g.away_rest END as rest_days,
+                g.is_divisional_game,
+                g.referee
             FROM hcl.team_game_stats tgs
             JOIN hcl.games g ON tgs.game_id = g.game_id
             WHERE tgs.team = %s AND tgs.season = %s
-            ORDER BY g.kickoff_time_utc DESC 
+            ORDER BY g.game_date DESC, tgs.week DESC
             LIMIT %s
         """
         
@@ -212,14 +229,568 @@ def get_team_games(team_abbr):
         if not games:
             return jsonify({
                 'success': False,
-                'error': f'No games found for team {team_abbr}'
+                'error': f'No games found for team {team_abbr} in season {season}'
             }), 404
         
         return jsonify({
             'success': True,
             'count': len(games),
             'team': team_abbr,
+            'season': season,
             'games': games
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+@hcl_bp.route('/games/<game_id>', methods=['GET'])
+def get_game_details(game_id):
+    """
+    Get complete game details including betting lines and weather
+    
+    Args:
+        game_id: Game ID (format: YYYY_WW_AWAY_HOME)
+    
+    Returns:
+        JSON with complete game info, team stats, betting lines, weather
+    """
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        
+        # Get game info with betting/weather
+        query = """
+            SELECT 
+                g.game_id,
+                g.season,
+                g.week,
+                g.game_date,
+                g.home_team,
+                g.away_team,
+                g.home_score,
+                g.away_score,
+                g.stadium,
+                -- Betting lines
+                g.spread_line,
+                g.total_line,
+                g.home_moneyline,
+                g.away_moneyline,
+                g.home_spread_odds,
+                g.away_spread_odds,
+                g.over_odds,
+                g.under_odds,
+                -- Weather
+                g.roof,
+                g.surface,
+                g.temp,
+                g.wind,
+                -- Context
+                g.away_rest,
+                g.home_rest,
+                g.is_divisional_game,
+                g.overtime,
+                g.referee,
+                g.away_coach,
+                g.home_coach,
+                g.away_qb_name,
+                g.home_qb_name
+            FROM hcl.games g
+            WHERE g.game_id = %s
+        """
+        
+        cur.execute(query, (game_id,))
+        game = cur.fetchone()
+        
+        if not game:
+            cur.close()
+            conn.close()
+            return jsonify({
+                'success': False,
+                'error': f'Game {game_id} not found'
+            }), 404
+        
+        # Get team stats for this game
+        cur.execute("""
+            SELECT 
+                team,
+                is_home,
+                points,
+                total_yards,
+                passing_yards,
+                rushing_yards,
+                turnovers,
+                ROUND(yards_per_play::numeric, 2) as yards_per_play,
+                ROUND(completion_pct::numeric, 1) as completion_pct,
+                ROUND(third_down_pct::numeric, 1) as third_down_pct,
+                result
+            FROM hcl.team_game_stats
+            WHERE game_id = %s
+            ORDER BY is_home DESC
+        """, (game_id,))
+        
+        team_stats = cur.fetchall()
+        
+        cur.close()
+        conn.close()
+        
+        return jsonify({
+            'success': True,
+            'game': game,
+            'team_stats': team_stats
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+@hcl_bp.route('/games/week/<int:season>/<int:week>', methods=['GET'])
+def get_week_games(season, week):
+    """
+    Get all games for a specific week with betting lines
+    
+    Args:
+        season: Season year
+        week: Week number
+    
+    Returns:
+        JSON array of games with scores, betting lines, weather
+    """
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        
+        query = """
+            SELECT 
+                game_id,
+                season,
+                week,
+                game_date,
+                away_team,
+                home_team,
+                away_score,
+                home_score,
+                spread_line,
+                total_line,
+                home_moneyline,
+                away_moneyline,
+                roof,
+                temp,
+                wind,
+                is_divisional_game,
+                referee
+            FROM hcl.games
+            WHERE season = %s AND week = %s
+            ORDER BY game_date, game_id
+        """
+        
+        cur.execute(query, (season, week))
+        games = cur.fetchall()
+        
+        cur.close()
+        conn.close()
+        
+        return jsonify({
+            'success': True,
+            'season': season,
+            'week': week,
+            'count': len(games),
+            'games': games
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+# ============================================================================
+# FEATURE ENGINEERING VIEW ENDPOINTS
+# ============================================================================
+
+@hcl_bp.route('/analytics/betting', methods=['GET'])
+def get_betting_performance():
+    """
+    Get team betting performance (ATS records, O/U trends)
+    
+    Query params:
+        season: Filter by season (default: 2025)
+        team: Filter by specific team (optional)
+    
+    Returns:
+        JSON with ATS records, over/under performance, favorite/underdog splits
+    """
+    try:
+        season = request.args.get('season', default=2025, type=int)
+        team = request.args.get('team', type=str)
+        
+        conn = get_db_connection()
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        
+        query = """
+            SELECT 
+                team,
+                season,
+                total_games,
+                ats_wins,
+                ats_losses,
+                ats_pushes,
+                ats_win_pct,
+                games_over,
+                games_under,
+                games_push,
+                over_pct,
+                games_as_favorite,
+                wins_as_favorite,
+                games_as_underdog,
+                wins_as_underdog
+            FROM hcl.v_team_betting_performance
+            WHERE season = %s
+        """
+        
+        params = [season]
+        
+        if team:
+            query += " AND team = %s"
+            params.append(team.upper())
+        
+        query += " ORDER BY ats_win_pct DESC"
+        
+        cur.execute(query, params)
+        results = cur.fetchall()
+        
+        cur.close()
+        conn.close()
+        
+        if not results:
+            return jsonify({
+                'success': False,
+                'error': f'No betting data found for season {season}'
+            }), 404
+        
+        return jsonify({
+            'success': True,
+            'season': season,
+            'count': len(results),
+            'teams': results
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+@hcl_bp.route('/analytics/weather', methods=['GET'])
+def get_weather_impact():
+    """
+    Get weather impact on scoring and performance
+    
+    Query params:
+        season: Filter by season (optional)
+        roof: Filter by roof type (outdoors/dome/closed/open) (optional)
+    
+    Returns:
+        JSON with scoring averages by weather conditions
+    """
+    try:
+        season = request.args.get('season', type=int)
+        roof = request.args.get('roof', type=str)
+        
+        conn = get_db_connection()
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        
+        query = """
+            SELECT 
+                roof,
+                surface,
+                temp_range,
+                wind_range,
+                season,
+                total_games,
+                avg_total_points,
+                avg_home_score,
+                avg_away_score,
+                avg_total_yards,
+                avg_passing_yards,
+                avg_rushing_yards,
+                avg_completion_pct,
+                avg_yards_per_play,
+                highest_scoring_game,
+                lowest_scoring_game,
+                games_over,
+                games_under,
+                over_pct
+            FROM hcl.v_weather_impact_analysis
+            WHERE 1=1
+        """
+        
+        params = []
+        
+        if season:
+            query += " AND season = %s"
+            params.append(season)
+        
+        if roof:
+            query += " AND roof = %s"
+            params.append(roof.lower())
+        
+        query += " ORDER BY avg_total_points DESC"
+        
+        cur.execute(query, params)
+        results = cur.fetchall()
+        
+        cur.close()
+        conn.close()
+        
+        if not results:
+            return jsonify({
+                'success': False,
+                'error': 'No weather data found'
+            }), 404
+        
+        return jsonify({
+            'success': True,
+            'count': len(results),
+            'conditions': results
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+@hcl_bp.route('/analytics/rest', methods=['GET'])
+def get_rest_advantage():
+    """
+    Get team performance by days of rest
+    
+    Query params:
+        season: Filter by season (default: 2025)
+    
+    Returns:
+        JSON with win rates and performance by rest days
+    """
+    try:
+        season = request.args.get('season', default=2025, type=int)
+        
+        conn = get_db_connection()
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        
+        query = """
+            SELECT 
+                rest_days,
+                rest_category,
+                season,
+                total_games,
+                wins,
+                losses,
+                ties,
+                win_pct,
+                avg_points_scored,
+                avg_total_yards,
+                avg_passing_yards,
+                avg_rushing_yards,
+                avg_turnovers,
+                avg_yards_per_play,
+                home_games,
+                away_games,
+                home_win_pct,
+                away_win_pct
+            FROM hcl.v_rest_advantage
+            WHERE season = %s
+            ORDER BY rest_days
+        """
+        
+        cur.execute(query, (season,))
+        results = cur.fetchall()
+        
+        cur.close()
+        conn.close()
+        
+        if not results:
+            return jsonify({
+                'success': False,
+                'error': f'No rest data found for season {season}'
+            }), 404
+        
+        return jsonify({
+            'success': True,
+            'season': season,
+            'count': len(results),
+            'rest_categories': results
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+@hcl_bp.route('/analytics/referees', methods=['GET'])
+def get_referee_tendencies():
+    """
+    Get referee officiating patterns and tendencies
+    
+    Query params:
+        season: Filter by season (default: 2025)
+        referee: Filter by specific referee name (optional)
+    
+    Returns:
+        JSON with referee stats, home bias, scoring averages
+    """
+    try:
+        season = request.args.get('season', default=2025, type=int)
+        referee = request.args.get('referee', type=str)
+        
+        conn = get_db_connection()
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        
+        query = """
+            SELECT 
+                referee,
+                season,
+                total_games,
+                home_wins,
+                away_wins,
+                ties,
+                home_win_pct,
+                avg_total_points,
+                avg_home_score,
+                avg_away_score,
+                avg_point_differential,
+                highest_scoring_game,
+                lowest_scoring_game,
+                overtime_games,
+                overtime_pct,
+                avg_turnovers_per_game,
+                divisional_games,
+                games_over,
+                games_under,
+                over_pct
+            FROM hcl.v_referee_tendencies
+            WHERE season = %s
+        """
+        
+        params = [season]
+        
+        if referee:
+            query += " AND referee ILIKE %s"
+            params.append(f"%{referee}%")
+        
+        query += " ORDER BY total_games DESC"
+        
+        cur.execute(query, params)
+        results = cur.fetchall()
+        
+        cur.close()
+        conn.close()
+        
+        if not results:
+            return jsonify({
+                'success': False,
+                'error': f'No referee data found for season {season}'
+            }), 404
+        
+        return jsonify({
+            'success': True,
+            'season': season,
+            'count': len(results),
+            'referees': results
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+@hcl_bp.route('/analytics/summary', methods=['GET'])
+def get_analytics_summary():
+    """
+    Get summary statistics from all analytical views
+    
+    Query params:
+        season: Filter by season (default: 2025)
+    
+    Returns:
+        JSON with key insights from betting, weather, rest, and referee data
+    """
+    try:
+        season = request.args.get('season', default=2025, type=int)
+        
+        conn = get_db_connection()
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        
+        # Best ATS team
+        cur.execute("""
+            SELECT team, ats_wins, ats_losses, ats_win_pct
+            FROM hcl.v_team_betting_performance
+            WHERE season = %s
+            ORDER BY ats_win_pct DESC
+            LIMIT 1
+        """, (season,))
+        best_ats = cur.fetchone()
+        
+        # Weather impact summary
+        cur.execute("""
+            SELECT roof, 
+                   ROUND(AVG(avg_total_points)::numeric, 1) as avg_ppg,
+                   COUNT(*) as conditions
+            FROM hcl.v_weather_impact_analysis
+            WHERE season = %s
+            GROUP BY roof
+            ORDER BY avg_ppg DESC
+        """, (season,))
+        weather_summary = cur.fetchall()
+        
+        # Rest advantage summary
+        cur.execute("""
+            SELECT rest_category,
+                   SUM(total_games) as games,
+                   ROUND(AVG(win_pct)::numeric, 1) as avg_win_pct
+            FROM hcl.v_rest_advantage
+            WHERE season = %s
+            GROUP BY rest_category
+            ORDER BY avg_win_pct DESC
+            LIMIT 1
+        """, (season,))
+        best_rest = cur.fetchone()
+        
+        # Top referee
+        cur.execute("""
+            SELECT referee, total_games, home_win_pct
+            FROM hcl.v_referee_tendencies
+            WHERE season = %s
+            ORDER BY total_games DESC
+            LIMIT 1
+        """, (season,))
+        top_referee = cur.fetchone()
+        
+        cur.close()
+        conn.close()
+        
+        return jsonify({
+            'success': True,
+            'season': season,
+            'summary': {
+                'best_ats_team': best_ats,
+                'weather_impact': weather_summary,
+                'best_rest_advantage': best_rest,
+                'most_games_referee': top_referee
+            }
         })
         
     except Exception as e:
