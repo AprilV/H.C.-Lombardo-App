@@ -1,47 +1,79 @@
-# QUICK START GUIDE - HCL Schema Testbed Testing
+# QUICK START GUIDE - HCL Production System
 
-**H.C. Lombardo App - Phase 2A Database Expansion**  
-**One-Page Reference - Keep This Open While Testing**
+**H.C. Lombardo App - Phase 2C: Analytics Dashboard**  
+**Current Status: Production Ready with Analytics UI**
 
 ---
 
-## 🚀 Quick Start (3 Steps)
+## 🚀 Quick Start (2 Steps)
 
-### Step 1: Load Test Data (5 minutes)
+### Step 1: Start API Server
 ```powershell
 cd "c:\IS330\H.C Lombardo App"
-.\LOAD_TESTBED_DATA.bat
+python api_server.py
 ```
-- Choose option **[1]** (2024 season only)
-- Wait 3-5 minutes
-- Should see: "SUCCESS! 2024 season loaded into testbed"
+- Server runs on http://127.0.0.1:5000
+- Should see: "H.C. Lombardo API Server Running"
+- Database: nfl_analytics.hcl (production schema)
 
-### Step 2: Verify in pgAdmin (2 minutes)
-Open pgAdmin → Query Tool → Run:
-```sql
--- Quick verification
-SELECT 
-  (SELECT COUNT(*) FROM hcl_test.games) as games,
-  (SELECT COUNT(*) FROM hcl_test.team_game_stats) as stats;
+### Step 2: Open in Browser
+Navigate to: **http://127.0.0.1:5000**
 
--- Expected: games: 270, stats: 540
-```
+**Available Pages:**
+- 🏈 **Home**: Dashboard overview
+- 📊 **Team Stats**: Current season team statistics
+- 📜 **Historical Data**: Multi-season game history
+- 📈 **Analytics**: NEW! Advanced betting analytics with 6 tabs
 
-### Step 3: Test Matchup View (1 minute)
-```sql
-SELECT game_id, home_team, away_team, home_score, away_score, winner
-FROM hcl_test.v_game_matchup_display
-WHERE season = 2024 AND week = 1
-ORDER BY game_date;
-
--- Expected: 16 rows (Week 1 games)
-```
-
-✅ **If all 3 steps pass → Proceed to full load** (Option 2 in batch script)
+✅ **System is ready for use!**
 
 ---
 
-## 📁 Files Created
+## 📊 Analytics Dashboard Features (Phase 2C)
+
+### 6 Interactive Tabs:
+
+1. **Summary** 🎯
+   - Best betting team (ATS leader)
+   - Weather impact comparison
+   - Rest advantage insights
+   - Top referee statistics
+
+2. **Betting** 💰
+   - Against The Spread (ATS) records
+   - Over/Under performance
+   - Favorite/Underdog splits
+   - All 32 teams with color-coded performance
+
+3. **Weather** 🌤️
+   - Dome vs Outdoor scoring
+   - Temperature impact analysis
+   - Wind effect on passing
+   - Scoring trends by conditions
+
+4. **Rest** 😴
+   - Bye week performance
+   - Short week struggles
+   - Normal rest baselines
+   - Days of rest win percentages
+
+5. **Referees** 👔
+   - Home field bias indicators
+   - Scoring trends by referee
+   - Overtime game frequencies
+   - Turnover patterns
+
+6. **Custom Builder** 🎯
+   - À la carte stat selector
+   - Team filtering
+   - 12 available statistics
+   - Mix betting, weather, and rest stats
+
+**Each tab includes educational legends explaining all metrics!**
+
+---
+
+## 📁 Latest Files (Phase 2C)
 
 | File | Purpose | Size |
 |------|---------|------|
