@@ -1,0 +1,44 @@
+================================================================================
+TESTBED BACKUP SNAPSHOT
+Created: 2025-10-28 18:17:17.669426
+Database: nfl_analytics
+Schema: hcl_test
+================================================================================
+
+1. GAMES TABLE
+----------------------------------------
+Total games: 1126
+Games by season:
+  2022: 284 games
+  2023: 285 games
+  2024: 285 games
+  2025: 272 games
+
+New columns coverage:
+  Betting lines: 1003/1126 (89.1%)
+  Weather (roof): 1126/1126 (100.0%)
+  Referee: 975/1126 (86.6%)
+
+2. TEAM_GAME_STATS TABLE
+----------------------------------------
+Total records: 1950
+
+3. SAMPLE GAMES (2024 Week 1)
+----------------------------------------
+2024_01_BAL_KC: BAL @ KC (20-27)
+  Spread: 3.0, Total: 46.0, Roof: outdoors, Temp: 67.0
+2024_01_GB_PHI: GB @ PHI (29-34)
+  Spread: 2.0, Total: 49.5, Roof: outdoors, Temp: None
+2024_01_ARI_BUF: ARI @ BUF (28-34)
+  Spread: 6.5, Total: 46.0, Roof: outdoors, Temp: 61.0
+2024_01_TEN_CHI: TEN @ CHI (17-24)
+  Spread: 4.0, Total: 43.0, Roof: outdoors, Temp: 67.0
+2024_01_PIT_ATL: PIT @ ATL (18-10)
+  Spread: 4.0, Total: 43.0, Roof: closed, Temp: None
+
+================================================================================
+BACKUP COMPLETE
+Total games: 1126
+Total team-game stats: 1950
+Ready for production migration
+================================================================================

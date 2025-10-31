@@ -131,7 +131,7 @@ def get_database_info():
                 "total_columns": total_columns,
                 "total_records": total_records,
                 "tables": table_details,
-                "database_name": DATABASE_CONFIG.get('database', 'postgres'),
+                "database_name": DATABASE_CONFIG.get('dbname', 'postgres'),
                 "timestamp": datetime.now().isoformat()
             }
         })

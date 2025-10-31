@@ -72,10 +72,19 @@ function SideMenu() {
             <span className="menu-text">Historical Data</span>
           </Link>
 
+          <Link 
+            to="/analytics" 
+            className={`menu-item ${isActive('/analytics')}`}
+            onClick={closeMenu}
+          >
+            <span className="menu-icon">📈</span>
+            <span className="menu-text">Analytics</span>
+          </Link>
+
           <div className="menu-divider"></div>
 
           <div className="menu-item disabled">
-            <span className="menu-icon">📈</span>
+            <span className="menu-icon">🎯</span>
             <span className="menu-text">Matchup Analyzer</span>
             <span className="coming-soon">Soon</span>
           </div>

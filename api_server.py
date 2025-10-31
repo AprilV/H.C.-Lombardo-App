@@ -10,6 +10,7 @@ import sys
 import os
 from logging_config import setup_logging
 from dashboard_api import register_dashboard_routes
+from api_routes_hcl import hcl_bp
 
 # Initialize logger
 loggers = setup_logging()
@@ -32,6 +33,9 @@ CORS(app, resources={
 
 # Register dashboard API routes
 register_dashboard_routes(app)
+
+# Register HCL API routes
+app.register_blueprint(hcl_bp)
 
 # Additional CORS headers for file:// protocol
 @app.after_request
