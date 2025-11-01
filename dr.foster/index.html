@@ -548,8 +548,135 @@
         <div class="tab" onclick="showTab('github', event)">🔗 GitHub</div>
     </div>
 
+    <div class="tabs">
+        <div class="tab active" onclick="showTab('week4-6', event)">🎯 Weeks 4-6 COMPLETE</div>
+        <div class="tab" onclick="showTab('overview', event)">📊 Overview</div>
+        <div class="tab" onclick="showTab('architecture', event)">🏗️ 3D Architecture</div>
+        <div class="tab" onclick="showTab('week1-2', event)">📝 Weeks 1-2</div>
+        <div class="tab" onclick="showTab('week2-4', event)">🚀 Weeks 3-4</div>
+        <div class="tab" onclick="showTab('week5-pwa', event)">📱 Weeks 5-6 PWA</div>
+        <div class="tab" onclick="showTab('database', event)">💾 Database</div>
+        <div class="tab" onclick="showTab('analytics', event)">📈 Analytics</div>
+        <div class="tab" onclick="showTab('mermaid', event)">📊 DB Diagrams</div>
+        <div class="tab" onclick="showTab('milestones', event)">🎯 Milestones</div>
+        <div class="tab" onclick="showTab('github', event)">🔗 GitHub</div>
+    </div>
+
     <!-- Content Area -->
     <div class="content">
+        <!-- Weeks 4-6 Tab (MOST RECENT - SHOWN FIRST) -->
+        <div id="week4-6" class="tab-content active">
+            <div class="card">
+                <h2>🎯 Weeks 4-6 Complete (October 14 - November 1, 2025)</h2>
+                <p><strong>Status:</strong> ✅ COMPLETE | <strong>Sprint:</strong> Sprint 8 Complete</p>
+                <p><strong>Heading Into:</strong> Weeks 7-8 (ML Features)</p>
+            </div>
+
+            <div class="card">
+                <h3>Week 6 Highlights (Oct 28 - Nov 1)</h3>
+                
+                <h4>🎨 November 1: Premium Gold Branding</h4>
+                <ul>
+                    <li><strong>Gold Shimmer Effect</strong> on H.C. LOMBARDO header</li>
+                    <li>Italian quote: "È FOTTUTAMENTE INCREDIBILE!"</li>
+                    <li>9-stop gradient, 4.5s right-to-left animation</li>
+                    <li>Realistic metallic look (gold reflects, doesn't glow)</li>
+                    <li>Production build: 215.71 kB JS, 6.91 kB CSS</li>
+                </ul>
+
+                <h4>📊 October 28-31: Historical Database Infrastructure (Sprint 8)</h4>
+                <ul>
+                    <li><strong>950+ games</strong> loaded (2022-2025 seasons)</li>
+                    <li><strong>1,900+ team-game records</strong> with 47+ metrics each</li>
+                    <li>Complete HCL schema in Third Normal Form (3NF)</li>
+                    <li>Automated data loader: <code>ingest_historical_games.py</code> (671 lines)</li>
+                    <li>Comprehensive testing infrastructure (5-phase testing)</li>
+                    <li>Testbed validation before production deployment</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>Week 5 Highlights (Oct 21-27)</h3>
+                
+                <h4>📅 October 26-27: React Frontend Integration (Sprint 7)</h4>
+                <ul>
+                    <li><strong>HistoricalData.jsx</strong> - 32-team grid view with stats</li>
+                    <li><strong>TeamDetail.jsx</strong> - Individual team analysis with Chart.js graphs</li>
+                    <li>React Router navigation: /historical, /team/:teamAbbr</li>
+                    <li>CORS-enabled Flask-React communication</li>
+                    <li>Chart.js 4.4.0 integration for trend visualization</li>
+                </ul>
+
+                <h4>📅 October 22: Historical Data API (Sprint 6)</h4>
+                <ul>
+                    <li>Flask REST API with 4 HCL endpoints</li>
+                    <li>100% test coverage (6/6 tests passed)</li>
+                    <li>Blueprint pattern for modular design</li>
+                    <li>JSON responses with proper HTTP status codes</li>
+                </ul>
+
+                <h4>📅 October 21-22: Database Design (Sprint 5)</h4>
+                <ul>
+                    <li>HCL schema designed in Third Normal Form (3NF)</li>
+                    <li>3 core tables: games, team_game_stats, team_season_stats</li>
+                    <li>3 database views for efficient querying</li>
+                    <li>2025 Week 7 test data loaded for validation</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>Week 4 Highlights (Oct 14-20)</h3>
+                <ul>
+                    <li>Three-tier architecture planning and design</li>
+                    <li>Infrastructure setup and environment configuration</li>
+                    <li>Documentation framework established</li>
+                    <li>Sprint planning for historical data system</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>📊 Key Metrics (Weeks 4-6)</h3>
+                <div class="stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                    <div class="stat-item">
+                        <div class="stat-value">950+</div>
+                        <div class="stat-label">Historical Games</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">1,900+</div>
+                        <div class="stat-label">Team-Game Records</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">47+</div>
+                        <div class="stat-label">Metrics Per Game</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">8</div>
+                        <div class="stat-label">React Components</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">9</div>
+                        <div class="stat-label">Flask Endpoints</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">100%</div>
+                        <div class="stat-label">Test Coverage</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>🎓 Skills Demonstrated (IS330 Course)</h3>
+                <ul>
+                    <li><strong>Database Design:</strong> 3NF normalization, materialized views, 950+ games</li>
+                    <li><strong>Full-Stack Development:</strong> React 18.2 + Flask + PostgreSQL</li>
+                    <li><strong>RESTful APIs:</strong> 9 endpoints with 100% test coverage</li>
+                    <li><strong>Data Visualization:</strong> Chart.js integration for trends</li>
+                    <li><strong>Professional Practices:</strong> Testbed-first, Git version control, comprehensive logging</li>
+                    <li><strong>UI/UX Design:</strong> Premium gold branding with CSS animations</li>
+                </ul>
+            </div>
+        </div>
+
         <!-- Overview Tab -->
         <div id="overview" class="tab-content">
             <div class="card">
