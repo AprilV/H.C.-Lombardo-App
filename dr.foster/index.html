@@ -536,7 +536,6 @@
 
     <!-- Navigation Tabs -->
     <div class="tabs">
-        <div class="tab active" onclick="showTab('week4-6', event)">🎯 Weeks 4-6 COMPLETE</div>
         <div class="tab" onclick="showTab('overview', event)">📊 Overview</div>
         <div class="tab" onclick="showTab('architecture', event)">🏗️ 3D Architecture</div>
         <div class="tab" onclick="showTab('week1-2', event)">📝 Weeks 1-2</div>
@@ -551,119 +550,6 @@
 
     <!-- Content Area -->
     <div class="content">
-        <!-- Weeks 4-6 Tab (MOST RECENT - SHOWN FIRST) -->
-        <div id="week4-6" class="tab-content active">
-            <div class="card">
-                <h2>🎯 Weeks 4-6 Complete (October 14 - November 1, 2025)</h2>
-                <p><strong>Status:</strong> ✅ COMPLETE | <strong>Sprint:</strong> Sprint 8 Complete</p>
-                <p><strong>Heading Into:</strong> Weeks 7-8 (ML Features)</p>
-            </div>
-
-            <div class="card">
-                <h3>Week 6 Highlights (Oct 28 - Nov 1)</h3>
-                
-                <h4>🎨 November 1: Premium Gold Branding</h4>
-                <ul>
-                    <li><strong>Gold Shimmer Effect</strong> on H.C. LOMBARDO header</li>
-                    <li>Italian quote: "È FOTTUTAMENTE INCREDIBILE!"</li>
-                    <li>9-stop gradient, 4.5s right-to-left animation</li>
-                    <li>Realistic metallic look (gold reflects, doesn't glow)</li>
-                    <li>Production build: 215.71 kB JS, 6.91 kB CSS</li>
-                </ul>
-
-                <h4>📊 October 28-31: Historical Database Infrastructure (Sprint 8)</h4>
-                <ul>
-                    <li><strong>950+ games</strong> loaded (2022-2025 seasons)</li>
-                    <li><strong>1,900+ team-game records</strong> with 47+ metrics each</li>
-                    <li>Complete HCL schema in Third Normal Form (3NF)</li>
-                    <li>Automated data loader: <code>ingest_historical_games.py</code> (671 lines)</li>
-                    <li>Comprehensive testing infrastructure (5-phase testing)</li>
-                    <li>Testbed validation before production deployment</li>
-                </ul>
-            </div>
-
-            <div class="card">
-                <h3>Week 5 Highlights (Oct 21-27)</h3>
-                
-                <h4>📅 October 26-27: React Frontend Integration (Sprint 7)</h4>
-                <ul>
-                    <li><strong>HistoricalData.jsx</strong> - 32-team grid view with stats</li>
-                    <li><strong>TeamDetail.jsx</strong> - Individual team analysis with Chart.js graphs</li>
-                    <li>React Router navigation: /historical, /team/:teamAbbr</li>
-                    <li>CORS-enabled Flask-React communication</li>
-                    <li>Chart.js 4.4.0 integration for trend visualization</li>
-                </ul>
-
-                <h4>📅 October 22: Historical Data API (Sprint 6)</h4>
-                <ul>
-                    <li>Flask REST API with 4 HCL endpoints</li>
-                    <li>100% test coverage (6/6 tests passed)</li>
-                    <li>Blueprint pattern for modular design</li>
-                    <li>JSON responses with proper HTTP status codes</li>
-                </ul>
-
-                <h4>📅 October 21-22: Database Design (Sprint 5)</h4>
-                <ul>
-                    <li>HCL schema designed in Third Normal Form (3NF)</li>
-                    <li>3 core tables: games, team_game_stats, team_season_stats</li>
-                    <li>3 database views for efficient querying</li>
-                    <li>2025 Week 7 test data loaded for validation</li>
-                </ul>
-            </div>
-
-            <div class="card">
-                <h3>Week 4 Highlights (Oct 14-20)</h3>
-                <ul>
-                    <li>Three-tier architecture planning and design</li>
-                    <li>Infrastructure setup and environment configuration</li>
-                    <li>Documentation framework established</li>
-                    <li>Sprint planning for historical data system</li>
-                </ul>
-            </div>
-
-            <div class="card">
-                <h3>📊 Key Metrics (Weeks 4-6)</h3>
-                <div class="stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
-                    <div class="stat-item">
-                        <div class="stat-value">950+</div>
-                        <div class="stat-label">Historical Games</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value">1,900+</div>
-                        <div class="stat-label">Team-Game Records</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value">47+</div>
-                        <div class="stat-label">Metrics Per Game</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value">8</div>
-                        <div class="stat-label">React Components</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value">9</div>
-                        <div class="stat-label">Flask Endpoints</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value">100%</div>
-                        <div class="stat-label">Test Coverage</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card">
-                <h3>🎓 Skills Demonstrated (IS330 Course)</h3>
-                <ul>
-                    <li><strong>Database Design:</strong> 3NF normalization, materialized views, 950+ games</li>
-                    <li><strong>Full-Stack Development:</strong> React 18.2 + Flask + PostgreSQL</li>
-                    <li><strong>RESTful APIs:</strong> 9 endpoints with 100% test coverage</li>
-                    <li><strong>Data Visualization:</strong> Chart.js integration for trends</li>
-                    <li><strong>Professional Practices:</strong> Testbed-first, Git version control, comprehensive logging</li>
-                    <li><strong>UI/UX Design:</strong> Premium gold branding with CSS animations</li>
-                </ul>
-            </div>
-        </div>
-
         <!-- Overview Tab -->
         <div id="overview" class="tab-content">
             <div class="card">
@@ -1074,22 +960,70 @@ npm start  # Runs on http://localhost:3000</code></pre>
         <!-- Weeks 5-6: Sprints 5, 6, 7 Tab -->
         <div id="week5-pwa" class="tab-content">
             <div class="card">
-                <h2>� Weeks 5-6: Historical Data System - October 21-27, 2025</h2>
-                <p><strong>Objective:</strong> Build a complete historical data analytics system with 3NF database design, REST API, and React frontend integration for advanced NFL analytics.</p>
+                <h2>📊 Weeks 4-6: Historical Data System - October 14 - November 1, 2025</h2>
+                <p><strong>Status:</strong> ✅ COMPLETE | <strong>Current Sprint:</strong> Sprint 8 Complete</p>
+                <p><strong>Objective:</strong> Build complete historical data analytics system with 950+ games, 3NF database design, REST API, React frontend with Chart.js visualization, and premium gold branding.</p>
 
                 <h3>✅ Sprint Overview</h3>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin: 1.5rem 0;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 1.5rem 0;">
                     <div style="background: rgba(59, 130, 246, 0.15); padding: 1.25rem; border-radius: 8px; border-left: 4px solid #3b82f6;">
-                        <h4 style="color: #3b82f6; margin-top: 0;">Sprint 5: Database Design</h4>
-                        <p style="font-size: 0.9rem; color: #94a3b8;">Oct 21-22 | 3NF Schema + nflverse Integration</p>
+                        <h4 style="color: #3b82f6; margin-top: 0;">Sprint 5: Database</h4>
+                        <p style="font-size: 0.9rem; color: #94a3b8;">Oct 21-22 | 3NF Schema</p>
                     </div>
                     <div style="background: rgba(16, 185, 129, 0.15); padding: 1.25rem; border-radius: 8px; border-left: 4px solid #10b981;">
-                        <h4 style="color: #10b981; margin-top: 0;">Sprint 6: REST API</h4>
-                        <p style="font-size: 0.9rem; color: #94a3b8;">Oct 22 | Flask Endpoints + Testing</p>
+                        <h4 style="color: #10b981; margin-top: 0;">Sprint 6: API</h4>
+                        <p style="font-size: 0.9rem; color: #94a3b8;">Oct 22 | REST Endpoints</p>
                     </div>
                     <div style="background: rgba(236, 72, 153, 0.15); padding: 1.25rem; border-radius: 8px; border-left: 4px solid #ec4899;">
                         <h4 style="color: #ec4899; margin-top: 0;">Sprint 7: Frontend</h4>
-                        <p style="font-size: 0.9rem; color: #94a3b8;">Oct 26-27 | React Components + Charts</p>
+                        <p style="font-size: 0.9rem; color: #94a3b8;">Oct 26-27 | React Charts</p>
+                    </div>
+                    <div style="background: rgba(245, 158, 11, 0.15); padding: 1.25rem; border-radius: 8px; border-left: 4px solid #f59e0b;">
+                        <h4 style="color: #f59e0b; margin-top: 0;">Sprint 8: Scale</h4>
+                        <p style="font-size: 0.9rem; color: #94a3b8;">Oct 28-Nov 1 | 950+ Games</p>
+                    </div>
+                </div>
+
+                <h3>🎨 Sprint 8: Historical Data Scale + Premium Branding</h3>
+                <p><strong>Date:</strong> October 28 - November 1, 2025 | <strong>Status:</strong> ✅ COMPLETE</p>
+                
+                <h4>November 1: Premium Gold Branding</h4>
+                <ul>
+                    <li>✅ <strong>Gold Shimmer Effect</strong> on H.C. LOMBARDO header</li>
+                    <li>✅ <strong>Italian Quote:</strong> "È FOTTUTAMENTE INCREDIBILE!" (Frank Lombardo)</li>
+                    <li>✅ <strong>9-Stop Gradient:</strong> Dark gold (#6B5416) → Bright gold (#FFD700) → Dark</li>
+                    <li>✅ <strong>Animated Shimmer:</strong> 4.5s right-to-left sweep animation</li>
+                    <li>✅ <strong>Realistic Metallic Look:</strong> No glow (gold reflects, doesn't emit light)</li>
+                    <li>✅ <strong>Production Build:</strong> 215.71 kB JS, 6.91 kB CSS</li>
+                </ul>
+
+                <h4>October 28-31: Historical Database Infrastructure</h4>
+                <ul>
+                    <li>✅ <strong>950+ Games:</strong> Complete 2022-2025 seasons loaded</li>
+                    <li>✅ <strong>1,900+ Team-Game Records:</strong> 47+ metrics per game</li>
+                    <li>✅ <strong>HCL Schema:</strong> games, team_game_stats tables in 3NF</li>
+                    <li>✅ <strong>Automated Loader:</strong> <code>ingest_historical_games.py</code> (671 lines)</li>
+                    <li>✅ <strong>Testing Infrastructure:</strong> 5-phase testbed validation</li>
+                    <li>✅ <strong>ML Ready:</strong> Exceeds 600-game minimum by 58%</li>
+                </ul>
+
+                <h4>Data Coverage (2022-2025)</h4>
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin: 1rem 0;">
+                    <div style="background: rgba(59, 130, 246, 0.1); padding: 1rem; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 2rem; font-weight: bold; color: #3b82f6;">270</div>
+                        <div style="font-size: 0.9rem; color: #94a3b8;">2022 Games</div>
+                    </div>
+                    <div style="background: rgba(16, 185, 129, 0.1); padding: 1rem; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 2rem; font-weight: bold; color: #10b981;">270</div>
+                        <div style="font-size: 0.9rem; color: #94a3b8;">2023 Games</div>
+                    </div>
+                    <div style="background: rgba(236, 72, 153, 0.1); padding: 1rem; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 2rem; font-weight: bold; color: #ec4899;">270</div>
+                        <div style="font-size: 0.9rem; color: #94a3b8;">2024 Games</div>
+                    </div>
+                    <div style="background: rgba(245, 158, 11, 0.1); padding: 1rem; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 2rem; font-weight: bold; color: #f59e0b;">140</div>
+                        <div style="font-size: 0.9rem; color: #94a3b8;">2025 Games</div>
                     </div>
                 </div>
 
