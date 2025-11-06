@@ -237,65 +237,79 @@ for batch_start in range(0, total_seasons, BATCH_SIZE):
 
 print(f"\n✅ Total team-game records with EPA: {len(all_team_game_stats):,}")
 
-# Step 4: Update database with EPA stats
+# Step 4: Insert/Update database with EPA stats
 print("\n" + "=" * 80)
-print("STEP 4: UPDATE DATABASE WITH EPA STATS")
+print("STEP 4: INSERT/UPDATE DATABASE WITH EPA STATS")
 print("=" * 80)
 
-print("⏳ Updating team_game_stats with EPA calculations...")
+print("⏳ Inserting team_game_stats with EPA calculations...")
 
-update_data = []
+# Convert numpy types to Python types for PostgreSQL
+def convert_value(val):
+    if pd.isna(val):
+        return None
+    return float(val)
+
+insert_data = []
 for stats in all_team_game_stats:
-    update_data.append((
-        stats['epa_per_play'],
-        stats['success_rate'],
-        stats['pass_epa'],
-        stats['rush_epa'],
-        stats['total_epa'],
-        stats['wpa'],
-        stats['cpoe'],
-        stats['air_yards_per_att'],
-        stats['yac_per_completion'],
-        stats['explosive_play_pct'],
-        stats['stuff_rate'],
-        stats['pass_success_rate'],
-        stats['rush_success_rate'],
+    insert_data.append((
         stats['game_id'],
-        stats['team']
+        stats['team'],
+        stats['opponent'],
+        stats['is_home'],
+        stats['season'],
+        stats['week'],
+        convert_value(stats['epa_per_play']),
+        convert_value(stats['success_rate']),
+        convert_value(stats['pass_epa']),
+        convert_value(stats['rush_epa']),
+        convert_value(stats['total_epa']),
+        convert_value(stats['wpa']),
+        convert_value(stats['cpoe']),
+        convert_value(stats['air_yards_per_att']),
+        convert_value(stats['yac_per_completion']),
+        convert_value(stats['explosive_play_pct']),
+        convert_value(stats['stuff_rate']),
+        convert_value(stats['pass_success_rate']),
+        convert_value(stats['rush_success_rate'])
     ))
 
 execute_values(
     cur,
     """
-    UPDATE hcl.team_game_stats SET
-        epa_per_play = data.epa_per_play,
-        success_rate = data.success_rate,
-        pass_epa = data.pass_epa,
-        rush_epa = data.rush_epa,
-        total_epa = data.total_epa,
-        wpa = data.wpa,
-        cpoe = data.cpoe,
-        air_yards_per_att = data.air_yards_per_att,
-        yac_per_completion = data.yac_per_completion,
-        explosive_play_pct = data.explosive_play_pct,
-        stuff_rate = data.stuff_rate,
-        pass_success_rate = data.pass_success_rate,
-        rush_success_rate = data.rush_success_rate,
-        updated_at = NOW()
-    FROM (VALUES %s) AS data(
+    INSERT INTO hcl.team_game_stats (
+        game_id, team, opponent, is_home, season, week,
         epa_per_play, success_rate, pass_epa, rush_epa, total_epa,
         wpa, cpoe, air_yards_per_att, yac_per_completion,
         explosive_play_pct, stuff_rate, pass_success_rate, rush_success_rate,
-        game_id, team
-    )
-    WHERE hcl.team_game_stats.game_id = data.game_id
-      AND hcl.team_game_stats.team = data.team
+        created_at, updated_at
+    ) VALUES %s
+    ON CONFLICT (game_id, team) DO UPDATE SET
+        opponent = EXCLUDED.opponent,
+        is_home = EXCLUDED.is_home,
+        season = EXCLUDED.season,
+        week = EXCLUDED.week,
+        epa_per_play = EXCLUDED.epa_per_play,
+        success_rate = EXCLUDED.success_rate,
+        pass_epa = EXCLUDED.pass_epa,
+        rush_epa = EXCLUDED.rush_epa,
+        total_epa = EXCLUDED.total_epa,
+        wpa = EXCLUDED.wpa,
+        cpoe = EXCLUDED.cpoe,
+        air_yards_per_att = EXCLUDED.air_yards_per_att,
+        yac_per_completion = EXCLUDED.yac_per_completion,
+        explosive_play_pct = EXCLUDED.explosive_play_pct,
+        stuff_rate = EXCLUDED.stuff_rate,
+        pass_success_rate = EXCLUDED.pass_success_rate,
+        rush_success_rate = EXCLUDED.rush_success_rate,
+        updated_at = NOW()
     """,
-    update_data
+    insert_data,
+    template="(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NOW(), NOW())"
 )
 
 conn.commit()
-print(f"✅ Updated {len(update_data):,} team-game records with EPA stats")
+print(f"✅ Inserted/Updated {len(insert_data):,} team-game records with EPA stats")
 
 # Step 5: Verification
 print("\n" + "=" * 80)
