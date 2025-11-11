@@ -26,6 +26,10 @@ CORS(app)  # Enable CORS for React dev server
 from api_routes_hcl import hcl_bp
 app.register_blueprint(hcl_bp)
 
+# Register ML API blueprint for predictions
+from api_routes_ml import ml_api
+app.register_blueprint(ml_api)
+
 # Log application startup
 log_activity('app', 'info', 'Flask application starting', 
             version='2.0', database='PostgreSQL', features='auto-refresh,logos,all-teams')
@@ -261,6 +265,12 @@ def team_detail(team_abbr):
     """Team detail page with historical stats"""
     log_activity('app', 'info', f'Team detail accessed: {team_abbr}', route='/team/<team_abbr>')
     return render_template('team_detail.html', team_abbr=team_abbr.upper())
+
+@app.route('/ml-test')
+def ml_test():
+    """ML Predictions test page"""
+    log_activity('app', 'info', 'ML test page accessed', route='/ml-test')
+    return render_template('ml_test.html')
 
 @app.route('/favicon.ico')
 def favicon():

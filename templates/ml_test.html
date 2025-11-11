@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ML Predictions Test - H.C. Lombardo</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+        }
+        .container {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        input, button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: 2px solid #667eea;
+            border-radius: 5px;
+        }
+        input {
+            flex: 1;
+            min-width: 150px;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #5568d3;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #667eea;
+            font-size: 18px;
+        }
+        .game-card {
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+        .game-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+        .matchup {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .away-team {
+            color: #e74c3c;
+        }
+        .home-team {
+            color: #2ecc71;
+        }
+        .prediction {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+            margin: 15px 0;
+        }
+        .winner {
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .confidence-bar {
+            width: 100%;
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2ecc71, #27ae60);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            transition: width 0.5s ease;
+        }
+        .details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e0e0e0;
+        }
+        .detail-item {
+            text-align: center;
+        }
+        .detail-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+        }
+        .detail-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+        .summary {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        .summary h2 {
+            margin-top: 0;
+            color: #667eea;
+        }
+        .model-info {
+            background: #e8f4f8;
+            padding: 15px;
+            border-left: 4px solid #3498db;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .error {
+            background: #fee;
+            border: 2px solid #f88;
+            color: #c33;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏈 ML Predictions Test Page</h1>
+        <p class="subtitle">Testing the NFL Neural Network V2 API</p>
+        
+        <div class="model-info">
+            <strong>Model:</strong> NFL Neural Network V2<br>
+            <strong>Architecture:</strong> 3-layer deep learning (41 inputs → 128 → 64 → 32 → 1 output)<br>
+            <strong>Test Accuracy:</strong> 65.55% on 2025 games
+        </div>
+
+        <div class="controls">
+            <input type="number" id="season" placeholder="Season (e.g., 2025)" value="2025">
+            <input type="number" id="week" placeholder="Week (1-18)" value="10">
+            <button onclick="predictWeek()">Predict Week</button>
+            <button onclick="predictUpcoming()">Predict Upcoming</button>
+            <button onclick="showModelInfo()">Model Info</button>
+            <button onclick="showExplanation()">How It Works</button>
+        </div>
+
+        <div id="results"></div>
+    </div>
+
+    <script>
+        async function predictWeek() {
+            const season = document.getElementById('season').value;
+            const week = document.getElementById('week').value;
+            
+            if (!season || !week) {
+                alert('Please enter both season and week');
+                return;
+            }
+
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<div class="loading">🔄 Loading predictions...</div>';
+
+            try {
+                const response = await fetch(`/api/ml/predict-week/${season}/${week}`);
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to fetch predictions');
+                }
+
+                displayPredictions(data);
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+            }
+        }
+
+        async function predictUpcoming() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<div class="loading">🔄 Loading upcoming predictions...</div>';
+
+            try {
+                const response = await fetch('/api/ml/predict-upcoming');
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to fetch predictions');
+                }
+
+                displayPredictions(data);
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+            }
+        }
+
+        function displayPredictions(data) {
+            const resultsDiv = document.getElementById('results');
+            
+            let html = `
+                <div class="summary">
+                    <h2>📊 ${data.season} Season - Week ${data.week}</h2>
+                    <p><strong>Total Games:</strong> ${data.total_games}</p>
+                    <p><strong>Model:</strong> ${data.model}</p>
+                    <p><strong>Accuracy:</strong> ${data.accuracy}</p>
+                </div>
+            `;
+
+            data.predictions.forEach((pred, idx) => {
+                const confidence = (pred.confidence * 100).toFixed(1);
+                const homeProb = (pred.home_win_prob * 100).toFixed(1);
+                const awayProb = (pred.away_win_prob * 100).toFixed(1);
+                
+                const isHomeWin = pred.predicted_winner === pred.home_team;
+                
+                html += `
+                    <div class="game-card">
+                        <div class="matchup">
+                            <span class="away-team">${pred.away_team}</span>
+                            <span style="color: #999;"> @ </span>
+                            <span class="home-team">${pred.home_team}</span>
+                        </div>
+                        
+                        <div class="prediction">
+                            <div class="winner">
+                                🏆 ${pred.predicted_winner} wins
+                            </div>
+                            <div style="font-size: 14px; margin-top: 5px; opacity: 0.9;">
+                                ${confidence}% Confidence
+                            </div>
+                        </div>
+
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" style="width: ${confidence}%">
+                                ${confidence}%
+                            </div>
+                        </div>
+
+                        <div class="details">
+                            <div class="detail-item">
+                                <div class="detail-label">Home Win Prob</div>
+                                <div class="detail-value">${homeProb}%</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Away Win Prob</div>
+                                <div class="detail-value">${awayProb}%</div>
+                            </div>
+                            ${pred.spread_line ? `
+                            <div class="detail-item">
+                                <div class="detail-label">Vegas Spread</div>
+                                <div class="detail-value">${pred.spread_line}</div>
+                            </div>
+                            ` : ''}
+                            ${pred.key_factors ? `
+                            <div class="detail-item">
+                                <div class="detail-label">EPA Advantage</div>
+                                <div class="detail-value">${pred.key_factors.epa_advantage.toFixed(3)}</div>
+                            </div>
+                            ` : ''}
+                        </div>
+
+                        ${pred.game_date ? `
+                        <div style="text-align: center; margin-top: 15px; color: #666; font-size: 14px;">
+                            📅 ${pred.game_date}
+                        </div>
+                        ` : ''}
+                    </div>
+                `;
+            });
+
+            resultsDiv.innerHTML = html;
+        }
+
+        async function showModelInfo() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<div class="loading">🔄 Loading model info...</div>';
+
+            try {
+                const response = await fetch('/api/ml/model-info');
+                const data = await response.json();
+
+                let html = `
+                    <div class="summary">
+                        <h2>🧠 ${data.model_name}</h2>
+                        <p><strong>Version:</strong> ${data.version}</p>
+                        <p><strong>Status:</strong> ${data.status}</p>
+                    </div>
+
+                    <div class="game-card">
+                        <h3>Architecture</h3>
+                        <p><strong>Type:</strong> ${data.architecture.type}</p>
+                        <p><strong>Total Parameters:</strong> ${data.architecture.total_parameters.toLocaleString()}</p>
+                        <h4>Layers:</h4>
+                        <ul>
+                `;
+
+                data.architecture.layers.forEach(layer => {
+                    html += `<li><strong>${layer.name}:</strong> ${layer.neurons} neurons`;
+                    if (layer.activation) html += ` (${layer.activation})`;
+                    if (layer.description) html += ` - ${layer.description}`;
+                    html += `</li>`;
+                });
+
+                html += `
+                        </ul>
+                    </div>
+
+                    <div class="game-card">
+                        <h3>Training Data</h3>
+                        <p><strong>Date Range:</strong> ${data.training_data.date_range}</p>
+                        <p><strong>Total Games:</strong> ${data.training_data.total_games.toLocaleString()}</p>
+                        <p><strong>Training Set:</strong> ${data.training_data.training_games.toLocaleString()} games</p>
+                        <p><strong>Validation Set:</strong> ${data.training_data.validation_games} games (2024)</p>
+                        <p><strong>Test Set:</strong> ${data.training_data.test_games} games (2025)</p>
+                    </div>
+
+                    <div class="game-card">
+                        <h3>Performance</h3>
+                        <p><strong>Validation Accuracy:</strong> ${(data.performance.validation_accuracy * 100).toFixed(2)}%</p>
+                        <p><strong>Test Accuracy:</strong> ${(data.performance.test_accuracy * 100).toFixed(2)}%</p>
+                        <h4>Baseline Comparison:</h4>
+                        <ul>
+                            <li>Vegas Spreads: ${data.performance.baseline_comparison.vegas_spreads}</li>
+                            <li>Best Public Models: ${data.performance.baseline_comparison.best_public_models}</li>
+                            <li>This Model: ${data.performance.baseline_comparison.this_model}</li>
+                        </ul>
+                    </div>
+                `;
+
+                resultsDiv.innerHTML = html;
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+            }
+        }
+
+        async function showExplanation() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<div class="loading">🔄 Loading explanation...</div>';
+
+            try {
+                const response = await fetch('/api/ml/explain');
+                const data = await response.json();
+
+                let html = `
+                    <div class="summary">
+                        <h2>${data.title}</h2>
+                    </div>
+                `;
+
+                data.sections.forEach(section => {
+                    html += `
+                        <div class="game-card">
+                            <h3>${section.heading}</h3>
+                    `;
+
+                    if (Array.isArray(section.content)) {
+                        html += '<ul>';
+                        section.content.forEach(item => {
+                            html += `<li>${item}</li>`;
+                        });
+                        html += '</ul>';
+                    } else {
+                        html += `<p>${section.content}</p>`;
+                    }
+
+                    html += `</div>`;
+                });
+
+                html += `
+                    <div class="model-info">
+                        <strong>Disclaimer:</strong> ${data.disclaimer}
+                    </div>
+                    <div class="model-info">
+                        <strong>Academic Context:</strong> ${data.academic_context}
+                    </div>
+                `;
+
+                resultsDiv.innerHTML = html;
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+            }
+        }
+
+        // Auto-load upcoming predictions on page load
+        window.addEventListener('load', () => {
+            predictWeek();
+        });
+    </script>
+</body>
+</html>

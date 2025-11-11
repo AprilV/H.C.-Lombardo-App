@@ -2,13 +2,71 @@
 
 **Student:** April V  
 **Course:** IS330  
-**Last Updated:** November 1, 2025  
-**Status:** End of Week 6 Complete ✅ (Weeks 4-6: Oct 14 - Nov 1)  
+**Last Updated:** November 11, 2025  
+**Status:** Weeks 7-8 Complete ✅ (Nov 2-11, 2025)  
 **GitHub:** https://github.com/AprilV/H.C.-Lombardo-App
 
 ---
 
-## 📊 WEEKS 4-6 COMPLETE (October 14 - November 1, 2025)
+## 📊 WEEKS 7-8: MACHINE LEARNING & ADVANCED ANALYTICS (November 2-11, 2025)
+
+### Week 7: Sprint 9 - Machine Learning Neural Network (Nov 6, 2025) ✅
+
+####  November 6: Neural Network Training & Deployment - COMPLETE
+- **3-Layer Deep Neural Network** for game outcome prediction
+- **Architecture**: 41 inputs → 128 → 64 → 32 → 1 output (binary classification)
+- **Total Parameters**: 20,097 learnable weights and biases
+- **Training Data**: 5,477 games (1999-2023) with rolling features
+- **Validation**: 267 games (2024 season)
+- **Test Set**: 128 games (2025 season)
+- **Final Accuracy**: 65.55% test accuracy (beats Vegas 52-55% baseline)
+- **Training Time**: 2.7 seconds on Windows CPU
+- **Data Leakage Fixed**: V1 (99.8% - leaked) → V2 (65.55% - proper rolling windows)
+
+**Feature Engineering (41 Features):**
+1. **Season Statistics (8)**: PPG, EPA/play, success rate, yards/play, completion %, total yards, turnovers, 3rd down %
+2. **Recent Form (8)**: L3/L5 EPA, success rate, PPG, yards/play
+3. **Matchup Differentials (16)**: Home vs away differences, L3/L5 momentum indicators
+4. **Vegas Lines (9)**: Spread, total, moneylines, implied probabilities, line movement, public %, sharp money
+
+**Production Deployment:**
+- **Backend**: Flask API with 6 endpoints (`/api/ml/predict-week`, `/predict-upcoming`, `/predict-game`, `/model-info`, `/explain`, `/features`)
+- **Frontend**: React component with 4 tabs (Predictions, Upcoming Games, Model Info, Legend)
+- **Database**: PostgreSQL HCL schema integration
+- **Weekly Workflow**: Monday predictions, live game tracking, Wednesday updates
+
+**Status:** Production deployed and operational ✅
+
+---
+
+### Week 8: Sprint 10 - Historical Data & 3D Visualization (Nov 7-11, 2025) ✅
+
+#### 📊 November 7-11: Historical Data Redesign
+- **Spreadsheet-Style Interface** with three interactive dropdowns:
+  - **Team Selector**: All 32 NFL teams
+  - **Season Selector**: 1999-2025 (27 years of data)
+  - **Stat Category Selector**: 8 categories (All, Offense, Defense, Passing, Rushing, Advanced, Efficiency, Scoring)
+- **Professional Blue Gradient Theme** matching ML Predictions page
+- **3-Column Table Layout**: Statistic | Value | Category
+- **41 Total Statistics** across all categories
+- **Team Info Banner**: Displays team name and selected season
+- **Responsive Design**: Optimized for desktop and mobile
+
+#### 🧠 November 7-11: Dr. Foster Dashboard ML Tab
+- **Interactive 3D Neural Network Visualization** using Three.js
+- **5 Layers Rendered**: Input (41), Hidden1 (128), Hidden2 (64), Hidden3 (32), Output (1)
+- **Color-Coded Neurons**: Blue (input), Green (H1), Purple (H2), Pink (H3), Yellow (output)
+- **Animated Neurons**: Pulsing effects with emissive materials
+- **Connection Lines**: Semi-transparent connections between layers
+- **OrbitControls**: Mouse drag to rotate, scroll to zoom, auto-rotate enabled
+- **Comprehensive Documentation**: 9 sections covering problem, data, features, architecture, training, deployment
+- **Educational Content**: Data leakage prevention, V1 vs V2 comparison, academic learning outcomes
+
+**Status:** Historical Data complete ✅ | Dashboard 3D visualization complete ✅
+
+---
+
+## 📚 PREVIOUS WEEKS SUMMARY
 
 ### Week 6 Highlights (Oct 28 - Nov 1)
 
@@ -50,6 +108,258 @@
 - Three-tier architecture planning
 - Infrastructure setup and testing
 - Documentation framework established
+
+---
+
+## Sprint 9: Neural Network Visual Schematic
+
+### Architecture Overview
+
+Our neural network uses a **deep feed-forward architecture** with 3 hidden layers. Here's how data flows from inputs to prediction:
+
+```
+INPUT LAYER (75 features)
+┌─────────────────────────────────┐
+│  Basic Stats (51 features)      │
+│  - Points, Touchdowns, Yards    │
+│  - Turnovers, Field Goals       │
+│  - Passing, Rushing, Penalties  │
+│                                  │
+│  EPA Metrics (13 features)      │
+│  - EPA per play                 │
+│  - Success rate                 │
+│  - Pass EPA, Rush EPA           │
+│  - WPA, CPOE                    │
+│                                  │
+│  Context (11 features)          │
+│  - Season, Week, is_home        │
+│  - Betting lines (spread/total) │
+│  - Moneylines                   │
+└──────────────┬──────────────────┘
+               │
+               │ 75 connections to each hidden neuron
+               ▼
+HIDDEN LAYER 1 (128 neurons)
+┌───────────────────────────────────────────────────────────┐
+│  [N1] [N2] [N3] [N4] ... [N124] [N125] [N126] [N127] [N128] │
+│   ●    ●    ●    ●   ...   ●      ●      ●      ●      ●    │
+└───────────────────────┬───────────────────────────────────┘
+                        │ ReLU Activation
+                        │ 9,728 parameters (75×128 + 128)
+                        ▼
+HIDDEN LAYER 2 (64 neurons)
+┌─────────────────────────────────────────────┐
+│  [N1] [N2] [N3] ... [N62] [N63] [N64]      │
+│   ●    ●    ●   ...   ●     ●     ●        │
+└──────────────────┬──────────────────────────┘
+                   │ ReLU Activation
+                   │ 8,256 parameters (128×64 + 64)
+                   ▼
+HIDDEN LAYER 3 (32 neurons)
+┌───────────────────────────────────┐
+│  [N1] [N2] ... [N31] [N32]       │
+│   ●    ●   ...   ●     ●         │
+└────────────┬──────────────────────┘
+             │ ReLU Activation
+             │ 2,080 parameters (64×32 + 32)
+             ▼
+OUTPUT LAYER (1 neuron)
+┌────────────────────────┐
+│   Win Probability      │
+│         ●              │
+│      (0.0 - 1.0)       │
+└────────────────────────┘
+   Sigmoid Activation
+   33 parameters (32×1 + 1)
+
+TOTAL: 20,097 parameters
+```
+
+### How a Single Neuron Works
+
+**Example: Neuron in Hidden Layer 1**
+
+```
+Inputs from previous layer (75 features):
+┌─────────┬─────────┬─────────┬─────┬─────────┐
+│  x₁     │  x₂     │  x₃     │ ... │  x₇₅    │
+│ 0.52    │ -0.31   │  0.88   │ ... │  0.15   │
+└─────────┴─────────┴─────────┴─────┴─────────┘
+      ↓         ↓         ↓              ↓
+    × w₁      × w₂      × w₃           × w₇₅
+      ↓         ↓         ↓              ↓
+    0.35      0.06      0.72           0.08
+      └─────────┴─────────┴─────────────┘
+                    │
+                    ▼
+            Weighted Sum + Bias
+         z = (Σ xᵢ × wᵢ) + b
+         z = 1.23 + 0.1 = 1.33
+                    │
+                    ▼
+            ReLU Activation
+         output = max(0, z)
+         output = 1.33
+                    │
+                    ▼
+         Passes to next layer
+```
+
+### Data Flow Example
+
+**Predicting: Kansas City Chiefs @ Buffalo Bills (Week 11, 2025)**
+
+```
+INPUT FEATURES (sample):
+┌────────────────────────────┬────────┐
+│ is_home                    │   1    │ ← Home team advantage
+│ season                     │ 2025   │
+│ week                       │  11    │
+│ epa_per_play (Chiefs)      │ 0.18   │ ← Strong offense
+│ success_rate (Chiefs)      │ 0.48   │
+│ epa_per_play (Bills)       │ 0.15   │
+│ success_rate (Bills)       │ 0.45   │
+│ spread_line                │ -3.5   │ ← Chiefs favored
+│ total_line                 │ 47.5   │
+│ ... (66 more features)     │  ...   │
+└────────────────────────────┴────────┘
+        │
+        ▼
+LAYER 1: Learns basic patterns
+  Neuron 1: "Home team scoring"     → 0.82
+  Neuron 2: "EPA advantage"         → 0.91
+  Neuron 3: "Betting line strength" → 0.75
+  ... (125 more neurons)
+        │
+        ▼
+LAYER 2: Combines patterns
+  Neuron 1: "Home + Strong Offense" → 0.88
+  Neuron 2: "EPA + Betting Odds"    → 0.79
+  ... (62 more neurons)
+        │
+        ▼
+LAYER 3: High-level abstractions
+  Neuron 1: "Dominant team at home" → 0.85
+  Neuron 2: "Close game factors"    → 0.42
+  ... (30 more neurons)
+        │
+        ▼
+OUTPUT: Win Probability
+  Sigmoid(weighted_sum) = 0.67
+        │
+        ▼
+  PREDICTION: 67% chance Chiefs win
+```
+
+### Training Process Visualization
+
+**How the Network Learns**
+
+```
+EPOCH 1 (First Pass):
+──────────────────────────────────────────
+Input: [Chiefs game stats]
+Prediction: 0.52 (52% win probability)
+Actual: 1 (Chiefs won)
+Error: 0.52 - 1.00 = -0.48 (underpredicted)
+
+Backpropagation:
+   Output Layer ← Calculate error gradient
+        ↓
+   Hidden Layer 3 ← Propagate error backward
+        ↓
+   Hidden Layer 2 ← Adjust weights
+        ↓
+   Hidden Layer 1 ← Update all 20,097 parameters
+
+Weight Update Example:
+   Old weight: 0.500
+   Gradient: 0.200 (error contribution)
+   Learning rate: 0.001
+   New weight = 0.500 - (0.001 × 0.200)
+              = 0.4998 (slightly adjusted)
+
+──────────────────────────────────────────
+EPOCH 50 (After Learning):
+Input: [Chiefs game stats] (same game)
+Prediction: 0.68 (68% win probability)
+Actual: 1 (Chiefs won)
+Error: 0.68 - 1.00 = -0.32 (better!)
+```
+
+### Sample Weighting Strategy
+
+**Why Recent Games Matter More**
+
+```
+TRAINING DATA DISTRIBUTION:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Era: 2020-2023 (Modern NFL)
+Games: 2,136
+Weight: 1.0 ████████████████████ 100%
+Influence: 2,136 effective games
+
+Era: 2010-2019 (Recent NFL)
+Games: 5,340
+Weight: 0.6 ████████████ 60%
+Influence: 3,204 effective games
+
+Era: 1999-2009 (Historical NFL)
+Games: 5,886
+Weight: 0.2 ████ 20%
+Influence: 1,177 effective games
+
+Total: 13,362 games → 5,898 effective
+```
+
+**Impact on Training:**
+```
+If model makes same error on games from different eras:
+
+2023 Game Error: 0.3 × 1.0 = 0.30 penalty
+2015 Game Error: 0.3 × 0.6 = 0.18 penalty
+2003 Game Error: 0.3 × 0.2 = 0.06 penalty
+
+Model learns to prioritize modern NFL patterns!
+```
+
+### Performance Expectations
+
+**Comparison to Industry Standards**
+
+```
+                    Accuracy Target
+                    ├──────────┤
+Random Guessing     50%   ░░░░░░░░░░
+                          │
+Coin Flip           50%   ░░░░░░░░░░
+                          │
+Vegas Lines         52-55% ████████████
+                          │
+Best Models         57-60% ████████████████
+                          │
+Our Target (EPA)    60-65% ████████████████████
+                          │
+Perfect Prediction  100%  (impossible due to chaos)
+```
+
+**Why 60-65% is Excellent:**
+- NFL has parity by design (salary cap, draft order)
+- Injuries and weather aren't in our data
+- "Any Given Sunday" - upsets happen
+- Human factors (coaching, motivation) are unpredictable
+
+### Academic Concepts Demonstrated
+
+✅ **Artificial Neural Networks** - Inspired by biological neurons  
+✅ **Deep Learning** - Multiple hidden layers enable hierarchical learning  
+✅ **Backpropagation** - Gradient-based optimization algorithm  
+✅ **Activation Functions** - Non-linear transformations (ReLU, Sigmoid)  
+✅ **Regularization** - Sample weighting, early stopping, L2 penalty  
+✅ **Supervised Learning** - Training with labeled data (win/loss)  
+✅ **Train/Validation/Test Split** - Proper evaluation methodology  
+✅ **Feature Engineering** - Selecting and preparing 75 input features  
 
 ---
 

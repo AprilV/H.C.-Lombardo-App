@@ -81,6 +81,15 @@ function SideMenu() {
             <span className="menu-text">Analytics</span>
           </Link>
 
+          <Link 
+            to="/ml-predictions" 
+            className={`menu-item ${isActive('/ml-predictions')}`}
+            onClick={closeMenu}
+          >
+            <span className="menu-icon">🧠</span>
+            <span className="menu-text">H.C. Lombardo Neural Net Predictions</span>
+          </Link>
+
           <div className="menu-divider"></div>
 
           <div className="menu-item disabled">
