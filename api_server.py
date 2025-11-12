@@ -254,17 +254,57 @@ def run_server(host='127.0.0.1', port=5000, debug=False):
         traceback.print_exc()
         sys.exit(1)
 
+# 404 Error handler for React Router
+@app.errorhandler(404)
+def not_found(e):
+    """Handle 404 errors by serving React app (for client-side routing)"""
+    # Get the requested path
+    from flask import request
+    path = request.path
+    
+    logger.info(f"404 handler: path='{path}'")
+    
+    # If it's an API route, return JSON error
+    if path.startswith('/api/') or path.startswith('/health'):
+        logger.warning(f"API route not found: {path}")
+        return jsonify({"error": "Route not found", "path": path}), 404
+    
+    # For all other routes, serve index.html (React Router will handle it)
+    logger.info(f"Serving index.html for React Router: path='{path}'")
+    try:
+        return send_from_directory(BUILD_FOLDER, 'index.html')
+    except Exception as ex:
+        logger.error(f"Error serving index.html: {ex}")
+        return jsonify({"error": "Failed to load application"}), 500
+
 # Serve React App (must be at the end, after all API routes)
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def serve_react_app(path):
     """Serve React production build or index.html for client-side routing"""
-    if path != "" and os.path.exists(os.path.join(BUILD_FOLDER, path)):
-        # Serve static file (JS, CSS, images, etc.)
-        return send_from_directory(BUILD_FOLDER, path)
-    else:
-        # Serve index.html for all other routes (React Router handles them)
+    logger.info(f"Catch-all route hit: path='{path}'")
+    
+    # Don't intercept API routes
+    if path.startswith('api/') or path.startswith('health'):
+        logger.warning(f"API route in catch-all (should not happen): {path}")
+        return jsonify({"error": "Route not found"}), 404
+    
+    # Check if it's a static file (has file extension)
+    if path and '.' in path.split('/')[-1]:
+        file_path = os.path.join(BUILD_FOLDER, path)
+        if os.path.exists(file_path):
+            logger.info(f"Serving static file: {path}")
+            return send_from_directory(BUILD_FOLDER, path)
+        else:
+            logger.warning(f"Static file not found: {path}")
+    
+    # For all other routes, serve index.html (React Router handles them)
+    logger.info(f"Serving index.html for React Router: path='{path}'")
+    try:
         return send_from_directory(BUILD_FOLDER, 'index.html')
+    except Exception as e:
+        logger.error(f"Error serving index.html: {e}")
+        return jsonify({"error": "Failed to load application"}), 500
 
 if __name__ == "__main__":
     run_server()

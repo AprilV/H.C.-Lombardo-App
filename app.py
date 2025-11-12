@@ -244,38 +244,24 @@ def api_get_team_details(abbreviation):
         log_activity('api', 'error', f'Failed to get team {abbreviation}: {e}')
         return jsonify({"error": str(e)}), 500
 
-@app.route('/')
-def home():
-    """Homepage with all 32 teams"""
-    log_activity('app', 'info', 'Homepage accessed', route='/', user_agent='browser')
-    
-    # Check if data needs refresh (24-hour check)
-    refresh_data_if_needed()
-    
-    offense = get_top_offense()
-    defense = get_top_defense()
-    
-    log_activity('app', 'info', 'Homepage data prepared', 
-                offense_teams=len(offense), defense_teams=len(defense))
-    
-    return render_template('index.html', offense=offense, defense=defense)
-
-@app.route('/team/<team_abbr>')
-def team_detail(team_abbr):
-    """Team detail page with historical stats"""
-    log_activity('app', 'info', f'Team detail accessed: {team_abbr}', route='/team/<team_abbr>')
-    return render_template('team_detail.html', team_abbr=team_abbr.upper())
-
-@app.route('/ml-test')
-def ml_test():
-    """ML Predictions test page"""
-    log_activity('app', 'info', 'ML test page accessed', route='/ml-test')
-    return render_template('ml_test.html')
-
 @app.route('/favicon.ico')
 def favicon():
     """Serve favicon"""
     return send_from_directory('frontend/build', 'favicon.ico', mimetype='image/vnd.microsoft.icon')
+
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def catch_all(path):
+    """Serve React app for all non-API routes (enables client-side routing)"""
+    # If requesting a static file, serve it
+    if path and (path.startswith('static/') or '.' in path.split('/')[-1]):
+        try:
+            return send_from_directory('frontend/build', path)
+        except:
+            pass
+    
+    # Otherwise, serve index.html for React Router to handle
+    return send_from_directory('frontend/build', 'index.html')
 
 if __name__ == '__main__':
     log_activity('app', 'info', 'Starting H.C. Lombardo NFL Dashboard', 

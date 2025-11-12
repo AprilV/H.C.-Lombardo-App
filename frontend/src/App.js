@@ -2,8 +2,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import SideMenu from './SideMenu';
 import Homepage from './Homepage';
-import TeamStats from './TeamStats';
-import HistoricalData from './HistoricalData';
+import GameStatistics from './GameStatistics';
 import TeamDetail from './TeamDetail';
 import Analytics from './Analytics';
 import MLPredictions from './MLPredictions';
@@ -88,8 +87,7 @@ function App() {
 
           <Routes>
             <Route path="/" element={<Homepage />} />
-            <Route path="/team-stats" element={<TeamStats />} />
-            <Route path="/historical" element={<HistoricalData />} />
+            <Route path="/game-statistics" element={<GameStatistics />} />
             <Route path="/analytics" element={<Analytics />} />
             <Route path="/ml-predictions" element={<MLPredictions />} />
             <Route path="/team/:teamAbbr" element={<TeamDetail />} />

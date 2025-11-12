@@ -55,21 +55,12 @@ function SideMenu() {
           </Link>
 
           <Link 
-            to="/team-stats" 
-            className={`menu-item ${isActive('/team-stats')}`}
+            to="/game-statistics" 
+            className={`menu-item ${isActive('/game-statistics')}`}
             onClick={closeMenu}
           >
             <span className="menu-icon">📊</span>
-            <span className="menu-text">Team Stats</span>
-          </Link>
-
-          <Link 
-            to="/historical" 
-            className={`menu-item ${isActive('/historical')}`}
-            onClick={closeMenu}
-          >
-            <span className="menu-icon">📜</span>
-            <span className="menu-text">Historical Data</span>
+            <span className="menu-text">Game Statistics</span>
           </Link>
 
           <Link 

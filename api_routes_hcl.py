@@ -103,7 +103,7 @@ def get_team_details(team_abbr):
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=RealDictCursor)
         
-        # Get season stats from team_game_stats
+        # Get season stats from team_game_stats - ALL AVAILABLE STATS
         query = """
             SELECT 
                 team,
@@ -111,15 +111,62 @@ def get_team_details(team_abbr):
                 COUNT(*) as games_played,
                 SUM(CASE WHEN result = 'W' THEN 1 ELSE 0 END) as wins,
                 SUM(CASE WHEN result = 'L' THEN 1 ELSE 0 END) as losses,
+                
+                -- Scoring
                 ROUND(AVG(points)::numeric, 1) as ppg,
+                SUM(points) as total_points,
+                ROUND(AVG(touchdowns)::numeric, 1) as touchdowns_per_game,
+                ROUND(AVG(field_goals_made)::numeric, 1) as fg_per_game,
+                ROUND(AVG(field_goals_att)::numeric, 1) as fg_att_per_game,
+                
+                -- Offensive Stats
                 ROUND(AVG(total_yards)::numeric, 1) as total_yards_per_game,
                 ROUND(AVG(passing_yards)::numeric, 1) as passing_yards_per_game,
                 ROUND(AVG(rushing_yards)::numeric, 1) as rushing_yards_per_game,
+                ROUND(AVG(plays)::numeric, 1) as plays_per_game,
                 ROUND(AVG(yards_per_play)::numeric, 2) as yards_per_play,
+                
+                -- Passing Stats
+                ROUND(AVG(completions)::numeric, 1) as completions_per_game,
+                ROUND(AVG(passing_att)::numeric, 1) as passing_att_per_game,
                 ROUND(AVG(completion_pct)::numeric, 1) as completion_pct,
+                ROUND(AVG(passing_tds)::numeric, 1) as passing_tds_per_game,
+                ROUND(AVG(interceptions)::numeric, 1) as interceptions_per_game,
+                ROUND(AVG(sacks_taken)::numeric, 1) as sacks_taken_per_game,
+                ROUND(AVG(sack_yards_lost)::numeric, 1) as sack_yards_lost_per_game,
+                ROUND(AVG(qb_rating)::numeric, 1) as qb_rating,
+                
+                -- Rushing Stats
+                ROUND(AVG(rushing_att)::numeric, 1) as rushing_att_per_game,
+                ROUND(AVG(yards_per_carry)::numeric, 2) as yards_per_carry,
+                ROUND(AVG(rushing_tds)::numeric, 1) as rushing_tds_per_game,
+                
+                -- Efficiency Metrics
                 ROUND(AVG(third_down_pct)::numeric, 1) as third_down_pct,
+                ROUND(AVG(fourth_down_pct)::numeric, 1) as fourth_down_pct,
                 ROUND(AVG(red_zone_pct)::numeric, 1) as red_zone_pct,
-                SUM(turnovers) as turnovers,
+                
+                -- Special Teams
+                ROUND(AVG(punt_count)::numeric, 1) as punts_per_game,
+                ROUND(AVG(punt_avg_yards)::numeric, 1) as punt_avg_yards,
+                ROUND(AVG(kickoff_return_yards)::numeric, 1) as kickoff_return_yards_per_game,
+                ROUND(AVG(punt_return_yards)::numeric, 1) as punt_return_yards_per_game,
+                
+                -- Defense/Turnovers
+                SUM(turnovers) as total_turnovers,
+                ROUND(AVG(turnovers)::numeric, 1) as turnovers_per_game,
+                ROUND(AVG(fumbles_lost)::numeric, 1) as fumbles_lost_per_game,
+                ROUND(AVG(penalties)::numeric, 1) as penalties_per_game,
+                ROUND(AVG(penalty_yards)::numeric, 1) as penalty_yards_per_game,
+                
+                -- Time of Possession
+                ROUND(AVG(time_of_possession_pct)::numeric, 1) as time_of_possession_pct,
+                
+                -- Advanced Metrics
+                ROUND(AVG(drives)::numeric, 1) as drives_per_game,
+                ROUND(AVG(early_down_success_rate)::numeric, 1) as early_down_success_rate,
+                ROUND(AVG(starting_field_pos_yds)::numeric, 1) as starting_field_pos_yds,
+                
                 -- Home/Away splits
                 ROUND(AVG(CASE WHEN is_home THEN points END)::numeric, 1) as ppg_home,
                 ROUND(AVG(CASE WHEN NOT is_home THEN points END)::numeric, 1) as ppg_away,
