@@ -18,6 +18,18 @@ function MLPredictions() {
     return `https://a.espncdn.com/i/teamlogos/nfl/500/${team}.png`;
   };
 
+  // Format game date (avoid timezone shifts)
+  const formatGameDate = (dateString) => {
+    if (!dateString) return '';
+    const [year, month, day] = dateString.split('-');
+    const date = new Date(year, month - 1, day);
+    return date.toLocaleDateString('en-US', { 
+      weekday: 'short',
+      month: 'short', 
+      day: 'numeric'
+    });
+  };
+
   // Fetch upcoming week predictions on load
   useEffect(() => {
     fetchUpcomingPredictions();
@@ -59,6 +71,8 @@ function MLPredictions() {
         setError(data.error);
       } else {
         setPredictions(data.predictions || []);
+        setSeason(data.season);
+        setWeek(data.week);
       }
     } catch (err) {
       console.error('Error fetching predictions:', err);
@@ -135,11 +149,11 @@ function MLPredictions() {
             return (
               <div key={idx} className="prediction-card">
                 <div className="game-header">
-                  <span className="game-date">{pred.game_date}</span>
+                  <span className="game-date">{formatGameDate(pred.game_date)}</span>
                   <span className="game-id">#{pred.game_id}</span>
                 </div>
 
-                <div className="matchup-container">
+                <div className="ml-matchup-container">
                   {/* Away Team */}
                   <div className={`team-section ${!isHomeWinner ? 'winner' : ''}`}>
                     <img 

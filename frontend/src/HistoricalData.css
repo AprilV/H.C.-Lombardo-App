@@ -8,6 +8,8 @@
 }
 
 .header {
+  position: relative;
+  overflow: hidden;
   text-align: center;
   margin-bottom: 2rem;
   padding: 2rem;

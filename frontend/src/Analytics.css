@@ -10,15 +10,18 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 30px;
-  padding: 20px;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  padding: 30px;
+  background: linear-gradient(135deg, rgba(26,26,46,0.98) 0%, rgba(22,33,62,0.98) 100%);
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  position: relative;
+  overflow: hidden;
+  z-index: 10;
 }
 
 .analytics-header h1 {
   margin: 0;
-  font-size: 2.2rem;
+  font-size: 2.5rem;
   background: linear-gradient(135deg, #00d4ff 0%, #0095ff 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;

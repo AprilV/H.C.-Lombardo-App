@@ -293,6 +293,8 @@ class WeeklyPredictor:
             
             # Add game metadata
             result['game_id'] = game['game_id']
+            result['season'] = season
+            result['week'] = week
             result['game_date'] = str(game['game_date']) if pd.notna(game['game_date']) else None
             result['kickoff_time'] = str(game['kickoff_time_utc']) if pd.notna(game['kickoff_time_utc']) else None
             
@@ -328,16 +330,16 @@ class WeeklyPredictor:
         return predictions
     
     def predict_upcoming(self):
-        """Predict the next upcoming week"""
+        """Predict the next upcoming week (games that haven't been played yet)"""
         conn = psycopg2.connect(**self.db_config)
         
-        # Find the current week (latest week with incomplete games)
+        # Find upcoming games based on game_date >= today
         query = """
             SELECT season, week
             FROM hcl.games
             WHERE is_postseason = false
-            AND (home_score IS NULL OR away_score IS NULL)
-            ORDER BY season DESC, week ASC
+            AND game_date >= CURRENT_DATE
+            ORDER BY season ASC, week ASC
             LIMIT 1;
         """
         
@@ -351,7 +353,20 @@ class WeeklyPredictor:
         season = int(df.iloc[0]['season'])
         week = int(df.iloc[0]['week'])
         
-        return self.predict_week(season, week)
+        print(f"📅 Predicting upcoming games: Season {season}, Week {week}")
+        
+        # Get all predictions for the week
+        all_predictions = self.predict_week(season, week)
+        
+        # Filter to only games that haven't been played yet (game_date >= today)
+        from datetime import date
+        today = str(date.today())
+        
+        upcoming_only = [p for p in all_predictions if p.get('game_date', '') >= today]
+        
+        print(f"✅ Filtered to {len(upcoming_only)} upcoming games (removed {len(all_predictions) - len(upcoming_only)} already played)")
+        
+        return upcoming_only
 
 
 def main():

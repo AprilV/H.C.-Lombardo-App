@@ -20,7 +20,7 @@
 
 .ml-predictions-header h1 {
   margin: 0;
-  font-size: 2.2rem;
+  font-size: 2.5rem;
   background: linear-gradient(135deg, #00d4ff 0%, #0095ff 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -193,7 +193,10 @@
 }
 
 /* Matchup Container */
-.matchup-container {
+.ml-matchup-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   margin: 20px 0;
 }
 
@@ -675,7 +678,7 @@
   }
 
   .ml-predictions-header h1 {
-    font-size: 1.8rem;
+    font-size: 2rem;
     text-align: center;
   }
 

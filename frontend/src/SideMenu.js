@@ -51,7 +51,7 @@ function SideMenu() {
             onClick={closeMenu}
           >
             <span className="menu-icon">🏈</span>
-            <span className="menu-text">Home</span>
+            <span className="menu-text">Dashboard</span>
           </Link>
 
           <Link 
@@ -60,7 +60,7 @@ function SideMenu() {
             onClick={closeMenu}
           >
             <span className="menu-icon">📊</span>
-            <span className="menu-text">Game Statistics</span>
+            <span className="menu-text">Historical Stats</span>
           </Link>
 
           <Link 
@@ -69,7 +69,7 @@ function SideMenu() {
             onClick={closeMenu}
           >
             <span className="menu-icon">📈</span>
-            <span className="menu-text">Analytics</span>
+            <span className="menu-text">Advanced Analytics</span>
           </Link>
 
           <Link 
@@ -78,16 +78,19 @@ function SideMenu() {
             onClick={closeMenu}
           >
             <span className="menu-icon">🧠</span>
-            <span className="menu-text">H.C. Lombardo Neural Net Predictions</span>
+            <span className="menu-text">AI Predictions</span>
           </Link>
 
           <div className="menu-divider"></div>
 
-          <div className="menu-item disabled">
+          <Link 
+            to="/matchup-analyzer" 
+            className={`menu-item ${isActive('/matchup-analyzer')}`}
+            onClick={closeMenu}
+          >
             <span className="menu-icon">🎯</span>
             <span className="menu-text">Matchup Analyzer</span>
-            <span className="coming-soon">Soon</span>
-          </div>
+          </Link>
 
           <div className="menu-item disabled">
             <span className="menu-icon">🎲</span>

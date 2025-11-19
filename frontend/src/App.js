@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import SideMenu from './SideMenu';
 import Homepage from './Homepage';
 import GameStatistics from './GameStatistics';
+import MatchupAnalyzer from './MatchupAnalyzer';
 import TeamDetail from './TeamDetail';
 import Analytics from './Analytics';
 import MLPredictions from './MLPredictions';
@@ -44,19 +45,6 @@ function App() {
         </header>
 
         <main className="App-main">
-          <div className="nfl-background">
-            <div className="nfl-scroll">
-              {[...Array(20)].map((_, i) => (
-                <img 
-                  key={i}
-                  src="https://a.espncdn.com/i/teamlogos/leagues/500/nfl.png" 
-                  alt=""
-                  className="nfl-watermark"
-                />
-              ))}
-            </div>
-          </div>
-
           <section className="status-bar">
             {serverStatus ? (
               <div className="status-bar-content">
@@ -88,6 +76,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Homepage />} />
             <Route path="/game-statistics" element={<GameStatistics />} />
+            <Route path="/matchup-analyzer" element={<MatchupAnalyzer />} />
             <Route path="/analytics" element={<Analytics />} />
             <Route path="/ml-predictions" element={<MLPredictions />} />
             <Route path="/team/:teamAbbr" element={<TeamDetail />} />

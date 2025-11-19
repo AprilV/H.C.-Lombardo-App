@@ -497,7 +497,7 @@ function Analytics() {
   return (
     <div className="analytics-container">
       <div className="analytics-header">
-        <h1>📊 Advanced Analytics Dashboard</h1>
+        <h1>🎯 Advanced Analytics Dashboard</h1>
         <div className="season-selector">
           <label>Season:</label>
           <select value={season} onChange={(e) => setSeason(Number(e.target.value))}>

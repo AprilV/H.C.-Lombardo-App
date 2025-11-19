@@ -913,3 +913,66 @@ body {
   }
 }
 
+
+
+/* ===================================
+   UNIVERSAL PAGE HEADER STYLES
+   Overrides all individual page headers for consistency
+   =================================== */
+
+.ml-predictions-header,
+.analytics-header,
+.stats-header,
+.matchup-header,
+.header {
+  position: relative !important;
+  overflow: hidden !important;
+  text-align: center !important;
+  margin-bottom: 30px !important;
+  padding: 40px 30px !important;
+  border-radius: 15px !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2) !important;
+  color: white !important;
+  min-height: 160px !important;
+}
+
+/* ML Predictions and Analytics use dark blue to match their page themes */
+.ml-predictions-header,
+.analytics-header {
+  background: linear-gradient(135deg, rgba(26,26,46,0.98) 0%, rgba(22,33,62,0.98) 100%) !important;
+}
+
+/* Other pages use purple gradient */
+.stats-header,
+.matchup-header,
+.header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+}
+
+.ml-predictions-header h1,
+.analytics-header h1,
+.stats-header h1,
+.matchup-header h1,
+.header h1 {
+  margin: 0 0 10px 0 !important;
+  font-size: 2.5rem !important;
+  font-weight: 700 !important;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3) !important;
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+.ml-predictions-header .subtitle,
+.analytics-header .subtitle,
+.stats-header .subtitle,
+.matchup-header .subtitle,
+.header .subtitle {
+  margin: 0 !important;
+  font-size: 1.1rem !important;
+  opacity: 0.95 !important;
+  font-weight: 300 !important;
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+

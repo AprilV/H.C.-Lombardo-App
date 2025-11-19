@@ -39,15 +39,8 @@ register_dashboard_routes(app)
 app.register_blueprint(hcl_bp)
 
 # Register ML API routes
+# Register ML API routes
 app.register_blueprint(ml_api)
-
-# Additional CORS headers for file:// protocol
-@app.after_request
-def after_request(response):
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
-    response.headers.add('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE')
-    return response
 
 # Database configuration
 DB_CONFIG = {
