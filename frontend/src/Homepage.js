@@ -73,7 +73,7 @@ function Homepage() {
   };
 
   const handleTeamClick = (abbr) => {
-    navigate(`/team-stats?team=${abbr}`);
+    navigate(`/team/${abbr}`);
   };
 
   if (loading) {

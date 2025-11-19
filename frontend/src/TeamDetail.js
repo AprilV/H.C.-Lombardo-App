@@ -70,6 +70,10 @@ function TeamDetail() {
     }
   };
 
+  const getTeamLogo = (abbr) => {
+    return `https://a.espncdn.com/i/teamlogos/nfl/500/${abbr}.png`;
+  };
+
   const getChartData = () => {
     if (!games || games.length === 0) return null;
     
@@ -79,16 +83,16 @@ function TeamDetail() {
       labels: sortedGames.map(g => `Week ${g.week}`),
       datasets: [
         {
-          label: 'EPA/Play',
-          data: sortedGames.map(g => parseFloat(g.epa_per_play || 0)),
+          label: 'Total Yards',
+          data: sortedGames.map(g => parseFloat(g.total_yards || 0)),
           borderColor: '#667eea',
           backgroundColor: 'rgba(102, 126, 234, 0.1)',
           tension: 0.4,
           fill: true
         },
         {
-          label: 'Success Rate',
-          data: sortedGames.map(g => parseFloat(g.success_rate || 0)),
+          label: 'Points Scored',
+          data: sortedGames.map(g => parseFloat(g.team_points || 0)),
           borderColor: '#4CAF50',
           backgroundColor: 'rgba(76, 175, 80, 0.1)',
           tension: 0.4,
@@ -129,7 +133,7 @@ function TeamDetail() {
     return (
       <div className="team-detail">
         <div className="error">Error: {error}</div>
-        <button onClick={() => navigate('/historical')} className="back-btn">
+        <button onClick={() => navigate('/')} className="back-btn">
           ← Back to Teams
         </button>
       </div>
@@ -144,11 +148,11 @@ function TeamDetail() {
     { label: 'Record', value: `${teamData.wins}-${teamData.losses}` },
     { label: 'Games Played', value: teamData.games_played },
     { label: 'PPG', value: teamData.ppg },
-    { label: 'EPA/Play', value: teamData.epa_per_play },
-    { label: 'Success Rate', value: teamData.success_rate },
-    { label: 'Yards/Play', value: teamData.yards_per_play },
-    { label: 'Pass EPA', value: teamData.pass_epa || 'N/A' },
-    { label: 'Rush EPA', value: teamData.rush_epa || 'N/A' }
+    { label: 'Total Yards/Game', value: teamData.total_yards_per_game },
+    { label: 'Pass Yards/Game', value: teamData.passing_yards_per_game },
+    { label: 'Rush Yards/Game', value: teamData.rushing_yards_per_game },
+    { label: 'Completion %', value: `${teamData.completion_pct}%` },
+    { label: '3rd Down %', value: `${teamData.third_down_pct}%` }
   ];
 
   const chartData = getChartData();
@@ -156,10 +160,15 @@ function TeamDetail() {
   return (
     <div className="team-detail">
       <div className="header">
-        <button onClick={() => navigate('/historical')} className="back-btn">
+        <button onClick={() => navigate('/')} className="back-btn">
           ← Back to Teams
         </button>
         <div className="team-header">
+          <img 
+            src={getTeamLogo(teamAbbr)} 
+            alt={teamAbbr}
+            className="team-logo-large"
+          />
           <div>
             <h1 className="team-name">{teamAbbr}</h1>
           </div>
@@ -195,27 +204,43 @@ function TeamDetail() {
               <th>Opponent</th>
               <th>Result</th>
               <th>Score</th>
-              <th>EPA/Play</th>
-              <th>Success Rate</th>
-              <th>Yards/Play</th>
+              <th>Total Yards</th>
+              <th>Pass Yds</th>
+              <th>Rush Yds</th>
             </tr>
           </thead>
           <tbody>
             {games.map((game, index) => {
-              const won = game.team_points > game.opponent_points;
+              const won = game.result === 'W';
               const resultClass = won ? 'win' : 'loss';
-              const result = won ? 'W' : 'L';
               const location = game.is_home ? 'vs' : '@';
               
               return (
                 <tr key={index}>
                   <td>{game.week}</td>
-                  <td>{location} {game.opponent}</td>
-                  <td className={resultClass}>{result}</td>
-                  <td>{game.team_points}-{game.opponent_points}</td>
-                  <td>{game.epa_per_play}</td>
-                  <td>{game.success_rate}</td>
-                  <td>{game.yards_per_play}</td>
+                  <td>
+                    <div className="opponent-cell">
+                      <img 
+                        src={getTeamLogo(game.opponent)} 
+                        alt={game.opponent}
+                        className="opponent-logo"
+                      />
+                      {location} {game.opponent}
+                      {game.is_divisional_game && <span className="division-badge">DIV</span>}
+                    </div>
+                  </td>
+                  <td className={resultClass}>{game.result}</td>
+                  <td>
+                    {game.team_points != null ? game.team_points : '-'}-
+                    {(() => {
+                      // Opponent score is home_score if team is away, away_score if team is home
+                      const oppScore = game.is_home ? game.away_score : game.home_score;
+                      return oppScore != null ? oppScore : '-';
+                    })()}
+                  </td>
+                  <td>{game.total_yards != null ? game.total_yards : '-'}</td>
+                  <td>{game.passing_yards != null ? game.passing_yards : '-'}</td>
+                  <td>{game.rushing_yards != null ? game.rushing_yards : '-'}</td>
                 </tr>
               );
             })}

@@ -35,6 +35,13 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 20px;
+}
+
+.team-logo-large {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
 }
 
 .team-name {
@@ -152,6 +159,28 @@ tr:hover {
 .loss {
   color: #f44336;
   font-weight: bold;
+}
+
+.opponent-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.opponent-logo {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+.division-badge {
+  background: #FF9800;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: bold;
+  margin-left: 8px;
 }
 
 .loading {
