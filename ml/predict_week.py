@@ -42,8 +42,8 @@ class WeeklyPredictor:
         with open(f'{model_dir}/feature_names_v2.txt', 'r') as f:
             self.win_feature_names = [line.strip() for line in f.readlines()]
         
-        # Load POINT SPREAD model (regression) from testbed
-        spread_dir = 'testbed/models'
+        # Load POINT SPREAD model (regression) - NOW IN PRODUCTION
+        spread_dir = 'ml/models'
         self.spread_model = joblib.load(f'{spread_dir}/point_spread_model.pkl')
         self.spread_scaler = joblib.load(f'{spread_dir}/point_spread_scaler.pkl')
         
@@ -260,6 +260,9 @@ class WeeklyPredictor:
         # AI-generated spread (negative means home favored)
         ai_spread = -predicted_margin
         
+        # Winner from POINT SPREAD model (more specific than win/loss model)
+        spread_predicted_winner = home_team if predicted_margin > 0 else away_team
+        
         # Compare to Vegas spread
         spread_difference = None
         if spread_line is not None:
@@ -270,11 +273,14 @@ class WeeklyPredictor:
             'home_team': home_team,
             'away_team': away_team,
             
-            # Win/Loss prediction
-            'predicted_winner': home_team if win_prediction == 1 else away_team,
+            # Win/Loss prediction from classification model
+            'win_model_prediction': home_team if win_prediction == 1 else away_team,
             'home_win_prob': float(win_confidence[1]),
             'away_win_prob': float(win_confidence[0]),
             'confidence': float(max(win_confidence)),
+            
+            # Use spread model's winner as primary (more granular)
+            'predicted_winner': spread_predicted_winner,
             
             # Score predictions
             'predicted_home_score': predicted_home_score,

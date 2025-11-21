@@ -1,0 +1,16 @@
+2025-11-18 19:30:02 | INFO | api | ============================================================
+2025-11-18 19:30:02 | INFO | api | H.C. LOMBARDO NFL ANALYTICS API - PRODUCTION
+2025-11-18 19:30:02 | INFO | api | ============================================================
+2025-11-18 19:30:02 | INFO | api | Server: http://127.0.0.1:5000
+2025-11-18 19:30:02 | INFO | api | Process ID: 24772
+2025-11-18 19:30:02 | INFO | api | CORS Enabled for: http://localhost:3000
+2025-11-18 19:30:02 | INFO | api | ============================================================
+2025-11-18 19:30:02 | INFO | api | Testing database connection...
+2025-11-18 19:30:02 | INFO | api | Database connected: 32 teams found
+2025-11-18 19:30:02 | INFO | api | Flask-CORS verified
+2025-11-18 19:30:02 | INFO | api | Starting Flask server...
+2025-11-18 19:30:02 | INFO | api | Build folder: C:\IS330\H.C Lombardo App\frontend\build
+2025-11-18 19:30:02 | INFO | api | [OK] React build folder found - serving production build
+2025-11-18 19:30:02 | INFO | werkzeug | [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-11-18 19:30:02 | INFO | werkzeug | [33mPress CTRL+C to quit[0m
