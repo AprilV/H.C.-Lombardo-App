@@ -145,7 +145,7 @@ function TeamDetail() {
   }
 
   const stats = [
-    { label: 'Record', value: `${teamData.wins}-${teamData.losses}` },
+    { label: 'Record', value: `${teamData.wins}-${teamData.losses}${(teamData.ties || 0) > 0 ? `-${teamData.ties}` : ''}` },
     { label: 'Games Played', value: teamData.games_played },
     { label: 'PPG', value: teamData.ppg },
     { label: 'Total Yards/Game', value: teamData.total_yards_per_game },

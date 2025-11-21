@@ -208,6 +208,52 @@ function MLPredictions() {
                   </div>
                 </div>
 
+                {/* Predicted Score */}
+                {pred.predicted_home_score !== undefined && pred.predicted_away_score !== undefined && (
+                  <div className="predicted-score">
+                    <div className="score-title">Predicted Final Score</div>
+                    <div className="score-display">
+                      <div className="score-team">
+                        <span className="score-team-name">{pred.away_team}</span>
+                        <span className="score-value">{pred.predicted_away_score}</span>
+                      </div>
+                      <div className="score-separator">-</div>
+                      <div className="score-team">
+                        <span className="score-team-name">{pred.home_team}</span>
+                        <span className="score-value">{pred.predicted_home_score}</span>
+                      </div>
+                    </div>
+                    <div className="score-margin">
+                      Margin: {Math.abs(pred.predicted_margin).toFixed(1)} pts
+                    </div>
+                  </div>
+                )}
+
+                {/* Spread Analysis */}
+                {pred.ai_spread !== undefined && pred.vegas_spread !== undefined && (
+                  <div className="spread-analysis">
+                    <div className="spread-title">AI vs Vegas Spread</div>
+                    <div className="spread-comparison">
+                      <div className="spread-item">
+                        <span className="spread-label">🤖 AI Spread</span>
+                        <span className="spread-value ai-spread">{pred.ai_spread > 0 ? '+' : ''}{pred.ai_spread}</span>
+                      </div>
+                      <div className="spread-vs">vs</div>
+                      <div className="spread-item">
+                        <span className="spread-label">🎰 Vegas Spread</span>
+                        <span className="spread-value vegas-spread">{pred.vegas_spread > 0 ? '+' : ''}{pred.vegas_spread}</span>
+                      </div>
+                    </div>
+                    {pred.spread_difference !== null && Math.abs(pred.spread_difference) > 3 && (
+                      <div className="value-indicator">
+                        <span className="value-badge">
+                          💎 Value Play: AI differs by {Math.abs(pred.spread_difference).toFixed(1)} pts
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 {/* Key Factors */}
                 {pred.key_factors && (
                   <div className="key-factors">
@@ -221,17 +267,17 @@ function MLPredictions() {
                           </span>
                         </div>
                       )}
-                      {pred.spread_line && (
+                      {pred.total_line && (
                         <div className="factor-item">
-                          <span className="factor-label">Vegas Spread</span>
-                          <span className="factor-value">{pred.spread_line}</span>
+                          <span className="factor-label">Vegas Total</span>
+                          <span className="factor-value">O/U {pred.total_line}</span>
                         </div>
                       )}
-                      {pred.key_factors.home_recent_ppg && (
+                      {pred.key_factors.home_recent_epa !== undefined && (
                         <div className="factor-item">
-                          <span className="factor-label">Recent Form</span>
+                          <span className="factor-label">Recent EPA Form</span>
                           <span className="factor-value">
-                            {pred.key_factors.home_recent_ppg.toFixed(1)} - {pred.key_factors.away_recent_ppg.toFixed(1)}
+                            {pred.key_factors.home_recent_epa.toFixed(3)} / {pred.key_factors.away_recent_epa.toFixed(3)}
                           </span>
                         </div>
                       )}
@@ -251,10 +297,70 @@ function MLPredictions() {
       <div className="legend-container">
         <div className="stat-legend">
           <h3>📊 Statistics & Terms Explained</h3>
-          <p>Understanding the metrics and data sources used in predictions</p>
+          <p>Understanding the metrics, predictions, and betting analysis</p>
         </div>
 
         <div className="legend-sections">
+          {/* Sprint 11: NEW PREDICTION FEATURES */}
+          <div className="legend-section highlight">
+            <h3>🆕 Sprint 11: Score & Spread Predictions</h3>
+            
+            <div className="legend-item">
+              <div className="legend-term">Predicted Final Score</div>
+              <div className="legend-definition">
+                <p><strong>What it is:</strong> AI-predicted final scores for both teams using neural network regression model.</p>
+                <p><strong>How it works:</strong> Analyzes team performance, recent form, EPA trends, and Vegas total line to predict exact scores.</p>
+                <p><strong>Example:</strong> "BUF: 18.7 - HOU: 24.8" means AI predicts Houston wins 24.8 to 18.7.</p>
+                <p><strong>Accuracy:</strong> Mean Absolute Error (MAE) of 10.35 points on 2025 games. Competitive with Vegas spreads (~10.5 MAE).</p>
+              </div>
+            </div>
+
+            <div className="legend-item">
+              <div className="legend-term">Predicted Margin / Point Differential</div>
+              <div className="legend-definition">
+                <p><strong>What it is:</strong> Difference between predicted scores (Home Score - Away Score).</p>
+                <p><strong>Example:</strong> "Margin: 6.1 pts" means home team predicted to win by 6.1 points.</p>
+                <p><strong>Positive margin:</strong> Home team favored. <strong>Negative margin:</strong> Away team favored.</p>
+              </div>
+            </div>
+
+            <div className="legend-item">
+              <div className="legend-term">🤖 AI Spread</div>
+              <div className="legend-definition">
+                <p><strong>What it is:</strong> AI-generated betting spread based on predicted point differential.</p>
+                <p><strong>How to read:</strong> Negative number = home team favored by that many points.</p>
+                <p><strong>Example:</strong> "AI Spread: -6.1" means AI predicts home team wins by 6.1 points.</p>
+                <p><strong>Calculation:</strong> -(Predicted Home Score - Predicted Away Score)</p>
+              </div>
+            </div>
+
+            <div className="legend-item">
+              <div className="legend-term">🎰 Vegas Spread</div>
+              <div className="legend-definition">
+                <p><strong>What it is:</strong> Official betting spread from sportsbooks (ESPN aggregated odds).</p>
+                <p><strong>How to read:</strong> Same format as AI spread - negative means home favored.</p>
+                <p><strong>Example:</strong> "Vegas Spread: -6.0" means Vegas has home team favored by 6 points.</p>
+                <p><strong>Source:</strong> ESPN Bet (aggregates DraftKings, FanDuel, Caesars, BetMGM).</p>
+              </div>
+            </div>
+
+            <div className="legend-item">
+              <div className="legend-term">💎 Value Play (Spread Difference)</div>
+              <div className="legend-definition">
+                <p><strong>What it is:</strong> When AI spread differs significantly from Vegas spread (threshold: 3+ points).</p>
+                <p><strong>Why it matters:</strong> Indicates potential betting opportunities where AI's analysis disagrees with market consensus.</p>
+                <p><strong>Example:</strong> AI: -10.5 vs Vegas: -6.0 → Difference: 4.5 pts → Shows as "💎 Value Play"</p>
+                <p><strong>Interpretation:</strong></p>
+                <ul>
+                  <li><strong>AI higher than Vegas:</strong> AI thinks favorite will win by MORE than Vegas predicts</li>
+                  <li><strong>AI lower than Vegas:</strong> AI thinks game will be CLOSER than Vegas predicts</li>
+                  <li><strong>Purple badge appears:</strong> When difference exceeds 3 points in either direction</li>
+                </ul>
+                <p><strong>Use case:</strong> Helps identify games where statistical analysis suggests Vegas may have mispriced the line.</p>
+              </div>
+            </div>
+          </div>
+
           {/* Key Metrics Section */}
           <div className="legend-section">
             <h3>🎯 Key Performance Metrics</h3>
@@ -270,11 +376,11 @@ function MLPredictions() {
             </div>
 
             <div className="legend-item">
-              <div className="legend-term">PPG (Points Per Game)</div>
+              <div className="legend-term">EPA Advantage</div>
               <div className="legend-definition">
-                <p><strong>What it is:</strong> Average points scored per game.</p>
-                <p><strong>Why it matters:</strong> Simple measure of offensive effectiveness.</p>
-                <p><strong>NFL average:</strong> ~22-24 points per game.</p>
+                <p><strong>What it is:</strong> Difference between home team EPA and away team EPA.</p>
+                <p><strong>Example:</strong> "EPA Advantage: +0.150" means home team has significantly better EPA.</p>
+                <p><strong>Impact:</strong> Strong predictor of game outcome - used heavily by both AI models.</p>
               </div>
             </div>
 
@@ -439,160 +545,381 @@ function MLPredictions() {
   };
 
   const renderModelInfo = () => {
-    if (!modelInfo) {
-      return <div className="loading">Loading model information...</div>;
-    }
-
     return (
       <div className="model-info-container">
         <div className="stat-legend">
-          <h3>🤖 Neural Network Architecture</h3>
-          <p>Our prediction system uses a multi-layer neural network trained on 14,312 games from 1999-2025</p>
+          <h3>🤖 Dual Neural Network System (Sprint 11 Update)</h3>
+          <p>Two specialized AI models working together to provide comprehensive predictions</p>
         </div>
 
         <div className="info-grid">
+          {/* Model 1: Win/Loss Classifier */}
           <div className="info-card highlight">
-            <h3>🎯 Model Performance</h3>
+            <h3>🏆 Model 1: Win/Loss Classifier</h3>
             <div className="info-content">
               <div className="metric">
-                <span className="metric-label">Test Accuracy</span>
-                <span className="metric-value">{modelInfo.performance?.test_accuracy || 'N/A'}</span>
+                <span className="metric-label">Model Type</span>
+                <span className="metric-value">Binary Classification</span>
               </div>
               <div className="metric">
-                <span className="metric-label">Validation Accuracy</span>
-                <span className="metric-value">{modelInfo.performance?.validation_accuracy || 'N/A'}</span>
-              </div>
-              <p className="metric-note">
-                Our model achieves 65.55% accuracy, outperforming Vegas betting lines (52-55%) 
-                and matching top NFL prediction models (57-60%)
-              </p>
-            </div>
-          </div>
-
-          <div className="info-card">
-            <h3>🧠 Architecture Details</h3>
-            <div className="info-content">
-              <div className="architecture-viz">
-                <div className="layer-block">
-                  <div className="layer-label">Input Layer</div>
-                  <div className="layer-neurons">41 features</div>
-                </div>
-                <div className="layer-arrow">→</div>
-                <div className="layer-block">
-                  <div className="layer-label">Hidden Layer 1</div>
-                  <div className="layer-neurons">128 neurons</div>
-                </div>
-                <div className="layer-arrow">→</div>
-                <div className="layer-block">
-                  <div className="layer-label">Hidden Layer 2</div>
-                  <div className="layer-neurons">64 neurons</div>
-                </div>
-                <div className="layer-arrow">→</div>
-                <div className="layer-block">
-                  <div className="layer-label">Hidden Layer 3</div>
-                  <div className="layer-neurons">32 neurons</div>
-                </div>
-                <div className="layer-arrow">→</div>
-                <div className="layer-block">
-                  <div className="layer-label">Output</div>
-                  <div className="layer-neurons">Win/Loss</div>
-                </div>
+                <span className="metric-label">Output</span>
+                <span className="metric-value">Win Probability (0-100%)</span>
               </div>
               <div className="metric">
-                <span className="metric-label">Total Parameters</span>
-                <span className="metric-value">20,097</span>
+                <span className="metric-label">Test Accuracy (2025)</span>
+                <span className="metric-value">65.55%</span>
+              </div>
+              <div className="metric">
+                <span className="metric-label">Training Games</span>
+                <span className="metric-value">14,312 games (1999-2025)</span>
+              </div>
+              <div className="metric">
+                <span className="metric-label">Features</span>
+                <span className="metric-value">39 statistical inputs</span>
+              </div>
+              <div className="metric-note">
+                <strong>What it predicts:</strong> WHO wins the game<br/>
+                <strong>How you see it:</strong> "BUF wins (74.8% confidence)"<br/>
+                <strong>Architecture:</strong> 3-layer neural network (128→64→32 neurons) with sigmoid output
               </div>
             </div>
           </div>
 
-          <div className="info-card">
-            <h3>📊 Training Data</h3>
+          {/* Model 2: Point Spread Regression */}
+          <div className="info-card highlight">
+            <h3>📊 Model 2: Point Spread Regression (NEW!)</h3>
             <div className="info-content">
               <div className="metric">
-                <span className="metric-label">Total Games</span>
-                <span className="metric-value">14,312</span>
+                <span className="metric-label">Model Type</span>
+                <span className="metric-value">Regression</span>
               </div>
               <div className="metric">
-                <span className="metric-label">Season Range</span>
-                <span className="metric-value">1999-2025</span>
+                <span className="metric-label">Output</span>
+                <span className="metric-value">Point Differential (-30 to +30)</span>
               </div>
               <div className="metric">
-                <span className="metric-label">Training Set</span>
-                <span className="metric-value">5,477 games (1999-2023)</span>
+                <span className="metric-label">Test MAE (2025)</span>
+                <span className="metric-value">10.35 points</span>
               </div>
               <div className="metric">
-                <span className="metric-label">Validation Set</span>
-                <span className="metric-value">269 games (2024)</span>
+                <span className="metric-label">Winner Accuracy</span>
+                <span className="metric-value">66.9%</span>
               </div>
               <div className="metric">
-                <span className="metric-label">Test Set</span>
-                <span className="metric-value">119 games (2025)</span>
+                <span className="metric-label">Training Games</span>
+                <span className="metric-value">5,894 games (weighted by recency)</span>
+              </div>
+              <div className="metric">
+                <span className="metric-label">Features</span>
+                <span className="metric-value">39 statistical inputs</span>
+              </div>
+              <div className="metric-note">
+                <strong>What it predicts:</strong> BY HOW MUCH a team wins<br/>
+                <strong>How you see it:</strong> "BUF 18.7 - HOU 24.8 (Margin: 6.1 pts)"<br/>
+                <strong>Architecture:</strong> 3-layer neural network (128→64→32 neurons) with linear output<br/>
+                <strong>Performance:</strong> Competitive with Vegas spreads (Vegas typical MAE: ~10.5 points)
               </div>
             </div>
           </div>
 
+          {/* Combined System */}
           <div className="info-card">
-            <h3>📈 Input Features (41 total)</h3>
+            <h3>⚡ How They Work Together</h3>
             <div className="info-content">
-              <div className="feature-category">
-                <strong>Season Stats (20):</strong> PPG, yards/game, touchdowns, EPA, 
-                success rate, YPP, 3rd down %, pass EPA, rush EPA, CPOE for both teams
-              </div>
-              <div className="feature-category">
-                <strong>Recent Form (6):</strong> Last 3 and last 5 game averages 
-                (PPG, EPA, success rate) for both teams
-              </div>
-              <div className="feature-category">
-                <strong>Matchup Differentials (4):</strong> EPA differential, PPG differential, 
-                success rate differential, YPP differential
-              </div>
-              <div className="feature-category">
-                <strong>Vegas Lines (4):</strong> Spread line, total line, home moneyline, 
-                away moneyline
+              <div className="metric-note">
+                <p><strong>1. Both models analyze the same game independently</strong></p>
+                <p>Each model uses 39 features: team EPA, recent form, success rates, Vegas lines, home/away stats, etc.</p>
+                
+                <p><strong>2. Win/Loss Model determines WHO wins</strong></p>
+                <p>Outputs probability like "74.8% chance Buffalo wins"</p>
+                
+                <p><strong>3. Point Spread Model determines BY HOW MUCH</strong></p>
+                <p>Outputs point differential like "+6.1 points" (Buffalo favored by 6.1)</p>
+                
+                <p><strong>4. System calculates predicted scores</strong></p>
+                <p>Uses Vegas total line + predicted margin to estimate final scores</p>
+                
+                <p><strong>5. AI spread compared to Vegas</strong></p>
+                <p>Identifies "value plays" where AI analysis differs from betting market</p>
               </div>
             </div>
           </div>
+
+          {/* Training Methodology */}
+          <div className="info-card">
+            <h3>📚 Training Methodology</h3>
+            <div className="info-content">
+              <div className="metric-note">
+                <p><strong>Data Leakage Prevention:</strong></p>
+                <ul>
+                  <li>Uses ONLY pre-game statistics (no post-game data)</li>
+                  <li>Rolling features computed from games BEFORE prediction</li>
+                  <li>Time-based validation: train on past, test on future</li>
+                </ul>
+                
+                <p><strong>Weighted Sampling (Point Spread Model):</strong></p>
+                <ul>
+                  <li>1999-2010 games: 0.5x weight (older NFL era)</li>
+                  <li>2011-2018 games: 1.0x weight (transition era)</li>
+                  <li>2019-2025 games: 2.0x weight (modern NFL - rule changes, offense evolution)</li>
+                </ul>
+                
+                <p><strong>Validation Splits:</strong></p>
+                <ul>
+                  <li>Training: Games through 2023 season</li>
+                  <li>Validation: 2024 season (269 games)</li>
+                  <li>Test: 2025 season (148 games so far)</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          {/* Feature Categories */}
+          <div className="info-card">
+            <h3>📊 39 Features Analyzed Per Game</h3>
+            <div className="info-content">
+              <div className="feature-category">
+                <strong>Season Performance (12 features per team = 24 total):</strong> PPG, YPG, Turnovers/Game, EPA, Success Rate, Pass EPA, Rush EPA, WPA, Yards/Play, 3rd Down %, Red Zone %, Time of Possession %
+              </div>
+              <div className="feature-category">
+                <strong>Recent Form (6 features per team = 12 total):</strong> Last 3 games EPA & PPG, Last 5 games EPA & PPG, games played this season
+              </div>
+              <div className="feature-category">
+                <strong>Matchup Differentials (3 features):</strong> EPA differential, PPG differential, Success Rate differential
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="legend-footer">
+          <p><strong>🔬 Model Validation:</strong> Both models tested on unseen 2025 games. No data leakage detected (validated using historical splits). Performance competitive with professional sports betting analytics.</p>
         </div>
       </div>
     );
   };
 
   const renderExplanation = () => {
-    if (!explanation) {
-      return <div className="loading">Loading explanation...</div>;
-    }
-
     return (
       <div className="explanation-container">
         <div className="stat-legend">
-          <h3>📖 How Our Predictions Work</h3>
-          <p>Understanding the neural network prediction methodology</p>
+          <h3>🧠 How It Works: From Data to Prediction</h3>
+          <p>Step-by-step breakdown of how AI predicts NFL games with scores and spreads</p>
         </div>
 
         <div className="explanation-sections">
-          {explanation.sections?.map((section, idx) => (
-            <div key={idx} className="explanation-card">
-              <h3>{section.title}</h3>
-              <p>{section.content}</p>
-              {section.details && (
-                <ul className="detail-list">
-                  {section.details.map((detail, i) => (
-                    <li key={i}>{detail}</li>
-                  ))}
-                </ul>
-              )}
+          {/* Step 1: Data Collection */}
+          <div className="explanation-card">
+            <h3>📡 Step 1: Data Collection</h3>
+            <div className="info-content">
+              <p><strong>When you request predictions for Week 12:</strong></p>
+              <ol>
+                <li><strong>Game Schedule:</strong> System fetches all 14 games scheduled for that week</li>
+                <li><strong>Team Performance Data:</strong> For each team, retrieves:
+                  <ul>
+                    <li>All games played THIS season before Week 12</li>
+                    <li>Advanced stats: EPA per play, success rate, yards per play</li>
+                    <li>Scoring trends: points per game, red zone efficiency</li>
+                    <li>Recent form: Last 3 games, Last 5 games</li>
+                  </ul>
+                </li>
+                <li><strong>Vegas Betting Lines:</strong> Fetches current spread, total, and moneyline from ESPN</li>
+              </ol>
+              <div className="metric-note">
+                <strong>🔒 Data Leakage Prevention:</strong> Only uses statistics from games BEFORE the one being predicted. Never uses future or current game data.
+              </div>
             </div>
-          ))}
+          </div>
+
+          {/* Step 2: Feature Engineering */}
+          <div className="explanation-card">
+            <h3>⚙️ Step 2: Feature Engineering</h3>
+            <div className="info-content">
+              <p><strong>System computes 39 features for each matchup:</strong></p>
+              
+              <p><strong>Home Team Stats (16 features):</strong></p>
+              <ul>
+                <li>Season averages: PPG, EPA, Success Rate, Yards/Play, 3rd Down %, Red Zone %</li>
+                <li>Recent form: L3 EPA, L3 PPG, L5 EPA, L5 PPG</li>
+                <li>Games played (experience factor)</li>
+              </ul>
+
+              <p><strong>Away Team Stats (16 features):</strong></p>
+              <ul>
+                <li>Same metrics as home team</li>
+              </ul>
+
+              <p><strong>Matchup Context (7 features):</strong></p>
+              <ul>
+                <li>EPA Differential (Home EPA - Away EPA)</li>
+                <li>PPG Differential</li>
+                <li>Success Rate Differential</li>
+                <li>Vegas Spread Line</li>
+                <li>Vegas Total Line</li>
+                <li>Season, Week (temporal context)</li>
+              </ul>
+
+              <div className="metric-note">
+                <strong>Example:</strong> For BUF @ HOU, system sees Buffalo averaging 0.137 EPA (elite offense) while Houston at -0.023 EPA (below average), creating an EPA advantage of 0.160 in Buffalo's favor.
+              </div>
+            </div>
+          </div>
+
+          {/* Step 3: Model Predictions */}
+          <div className="explanation-card">
+            <h3>🤖 Step 3: Dual Model Prediction</h3>
+            <div className="info-content">
+              <p><strong>Both AI models analyze the game simultaneously:</strong></p>
+              
+              <p><strong>🏆 Win/Loss Model (Classification):</strong></p>
+              <ol>
+                <li>Takes 39 features → passes through neural network</li>
+                <li>128 neurons analyze patterns → 64 neurons refine → 32 neurons finalize</li>
+                <li>Outputs probability: "74.8% Buffalo wins"</li>
+                <li>Determines predicted winner: BUF</li>
+              </ol>
+
+              <p><strong>📊 Point Spread Model (Regression):</strong></p>
+              <ol>
+                <li>Takes SAME 39 features → passes through separate neural network</li>
+                <li>128 neurons → 64 neurons → 32 neurons (different weights trained for scoring)</li>
+                <li>Outputs point differential: "+6.1" (Buffalo favored by 6.1 points)</li>
+              </ol>
+
+              <div className="metric-note">
+                <strong>⚡ Why two models?</strong> Win/loss model excels at picking winners (65.55% accurate). Point spread model excels at predicting margin (10.35 MAE). Together they provide complete picture.
+              </div>
+            </div>
+          </div>
+
+          {/* Step 4: Score Calculation */}
+          <div className="explanation-card">
+            <h3>🔢 Step 4: Predicted Score Calculation</h3>
+            <div className="info-content">
+              <p><strong>System converts point differential into actual scores:</strong></p>
+              
+              <p><strong>Formula:</strong></p>
+              <div className="metric-note" style={{fontFamily: 'monospace', background: 'rgba(0,0,0,0.3)', padding: '15px', borderRadius: '8px'}}>
+                Point Differential = +6.1 (Buffalo favored)<br/>
+                Vegas Total Line = 43.5 (expected combined points)<br/>
+                <br/>
+                Home Score = (Total + Margin) / 2<br/>
+                Home Score = (43.5 + 6.1) / 2 = 24.8<br/>
+                <br/>
+                Away Score = (Total - Margin) / 2<br/>
+                Away Score = (43.5 - 6.1) / 2 = 18.7<br/>
+                <br/>
+                <strong>Result: BUF 18.7 - HOU 24.8</strong>
+              </div>
+
+              <p style={{marginTop: '15px'}}><strong>Why use Vegas total?</strong> Betting totals incorporate real-world factors (weather, injuries, pace of play) that pure stats might miss. Combining AI margin with Vegas total gives most realistic score prediction.</p>
+            </div>
+          </div>
+
+          {/* Step 5: Spread Analysis */}
+          <div className="explanation-card">
+            <h3>💎 Step 5: AI vs Vegas Spread Analysis</h3>
+            <div className="info-content">
+              <p><strong>System compares AI analysis to betting market:</strong></p>
+              
+              <p><strong>Converting to betting spread:</strong></p>
+              <div className="metric-note" style={{fontFamily: 'monospace', background: 'rgba(0,0,0,0.3)', padding: '15px', borderRadius: '8px'}}>
+                Predicted Margin = +6.1 (Houston favored by 6.1)<br/>
+                AI Spread = -6.1 (negative means home favored)<br/>
+                Vegas Spread = -6.0 (from sportsbooks)<br/>
+                <br/>
+                Difference = AI (-6.1) - Vegas (-6.0) = -0.1<br/>
+              </div>
+
+              <p style={{marginTop: '15px'}}><strong>Interpreting spread difference:</strong></p>
+              <ul>
+                <li><strong>0-3 point difference:</strong> AI and Vegas agree (no value play badge)</li>
+                <li><strong>3+ point difference:</strong> Significant disagreement (💎 VALUE PLAY appears)</li>
+              </ul>
+
+              <p><strong>Example Value Play:</strong></p>
+              <div className="metric-note">
+                If AI says Detroit -10.5 but Vegas says -6.0:<br/>
+                → Difference: 4.5 points<br/>
+                → <strong>💎 Value Play</strong> appears (purple badge)<br/>
+                → AI thinks Detroit will win by MORE than Vegas predicts<br/>
+                → Potential betting opportunity on Detroit to cover spread
+              </div>
+
+              <p style={{marginTop: '15px'}}><strong>⚠️ Important:</strong> Value plays are statistical insights, not guaranteed winners. They identify where AI's analysis differs from market consensus, which may indicate mispriced lines.</p>
+            </div>
+          </div>
+
+          {/* Step 6: Display */}
+          <div className="explanation-card">
+            <h3>📺 Step 6: Presenting Results to You</h3>
+            <div className="info-content">
+              <p><strong>Each prediction card shows layered information:</strong></p>
+              
+              <p><strong>🏆 Winner Banner:</strong> "BUF wins (74.8% confidence)"</p>
+              <ul>
+                <li>From: Win/Loss Model</li>
+                <li>Shows: Predicted winner + confidence level</li>
+                <li>Color-coded confidence bar (green=high, blue=medium, orange=low)</li>
+              </ul>
+
+              <p><strong>📊 Predicted Final Score:</strong> "BUF 18.7 - HOU 24.8 (Margin: 6.1 pts)"</p>
+              <ul>
+                <li>From: Point Spread Model + Vegas Total</li>
+                <li>Shows: Expected final scores and winning margin</li>
+                <li>Large numbers for quick scanning</li>
+              </ul>
+
+              <p><strong>🎰 AI vs Vegas Spread:</strong> "🤖 -6.1 vs 🎰 -6.0"</p>
+              <ul>
+                <li>From: Comparing AI prediction to betting market</li>
+                <li>Shows: Both spreads side-by-side</li>
+                <li>💎 Badge appears if difference > 3 points</li>
+              </ul>
+
+              <p><strong>🎯 Key Factors:</strong> EPA Advantage, Recent Form, Vegas Total</p>
+              <ul>
+                <li>From: Raw feature data</li>
+                <li>Shows: Top drivers of the prediction</li>
+                <li>Helps understand WHY AI made this pick</li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Performance Tracking */}
+          <div className="explanation-card highlight">
+            <h3>📊 How Accurate Is This System?</h3>
+            <div className="info-content">
+              <p><strong>Win/Loss Model (65.55% accuracy):</strong></p>
+              <ul>
+                <li>Correctly predicts winner in ~2 out of 3 games</li>
+                <li>Outperforms Vegas betting favorites (52-55%)</li>
+                <li>Competitive with professional sports analytics</li>
+              </ul>
+
+              <p><strong>Point Spread Model (10.35 MAE):</strong></p>
+              <ul>
+                <li>Average error of 10.35 points on final margin</li>
+                <li>Competitive with Vegas spreads (~10.5 MAE)</li>
+                <li>66.9% accurate at picking correct winner</li>
+              </ul>
+
+              <div className="metric-note">
+                <strong>What does MAE mean?</strong> Mean Absolute Error measures average distance between prediction and actual result. MAE of 10.35 means predictions are typically within 10-11 points of actual margin. Lower is better.
+              </div>
+
+              <p style={{marginTop: '15px'}}><strong>Validation approach:</strong></p>
+              <ul>
+                <li>Trained on 1999-2023 games</li>
+                <li>Validated on unseen 2024 games</li>
+                <li>Tested on unseen 2025 games (current season)</li>
+                <li>No data leakage - predictions use only pre-game information</li>
+              </ul>
+            </div>
+          </div>
         </div>
 
-        <div className="disclaimer">
-          <h4>⚠️ Important Notes</h4>
-          <p>
-            While our model achieves strong accuracy (65.55%), NFL games are inherently unpredictable. 
-            Factors like injuries, weather changes, and coaching decisions can affect outcomes. 
-            These predictions are for informational purposes and should not be used as the sole basis 
-            for betting decisions.
-          </p>
+        <div className="legend-footer">
+          <p><strong>💡 Bottom Line:</strong> The system analyzes 39 statistical features through two specialized neural networks to predict both WHO wins and BY HOW MUCH. By comparing AI spreads to Vegas lines, you can identify potential value plays where statistical analysis disagrees with betting markets.</p>
         </div>
       </div>
     );

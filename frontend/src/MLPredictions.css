@@ -349,7 +349,163 @@
   color: #00ffaa;
 }
 
-/* Model Info */
+/* Predicted Score Section */
+.predicted-score {
+  margin-top: 15px;
+  padding: 15px;
+  background: linear-gradient(135deg, rgba(0,212,255,0.1) 0%, rgba(0,149,255,0.1) 100%);
+  border-radius: 10px;
+  border: 1px solid rgba(0,212,255,0.3);
+}
+
+.score-title {
+  font-size: 0.9rem;
+  color: #00d4ff;
+  font-weight: 600;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.score-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 10px;
+}
+
+.score-team {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.score-team-name {
+  font-size: 0.9rem;
+  color: #aaa;
+  font-weight: 600;
+}
+
+.score-value {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #00ffaa;
+  text-shadow: 0 0 10px rgba(0,255,170,0.3);
+}
+
+.score-separator {
+  font-size: 1.5rem;
+  color: #666;
+  font-weight: bold;
+}
+
+.score-margin {
+  text-align: center;
+  font-size: 0.85rem;
+  color: #00d4ff;
+  font-weight: 600;
+  margin-top: 8px;
+}
+
+/* Spread Analysis Section */
+.spread-analysis {
+  margin-top: 15px;
+  padding: 15px;
+  background: linear-gradient(135deg, rgba(255,215,0,0.05) 0%, rgba(255,165,0,0.05) 100%);
+  border-radius: 10px;
+  border: 1px solid rgba(255,215,0,0.2);
+}
+
+.spread-title {
+  font-size: 0.9rem;
+  color: #ffd700;
+  font-weight: 600;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.spread-comparison {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.spread-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.spread-label {
+  font-size: 0.85rem;
+  color: #aaa;
+  font-weight: 600;
+}
+
+.spread-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  padding: 8px 16px;
+  border-radius: 8px;
+  min-width: 60px;
+  text-align: center;
+}
+
+.spread-value.ai-spread {
+  background: rgba(0,212,255,0.15);
+  color: #00d4ff;
+  border: 2px solid #00d4ff;
+}
+
+.spread-value.vegas-spread {
+  background: rgba(255,215,0,0.15);
+  color: #ffd700;
+  border: 2px solid #ffd700;
+}
+
+.spread-vs {
+  font-size: 0.9rem;
+  color: #666;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.value-indicator {
+  margin-top: 12px;
+  text-align: center;
+}
+
+.value-badge {
+  display: inline-block;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, rgba(138,43,226,0.2) 0%, rgba(75,0,130,0.2) 100%);
+  border: 2px solid #9370db;
+  border-radius: 20px;
+  color: #da70d6;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(138,43,226,0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(138,43,226,0.6);
+  }
+}
+
+/* Key Factors */
 .model-info-container {
   padding: 20px 0;
 }

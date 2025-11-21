@@ -34,16 +34,24 @@ class WeeklyPredictor:
             'host': 'localhost'
         }
         
-        # Load trained model and scaler
+        # Load WIN/LOSS model (classification)
         model_dir = 'ml/models'
-        self.model = joblib.load(f'{model_dir}/nfl_neural_network_v2.pkl')
-        self.scaler = joblib.load(f'{model_dir}/scaler_v2.pkl')
+        self.win_model = joblib.load(f'{model_dir}/nfl_neural_network_v2.pkl')
+        self.win_scaler = joblib.load(f'{model_dir}/scaler_v2.pkl')
         
-        # Load feature names
         with open(f'{model_dir}/feature_names_v2.txt', 'r') as f:
-            self.feature_names = [line.strip() for line in f.readlines()]
+            self.win_feature_names = [line.strip() for line in f.readlines()]
         
-        print(f"✅ Loaded model with {len(self.feature_names)} features")
+        # Load POINT SPREAD model (regression) from testbed
+        spread_dir = 'testbed/models'
+        self.spread_model = joblib.load(f'{spread_dir}/point_spread_model.pkl')
+        self.spread_scaler = joblib.load(f'{spread_dir}/point_spread_scaler.pkl')
+        
+        with open(f'{spread_dir}/point_spread_features.txt', 'r') as f:
+            self.spread_feature_names = [line.strip() for line in f.readlines()]
+        
+        print(f"Loaded win/loss model with {len(self.win_feature_names)} features")
+        print(f"Loaded point spread model with {len(self.spread_feature_names)} features")
     
     def fetch_schedule(self, season, week):
         """Fetch games scheduled for the given week"""
@@ -219,38 +227,67 @@ class WeeklyPredictor:
     
     def predict_game(self, season, week, home_team, away_team, spread_line=None, total_line=None):
         """
-        Predict outcome of a single game
-        Returns: dict with prediction, confidence, and explanation
+        Predict outcome of a single game using BOTH models
+        Returns: dict with win probability, predicted scores, and point differential
         """
         # Compute features
         features = self.compute_rolling_features(season, week, home_team, away_team)
         
         # Add betting lines if available
-        if 'spread_line' in self.feature_names:
+        if 'spread_line' in self.win_feature_names:
             features['spread_line'] = spread_line if spread_line is not None else 0.0
-        if 'total_line' in self.feature_names:
+        if 'total_line' in self.win_feature_names:
             features['total_line'] = total_line if total_line is not None else 0.0
         
-        # Create feature vector in correct order
-        X = np.array([[features.get(name, 0.0) for name in self.feature_names]])
+        # PREDICT WIN/LOSS (Classification Model)
+        X_win = np.array([[features.get(name, 0.0) for name in self.win_feature_names]])
+        X_win_scaled = self.win_scaler.transform(X_win)
         
-        # Scale features
-        X_scaled = self.scaler.transform(X)
+        win_prediction = self.win_model.predict(X_win_scaled)[0]  # 1 = home win, 0 = away win
+        win_confidence = self.win_model.predict_proba(X_win_scaled)[0]
         
-        # Predict
-        prediction = self.model.predict(X_scaled)[0]  # 1 = home win, 0 = away win
-        confidence = self.model.predict_proba(X_scaled)[0]
+        # PREDICT POINT SPREAD (Regression Model)
+        X_spread = np.array([[features.get(name, 0.0) for name in self.spread_feature_names]])
+        X_spread_scaled = self.spread_scaler.transform(X_spread)
         
-        # Build result
+        predicted_margin = self.spread_model.predict(X_spread_scaled)[0]  # Positive = home favored
+        
+        # Calculate predicted scores using point spread + total line
+        avg_total = total_line if total_line is not None else 47.0
+        predicted_home_score = round((avg_total + predicted_margin) / 2, 1)
+        predicted_away_score = round((avg_total - predicted_margin) / 2, 1)
+        
+        # AI-generated spread (negative means home favored)
+        ai_spread = -predicted_margin
+        
+        # Compare to Vegas spread
+        spread_difference = None
+        if spread_line is not None:
+            spread_difference = round(ai_spread - spread_line, 1)
+        
+        # Build comprehensive result
         result = {
             'home_team': home_team,
             'away_team': away_team,
-            'predicted_winner': home_team if prediction == 1 else away_team,
-            'home_win_prob': float(confidence[1]),
-            'away_win_prob': float(confidence[0]),
-            'confidence': float(max(confidence)),
-            'spread_line': spread_line,
+            
+            # Win/Loss prediction
+            'predicted_winner': home_team if win_prediction == 1 else away_team,
+            'home_win_prob': float(win_confidence[1]),
+            'away_win_prob': float(win_confidence[0]),
+            'confidence': float(max(win_confidence)),
+            
+            # Score predictions
+            'predicted_home_score': predicted_home_score,
+            'predicted_away_score': predicted_away_score,
+            'predicted_margin': round(predicted_margin, 1),
+            
+            # Spread analysis
+            'ai_spread': round(ai_spread, 1),
+            'vegas_spread': spread_line,
+            'spread_difference': spread_difference,
             'total_line': total_line,
+            
+            # Key factors
             'key_factors': {
                 'home_epa': features.get('home_epa_season', 0),
                 'away_epa': features.get('away_epa_season', 0),
@@ -310,7 +347,7 @@ class WeeklyPredictor:
             # Print summary
             winner = result['predicted_winner']
             conf = result['confidence'] * 100
-            print(f"   ✓ Prediction: {winner} wins ({conf:.1f}% confidence)")
+            print(f"   > Prediction: {winner} wins ({conf:.1f}% confidence)")
             
             if 'correct' in result:
                 status = "✅ CORRECT" if result['correct'] else "❌ WRONG"

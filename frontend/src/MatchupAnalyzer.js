@@ -247,7 +247,7 @@ function MatchupAnalyzer() {
               <option value="">-- Choose Team A --</option>
               {teamAList.map(team => (
                 <option key={team.team} value={team.team}>
-                  {team.team} ({team.wins || 0}-{team.losses || 0})
+                  {team.team} ({team.wins || 0}-{team.losses || 0}{(team.ties || 0) > 0 ? `-${team.ties}` : ''})
                 </option>
               ))}
             </select>

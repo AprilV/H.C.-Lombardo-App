@@ -158,7 +158,10 @@ function Analytics() {
                 <div className="team-name">{summary.best_ats_team.team}</div>
                 <div className="stat-large">{summary.best_ats_team.ats_win_pct}%</div>
                 <div className="stat-label">ATS Win Rate</div>
-                <div className="record">{summary.best_ats_team.ats_wins}-{summary.best_ats_team.ats_losses}</div>
+                <div className="record">
+                  {summary.best_ats_team.wins}-{summary.best_ats_team.losses}
+                  {summary.best_ats_team.ties > 0 && `-${summary.best_ats_team.ties}`}
+                </div>
               </div>
             )}
           </div>

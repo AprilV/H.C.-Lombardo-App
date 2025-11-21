@@ -479,7 +479,7 @@ function GameStatistics() {
               <option value="">-- Choose Team --</option>
               {teamAList.map(team => (
                 <option key={team.team} value={team.team}>
-                  {team.team} ({team.wins || 0}-{team.losses || 0})
+                  {team.team} ({team.wins || 0}-{team.losses || 0}{(team.ties || 0) > 0 ? `-${team.ties}` : ''})
                 </option>
               ))}
             </select>
@@ -495,7 +495,7 @@ function GameStatistics() {
                 />
                 <h3>{teamAData.team_name}</h3>
                 <div className="team-record-badge">
-                  {teamAData.wins}-{teamAData.losses}
+                  {teamAData.wins}-{teamAData.losses}{(teamAData.ties || 0) > 0 ? `-${teamAData.ties}` : ''}
                 </div>
               </div>
 
@@ -575,7 +575,7 @@ function GameStatistics() {
               <option value="">-- Choose Team --</option>
               {teamBList.map(team => (
                 <option key={team.team} value={team.team}>
-                  {team.team} ({team.wins || 0}-{team.losses || 0})
+                  {team.team} ({team.wins || 0}-{team.losses || 0}{(team.ties || 0) > 0 ? `-${team.ties}` : ''})
                 </option>
               ))}
             </select>
@@ -591,7 +591,7 @@ function GameStatistics() {
                 />
                 <h3>{teamBData.team_name}</h3>
                 <div className="team-record-badge">
-                  {teamBData.wins}-{teamBData.losses}
+                  {teamBData.wins}-{teamBData.losses}{(teamBData.ties || 0) > 0 ? `-${teamBData.ties}` : ''}
                 </div>
               </div>
 
@@ -719,7 +719,7 @@ function GameStatistics() {
                   <option value="">-- Choose Team --</option>
                   {teamAList.map(team => (
                     <option key={team.team} value={team.team}>
-                      {team.team} ({team.wins || 0}-{team.losses || 0})
+                      {team.team} ({team.wins || 0}-{team.losses || 0}{(team.ties || 0) > 0 ? `-${team.ties}` : ''})
                     </option>
                   ))}
                 </select>
@@ -735,7 +735,7 @@ function GameStatistics() {
                     />
                     <h3>{teamAData.team}</h3>
                     <div className="team-record-badge">
-                      {teamAData.wins}-{teamAData.losses}
+                      {teamAData.wins}-{teamAData.losses}{(teamAData.ties || 0) > 0 ? `-${teamAData.ties}` : ''}
                     </div>
                   </div>
 
@@ -884,7 +884,7 @@ function GameStatistics() {
                   <option value="">-- Choose Team --</option>
                   {teamBList.map(team => (
                     <option key={team.team} value={team.team}>
-                      {team.team} ({team.wins || 0}-{team.losses || 0})
+                      {team.team} ({team.wins || 0}-{team.losses || 0}{(team.ties || 0) > 0 ? `-${team.ties}` : ''})
                     </option>
                   ))}
                 </select>
@@ -900,7 +900,7 @@ function GameStatistics() {
                     />
                     <h3>{teamBData.team}</h3>
                     <div className="team-record-badge">
-                      {teamBData.wins}-{teamBData.losses}
+                      {teamBData.wins}-{teamBData.losses}{(teamBData.ties || 0) > 0 ? `-${teamBData.ties}` : ''}
                     </div>
                   </div>
 
