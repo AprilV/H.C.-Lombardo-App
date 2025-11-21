@@ -189,6 +189,10 @@ function MLPredictions() {
 
                 {/* Prediction Result */}
                 <div className="prediction-result">
+                  <div className="model-identifier">
+                    <span className="model-badge classification">📊 Win/Loss Model</span>
+                    <span className="model-type">Neural Network Classifier (65.55% Accuracy)</span>
+                  </div>
                   <div className="winner-banner">
                     <span className="trophy-icon">🏆</span>
                     <span className="winner-text">
@@ -208,9 +212,20 @@ function MLPredictions() {
                   </div>
                 </div>
 
+                {/* Model Divider */}
+                <div className="model-divider">
+                  <div className="divider-line"></div>
+                  <span className="divider-text">Score & Spread Predictions</span>
+                  <div className="divider-line"></div>
+                </div>
+
                 {/* Predicted Score */}
                 {pred.predicted_home_score !== undefined && pred.predicted_away_score !== undefined && (
                   <div className="predicted-score">
+                    <div className="model-identifier">
+                      <span className="model-badge regression">📈 Point Spread Model</span>
+                      <span className="model-type">Neural Network Regressor (10.35 MAE)</span>
+                    </div>
                     <div className="score-title">Predicted Final Score</div>
                     <div className="score-display">
                       <div className="score-team">

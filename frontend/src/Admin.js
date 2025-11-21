@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import './Admin.css';
+import ModelPerformance from './ModelPerformance';
 
 const API_URL = 'http://127.0.0.1:5000';
 
 function Admin() {
   const [activeTab, setActiveTab] = useState('system');
   const [serverStatus, setServerStatus] = useState(null);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [updateMessage, setUpdateMessage] = useState(null);
 
   useEffect(() => {
     checkServerStatus();
@@ -24,6 +27,36 @@ function Admin() {
     }
   };
 
+  const handleUpdatePredictions = async () => {
+    setIsUpdating(true);
+    setUpdateMessage(null);
+    try {
+      const response = await fetch(`${API_URL}/api/ml/update-results`, {
+        method: 'POST'
+      });
+      const data = await response.json();
+      
+      if (data.success) {
+        setUpdateMessage({
+          type: 'success',
+          text: `✅ Updated ${data.updated} predictions with actual results!`
+        });
+      } else {
+        setUpdateMessage({
+          type: 'error',
+          text: `❌ Error: ${data.error}`
+        });
+      }
+    } catch (err) {
+      setUpdateMessage({
+        type: 'error',
+        text: `❌ Failed to update predictions: ${err.message}`
+      });
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
   return (
     <div className="admin-container">
       <div className="admin-header">
@@ -37,6 +70,12 @@ function Admin() {
           onClick={() => setActiveTab('system')}
         >
           ⚙️ System Status
+        </button>
+        <button 
+          className={`admin-tab ${activeTab === 'performance' ? 'active' : ''}`}
+          onClick={() => setActiveTab('performance')}
+        >
+          📊 AI Performance
         </button>
         <button 
           className={`admin-tab ${activeTab === 'database' ? 'active' : ''}`}
@@ -53,6 +92,49 @@ function Admin() {
       </div>
 
       <div className="admin-content">
+        {activeTab === 'performance' && (
+          <div className="admin-section">
+            <div className="performance-header">
+              <h2>🏈 AI Model Performance Tracking</h2>
+              <button 
+                className={`update-btn ${isUpdating ? 'updating' : ''}`}
+                onClick={handleUpdatePredictions}
+                disabled={isUpdating}
+              >
+                {isUpdating ? '⏳ Updating...' : '🔄 Update Results'}
+              </button>
+            </div>
+            
+            {updateMessage && (
+              <div className={`update-message ${updateMessage.type}`}>
+                {updateMessage.text}
+              </div>
+            )}
+            
+            <div className="performance-dashboard">
+              <iframe 
+                src="/performance-dashboard.html" 
+                style={{
+                  width: '100%',
+                  height: '1200px',
+                  border: 'none',
+                  borderRadius: '12px',
+                  background: 'rgba(10, 14, 39, 0.6)'
+                }}
+                title="AI Performance Dashboard"
+              />
+            </div>
+          </div>
+        )}
+
+
+        {activeTab === 'performance' && (
+          <div className="admin-section">
+            <h2>AI Model Performance Tracking</h2>
+            <ModelPerformance />
+          </div>
+        )}
+
         {activeTab === 'database' && (
           <div className="admin-section">
             <h2>3NF Database Structure</h2>
@@ -139,11 +221,29 @@ function Admin() {
             <div className="info-card">
               <h3>🤖 Machine Learning Models</h3>
               <ul className="admin-list">
-                <li><strong>Win/Loss Classifier:</strong> MLPClassifier (65.55% accuracy)</li>
-                <li><strong>Point Spread Regression:</strong> MLPRegressor (10.35 MAE)</li>
+                <li><strong>Win/Loss Classifier:</strong> MLPClassifier (65.55% accuracy on test set)</li>
+                <li><strong>Point Spread Regression:</strong> MLPRegressor (10.35 MAE on test set)</li>
                 <li><strong>Training Data:</strong> 5,894 games with weighted sampling</li>
                 <li><strong>Features:</strong> 39 statistical inputs per game</li>
                 <li><strong>Update Frequency:</strong> Retrained after each season</li>
+              </ul>
+            </div>
+
+            <div className="info-card">
+              <h3>🔄 Model Retraining Strategy</h3>
+              <p><strong>Why We Don't Retrain Weekly:</strong></p>
+              <ul className="admin-list">
+                <li><strong>Data Volume:</strong> Training set has 5,894 games. Adding 16 games/week (0.27% increase) has negligible impact.</li>
+                <li><strong>Seasonality:</strong> NFL statistics stabilize around Week 4-5. Early-season anomalies would add noise, not signal.</li>
+                <li><strong>Overfitting Risk:</strong> Training on current season data risks overfitting to small sample. Model would chase weekly noise instead of true patterns.</li>
+                <li><strong>Computational Cost:</strong> Full retraining takes ~2 hours (feature engineering + hyperparameter tuning). Weekly retraining unnecessary.</li>
+              </ul>
+              
+              <p style={{marginTop: '15px'}}><strong>When We DO Retrain:</strong></p>
+              <ul className="admin-list">
+                <li><strong>End of Season:</strong> After playoffs complete, add full 2025 season (~285 games) to training set.</li>
+                <li><strong>Rule Changes:</strong> Major NFL rule changes affecting scoring or gameplay require immediate retraining.</li>
+                <li><strong>Performance Degradation:</strong> If 2025 accuracy drops below 55%, investigate and retrain with updated features.</li>
               </ul>
             </div>
 

@@ -83,22 +83,26 @@
 }
 
 .stat-box {
-  background: #f8f9fa;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
   padding: 15px;
   border-radius: 8px;
   text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
 
 .stat-label {
   font-size: 14px;
-  color: #666;
+  color: rgba(255, 255, 255, 0.9) !important;
   margin-bottom: 5px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 500;
 }
 
 .stat-value {
   font-size: 28px;
   font-weight: bold;
-  color: #333;
+  color: #ffffff !important;
 }
 
 .chart-container {

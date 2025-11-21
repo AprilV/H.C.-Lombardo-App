@@ -142,7 +142,7 @@ class WeeklyPredictor:
         if len(home_stats) == 0 or len(away_stats) == 0:
             print(f"⚠️  Warning: Limited data for {home_team} vs {away_team} in week {week}")
             # Return default features (zeros)
-            return {name: 0.0 for name in self.feature_names}
+            return {name: 0.0 for name in self.win_feature_names}
         
         # HOME TEAM SEASON STATS (all games so far)
         features['home_ppg_season'] = home_stats['points'].mean()

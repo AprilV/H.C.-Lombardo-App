@@ -261,6 +261,66 @@
   border: 1px solid rgba(0,212,255,0.2);
 }
 
+/* Model Identifier Badges */
+.model-identifier {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.model-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.model-badge.classification {
+  background: linear-gradient(135deg, #00ffaa 0%, #00d4ff 100%);
+  color: #0a0e27;
+}
+
+.model-badge.regression {
+  background: linear-gradient(135deg, #ffd700 0%, #ffa500 100%);
+  color: #0a0e27;
+}
+
+.model-type {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+/* Model Divider */
+.model-divider {
+  display: flex;
+  align-items: center;
+  margin: 25px 0;
+  gap: 15px;
+}
+
+.divider-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.2) 50%, transparent 100%);
+}
+
+.divider-text {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+
 .winner-banner {
   display: flex;
   align-items: center;

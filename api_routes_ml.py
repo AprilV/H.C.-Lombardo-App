@@ -10,6 +10,8 @@ Date: November 6, 2025
 from flask import Blueprint, jsonify, request
 import sys
 import os
+import psycopg2
+from psycopg2.extras import RealDictCursor
 
 # Add ml directory to path
 sys.path.append(os.path.join(os.path.dirname(__file__), 'ml'))
@@ -79,7 +81,7 @@ def predict_week(season, week):
 @ml_api.route('/api/ml/predict-upcoming', methods=['GET'])
 def predict_upcoming():
     """
-    Predict the next upcoming week
+    Predict the next upcoming week and save to tracking table
     
     Example: GET /api/ml/predict-upcoming
     
@@ -98,6 +100,63 @@ def predict_upcoming():
         # Extract season/week from first prediction
         season = predictions[0].get('season', None)
         week = predictions[0].get('week', None)
+        
+        # Automatically save predictions to tracking table
+        try:
+            conn = psycopg2.connect(**pred.db_config)
+            cur = conn.cursor()
+            
+            saved_count = 0
+            for p in predictions:
+                insert_sql = """
+                    INSERT INTO hcl.ml_predictions (
+                        game_id, season, week, home_team, away_team, game_date,
+                        predicted_winner, win_confidence, home_win_prob, away_win_prob,
+                        predicted_home_score, predicted_away_score, predicted_margin, ai_spread,
+                        vegas_spread, vegas_total
+                    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    ON CONFLICT (game_id) DO UPDATE SET
+                        predicted_winner = EXCLUDED.predicted_winner,
+                        win_confidence = EXCLUDED.win_confidence,
+                        home_win_prob = EXCLUDED.home_win_prob,
+                        away_win_prob = EXCLUDED.away_win_prob,
+                        predicted_home_score = EXCLUDED.predicted_home_score,
+                        predicted_away_score = EXCLUDED.predicted_away_score,
+                        predicted_margin = EXCLUDED.predicted_margin,
+                        ai_spread = EXCLUDED.ai_spread,
+                        vegas_spread = EXCLUDED.vegas_spread,
+                        vegas_total = EXCLUDED.vegas_total,
+                        predicted_at = NOW()
+                """
+                
+                cur.execute(insert_sql, (
+                    p.get('game_id'),
+                    p.get('season'),
+                    p.get('week'),
+                    p.get('home_team'),
+                    p.get('away_team'),
+                    p.get('game_date'),
+                    p.get('predicted_winner'),
+                    p.get('confidence'),
+                    p.get('home_win_prob'),
+                    p.get('away_win_prob'),
+                    p.get('predicted_home_score'),
+                    p.get('predicted_away_score'),
+                    p.get('predicted_margin'),
+                    p.get('ai_spread'),
+                    p.get('vegas_spread'),
+                    p.get('total_line')
+                ))
+                saved_count += 1
+            
+            conn.commit()
+            cur.close()
+            conn.close()
+            print(f"✅ Auto-saved {saved_count} predictions to tracking table")
+            
+        except Exception as save_err:
+            print(f"⚠️ Failed to save predictions: {save_err}")
+            # Don't fail the whole request if save fails
         
         return jsonify({
             'season': season,
@@ -279,6 +338,139 @@ def get_current_week_predictions():
         })
 
 
+@ml_api.route('/api/ml/model-performance', methods=['GET'])
+def get_model_performance():
+    """
+    Calculate and return model performance statistics
+    Tracks both win/loss classifier and point spread regressor accuracy
+    
+    Query params:
+        season: Filter by season (default: 2025)
+        week: Filter by specific week (optional)
+    """
+    try:
+        season = request.args.get('season', default=2025, type=int)
+        week = request.args.get('week', type=int)
+        
+        conn = psycopg2.connect(**get_predictor().db_config)
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        
+        # Build WHERE clause
+        where_conditions = [f"g.season = {season}"]
+        if week:
+            where_conditions.append(f"g.week = {week}")
+        where_clause = " AND " + " AND ".join(where_conditions)
+        
+        # Get completed games with predictions
+        query = f"""
+            WITH predictions AS (
+                SELECT 
+                    g.game_id,
+                    g.home_team,
+                    g.away_team,
+                    g.home_score,
+                    g.away_score,
+                    g.week,
+                    CASE WHEN g.home_score > g.away_score THEN g.home_team
+                         WHEN g.away_score > g.home_score THEN g.away_team
+                         ELSE 'TIE' END as actual_winner,
+                    g.home_score - g.away_score as actual_margin,
+                    g.spread_line as vegas_spread
+                FROM hcl.games g
+                WHERE g.home_score IS NOT NULL 
+                  AND g.away_score IS NOT NULL
+                  {where_clause}
+            )
+            SELECT * FROM predictions
+            ORDER BY week DESC
+        """
+        
+        cur.execute(query)
+        games = cur.fetchall()
+        
+        if not games:
+            return jsonify({
+                'success': True,
+                'season': season,
+                'week': week,
+                'total_games': 0,
+                'classification': {'accuracy': 0, 'correct': 0, 'total': 0},
+                'regression': {'mae': 0, 'correct_covers': 0, 'total': 0}
+            })
+        
+        # Get predictions for these games
+        pred = get_predictor()
+        classification_correct = 0
+        regression_errors = []
+        ai_covers = 0
+        vegas_covers = 0
+        
+        for game in games:
+            # Generate prediction for this game
+            prediction = pred.predict_game(
+                season,
+                game['week'],
+                game['home_team'],
+                game['away_team'],
+                game['vegas_spread'],
+                None
+            )
+            
+            # Check classification accuracy (did we pick the right winner?)
+            if prediction['predicted_winner'] == game['actual_winner']:
+                classification_correct += 1
+            
+            # Check regression accuracy (how close was our spread?)
+            predicted_margin = prediction['predicted_margin']
+            actual_margin = game['actual_margin']
+            regression_errors.append(abs(predicted_margin - actual_margin))
+            
+            # Check spread betting performance
+            ai_spread = prediction['ai_spread']
+            vegas_spread = game['vegas_spread']
+            
+            # Did AI spread beat the actual result better than Vegas?
+            if vegas_spread:
+                ai_diff = abs(ai_spread - (-actual_margin))  # AI spread is negative of margin
+                vegas_diff = abs(vegas_spread - (-actual_margin))
+                
+                if ai_diff < vegas_diff:
+                    ai_covers += 1
+                elif vegas_diff < ai_diff:
+                    vegas_covers += 1
+        
+        # Calculate statistics
+        total_games = len(games)
+        mae = sum(regression_errors) / total_games if regression_errors else 0
+        
+        cur.close()
+        conn.close()
+        
+        return jsonify({
+            'success': True,
+            'season': season,
+            'week': week,
+            'total_games': total_games,
+            'classification': {
+                'correct': classification_correct,
+                'total': total_games,
+                'accuracy': round((classification_correct / total_games * 100), 2) if total_games > 0 else 0
+            },
+            'regression': {
+                'mae': round(mae, 2),
+                'ai_covers': ai_covers,
+                'vegas_covers': vegas_covers,
+                'total': total_games
+            }
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
 @ml_api.route('/api/ml/explain', methods=['GET'])
 def explain_methodology():
     """
@@ -330,3 +522,203 @@ def explain_methodology():
         'disclaimer': 'These are statistical predictions based on historical patterns, not guarantees. NFL games have inherent uncertainty due to injuries, weather, turnovers, and coaching decisions not captured in data.',
         'academic_context': 'Built for IS330 coursework to demonstrate understanding of machine learning, feature engineering, and model evaluation. This project showcases proper ML methodology including data leakage prevention and time-based validation.'
     })
+
+
+@ml_api.route('/api/ml/save-predictions', methods=['POST'])
+def save_predictions():
+    """
+    Save predictions to tracking table for future performance analysis
+    Call this after generating predictions for upcoming games
+    """
+    try:
+        data = request.get_json()
+        predictions = data.get('predictions', [])
+        
+        if not predictions:
+            return jsonify({'success': False, 'error': 'No predictions provided'}), 400
+        
+        conn = psycopg2.connect(**get_predictor().db_config)
+        cur = conn.cursor()
+        
+        saved_count = 0
+        for pred in predictions:
+            insert_sql = """
+                INSERT INTO hcl.ml_predictions (
+                    game_id, season, week, home_team, away_team, game_date,
+                    predicted_winner, win_confidence, home_win_prob, away_win_prob,
+                    predicted_home_score, predicted_away_score, predicted_margin, ai_spread,
+                    vegas_spread, vegas_total
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                ON CONFLICT (game_id) DO UPDATE SET
+                    predicted_winner = EXCLUDED.predicted_winner,
+                    win_confidence = EXCLUDED.win_confidence,
+                    home_win_prob = EXCLUDED.home_win_prob,
+                    away_win_prob = EXCLUDED.away_win_prob,
+                    predicted_home_score = EXCLUDED.predicted_home_score,
+                    predicted_away_score = EXCLUDED.predicted_away_score,
+                    predicted_margin = EXCLUDED.predicted_margin,
+                    ai_spread = EXCLUDED.ai_spread,
+                    vegas_spread = EXCLUDED.vegas_spread,
+                    vegas_total = EXCLUDED.vegas_total,
+                    predicted_at = NOW()
+            """
+            
+            cur.execute(insert_sql, (
+                pred.get('game_id'),
+                pred.get('season'),
+                pred.get('week'),
+                pred.get('home_team'),
+                pred.get('away_team'),
+                pred.get('game_date'),
+                pred.get('predicted_winner'),
+                pred.get('confidence'),
+                pred.get('home_win_prob'),
+                pred.get('away_win_prob'),
+                pred.get('predicted_home_score'),
+                pred.get('predicted_away_score'),
+                pred.get('predicted_margin'),
+                pred.get('ai_spread'),
+                pred.get('vegas_spread'),
+                pred.get('total_line')
+            ))
+            saved_count += 1
+        
+        conn.commit()
+        cur.close()
+        conn.close()
+        
+        return jsonify({
+            'success': True,
+            'saved': saved_count,
+            'message': f'Saved {saved_count} predictions to tracking table'
+        })
+        
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@ml_api.route('/api/ml/update-results', methods=['POST'])
+def update_results():
+    """
+    Update predictions with actual results after games complete
+    Automatically called when new game results are loaded
+    """
+    try:
+        conn = psycopg2.connect(**get_predictor().db_config)
+        cur = conn.cursor()
+        
+        # Update all predictions that have results but haven't been scored yet
+        update_sql = """
+            UPDATE hcl.ml_predictions mp
+            SET 
+                actual_winner = CASE 
+                    WHEN g.home_score > g.away_score THEN g.home_team
+                    WHEN g.away_score > g.home_score THEN g.away_team
+                    ELSE 'TIE'
+                END,
+                actual_home_score = g.home_score,
+                actual_away_score = g.away_score,
+                actual_margin = g.home_score - g.away_score,
+                win_prediction_correct = CASE 
+                    WHEN g.home_score > g.away_score THEN mp.predicted_winner = g.home_team
+                    WHEN g.away_score > g.home_score THEN mp.predicted_winner = g.away_team
+                    ELSE FALSE
+                END,
+                score_prediction_error_home = ABS(mp.predicted_home_score - g.home_score),
+                score_prediction_error_away = ABS(mp.predicted_away_score - g.away_score),
+                margin_prediction_error = ABS(mp.predicted_margin - (g.home_score - g.away_score)),
+                result_recorded_at = NOW()
+            FROM hcl.games g
+            WHERE mp.game_id = g.game_id
+              AND g.home_score IS NOT NULL
+              AND g.away_score IS NOT NULL
+              AND mp.result_recorded_at IS NULL
+        """
+        
+        cur.execute(update_sql)
+        updated_count = cur.rowcount
+        
+        conn.commit()
+        cur.close()
+        conn.close()
+        
+        return jsonify({
+            'success': True,
+            'updated': updated_count,
+            'message': f'Updated {updated_count} predictions with actual results'
+        })
+        
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@ml_api.route('/api/ml/performance-stats', methods=['GET'])
+def get_performance_stats():
+    """
+    Get model performance statistics from tracking table
+    Returns win/loss accuracy and spread prediction accuracy
+    
+    Query params:
+        season: Filter by season (default: 2025)
+        week: Filter by week (optional)
+    """
+    try:
+        season = request.args.get('season', default=2025, type=int)
+        week = request.args.get('week', type=int)
+        
+        conn = psycopg2.connect(**get_predictor().db_config)
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        
+        # Build WHERE clause
+        where_conditions = [f"season = {season}", "result_recorded_at IS NOT NULL"]
+        if week:
+            where_conditions.append(f"week = {week}")
+        where_clause = " AND ".join(where_conditions)
+        
+        # Get statistics
+        stats_sql = f"""
+            SELECT 
+                COUNT(*) as total_games,
+                SUM(CASE WHEN win_prediction_correct THEN 1 ELSE 0 END) as correct_predictions,
+                CAST(AVG(CASE WHEN win_prediction_correct THEN 100.0 ELSE 0.0 END) AS NUMERIC(10,2)) as win_accuracy,
+                CAST(AVG(margin_prediction_error) AS NUMERIC(10,2)) as avg_margin_error,
+                CAST(AVG(score_prediction_error_home) AS NUMERIC(10,2)) as avg_home_score_error,
+                CAST(AVG(score_prediction_error_away) AS NUMERIC(10,2)) as avg_away_score_error,
+                MIN(week) as first_week,
+                MAX(week) as latest_week
+            FROM hcl.ml_predictions
+            WHERE {where_clause}
+        """
+        
+        cur.execute(stats_sql)
+        stats = cur.fetchone()
+        
+        # Get week-by-week breakdown
+        weekly_sql = f"""
+            SELECT 
+                week,
+                COUNT(*) as games,
+                SUM(CASE WHEN win_prediction_correct THEN 1 ELSE 0 END) as correct,
+                CAST(AVG(CASE WHEN win_prediction_correct THEN 100.0 ELSE 0.0 END) AS NUMERIC(10,1)) as accuracy,
+                CAST(AVG(margin_prediction_error) AS NUMERIC(10,1)) as mae
+            FROM hcl.ml_predictions
+            WHERE {where_clause}
+            GROUP BY week
+            ORDER BY week DESC
+        """
+        
+        cur.execute(weekly_sql)
+        weekly_stats = cur.fetchall()
+        
+        cur.close()
+        conn.close()
+        
+        return jsonify({
+            'success': True,
+            'season': season,
+            'overall': dict(stats) if stats else {},
+            'by_week': [dict(w) for w in weekly_stats]
+        })
+        
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
