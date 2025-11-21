@@ -198,8 +198,10 @@ function TeamDetail() {
     { label: 'Total Yards/Game', value: teamData.total_yards_per_game },
     { label: 'Pass Yards/Game', value: teamData.passing_yards_per_game },
     { label: 'Rush Yards/Game', value: teamData.rushing_yards_per_game },
-    { label: 'Completion %', value: `${teamData.completion_pct}%` },
-    { label: '3rd Down %', value: `${teamData.third_down_pct}%` }
+    { label: 'Completion %', value: teamData.completion_pct ? `${teamData.completion_pct}%` : 'N/A' },
+    { label: 'QB Rating', value: teamData.qb_rating || 'N/A' },
+    { label: 'Sack Yards Lost/Game', value: teamData.sack_yards_lost_per_game || 'N/A' },
+    { label: '3rd Down %', value: teamData.third_down_pct ? `${teamData.third_down_pct}%` : 'N/A' }
   ];
 
   const chartData = getChartData();

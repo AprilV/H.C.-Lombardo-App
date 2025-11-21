@@ -489,11 +489,11 @@ function GameStatistics() {
             <>
               <div className="team-logo-display">
                 <img 
-                  src={getTeamLogo(teamAData.team_abbreviation)} 
-                  alt={teamAData.team_name}
+                  src={getTeamLogo(teamAData.team)} 
+                  alt={teamAData.team}
                   className="team-logo"
+                  onError={(e) => { e.target.style.display = 'none'; }}
                 />
-                <h3>{teamAData.team_name}</h3>
                 <div className="team-record-badge">
                   {teamAData.wins}-{teamAData.losses}{(teamAData.ties || 0) > 0 ? `-${teamAData.ties}` : ''}
                 </div>
@@ -585,11 +585,11 @@ function GameStatistics() {
             <>
               <div className="team-logo-display">
                 <img 
-                  src={getTeamLogo(teamBData.team_abbreviation)} 
-                  alt={teamBData.team_name}
+                  src={getTeamLogo(teamBData.team)} 
+                  alt={teamBData.team}
                   className="team-logo"
+                  onError={(e) => { e.target.style.display = 'none'; }}
                 />
-                <h3>{teamBData.team_name}</h3>
                 <div className="team-record-badge">
                   {teamBData.wins}-{teamBData.losses}{(teamBData.ties || 0) > 0 ? `-${teamBData.ties}` : ''}
                 </div>

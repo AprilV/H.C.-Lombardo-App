@@ -264,8 +264,22 @@ def calculate_team_game_stats(pbp_data, game_id: str, team: str, opponent: str,
         stats['sacks_taken'] = len(pass_plays[pass_plays['sack'] == 1])
         stats['sack_yards_lost'] = abs(int(pass_plays[pass_plays['sack'] == 1]['yards_gained'].sum()))
         
-        # QB Rating (simplified - would need more complex calculation)
-        stats['qb_rating'] = None  # TODO: Implement full QB rating formula
+        # QB Rating (NFL Passer Rating formula)
+        if stats['passing_att'] > 0:
+            a = ((stats['completions'] / stats['passing_att']) - 0.3) * 5
+            b = ((stats['passing_yards'] / stats['passing_att']) - 3) * 0.25
+            c = (stats['passing_tds'] / stats['passing_att']) * 20
+            d = 2.375 - ((stats['interceptions'] / stats['passing_att']) * 25)
+            
+            # Clamp each component between 0 and 2.375
+            a = max(0, min(a, 2.375))
+            b = max(0, min(b, 2.375))
+            c = max(0, min(c, 2.375))
+            d = max(0, min(d, 2.375))
+            
+            stats['qb_rating'] = round(((a + b + c + d) / 6) * 100, 1)
+        else:
+            stats['qb_rating'] = None
         
         # Rushing Stats
         rush_plays = team_plays[team_plays['play_type'] == 'run']
