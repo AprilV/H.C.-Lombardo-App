@@ -12,6 +12,7 @@ from logging_config import setup_logging
 from dashboard_api import register_dashboard_routes
 from api_routes_hcl import hcl_bp
 from api_routes_ml import ml_api
+from api_routes_live_scores import live_scores_api
 
 # Initialize logger
 loggers = setup_logging()
@@ -41,6 +42,9 @@ app.register_blueprint(hcl_bp)
 # Register ML API routes
 # Register ML API routes
 app.register_blueprint(ml_api)
+
+# Register Live Scores API routes
+app.register_blueprint(live_scores_api)
 
 # Database configuration
 DB_CONFIG = {

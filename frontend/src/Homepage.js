@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Homepage.css';
+import LiveGamesTicker from './LiveGamesTicker';
 
 const API_URL = 'http://127.0.0.1:5000';
 
@@ -111,30 +112,8 @@ function Homepage() {
 
   return (
     <div className="homepage">
-      {/* AI Predictions Ticker Tape */}
-      {predictions.length > 0 && (
-        <div className="predictions-ticker-container">
-          <div className="ticker-header">
-            <span className="ticker-title">🤖 AI Predictions vs Vegas</span>
-            <span className="ticker-subtitle">Week {predictions[0]?.week || ''} • 65.55% Win Rate</span>
-          </div>
-          <div className="ticker-wrapper">
-            <div className="ticker-content">
-              {predictions.concat(predictions).map((pred, idx) => (
-                <div key={idx} className="ticker-item">
-                  <span className="matchup">{pred.away_team} @ {pred.home_team}</span>
-                  <span className="separator">|</span>
-                  <span className="line ai">AI: {pred.ai_spread > 0 ? '+' : ''}{pred.ai_spread}</span>
-                  <span className="line vegas">LV: {pred.vegas_spread > 0 ? '+' : ''}{pred.vegas_spread}</span>
-                  <span className="separator">|</span>
-                  <span className="line ai">O/U {pred.ai_total}</span>
-                  <span className="line vegas">LV {pred.vegas_total}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Live Games Ticker */}
+      <LiveGamesTicker />
 
       <div className="homepage-header" style={{marginTop: '40px'}}>
         <h2>🏈 2025 NFL Season Standings</h2>
