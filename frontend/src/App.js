@@ -7,6 +7,7 @@ import MatchupAnalyzer from './MatchupAnalyzer';
 import TeamDetail from './TeamDetail';
 import Analytics from './Analytics';
 import MLPredictions from './MLPredictions';
+import Admin from './Admin';
 import './App.css';
 
 const API_URL = 'http://127.0.0.1:5000';
@@ -45,32 +46,6 @@ function App() {
         </header>
 
         <main className="App-main">
-          <section className="status-bar">
-            {serverStatus ? (
-              <div className="status-bar-content">
-                <div className="status-indicator success">
-                  <span className="status-dot"></span>
-                  <span className="status-text"> LIVE</span>
-                </div>
-                <div className="status-indicator success">
-                  <span className="status-dot"></span>
-                  <span className="status-text"> DB Connected</span>
-                </div>
-                <div className="status-indicator success">
-                  <span className="status-dot"></span>
-                  <span className="status-text"> API Ready</span>
-                </div>
-              </div>
-            ) : (
-              <div className="status-bar-content error">
-                <div className="status-indicator error">
-                  <span className="status-dot"></span>
-                  <span className="status-text"> Offline</span>
-                </div>
-              </div>
-            )}
-          </section>
-
           <SideMenu />
 
           <Routes>
@@ -79,6 +54,7 @@ function App() {
             <Route path="/matchup-analyzer" element={<MatchupAnalyzer />} />
             <Route path="/analytics" element={<Analytics />} />
             <Route path="/ml-predictions" element={<MLPredictions />} />
+            <Route path="/admin" element={<Admin />} />
             <Route path="/team/:teamAbbr" element={<TeamDetail />} />
           </Routes>
         </main>

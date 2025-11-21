@@ -92,11 +92,16 @@ function SideMenu() {
             <span className="menu-text">Matchup Analyzer</span>
           </Link>
 
-          <div className="menu-item disabled">
-            <span className="menu-icon">🎲</span>
-            <span className="menu-text">Betting Odds</span>
-            <span className="coming-soon">Soon</span>
-          </div>
+          <div className="menu-divider"></div>
+
+          <Link 
+            to="/admin" 
+            className={`menu-item ${isActive('/admin')}`}
+            onClick={closeMenu}
+          >
+            <span className="menu-icon">🔧</span>
+            <span className="menu-text">Admin</span>
+          </Link>
 
           <div className="menu-divider"></div>
 

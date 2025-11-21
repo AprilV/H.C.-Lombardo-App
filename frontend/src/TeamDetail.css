@@ -4,8 +4,8 @@
   padding: 20px;
 }
 
-.team-detail .header {
-  background: white;
+.team-detail-header {
+  /* background removed - now set dynamically per team in TeamDetail.js */
   padding: 20px;
   border-radius: 10px;
   margin-bottom: 20px;
@@ -47,8 +47,9 @@
 .team-name {
   font-size: 32px;
   font-weight: bold;
-  color: #333;
+  color: white;
   margin: 0;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
 }
 
 .badge {

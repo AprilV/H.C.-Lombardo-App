@@ -235,6 +235,50 @@ def model_info():
     })
 
 
+@ml_api.route('/api/predictions/current-week', methods=['GET'])
+def get_current_week_predictions():
+    """
+    Get simplified predictions for Homepage widget
+    Returns upcoming games with AI vs Vegas comparison
+    """
+    try:
+        pred = get_predictor()
+        predictions = pred.predict_upcoming()
+        
+        if not predictions:
+            return jsonify({
+                'success': True,
+                'predictions': []
+            })
+        
+        # Simplify predictions for homepage display
+        simplified = []
+        for p in predictions:
+            simplified.append({
+                'home_team': p.get('home_team'),
+                'away_team': p.get('away_team'),
+                'game_date': p.get('game_date'),
+                'ai_spread': p.get('ai_spread'),
+                'vegas_spread': p.get('vegas_spread'),
+                'ai_total': round(p.get('predicted_home_score', 0) + p.get('predicted_away_score', 0), 1),
+                'vegas_total': p.get('total_line'),
+                'predicted_winner': p.get('predicted_winner')
+            })
+        
+        return jsonify({
+            'success': True,
+            'week': predictions[0].get('week') if predictions else None,
+            'predictions': simplified
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e),
+            'predictions': []
+        })
+
+
 @ml_api.route('/api/ml/explain', methods=['GET'])
 def explain_methodology():
     """

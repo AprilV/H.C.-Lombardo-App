@@ -22,11 +22,13 @@ const NFL_STRUCTURE = {
 
 function Homepage() {
   const [teams, setTeams] = useState([]);
+  const [predictions, setPredictions] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchTeams();
+    fetchPredictions();
   }, []);
 
   const fetchTeams = async () => {
@@ -39,6 +41,28 @@ function Homepage() {
       console.error('Failed to fetch teams:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchPredictions = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/ml/predict-upcoming`);
+      const data = await response.json();
+      if (data.predictions && data.predictions.length > 0) {
+        // Transform to match our ticker format
+        const simplified = data.predictions.map(p => ({
+          home_team: p.home_team,
+          away_team: p.away_team,
+          ai_spread: p.ai_spread,
+          vegas_spread: p.vegas_spread,
+          ai_total: Math.round(p.predicted_home_score + p.predicted_away_score),
+          vegas_total: p.total_line,
+          week: data.week
+        }));
+        setPredictions(simplified);
+      }
+    } catch (err) {
+      console.error('Failed to fetch predictions:', err);
     }
   };
 
@@ -87,49 +111,37 @@ function Homepage() {
 
   return (
     <div className="homepage">
-      <div className="homepage-header">
-        <h1>🏈 H.C. Lombardo NFL Analytics Platform</h1>
-        <p className="season-subtitle">Full-Stack Sports Analytics • React + Flask + PostgreSQL</p>
-        <div className="project-badges">
-          <span className="badge badge-sprint">Sprint 7 Complete</span>
-          <span className="badge badge-data">108 Games • 2025 Weeks 1-7</span>
-          <span className="badge badge-tech">React 18 • Chart.js • 3NF Database</span>
+      {/* AI Predictions Ticker Tape */}
+      {predictions.length > 0 && (
+        <div className="predictions-ticker-container">
+          <div className="ticker-header">
+            <span className="ticker-title">🤖 AI Predictions vs Vegas</span>
+            <span className="ticker-subtitle">Week {predictions[0]?.week || ''} • 65.55% Win Rate</span>
+          </div>
+          <div className="ticker-wrapper">
+            <div className="ticker-content">
+              {predictions.concat(predictions).map((pred, idx) => (
+                <div key={idx} className="ticker-item">
+                  <span className="matchup">{pred.away_team} @ {pred.home_team}</span>
+                  <span className="separator">|</span>
+                  <span className="line ai">AI: {pred.ai_spread > 0 ? '+' : ''}{pred.ai_spread}</span>
+                  <span className="line vegas">LV: {pred.vegas_spread > 0 ? '+' : ''}{pred.vegas_spread}</span>
+                  <span className="separator">|</span>
+                  <span className="line ai">O/U {pred.ai_total}</span>
+                  <span className="line vegas">LV {pred.vegas_total}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
-      </div>
-
-      <div className="features-showcase">
-        <div className="feature-card" onClick={() => navigate('/historical')}>
-          <div className="feature-icon">📊</div>
-          <h3>Historical Data</h3>
-          <p>32-team grid with advanced metrics: EPA/Play, Success Rate, Efficiency stats</p>
-          <span className="feature-tag">NEW - Sprint 7</span>
-        </div>
-
-        <div className="feature-card" onClick={() => navigate('/team-stats')}>
-          <div className="feature-icon">📈</div>
-          <h3>Team Analysis</h3>
-          <p>Interactive Chart.js visualizations, game-by-game breakdowns, season trends</p>
-          <span className="feature-tag">NEW - Sprint 7</span>
-        </div>
-
-        <div className="feature-card" onClick={() => navigate('/historical')}>
-          <div className="feature-icon">🎯</div>
-          <h3>Advanced Metrics</h3>
-          <p>EPA per play, 3rd down %, Red Zone efficiency, Yards/Play analytics</p>
-          <span className="feature-tag">Sprint 6 API</span>
-        </div>
-
-        <div className="feature-card">
-          <div className="feature-icon">🗄️</div>
-          <h3>3NF Database</h3>
-          <p>PostgreSQL with HCL schema, 3 views, 47 metrics per game, proper normalization</p>
-          <span className="feature-tag">Sprint 5 Design</span>
-        </div>
-      </div>
+      )}
 
       <div className="homepage-header" style={{marginTop: '40px'}}>
         <h2>🏈 2025 NFL Season Standings</h2>
         <p className="season-subtitle">Conference & Division Standings</p>
+        <p className="season-subtitle" style={{marginTop: '10px', fontSize: '0.9rem', color: '#a8d5ff'}}>
+          💡 Click on any team to view detailed stats
+        </p>
       </div>
 
       {Object.entries(NFL_STRUCTURE).map(([conference, divisions]) => (
