@@ -8,6 +8,9 @@ function LiveGamesTicker() {
   const [loading, setLoading] = useState(true);
   const [isPaused, setIsPaused] = useState(false);
   const scrollContainerRef = React.useRef(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
 
   useEffect(() => {
     fetchGames();
@@ -15,17 +18,58 @@ function LiveGamesTicker() {
     return () => clearInterval(interval);
   }, []);
 
-  const scrollLeft = () => {
+  const handleMouseDown = (e) => {
+    setIsDragging(true);
+    setIsPaused(true);
+    setStartX(e.pageX - scrollContainerRef.current.offsetLeft);
+    setScrollLeft(scrollContainerRef.current.scrollLeft);
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+    setTimeout(() => setIsPaused(false), 3000); // Resume auto-scroll after 3 seconds
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDragging) return;
+    e.preventDefault();
+    const x = e.pageX - scrollContainerRef.current.offsetLeft;
+    const walk = (x - startX) * 2; // Multiply by 2 for faster scroll
+    scrollContainerRef.current.scrollLeft = scrollLeft - walk;
+  };
+
+  const handleTouchStart = (e) => {
+    setIsDragging(true);
+    setIsPaused(true);
+    setStartX(e.touches[0].pageX - scrollContainerRef.current.offsetLeft);
+    setScrollLeft(scrollContainerRef.current.scrollLeft);
+  };
+
+  const handleTouchMove = (e) => {
+    if (!isDragging) return;
+    const x = e.touches[0].pageX - scrollContainerRef.current.offsetLeft;
+    const walk = (x - startX) * 2;
+    scrollContainerRef.current.scrollLeft = scrollLeft - walk;
+  };
+
+  const handleTouchEnd = () => {
+    setIsDragging(false);
+    setTimeout(() => setIsPaused(false), 3000);
+  };
+
+  const scrollLeftBtn = () => {
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollBy({ left: -300, behavior: 'smooth' });
       setIsPaused(true);
+      setTimeout(() => setIsPaused(false), 3000);
     }
   };
 
-  const scrollRight = () => {
+  const scrollRightBtn = () => {
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollBy({ left: 300, behavior: 'smooth' });
       setIsPaused(true);
+      setTimeout(() => setIsPaused(false), 3000);
     }
   };
 
@@ -104,15 +148,26 @@ function LiveGamesTicker() {
           LIVE SCORES • AI PREDICTIONS • VEGAS LINES
         </div>
         <div className="ticker-controls">
-          <button className="scroll-btn" onClick={scrollLeft} title="Scroll Left">
+          <button className="scroll-btn" onClick={scrollLeftBtn} title="Scroll Left">
             ◀
           </button>
-          <button className="scroll-btn" onClick={scrollRight} title="Scroll Right">
+          <button className="scroll-btn" onClick={scrollRightBtn} title="Scroll Right">
             ▶
           </button>
         </div>
       </div>
-      <div className="ticker-scroll" ref={scrollContainerRef}>
+      <div 
+        className="ticker-scroll" 
+        ref={scrollContainerRef}
+        onMouseDown={handleMouseDown}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
+        onMouseMove={handleMouseMove}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
+      >
         <div className={`ticker-content ${isPaused ? 'paused' : ''}`}>
           {/* Duplicate for seamless loop */}
           {[...games, ...games].map((game, index) => (
