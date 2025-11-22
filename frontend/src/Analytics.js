@@ -19,6 +19,7 @@ function Analytics() {
   const [selectedTeam, setSelectedTeam] = useState('');
   const [selectedStats, setSelectedStats] = useState([]);
   const [teams, setTeams] = useState([]);
+  const [customData, setCustomData] = useState(null);
 
   // Available stats for à la carte selection
   const availableStats = [
@@ -47,6 +48,12 @@ function Analytics() {
     if (activeTab === 'rest') fetchRestData();
     if (activeTab === 'referees') fetchRefereeData();
   }, [activeTab, season]);
+
+  useEffect(() => {
+    if (activeTab === 'custom') {
+      fetchCustomData();
+    }
+  }, [selectedStats, selectedTeam, season, activeTab]);
 
   const fetchSummary = async () => {
     setLoading(true);
@@ -120,7 +127,7 @@ function Analytics() {
 
   const fetchTeams = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/hcl/teams`);
+      const response = await fetch(`${API_URL}/api/hcl/teams?season=${season}`);
       const data = await response.json();
       if (data.success) {
         setTeams(data.teams);
@@ -128,6 +135,48 @@ function Analytics() {
     } catch (err) {
       console.error('Error fetching teams:', err);
     }
+  };
+
+  const fetchCustomData = async () => {
+    if (selectedStats.length === 0) {
+      setCustomData(null);
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // Fetch all analytics data we might need
+      const endpoints = {
+        betting: selectedStats.some(s => availableStats.find(st => st.id === s)?.category === 'betting'),
+        weather: selectedStats.some(s => availableStats.find(st => st.id === s)?.category === 'weather'),
+        rest: selectedStats.some(s => availableStats.find(st => st.id === s)?.category === 'rest'),
+      };
+
+      const data = {};
+
+      if (endpoints.betting) {
+        const response = await fetch(`${API_URL}/api/hcl/analytics/betting?season=${season}${selectedTeam ? `&team=${selectedTeam}` : ''}`);
+        const result = await response.json();
+        if (result.success) data.betting = result.teams;
+      }
+
+      if (endpoints.weather) {
+        const response = await fetch(`${API_URL}/api/hcl/analytics/weather?season=${season}`);
+        const result = await response.json();
+        if (result.success) data.weather = result.conditions;
+      }
+
+      if (endpoints.rest) {
+        const response = await fetch(`${API_URL}/api/hcl/analytics/rest?season=${season}`);
+        const result = await response.json();
+        if (result.success) data.rest = result.rest_categories;
+      }
+
+      setCustomData(data);
+    } catch (err) {
+      console.error('Error fetching custom data:', err);
+    }
+    setLoading(false);
   };
 
   const toggleStat = (statId) => {
@@ -401,6 +450,78 @@ function Analytics() {
   };
 
   const renderCustomBuilder = () => {
+    const getStatValue = (statId) => {
+      if (!customData) return 'Select stats to view data';
+
+      const stat = availableStats.find(s => s.id === statId);
+      if (!stat) return 'N/A';
+
+      // BETTING STATS
+      if (stat.category === 'betting' && customData.betting) {
+        const teamData = selectedTeam 
+          ? customData.betting.find(t => t.team === selectedTeam)
+          : customData.betting[0]; // If no team selected, show first team or aggregate
+
+        if (!teamData) return 'No data';
+
+        switch (statId) {
+          case 'ats_record':
+            return `${teamData.ats_wins}-${teamData.ats_losses}-${teamData.ats_pushes}`;
+          case 'ats_win_pct':
+            return `${teamData.ats_win_pct}%`;
+          case 'over_under':
+            return `${teamData.games_over}-${teamData.games_under}`;
+          case 'favorite_record':
+            return `${teamData.wins_as_favorite}-${teamData.games_as_favorite - teamData.wins_as_favorite}`;
+          case 'underdog_record':
+            return `${teamData.wins_as_underdog}-${teamData.games_as_underdog - teamData.wins_as_underdog}`;
+          default:
+            return 'N/A';
+        }
+      }
+
+      // WEATHER STATS
+      if (stat.category === 'weather' && customData.weather) {
+        const domeData = customData.weather.find(w => w.roof === 'dome');
+        const outdoorData = customData.weather.find(w => w.roof === 'outdoor');
+        const coldData = customData.weather.find(w => w.temp_range && w.temp_range.includes('Cold'));
+        const windData = customData.weather.find(w => w.wind_range && w.wind_range.includes('High'));
+
+        switch (statId) {
+          case 'dome_scoring':
+            return domeData ? `${parseFloat(domeData.avg_total_points).toFixed(1)} PPG` : 'N/A';
+          case 'outdoor_scoring':
+            return outdoorData ? `${parseFloat(outdoorData.avg_total_points).toFixed(1)} PPG` : 'N/A';
+          case 'cold_weather':
+            return coldData ? `${parseFloat(coldData.avg_total_points).toFixed(1)} PPG (${coldData.total_games} games)` : 'N/A';
+          case 'wind_impact':
+            return windData ? `${parseFloat(windData.avg_total_points).toFixed(1)} PPG (${windData.total_games} games)` : 'N/A';
+          default:
+            return 'N/A';
+        }
+      }
+
+      // REST STATS
+      if (stat.category === 'rest' && customData.rest) {
+        const byeData = customData.rest.find(r => r.rest_category && r.rest_category.includes('Bye'));
+        const shortData = customData.rest.find(r => r.rest_category && r.rest_category.includes('Short'));
+        const normalData = customData.rest.find(r => r.rest_category && r.rest_category.includes('Normal'));
+
+        switch (statId) {
+          case 'rest_advantage':
+            return byeData ? `${byeData.win_pct}% Win Rate (${byeData.wins}-${byeData.losses})` : 'N/A';
+          case 'short_week':
+            return shortData ? `${shortData.win_pct}% Win Rate (${shortData.wins}-${shortData.losses})` : 'N/A';
+          case 'normal_rest':
+            return normalData ? `${normalData.win_pct}% Win Rate (${normalData.wins}-${normalData.losses})` : 'N/A';
+          default:
+            return 'N/A';
+        }
+      }
+
+      return 'Loading...';
+    };
+
     return (
       <div className="custom-builder">
         <div className="stat-legend">
@@ -419,7 +540,9 @@ function Analytics() {
             <select value={selectedTeam} onChange={(e) => setSelectedTeam(e.target.value)}>
               <option value="">-- All Teams --</option>
               {teams.map(team => (
-                <option key={team.team} value={team.team}>{team.team}</option>
+                <option key={team.team} value={team.team}>
+                  {team.team} ({team.wins || 0}-{team.losses || 0}{(team.ties || 0) > 0 ? `-${team.ties}` : ''})
+                </option>
               ))}
             </select>
           </div>
@@ -473,23 +596,36 @@ function Analytics() {
 
           {selectedStats.length > 0 && (
             <div className="selected-stats-display">
-              <h3>Your Custom Stats View:</h3>
-              <div className="custom-stats-grid">
-                {selectedStats.map(statId => {
-                  const stat = availableStats.find(s => s.id === statId);
-                  return (
-                    <div key={statId} className="custom-stat-card">
-                      <div className="stat-name">{stat.name}</div>
-                      <div className="stat-value">Coming Soon</div>
-                      <button onClick={() => toggleStat(statId)} className="remove-stat">×</button>
-                    </div>
-                  );
-                })}
-              </div>
+              <h3>📊 Your Custom Stats {selectedTeam && `for ${selectedTeam}`}:</h3>
+              {loading ? (
+                <div className="loading">Loading data...</div>
+              ) : (
+                <div className="custom-stats-grid">
+                  {selectedStats.map(statId => {
+                    const stat = availableStats.find(s => s.id === statId);
+                    return (
+                      <div key={statId} className="custom-stat-card">
+                        <div className="stat-name">{stat.name}</div>
+                        <div className="stat-value">{getStatValue(statId)}</div>
+                        <button onClick={() => toggleStat(statId)} className="remove-stat" title="Remove this stat">×</button>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
               <p className="builder-note">
-                💡 This custom builder lets you pick exactly which stats you want to see.
-                Select a team above to filter, or leave blank for league-wide stats.
+                💡 This custom builder fetches real data from the analytics engine.
+                {selectedTeam ? ` Showing stats for ${selectedTeam}.` : ' Select a team above for team-specific stats, or view league-wide data.'}
               </p>
+            </div>
+          )}
+
+          {selectedStats.length === 0 && (
+            <div className="empty-builder-state">
+              <div className="empty-icon">📊</div>
+              <h3>No Stats Selected</h3>
+              <p>Check the boxes above to add stats to your custom dashboard.</p>
+              <p>Mix and match betting, weather, and rest statistics to build your perfect analytics view!</p>
             </div>
           )}
         </div>
