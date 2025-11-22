@@ -191,6 +191,15 @@ function Analytics() {
     );
   };
 
+  const selectAllStats = () => {
+    setSelectedStats(availableStats.map(s => s.id));
+  };
+
+  const resetStats = () => {
+    setSelectedStats([]);
+    setCustomData(null);
+  };
+
   const renderSummary = () => {
     if (!summary) return <div>Loading summary...</div>;
 
@@ -463,13 +472,13 @@ function Analytics() {
 
       // BETTING STATS
       if (stat.category === 'betting') {
-        if (!customData.betting || customData.betting.length === 0) return 'No data available';
+        if (!customData.betting || customData.betting.length === 0) return 'No betting data';
         
-        const teamData = selectedTeam 
-          ? customData.betting.find(t => t.team === selectedTeam)
-          : customData.betting[0];
+        // When a team is selected, the API already filters to that team
+        // So we can just use the first (and only) result
+        const teamData = customData.betting[0];
 
-        if (!teamData) return 'No data for selected team';
+        if (!teamData) return 'No data for team';
 
         switch (statId) {
           case 'ats_record':
@@ -563,7 +572,13 @@ function Analytics() {
           </div>
           
           <div className="stat-selector">
-            <h3>Select Stats to Display:</h3>
+            <div className="selector-header">
+              <h3>Select Stats to Display:</h3>
+              <div className="bulk-actions">
+                <button onClick={selectAllStats} className="btn-select-all">✓ Select All</button>
+                <button onClick={resetStats} className="btn-reset">✕ Reset</button>
+              </div>
+            </div>
             <div className="stat-categories">
               <div className="stat-category">
                 <h4>🎯 Betting Stats</h4>
@@ -572,7 +587,7 @@ function Analytics() {
                     <input 
                       type="checkbox" 
                       checked={selectedStats.includes(stat.id)}
-                      onChange={() => toggleStat(stat.id)}
+                      onChange={(e) => { e.preventDefault(); toggleStat(stat.id); }}
                     />
                     {stat.name}
                   </label>
@@ -586,7 +601,7 @@ function Analytics() {
                     <input 
                       type="checkbox" 
                       checked={selectedStats.includes(stat.id)}
-                      onChange={() => toggleStat(stat.id)}
+                      onChange={(e) => { e.preventDefault(); toggleStat(stat.id); }}
                     />
                     {stat.name}
                   </label>
@@ -600,7 +615,7 @@ function Analytics() {
                     <input 
                       type="checkbox" 
                       checked={selectedStats.includes(stat.id)}
-                      onChange={() => toggleStat(stat.id)}
+                      onChange={(e) => { e.preventDefault(); toggleStat(stat.id); }}
                     />
                     {stat.name}
                   </label>
