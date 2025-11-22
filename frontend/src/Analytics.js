@@ -157,21 +157,25 @@ function Analytics() {
       if (endpoints.betting) {
         const response = await fetch(`${API_URL}/api/hcl/analytics/betting?season=${season}${selectedTeam ? `&team=${selectedTeam}` : ''}`);
         const result = await response.json();
+        console.log('Betting data received:', result);
         if (result.success) data.betting = result.teams;
       }
 
       if (endpoints.weather) {
         const response = await fetch(`${API_URL}/api/hcl/analytics/weather?season=${season}`);
         const result = await response.json();
+        console.log('Weather data received:', result);
         if (result.success) data.weather = result.conditions;
       }
 
       if (endpoints.rest) {
         const response = await fetch(`${API_URL}/api/hcl/analytics/rest?season=${season}`);
         const result = await response.json();
+        console.log('Rest data received:', result);
         if (result.success) data.rest = result.rest_categories;
       }
 
+      console.log('Setting customData:', data);
       setCustomData(data);
     } catch (err) {
       console.error('Error fetching custom data:', err);
@@ -452,74 +456,85 @@ function Analytics() {
   const renderCustomBuilder = () => {
     const getStatValue = (statId) => {
       if (!customData) return 'Select stats to view data';
+      if (loading) return 'Loading...';
 
       const stat = availableStats.find(s => s.id === statId);
       if (!stat) return 'N/A';
 
       // BETTING STATS
-      if (stat.category === 'betting' && customData.betting) {
+      if (stat.category === 'betting') {
+        if (!customData.betting || customData.betting.length === 0) return 'No data available';
+        
         const teamData = selectedTeam 
           ? customData.betting.find(t => t.team === selectedTeam)
-          : customData.betting[0]; // If no team selected, show first team or aggregate
+          : customData.betting[0];
 
-        if (!teamData) return 'No data';
+        if (!teamData) return 'No data for selected team';
 
         switch (statId) {
           case 'ats_record':
-            return `${teamData.ats_wins}-${teamData.ats_losses}-${teamData.ats_pushes}`;
+            return `${teamData.ats_wins || 0}-${teamData.ats_losses || 0}-${teamData.ats_pushes || 0}`;
           case 'ats_win_pct':
-            return `${teamData.ats_win_pct}%`;
+            return `${teamData.ats_win_pct || 0}%`;
           case 'over_under':
-            return `${teamData.games_over}-${teamData.games_under}`;
+            return `${teamData.games_over || 0}-${teamData.games_under || 0}`;
           case 'favorite_record':
-            return `${teamData.wins_as_favorite}-${teamData.games_as_favorite - teamData.wins_as_favorite}`;
+            const favWins = teamData.wins_as_favorite || 0;
+            const favGames = teamData.games_as_favorite || 0;
+            return `${favWins}-${favGames - favWins}`;
           case 'underdog_record':
-            return `${teamData.wins_as_underdog}-${teamData.games_as_underdog - teamData.wins_as_underdog}`;
+            const dogWins = teamData.wins_as_underdog || 0;
+            const dogGames = teamData.games_as_underdog || 0;
+            return `${dogWins}-${dogGames - dogWins}`;
           default:
             return 'N/A';
         }
       }
 
       // WEATHER STATS
-      if (stat.category === 'weather' && customData.weather) {
-        const domeData = customData.weather.find(w => w.roof === 'dome');
-        const outdoorData = customData.weather.find(w => w.roof === 'outdoor');
-        const coldData = customData.weather.find(w => w.temp_range && w.temp_range.includes('Cold'));
-        const windData = customData.weather.find(w => w.wind_range && w.wind_range.includes('High'));
+      if (stat.category === 'weather') {
+        if (!customData.weather || customData.weather.length === 0) return 'No data available';
+        
+        const domeData = customData.weather.find(w => w.roof && w.roof.toLowerCase() === 'dome');
+        const outdoorData = customData.weather.find(w => w.roof && w.roof.toLowerCase() === 'outdoor');
+        const coldData = customData.weather.find(w => w.temp_range && w.temp_range.toLowerCase().includes('cold'));
+        const windData = customData.weather.find(w => w.wind_range && w.wind_range.toLowerCase().includes('high'));
 
         switch (statId) {
           case 'dome_scoring':
-            return domeData ? `${parseFloat(domeData.avg_total_points).toFixed(1)} PPG` : 'N/A';
+            return domeData && domeData.avg_total_points ? `${parseFloat(domeData.avg_total_points).toFixed(1)} PPG` : 'No dome data';
           case 'outdoor_scoring':
-            return outdoorData ? `${parseFloat(outdoorData.avg_total_points).toFixed(1)} PPG` : 'N/A';
+            return outdoorData && outdoorData.avg_total_points ? `${parseFloat(outdoorData.avg_total_points).toFixed(1)} PPG` : 'No outdoor data';
           case 'cold_weather':
-            return coldData ? `${parseFloat(coldData.avg_total_points).toFixed(1)} PPG (${coldData.total_games} games)` : 'N/A';
+            return coldData && coldData.avg_total_points ? `${parseFloat(coldData.avg_total_points).toFixed(1)} PPG (${coldData.total_games || 0} games)` : 'No cold weather data';
           case 'wind_impact':
-            return windData ? `${parseFloat(windData.avg_total_points).toFixed(1)} PPG (${windData.total_games} games)` : 'N/A';
+            return windData && windData.avg_total_points ? `${parseFloat(windData.avg_total_points).toFixed(1)} PPG (${windData.total_games || 0} games)` : 'No high wind data';
           default:
             return 'N/A';
         }
       }
 
       // REST STATS
-      if (stat.category === 'rest' && customData.rest) {
-        const byeData = customData.rest.find(r => r.rest_category && r.rest_category.includes('Bye'));
-        const shortData = customData.rest.find(r => r.rest_category && r.rest_category.includes('Short'));
-        const normalData = customData.rest.find(r => r.rest_category && r.rest_category.includes('Normal'));
+      if (stat.category === 'rest') {
+        if (!customData.rest || customData.rest.length === 0) return 'No data available';
+        
+        const byeData = customData.rest.find(r => r.rest_category && r.rest_category.toLowerCase().includes('bye'));
+        const shortData = customData.rest.find(r => r.rest_category && r.rest_category.toLowerCase().includes('short'));
+        const normalData = customData.rest.find(r => r.rest_category && r.rest_category.toLowerCase().includes('normal'));
 
         switch (statId) {
           case 'rest_advantage':
-            return byeData ? `${byeData.win_pct}% Win Rate (${byeData.wins}-${byeData.losses})` : 'N/A';
+            return byeData && byeData.win_pct ? `${byeData.win_pct}% Win Rate (${byeData.wins || 0}-${byeData.losses || 0})` : 'No bye week data';
           case 'short_week':
-            return shortData ? `${shortData.win_pct}% Win Rate (${shortData.wins}-${shortData.losses})` : 'N/A';
+            return shortData && shortData.win_pct ? `${shortData.win_pct}% Win Rate (${shortData.wins || 0}-${shortData.losses || 0})` : 'No short week data';
           case 'normal_rest':
-            return normalData ? `${normalData.win_pct}% Win Rate (${normalData.wins}-${normalData.losses})` : 'N/A';
+            return normalData && normalData.win_pct ? `${normalData.win_pct}% Win Rate (${normalData.wins || 0}-${normalData.losses || 0})` : 'No normal rest data';
           default:
             return 'N/A';
         }
       }
 
-      return 'Loading...';
+      return 'Data not available';
     };
 
     return (
