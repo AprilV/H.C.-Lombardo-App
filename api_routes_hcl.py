@@ -208,7 +208,7 @@ def get_team_details(team_abbr):
 @hcl_bp.route('/teams/<team_abbr>/games', methods=['GET'])
 def get_team_games(team_abbr):
     """
-    Get game-by-game history for a specific team including betting lines and weather
+    Get full season schedule for a specific team (both completed and upcoming games)
     
     Args:
         team_abbr: Team abbreviation (e.g. 'BAL', 'KC')
@@ -218,30 +218,33 @@ def get_team_games(team_abbr):
         limit: Max games to return (default: 20)
     
     Returns:
-        JSON array of games with stats, opponent, result, betting lines, weather
+        JSON array of games with stats for completed games, schedule info for upcoming
     """
     try:
         team_abbr = team_abbr.upper()
         season = request.args.get('season', default=2025, type=int)
-        limit = request.args.get('limit', default=20, type=int)
+        limit = request.args.get('limit', default=18, type=int)  # Changed default to 18 for full season
         
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=RealDictCursor)
         
+        # Query to get all scheduled games (from hcl.games) and join with stats where available
         query = """
             SELECT 
-                tgs.game_id,
-                tgs.season,
-                tgs.week,
+                g.game_id,
+                g.season,
+                g.week,
                 g.game_date,
-                tgs.team,
-                tgs.opponent,
-                tgs.is_home,
-                tgs.points as team_points,
+                CASE WHEN g.home_team = %s THEN g.home_team ELSE g.away_team END as team,
+                CASE WHEN g.home_team = %s THEN g.away_team ELSE g.home_team END as opponent,
+                CASE WHEN g.home_team = %s THEN TRUE ELSE FALSE END as is_home,
+                -- Scores (NULL for upcoming games)
                 g.home_score,
                 g.away_score,
+                CASE WHEN g.home_team = %s THEN g.home_score ELSE g.away_score END as team_points,
+                -- Result (NULL for upcoming games)
                 tgs.result,
-                -- Team stats
+                -- Team stats (NULL for upcoming games)
                 tgs.total_yards,
                 tgs.passing_yards,
                 tgs.rushing_yards,
@@ -259,17 +262,17 @@ def get_team_games(team_abbr):
                 g.temp,
                 g.wind,
                 -- Context
-                CASE WHEN tgs.is_home THEN g.home_rest ELSE g.away_rest END as rest_days,
+                CASE WHEN g.home_team = %s THEN g.home_rest ELSE g.away_rest END as rest_days,
                 g.is_divisional_game,
                 g.referee
-            FROM hcl.team_game_stats tgs
-            JOIN hcl.games g ON tgs.game_id = g.game_id
-            WHERE tgs.team = %s AND tgs.season = %s
-            ORDER BY g.game_date DESC, tgs.week DESC
+            FROM hcl.games g
+            LEFT JOIN hcl.team_game_stats tgs ON g.game_id = tgs.game_id AND tgs.team = %s
+            WHERE (g.home_team = %s OR g.away_team = %s) AND g.season = %s
+            ORDER BY g.week ASC
             LIMIT %s
         """
         
-        cur.execute(query, (team_abbr, season, limit))
+        cur.execute(query, (team_abbr, team_abbr, team_abbr, team_abbr, team_abbr, team_abbr, team_abbr, team_abbr, season, limit))
         games = cur.fetchall()
         
         cur.close()

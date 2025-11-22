@@ -154,12 +154,16 @@ def get_live_scores():
                     game_date = event.get('date', '')
                     if game_date:
                         try:
-                            # Parse ISO datetime from ESPN
-                            dt = datetime.fromisoformat(game_date.replace('Z', '+00:00'))
+                            # Parse ISO datetime from ESPN (UTC)
+                            from datetime import timedelta
+                            dt_utc = datetime.fromisoformat(game_date.replace('Z', '+00:00'))
+                            # Convert UTC to ET (EST is UTC-5, EDT is UTC-4)
+                            # November is EST (UTC-5)
+                            dt_et = dt_utc - timedelta(hours=5)
                             # Format time in ET
-                            game_time = dt.strftime('%I:%M %p ET')
+                            game_time = dt_et.strftime('%I:%M %p ET')
                             # Format date
-                            game_date_str = dt.strftime('%a %b %d')  # e.g., "Thu Nov 21"
+                            game_date_str = dt_et.strftime('%a %b %d')  # e.g., "Sun Nov 23"
                         except:
                             game_time = 'TBD'
                             game_date_str = ''

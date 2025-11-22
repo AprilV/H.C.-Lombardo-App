@@ -124,14 +124,19 @@ function TeamDetail() {
   const getChartData = () => {
     if (!games || games.length === 0) return null;
     
-    const sortedGames = [...games].sort((a, b) => a.week - b.week);
+    // Only include games that have been played (have stats)
+    const completedGames = games.filter(g => g.total_yards != null);
+    
+    if (completedGames.length === 0) return null;
+    
+    const sortedGames = [...completedGames].sort((a, b) => a.week - b.week);
     
     return {
       labels: sortedGames.map(g => `Week ${g.week}`),
       datasets: [
         {
           label: 'Total Yards',
-          data: sortedGames.map(g => parseFloat(g.total_yards || 0)),
+          data: sortedGames.map(g => parseFloat(g.total_yards)),
           borderColor: '#667eea',
           backgroundColor: 'rgba(102, 126, 234, 0.1)',
           tension: 0.4,
@@ -139,7 +144,7 @@ function TeamDetail() {
         },
         {
           label: 'Points Scored',
-          data: sortedGames.map(g => parseFloat(g.team_points || 0)),
+          data: sortedGames.map(g => parseFloat(g.team_points)),
           borderColor: '#4CAF50',
           backgroundColor: 'rgba(76, 175, 80, 0.1)',
           tension: 0.4,
