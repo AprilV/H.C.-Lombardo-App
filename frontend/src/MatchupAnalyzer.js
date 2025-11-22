@@ -269,7 +269,7 @@ function MatchupAnalyzer() {
               </div>
               
               <div className="team-record-badge">
-                {teamAData.wins}-{teamAData.losses}
+                {teamAData.wins}-{teamAData.losses}{(teamAData.ties || 0) > 0 ? `-${teamAData.ties}` : ''}
                 <span className="record-label">2025 Record</span>
               </div>
 
@@ -390,7 +390,7 @@ function MatchupAnalyzer() {
               </div>
               
               <div className="team-record-badge">
-                {teamBData.wins}-{teamBData.losses}
+                {teamBData.wins}-{teamBData.losses}{(teamBData.ties || 0) > 0 ? `-${teamBData.ties}` : ''}
                 <span className="record-label">2025 Record</span>
               </div>
 

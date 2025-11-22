@@ -1,0 +1,433 @@
+/* Import base styles from GameStatistics.css for matchup-analyzer component */
+
+.matchup-analyzer {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 30px 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  min-height: 100vh;
+}
+
+/* Header Section */
+.matchup-header {
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+  margin-bottom: 30px;
+  padding: 30px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  color: white;
+}
+
+.matchup-header h1 {
+  margin: 0 0 10px 0;
+  font-size: 2.5rem;
+  font-weight: 700;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.matchup-header .subtitle {
+  margin: 0;
+  font-size: 1.2em;
+  opacity: 0.95;
+  font-weight: 300;
+}
+
+/* Error Banner */
+.error-banner {
+  background: #fff5f5;
+  border: 2px solid #fc8181;
+  border-radius: 10px;
+  padding: 15px 25px;
+  margin-bottom: 20px;
+  color: #c53030;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* Matchup Container - 3 Column Layout */
+.matchup-container {
+  display: grid;
+  grid-template-columns: 1fr 400px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+/* Team Cards */
+.matchup-analyzer .team-card {
+  background: white;
+  border-radius: 15px;
+  padding: 25px;
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
+  min-height: 600px;
+}
+
+.matchup-analyzer .team-a-card {
+  border-top: 5px solid #48bb78;
+}
+
+.matchup-analyzer .team-b-card {
+  border-top: 5px solid #ed8936;
+}
+
+.matchup-analyzer .team-card-header {
+  text-align: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.matchup-analyzer .team-card-header h2 {
+  margin: 0;
+  font-size: 1.8em;
+  color: #2d3748;
+}
+
+/* Team Selector */
+.matchup-analyzer .team-selector {
+  margin-bottom: 25px;
+}
+
+.matchup-analyzer .team-selector label {
+  display: block;
+  font-size: 1.1em;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 10px;
+}
+
+.matchup-analyzer .team-dropdown {
+  width: 100%;
+  padding: 14px 18px;
+  font-size: 1.05em;
+  border: 2px solid #cbd5e0;
+  border-radius: 8px;
+  background: white;
+  color: #2d3748;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.matchup-analyzer .team-dropdown:hover {
+  border-color: #667eea;
+}
+
+.matchup-analyzer .team-dropdown:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* Team Stats Display */
+.matchup-analyzer .team-stats-display {
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Team Logo */
+.matchup-analyzer .team-logo-container {
+  text-align: center;
+  margin-bottom: 20px;
+  padding: 20px;
+  background: linear-gradient(135deg, #f6f8fb 0%, #ffffff 100%);
+  border-radius: 12px;
+  border: 2px solid #e2e8f0;
+}
+
+.matchup-analyzer .team-logo {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+  margin-bottom: 10px;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+  transition: transform 0.3s ease;
+}
+
+.matchup-analyzer .team-logo:hover {
+  transform: scale(1.05);
+}
+
+.matchup-analyzer .team-name-display {
+  font-size: 1.8em;
+  font-weight: 700;
+  color: #2d3748;
+  margin-top: 10px;
+}
+
+.matchup-analyzer .team-record-badge {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  font-size: 2.5em;
+  font-weight: 700;
+  margin-bottom: 25px;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.matchup-analyzer .record-label {
+  display: block;
+  font-size: 0.4em;
+  font-weight: 400;
+  opacity: 0.9;
+  margin-top: 5px;
+}
+
+/* Stat Categories */
+.matchup-analyzer .stat-category {
+  margin-bottom: 20px;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.matchup-analyzer .category-header {
+  background: linear-gradient(135deg, #f6f8fb 0%, #e9ecef 100%);
+  padding: 15px 20px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.matchup-analyzer .category-header:hover {
+  background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+}
+
+.matchup-analyzer .category-header h3 {
+  margin: 0;
+  font-size: 1.2em;
+  color: #2d3748;
+}
+
+.matchup-analyzer .toggle-icon {
+  font-size: 1.5em;
+  color: #718096;
+}
+
+.matchup-analyzer .category-stats {
+  padding: 15px 20px;
+  background: white;
+}
+
+.matchup-analyzer .stat-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #f7fafc;
+}
+
+.matchup-analyzer .stat-row:last-child {
+  border-bottom: none;
+}
+
+.matchup-analyzer .stat-label {
+  color: #718096;
+  font-size: 0.95em;
+}
+
+.matchup-analyzer .stat-value {
+  font-weight: 700;
+  color: #2d3748;
+  font-size: 1.05em;
+}
+
+/* Differential Panel */
+.matchup-analyzer .differential-panel {
+  background: white;
+  border-radius: 15px;
+  padding: 25px;
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
+  border-top: 5px solid #5a67d8;
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+  position: sticky;
+  top: 20px;
+}
+
+.matchup-analyzer .differential-header {
+  text-align: center;
+  margin-bottom: 25px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.matchup-analyzer .differential-header h2 {
+  margin: 0 0 5px 0;
+  font-size: 1.8em;
+  color: #2d3748;
+}
+
+.matchup-analyzer .differential-header p {
+  margin: 0;
+  color: #718096;
+  font-size: 1em;
+}
+
+/* Differentials Display */
+.matchup-analyzer .differentials-display {
+  animation: fadeIn 0.5s ease;
+}
+
+.matchup-analyzer .diff-category {
+  margin-bottom: 25px;
+}
+
+.matchup-analyzer .diff-category h4 {
+  margin: 0 0 12px 0;
+  font-size: 1.1em;
+  color: #2d3748;
+  padding: 10px;
+  background: linear-gradient(135deg, #f6f8fb 0%, #e9ecef 100%);
+  border-radius: 6px;
+  text-align: center;
+}
+
+.matchup-analyzer .diff-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  border-radius: 6px;
+  background: #f7fafc;
+  transition: all 0.3s ease;
+}
+
+.matchup-analyzer .diff-row.better-A {
+  background: linear-gradient(90deg, #c6f6d5 0%, #f7fafc 100%);
+  border-left: 4px solid #48bb78;
+}
+
+.matchup-analyzer .diff-row.better-B {
+  background: linear-gradient(90deg, #f7fafc 0%, #fed7d7 100%);
+  border-right: 4px solid #ed8936;
+}
+
+.matchup-analyzer .diff-label {
+  font-size: 0.9em;
+  color: #4a5568;
+  flex: 1;
+}
+
+.matchup-analyzer .diff-value {
+  font-weight: 700;
+  font-size: 1.05em;
+  color: #2d3748;
+  min-width: 80px;
+  text-align: center;
+}
+
+/* Empty States */
+.matchup-analyzer .empty-diff-state {
+  text-align: center;
+  padding: 80px 20px;
+  color: #a0aec0;
+}
+
+.matchup-analyzer .empty-icon {
+  font-size: 4em;
+  margin-bottom: 15px;
+  opacity: 0.5;
+}
+
+.matchup-analyzer .empty-diff-state p {
+  font-size: 1.2em;
+  margin: 0 0 10px 0;
+}
+
+.matchup-analyzer .empty-diff-state small {
+  font-size: 0.9em;
+  opacity: 0.8;
+}
+
+/* Loading State */
+.matchup-analyzer .loading {
+  text-align: center;
+  padding: 60px 20px;
+  font-size: 1.5em;
+  color: #667eea;
+}
+
+/* Responsive Design */
+@media (max-width: 1400px) {
+  .matchup-container {
+    grid-template-columns: 1fr 350px 1fr;
+    gap: 15px;
+  }
+  
+  .matchup-analyzer .differential-panel {
+    max-height: 700px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .matchup-container {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .matchup-analyzer .differential-panel {
+    order: 3;
+    position: static;
+    max-height: none;
+  }
+  
+  .matchup-analyzer .team-a-card {
+    order: 1;
+  }
+  
+  .matchup-analyzer .team-b-card {
+    order: 2;
+  }
+}
+
+@media (max-width: 768px) {
+  .matchup-analyzer {
+    padding: 20px 10px;
+  }
+  
+  .matchup-header h1 {
+    font-size: 2em;
+  }
+  
+  .matchup-header .subtitle {
+    font-size: 1em;
+  }
+  
+  .matchup-analyzer .team-card {
+    padding: 20px;
+  }
+  
+  .matchup-analyzer .team-record-badge {
+    font-size: 2em;
+  }
+}
+
+/* Scrollbar Styling for Differential Panel */
+.matchup-analyzer .differential-panel::-webkit-scrollbar {
+  width: 8px;
+}
+
+.matchup-analyzer .differential-panel::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.matchup-analyzer .differential-panel::-webkit-scrollbar-thumb {
+  background: #cbd5e0;
+  border-radius: 10px;
+}
+
+.matchup-analyzer .differential-panel::-webkit-scrollbar-thumb:hover {
+  background: #a0aec0;
+}

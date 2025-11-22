@@ -7,12 +7,17 @@ const API_URL = 'http://127.0.0.1:5000';
 function Admin() {
   const [activeTab, setActiveTab] = useState('system');
   const [serverStatus, setServerStatus] = useState(null);
+  const [dbStats, setDbStats] = useState(null);
   const [isUpdating, setIsUpdating] = useState(false);
   const [updateMessage, setUpdateMessage] = useState(null);
 
   useEffect(() => {
     checkServerStatus();
-    const interval = setInterval(checkServerStatus, 5000); // Check every 5 seconds
+    fetchDatabaseStats();
+    const interval = setInterval(() => {
+      checkServerStatus();
+      fetchDatabaseStats();
+    }, 5000); // Check every 5 seconds
     return () => clearInterval(interval);
   }, []);
 
@@ -24,6 +29,24 @@ function Admin() {
     } catch (err) {
       console.error('Health check failed:', err);
       setServerStatus(null);
+    }
+  };
+
+  const fetchDatabaseStats = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/teams`);
+      const data = await response.json();
+      if (data.success && data.teams) {
+        const totalGames = data.teams.reduce((sum, t) => sum + (t.games_played || 0), 0);
+        const totalYards = data.teams.reduce((sum, t) => sum + (t.total_yards || 0), 0);
+        setDbStats({
+          teams: data.teams.length,
+          games: totalGames,
+          avgYards: (totalYards / data.teams.length).toFixed(1)
+        });
+      }
+    } catch (err) {
+      console.error('Failed to fetch DB stats:', err);
     }
   };
 
@@ -69,7 +92,13 @@ function Admin() {
           className={`admin-tab ${activeTab === 'system' ? 'active' : ''}`}
           onClick={() => setActiveTab('system')}
         >
-          ⚙️ System Status
+          ⚙️ App Status
+        </button>
+        <button 
+          className={`admin-tab ${activeTab === 'topology' ? 'active' : ''}`}
+          onClick={() => setActiveTab('topology')}
+        >
+          🏗️ Architecture
         </button>
         <button 
           className={`admin-tab ${activeTab === 'performance' ? 'active' : ''}`}
@@ -78,20 +107,141 @@ function Admin() {
           📊 AI Performance
         </button>
         <button 
+          className={`admin-tab ${activeTab === 'neural-net' ? 'active' : ''}`}
+          onClick={() => setActiveTab('neural-net')}
+        >
+          🧠 Prediction Models
+        </button>
+        <button 
           className={`admin-tab ${activeTab === 'database' ? 'active' : ''}`}
           onClick={() => setActiveTab('database')}
         >
-          🗄️ Database Info
-        </button>
-        <button 
-          className={`admin-tab ${activeTab === 'security' ? 'active' : ''}`}
-          onClick={() => setActiveTab('security')}
-        >
-          🔒 Security
+          🗄️ Data Storage
         </button>
       </div>
 
       <div className="admin-content">
+        {activeTab === 'system' && (
+          <div className="admin-section">
+            <h2>⚙️ App Status & Health</h2>
+            <div className="info-grid">
+              <div className="info-card">
+                <div className="info-icon">📱</div>
+                <h3>Application Server</h3>
+                {serverStatus ? (
+                  <>
+                    <div className="status-indicator online">● Online</div>
+                    <p>Backend services operational</p>
+                    <p className="detail">Processing requests</p>
+                  </>
+                ) : (
+                  <>
+                    <div className="status-indicator offline">● Offline</div>
+                    <p>Unable to connect to backend</p>
+                  </>
+                )}
+              </div>
+
+              <div className="info-card">
+                <div className="info-icon">🗄️</div>
+                <h3>Data Storage</h3>
+                {serverStatus ? (
+                  <>
+                    <div className="status-indicator online">● Connected</div>
+                    <p>Data storage system active</p>
+                    <p className="detail">HCL schema loaded</p>
+                  </>
+                ) : (
+                  <>
+                    <div className="status-indicator offline">● Disconnected</div>
+                    <p>Data storage unavailable</p>
+                  </>
+                )}
+              </div>
+
+              <div className="info-card">
+                <div className="info-icon">⚡</div>
+                <h3>App Environment</h3>
+                <div className="status-indicator online">● Development</div>
+                <p>Hot reload enabled</p>
+                <p className="detail">Real-time updates active</p>
+              </div>
+
+              <div className="info-card">
+                <div className="info-icon">🔄</div>
+                <h3>Live Data Sync</h3>
+                <div className="status-indicator online">● Running</div>
+                <p>Game scores & stats syncing</p>
+                <p className="detail">Updates every 15 minutes</p>
+              </div>
+
+              <div className="info-card">
+                <div className="info-icon">🎯</div>
+                <h3>Prediction Engine</h3>
+                <div className="status-indicator online">● Ready</div>
+                <p>Win/Loss Classifier active</p>
+                <p className="detail">Score Regressor active</p>
+              </div>
+
+              <div className="info-card">
+                <div className="info-icon">📊</div>
+                <h3>App Technology</h3>
+                <p>React 18 Web Application</p>
+                <p>Neural Network AI Models</p>
+                <p className="detail">Real-time data processing</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'topology' && (
+          <div className="admin-section">
+            <h2>🏗️ App Architecture - 3D Interactive</h2>
+            <div style={{marginBottom: '20px', textAlign: 'center', color: '#7ab8ff'}}>
+              <p>Interactive 3D visualization of how the app works internally</p>
+              <p style={{fontSize: '0.9rem', opacity: 0.8}}>Drag to rotate • Scroll to zoom • Explore app layers</p>
+            </div>
+            <div className="visualization-container">
+              <iframe 
+                src="/admin-topology.html" 
+                style={{
+                  width: '100%',
+                  height: '800px',
+                  border: 'none',
+                  borderRadius: '12px',
+                  background: 'rgba(10, 14, 39, 0.6)',
+                  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.4)'
+                }}
+                title="System Topology 3D"
+              />
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'neural-net' && (
+          <div className="admin-section">
+            <h2>🧠 Prediction Models - 3D Neural Networks</h2>
+            <div style={{marginBottom: '20px', textAlign: 'center', color: '#7ab8ff'}}>
+              <p>Interactive 3D visualization of our AI prediction models</p>
+              <p style={{fontSize: '0.9rem', opacity: 0.8}}>🟢 Win/Loss Classifier • 🔴 Score Regressor</p>
+            </div>
+            <div className="visualization-container">
+              <iframe 
+                src="/admin-both-models.html" 
+                style={{
+                  width: '100%',
+                  height: '800px',
+                  border: 'none',
+                  borderRadius: '12px',
+                  background: 'rgba(10, 14, 39, 0.6)',
+                  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.4)'
+                }}
+                title="Prediction Models 3D"
+              />
+            </div>
+          </div>
+        )}
+
         {activeTab === 'performance' && (
           <div className="admin-section">
             <div className="performance-header">
@@ -111,26 +261,6 @@ function Admin() {
               </div>
             )}
             
-            <div className="performance-dashboard">
-              <iframe 
-                src="/performance-dashboard.html" 
-                style={{
-                  width: '100%',
-                  height: '1200px',
-                  border: 'none',
-                  borderRadius: '12px',
-                  background: 'rgba(10, 14, 39, 0.6)'
-                }}
-                title="AI Performance Dashboard"
-              />
-            </div>
-          </div>
-        )}
-
-
-        {activeTab === 'performance' && (
-          <div className="admin-section">
-            <h2>AI Model Performance Tracking</h2>
             <ModelPerformance />
           </div>
         )}
@@ -176,35 +306,7 @@ function Admin() {
 
         {activeTab === 'system' && (
           <div className="admin-section">
-            <h2>System Status & Architecture</h2>
-            
-            <div className="status-card">
-              <h3>🔴 Live System Status</h3>
-              <div className="status-bar-content">
-                {serverStatus ? (
-                  <>
-                    <div className="status-indicator success">
-                      <span className="status-dot"></span>
-                      <span className="status-text">LIVE</span>
-                    </div>
-                    <div className="status-indicator success">
-                      <span className="status-dot"></span>
-                      <span className="status-text">DB Connected</span>
-                    </div>
-                    <div className="status-indicator success">
-                      <span className="status-dot"></span>
-                      <span className="status-text">API Ready</span>
-                    </div>
-                  </>
-                ) : (
-                  <div className="status-indicator error">
-                    <span className="status-dot"></span>
-                    <span className="status-text">Offline</span>
-                  </div>
-                )}
-              </div>
-              <p style={{marginTop: '15px', fontSize: '0.9rem', color: '#7ab8ff'}}>Auto-refreshes every 5 seconds</p>
-            </div>
+            <h2>🏗️ Tech Stack & Infrastructure</h2>
 
             <div className="info-card">
               <h3>🏗️ Tech Stack</h3>
@@ -303,6 +405,78 @@ function Admin() {
                 <li><strong>Backups:</strong> Manual snapshots before major changes</li>
                 <li><strong>SQL Injection:</strong> Protected via parameterized queries</li>
               </ul>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'database' && (
+          <div className="admin-section">
+            <h2>🗄️ App Data Storage & Stats</h2>
+            
+            {dbStats ? (
+              <div className="info-grid">
+                <div className="info-card highlight">
+                  <div className="info-icon">🏈</div>
+                  <h3>Total Teams</h3>
+                  <div className="stat-number">{dbStats.teams}</div>
+                  <p className="detail">NFL franchises in app</p>
+                </div>
+
+                <div className="info-card highlight">
+                  <div className="info-icon">🎮</div>
+                  <h3>Games Loaded</h3>
+                  <div className="stat-number">{dbStats.games}</div>
+                  <p className="detail">2024-2025 season data</p>
+                </div>
+
+                <div className="info-card highlight">
+                  <div className="info-icon">📈</div>
+                  <h3>Avg Yards/Team</h3>
+                  <div className="stat-number">{dbStats.avgYards}</div>
+                  <p className="detail">Total offense per team</p>
+                </div>
+
+                <div className="info-card">
+                  <div className="info-icon">📊</div>
+                  <h3>Data Structure</h3>
+                  <p style={{color: '#e2e8f0'}}>Teams, games, and statistics</p>
+                  <p className="detail">Optimized for fast loading</p>
+                </div>
+
+                <div className="info-card">
+                  <div className="info-icon">🔢</div>
+                  <h3>Tracked Stats</h3>
+                  <p style={{color: '#e2e8f0'}}>47 metrics per game</p>
+                  <p className="detail">Yards, scores, turnovers, etc.</p>
+                </div>
+
+                <div className="info-card">
+                  <div className="info-icon">🔄</div>
+                  <h3>Data Updates</h3>
+                  <p style={{color: '#e2e8f0'}}>Live game scores & stats</p>
+                  <p className="detail">Syncs every 15 minutes</p>
+                </div>
+              </div>
+            ) : (
+              <div className="loading-message">
+                <p>Loading app data statistics...</p>
+              </div>
+            )}
+
+            <div style={{marginTop: '40px'}}>
+              <h3 style={{marginBottom: '20px', color: '#7ab8ff'}}>Data Organization</h3>
+              <div className="info-card">
+                <h4 style={{color: '#7ab8ff'}}>🏗️ How Data is Stored</h4>
+                <ul style={{textAlign: 'left', margin: '15px 0', lineHeight: '1.8', color: '#e2e8f0'}}>
+                  <li><strong>Team Profiles</strong> - 32 NFL teams with logos and stats</li>
+                  <li><strong>Game Schedule</strong> - Full 18-week season (Week 1-18)</li>
+                  <li><strong>Performance Metrics</strong> - Detailed stats for each game</li>
+                  <li><strong>Predictions</strong> - AI model predictions & accuracy tracking</li>
+                </ul>
+                <p className="detail" style={{marginTop: '15px'}}>
+                  Data is organized efficiently for fast app performance and real-time updates
+                </p>
+              </div>
             </div>
           </div>
         )}
