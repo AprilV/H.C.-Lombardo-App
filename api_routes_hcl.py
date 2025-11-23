@@ -470,14 +470,14 @@ def get_week_games(season, week):
 @hcl_bp.route('/analytics/betting', methods=['GET'])
 def get_betting_performance():
     """
-    Get team betting performance (ATS records, O/U trends) + actual W-L-T records
+    Get team betting performance (ATS records, O/U trends)
     
     Query params:
         season: Filter by season (default: 2025)
         team: Filter by specific team (optional)
     
     Returns:
-        JSON with ATS records, over/under performance, favorite/underdog splits, AND actual team W-L-T records
+        JSON with ATS records, over/under performance, favorite/underdog splits
     """
     try:
         season = request.args.get('season', default=2025, type=int)
@@ -488,36 +488,32 @@ def get_betting_performance():
         
         query = """
             SELECT 
-                bp.team,
-                bp.season,
-                bp.total_games,
-                bp.ats_wins,
-                bp.ats_losses,
-                bp.ats_pushes,
-                bp.ats_win_pct,
-                bp.games_over,
-                bp.games_under,
-                bp.games_push,
-                bp.over_pct,
-                bp.games_as_favorite,
-                bp.wins_as_favorite,
-                bp.games_as_underdog,
-                bp.wins_as_underdog,
-                ts.wins,
-                ts.losses,
-                ts.ties
-            FROM hcl.v_team_betting_performance bp
-            LEFT JOIN hcl.team_season_stats ts ON bp.team = ts.team AND bp.season = ts.season
-            WHERE bp.season = %s
+                team,
+                season,
+                total_games,
+                ats_wins,
+                ats_losses,
+                ats_pushes,
+                ats_win_pct,
+                games_over,
+                games_under,
+                games_push,
+                over_pct,
+                games_as_favorite,
+                wins_as_favorite,
+                games_as_underdog,
+                wins_as_underdog
+            FROM hcl.v_team_betting_performance
+            WHERE season = %s
         """
         
         params = [season]
         
         if team:
-            query += " AND bp.team = %s"
+            query += " AND team = %s"
             params.append(team.upper())
         
-        query += " ORDER BY bp.ats_win_pct DESC"
+        query += " ORDER BY ats_win_pct DESC"
         
         cur.execute(query, params)
         results = cur.fetchall()
