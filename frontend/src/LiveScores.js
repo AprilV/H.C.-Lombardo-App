@@ -73,6 +73,49 @@ function LiveScores() {
     return teamScore > opponentScore ? 'winning' : 'losing';
   };
 
+  // Calculate live differential vs predictions
+  const getDifferentialInfo = (game) => {
+    if (game.status === 'scheduled' || !game.home_score) return null;
+    
+    // Current score differential (positive = home team winning)
+    const currentDiff = game.home_score - game.away_score;
+    
+    const info = {
+      currentDiff,
+      ai: null,
+      vegas: null
+    };
+    
+    // Compare to AI prediction (if available)
+    if (game.ai_spread !== undefined && game.ai_spread !== null) {
+      // AI spread is from home team perspective (negative = home underdog)
+      // Differential vs AI = current - predicted
+      info.ai = {
+        predicted: game.ai_spread,
+        diff: currentDiff - game.ai_spread,
+        beating: currentDiff > game.ai_spread
+      };
+    }
+    
+    // Compare to Vegas line (if available)
+    if (game.vegas_spread !== undefined && game.vegas_spread !== null) {
+      // Vegas spread is from home team perspective (negative = home underdog)
+      info.vegas = {
+        predicted: game.vegas_spread,
+        diff: currentDiff - game.vegas_spread,
+        beating: currentDiff > game.vegas_spread,
+        covering: game.status === 'final' ? currentDiff + game.vegas_spread > 0 : null
+      };
+    }
+    
+    return info;
+  };
+
+  const formatSpread = (spread) => {
+    if (spread === 0) return 'PK';
+    return spread > 0 ? `+${spread}` : spread.toString();
+  };
+
   if (loading) {
     return (
       <div className="live-scores-container">
@@ -125,6 +168,7 @@ function LiveScores() {
           const status = getGameStatus(game);
           const isFinal = game.status === 'final';
           const isLive = game.status === 'in_progress';
+          const diffInfo = getDifferentialInfo(game);
           
           return (
             <div key={index} className={`game-card ${status.class}`}>
@@ -167,6 +211,45 @@ function LiveScores() {
                   </div>
                 </div>
               </div>
+
+              {/* Live Differential Tracker */}
+              {diffInfo && (diffInfo.ai || diffInfo.vegas) && (
+                <div className="differential-tracker">
+                  <div className="diff-header">
+                    <span className="current-diff">
+                      Current: {game.home_team} {diffInfo.currentDiff > 0 ? '+' : ''}{diffInfo.currentDiff}
+                    </span>
+                  </div>
+                  <div className="diff-comparisons">
+                    {diffInfo.ai && (
+                      <div className={`diff-item ai ${diffInfo.ai.beating ? 'beating' : 'trailing'}`}>
+                        <div className="diff-label">
+                          <span className="label-text">🤖 AI Line:</span>
+                          <span className="line-value">{formatSpread(diffInfo.ai.predicted)}</span>
+                        </div>
+                        <div className="diff-status">
+                          {diffInfo.ai.beating ? '✓ Beating' : '✗ Below'}
+                          <span className="diff-value">({diffInfo.ai.diff > 0 ? '+' : ''}{diffInfo.ai.diff.toFixed(1)})</span>
+                        </div>
+                      </div>
+                    )}
+                    {diffInfo.vegas && (
+                      <div className={`diff-item vegas ${diffInfo.vegas.beating ? 'beating' : 'trailing'}`}>
+                        <div className="diff-label">
+                          <span className="label-text">🎰 Vegas:</span>
+                          <span className="line-value">{formatSpread(diffInfo.vegas.predicted)}</span>
+                        </div>
+                        <div className="diff-status">
+                          {isFinal 
+                            ? (diffInfo.vegas.covering ? '✓ Covered' : '✗ Failed') 
+                            : (diffInfo.vegas.beating ? '✓ Beating' : '✗ Below')}
+                          <span className="diff-value">({diffInfo.vegas.diff > 0 ? '+' : ''}{diffInfo.vegas.diff.toFixed(1)})</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
 
               {/* AI Prediction (if available) */}
               {game.ai_prediction && (
