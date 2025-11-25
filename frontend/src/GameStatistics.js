@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './GameStatistics.css';
 
-const API_URL = 'http://127.0.0.1:5000';
+const API_URL = '';
 
 // All available statistics organized by category for à la carte selection
 const STAT_CATEGORIES = {

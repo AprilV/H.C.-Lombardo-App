@@ -25,7 +25,7 @@ ChartJS.register(
   Filler
 );
 
-const API_URL = 'http://127.0.0.1:5000';
+const API_URL = '';
 
 // NFL Team Colors
 const TEAM_COLORS = {

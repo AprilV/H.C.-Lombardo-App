@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './HistoricalData.css';
 
-const API_URL = 'http://127.0.0.1:5000';
+const API_URL = '';
 
 // All available statistics from nflverse data (ALL stats from team_game_stats aggregated)
 const ALL_STATS = [

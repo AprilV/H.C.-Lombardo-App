@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './LiveGamesTicker.css';
 
-const API_URL = 'http://127.0.0.1:5000';
+const API_URL = '';
 
 function LiveGamesTicker() {
   const [games, setGames] = useState([]);
