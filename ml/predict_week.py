@@ -325,12 +325,17 @@ class WeeklyPredictor:
         for idx, game in schedule.iterrows():
             print(f"Predicting: {game['away_team']} @ {game['home_team']}")
             
+            # NFLverse uses inverted sign convention: positive = home favored
+            # We need to flip to standard convention: negative = favored
+            raw_spread = game.get('spread_line')
+            vegas_spread = -raw_spread if raw_spread is not None else None
+            
             result = self.predict_game(
                 season=season,
                 week=week,
                 home_team=game['home_team'],
                 away_team=game['away_team'],
-                spread_line=game.get('spread_line'),
+                spread_line=vegas_spread,
                 total_line=game.get('total_line')
             )
             

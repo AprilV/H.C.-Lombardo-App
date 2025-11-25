@@ -35,50 +35,42 @@ live_scores_api = Blueprint('live_scores_api', __name__)
 ESPN_SCOREBOARD_URL = "http://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard"
 
 def get_predictions_for_week(week, season=2025):
-    """Fetch AI and Vegas predictions for a specific week"""
+    """Fetch AI and Vegas predictions from the ML predictions API"""
     try:
-        conn = get_db_connection()
-        cur = conn.cursor()
+        # Call the ML predictions API directly to get fresh predictions
+        api_url = f'http://127.0.0.1:5000/api/ml/predict-week/{season}/{week}'
+        response = requests.get(api_url, timeout=10)
         
-        query = """
-            SELECT 
-                home_team,
-                away_team,
-                predicted_winner,
-                ai_spread,
-                vegas_spread,
-                vegas_total
-            FROM hcl.ml_predictions
-            WHERE week = %s AND season = %s
-        """
+        if response.status_code != 200:
+            print(f"ERROR: ML API returned status {response.status_code}")
+            return {}
         
-        cur.execute(query, (week, season))
-        rows = cur.fetchall()
+        data = response.json()
+        predictions_list = data.get('predictions', [])
         
-        print(f"DEBUG: Found {len(rows)} predictions for Week {week} Season {season}")
+        print(f"DEBUG: Got {len(predictions_list)} predictions from ML API for Week {week} Season {season}")
         
         # Create lookup dictionary by teams
         predictions = {}
-        for row in rows:
-            home_team, away_team, ai_winner, ai_spread, vegas_spread, vegas_total = row
+        
+        for pred in predictions_list:
+            home_team = pred.get('home_team')
+            away_team = pred.get('away_team')
             key = f"{away_team}@{home_team}"
             predictions[key] = {
-                'ai_predicted_winner': ai_winner,
-                'ai_spread': float(ai_spread) if ai_spread else None,
-                'vegas_spread': float(vegas_spread) if vegas_spread else None,
-                'vegas_total': float(vegas_total) if vegas_total else None
+                'ai_predicted_winner': pred.get('predicted_winner'),
+                'ai_spread': pred.get('ai_spread'),
+                'vegas_spread': pred.get('vegas_spread'),
+                'vegas_total': pred.get('total_line')
             }
-            print(f"DEBUG: Added prediction {key} -> AI: {ai_winner}")
+            print(f"DEBUG: Added prediction {key} -> AI: {pred.get('predicted_winner')}, Vegas: {pred.get('vegas_spread')}")
         
         print(f"DEBUG: Total predictions in dict: {len(predictions)}")
-        
-        cur.close()
-        conn.close()
         
         return predictions
         
     except Exception as e:
-        print(f"Error fetching predictions: {e}")
+        print(f"Error fetching predictions from ML API: {e}")
         return {}
 
 @live_scores_api.route('/api/live-scores', methods=['GET'])
@@ -206,14 +198,44 @@ def get_live_scores():
                             actual_winner = 'TIE'
                         
                         game_data['ai_correct'] = (pred['ai_predicted_winner'] == actual_winner)
+                        
+                        # Calculate spread coverage
+                        actual_margin = game_data['home_score'] - game_data['away_score']
+                        
+                        # Calculate Vegas spread coverage
+                        vegas_spread = pred['vegas_spread']
+                        
+                        # Check if it's a push
+                        if actual_margin == -vegas_spread:
+                            game_data['vegas_covered'] = 'push'
+                        elif vegas_spread < 0:
+                            # Home team favored - need to win by MORE than spread
+                            game_data['vegas_covered'] = actual_margin > abs(vegas_spread)
+                        else:
+                            # Away team favored - need to win by MORE than spread
+                            game_data['vegas_covered'] = actual_margin < -abs(vegas_spread)
+                        
+                        # Calculate AI spread coverage
+                        ai_spread = pred['ai_spread']
+                        
+                        # AI spreads are decimals, so no pushes
+                        if ai_spread < 0:
+                            # Home team favored - need to win by MORE than spread
+                            game_data['ai_spread_covered'] = actual_margin > abs(ai_spread)
+                        else:
+                            # Away team favored - need to win by MORE than spread
+                            game_data['ai_spread_covered'] = actual_margin < -abs(ai_spread)
                     else:
                         game_data['ai_correct'] = None
+                        game_data['vegas_covered'] = None
+                        game_data['ai_spread_covered'] = None
                 else:
                     game_data['ai_prediction'] = None
                     game_data['ai_spread'] = None
                     game_data['vegas_spread'] = None
                     game_data['vegas_total'] = None
                     game_data['ai_correct'] = None
+                    game_data['ai_spread_covered'] = None
                 
                 games.append(game_data)
                 

@@ -139,19 +139,191 @@ function MLPredictions() {
           <p className="predictions-subtitle">{season} Season - {predictions.length} Games</p>
         </div>
 
+        {/* Results Scorecard */}
+        {(() => {
+          const finishedGames = predictions.filter(p => p.actual_home_score !== null && p.actual_home_score !== undefined);
+          if (finishedGames.length > 0) {
+            // Count AI correct predictions (winner picks)
+            const aiCorrect = finishedGames.filter(p => p.correct === true).length;
+            
+            // Count AI spread coverage (favorite covered)
+            let aiSpreadCovered = 0;
+            let aiSpreadPushes = 0;
+            let aiSpreadTotal = 0;
+            
+            finishedGames.forEach(p => {
+              const actualMargin = p.actual_home_score - p.actual_away_score;
+              const isPush = (actualMargin === -p.ai_spread);
+              
+              if (isPush) {
+                aiSpreadPushes++;
+              } else {
+                aiSpreadTotal++;
+                let covered = false;
+                if (p.ai_spread < 0) {
+                  covered = actualMargin > Math.abs(p.ai_spread);
+                } else {
+                  covered = actualMargin < -Math.abs(p.ai_spread);
+                }
+                if (covered) aiSpreadCovered++;
+              }
+            });
+            
+            // Count Vegas spread coverage (favorite covered)
+            let vegasCovered = 0;
+            let vegasPushes = 0;
+            let vegasTotal = 0;
+            
+            finishedGames.forEach(p => {
+              const actualMargin = p.actual_home_score - p.actual_away_score;
+              const isPush = (actualMargin === -p.vegas_spread);
+              
+              if (isPush) {
+                vegasPushes++;
+              } else {
+                vegasTotal++;
+                let covered = false;
+                if (p.vegas_spread < 0) {
+                  covered = actualMargin > Math.abs(p.vegas_spread);
+                } else {
+                  covered = actualMargin < -Math.abs(p.vegas_spread);
+                }
+                if (covered) vegasCovered++;
+              }
+            });
+
+            return (
+              <div className="results-scorecard">
+                <div className="scorecard-title">📊 Week {week} Results</div>
+                <div className="scorecard-stats">
+                  <div className="stat-box ai-stat">
+                    <div className="stat-icon">🤖</div>
+                    <div className="stat-content">
+                      <div className="stat-label">AI Winner Picks</div>
+                      <div className="stat-value">{aiCorrect} / {finishedGames.length}</div>
+                      <div className="stat-percent">
+                        {finishedGames.length > 0 ? ((aiCorrect / finishedGames.length) * 100).toFixed(1) : 0}% Correct
+                      </div>
+                    </div>
+                  </div>
+                  <div className="stat-box ai-spread-stat">
+                    <div className="stat-icon">🤖</div>
+                    <div className="stat-content">
+                      <div className="stat-label">AI Spread</div>
+                      <div className="stat-value">
+                        {aiSpreadCovered} / {aiSpreadTotal}
+                        {aiSpreadPushes > 0 && <span className="push-count"> / {aiSpreadPushes}</span>}
+                      </div>
+                      <div className="stat-percent">
+                        {aiSpreadTotal > 0 ? ((aiSpreadCovered / aiSpreadTotal) * 100).toFixed(1) : 0}% Covered
+                        {aiSpreadPushes > 0 && <span className="push-note"> ({aiSpreadPushes} push{aiSpreadPushes > 1 ? 'es' : ''})</span>}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="stat-box vegas-stat">
+                    <div className="stat-icon">🎰</div>
+                    <div className="stat-content">
+                      <div className="stat-label">Vegas Spread</div>
+                      <div className="stat-value">
+                        {vegasCovered} / {vegasTotal}
+                        {vegasPushes > 0 && <span className="push-count"> / {vegasPushes}</span>}
+                      </div>
+                      <div className="stat-percent">
+                        {vegasTotal > 0 ? ((vegasCovered / vegasTotal) * 100).toFixed(1) : 0}% Covered
+                        {vegasPushes > 0 && <span className="push-note"> ({vegasPushes} push{vegasPushes > 1 ? 'es' : ''})</span>}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          }
+          return null;
+        })()}
+
         <div className="predictions-grid">
           {predictions.map((pred, idx) => {
             const isHomeWinner = pred.predicted_winner === pred.home_team;
             const winnerConfidence = (pred.confidence * 100).toFixed(1);
             const homeProb = (pred.home_win_prob * 100).toFixed(1);
             const awayProb = (pred.away_win_prob * 100).toFixed(1);
+            
+            // Check if game is finished (use correct field names from API)
+            const isFinished = pred.actual_home_score !== null && pred.actual_home_score !== undefined;
+            const actualWinner = isFinished ? pred.actual_winner : null;
+            const aiWasCorrect = isFinished ? pred.correct : null;
+            const actualMargin = isFinished ? pred.actual_home_score - pred.actual_away_score : null;
+            
+            // Spread coverage: Check if the FAVORITE covered
+            // Negative spread = home favored, must win by MORE than the absolute value
+            // Positive spread = away favored, must win by MORE than the absolute value
+            
+            // For VEGAS: Check if favorite covered (display shows favorite)
+            let vegasCovered = null;
+            if (isFinished) {
+              const vegasResult = actualMargin + pred.vegas_spread;
+              if (vegasResult === 0) {
+                vegasCovered = null; // Push
+              } else if (pred.vegas_spread < 0) {
+                // Home team is favorite - must win by MORE than the spread
+                // Example: -6.5 spread means home must win by 7+
+                vegasCovered = actualMargin > Math.abs(pred.vegas_spread);
+              } else {
+                // Away team is favorite - must win by MORE than the spread
+                // Example: +6.5 spread means away must win by 7+
+                vegasCovered = actualMargin < -Math.abs(pred.vegas_spread);
+              }
+            }
+            
+            // For AI: Check if favorite covered (display shows favorite)
+            let aiSpreadCovered = null;
+            if (isFinished) {
+              const aiResult = actualMargin + pred.ai_spread;
+              if (aiResult === 0) {
+                aiSpreadCovered = null; // Push
+              } else if (pred.ai_spread < 0) {
+                // Home team is favorite - must win by MORE than the spread
+                aiSpreadCovered = actualMargin > Math.abs(pred.ai_spread);
+              } else {
+                // Away team is favorite - must win by MORE than the spread
+                aiSpreadCovered = actualMargin < -Math.abs(pred.ai_spread);
+              }
+            }
 
             return (
-              <div key={idx} className="prediction-card">
+              <div key={idx} className={`prediction-card ${isFinished ? 'finished' : ''}`}>
                 <div className="game-header">
                   <span className="game-date">{formatGameDate(pred.game_date)}</span>
                   <span className="game-id">#{pred.game_id}</span>
+                  {isFinished && (
+                    <span className="final-badge">FINAL</span>
+                  )}
                 </div>
+
+                {/* Actual Score for finished games */}
+                {isFinished && (
+                  <div className="actual-score-display">
+                    <div className="actual-score-title">Final Score</div>
+                    <div className="actual-score-teams">
+                      <div className="actual-score-team">
+                        <span className={`score-name ${actualWinner === pred.away_team ? 'winner-name' : ''}`}>
+                          {pred.away_team}
+                        </span>
+                        <span className="score-number">{pred.actual_away_score}</span>
+                      </div>
+                      <div className="score-sep">-</div>
+                      <div className="actual-score-team">
+                        <span className={`score-name ${actualWinner === pred.home_team ? 'winner-name' : ''}`}>
+                          {pred.home_team}
+                        </span>
+                        <span className="score-number">{pred.actual_home_score}</span>
+                      </div>
+                    </div>
+                    <div className="actual-margin">
+                      {actualWinner} won by {Math.abs(actualMargin)} pts
+                    </div>
+                  </div>
+                )}
 
                 <div className="ml-matchup-container">
                   {/* Away Team */}
@@ -198,6 +370,11 @@ function MLPredictions() {
                     <span className="winner-text">
                       {pred.predicted_winner} wins
                     </span>
+                    {isFinished && (
+                      <span className={`result-indicator ${aiWasCorrect ? 'correct' : 'wrong'}`}>
+                        {aiWasCorrect ? '✓' : '✗'}
+                      </span>
+                    )}
                   </div>
                   <div className="confidence-bar-container">
                     <div className="confidence-label">
@@ -239,7 +416,7 @@ function MLPredictions() {
                       </div>
                     </div>
                     <div className="score-margin">
-                      Margin: {Math.abs(pred.predicted_margin).toFixed(1)} pts
+                      {pred.predicted_winner} by {Math.abs(pred.predicted_home_score - pred.predicted_away_score).toFixed(1)} pts
                     </div>
                   </div>
                 )}
@@ -252,11 +429,38 @@ function MLPredictions() {
                       <div className="spread-item">
                         <span className="spread-label">🤖 AI Spread</span>
                         <span className="spread-value ai-spread">{pred.ai_spread > 0 ? '+' : ''}{pred.ai_spread}</span>
+                        <div className="spread-explanation">
+                          AI: {Math.abs(pred.ai_spread) < 0.5 
+                            ? 'Toss-up' 
+                            : `${pred.ai_spread > 0 ? pred.away_team : pred.home_team} by ${Math.abs(pred.ai_spread).toFixed(1)}`
+                          }
+                        </div>
+                        {isFinished && (
+                          aiSpreadCovered === null ? (
+                            <span className="spread-result push">PUSH</span>
+                          ) : (
+                            <span className={`spread-result ${aiSpreadCovered ? 'correct' : 'wrong'}`}>
+                              {aiSpreadCovered ? '✓' : '✗'}
+                            </span>
+                          )
+                        )}
                       </div>
                       <div className="spread-vs">vs</div>
                       <div className="spread-item">
                         <span className="spread-label">🎰 Vegas Spread</span>
                         <span className="spread-value vegas-spread">{pred.vegas_spread > 0 ? '+' : ''}{pred.vegas_spread}</span>
+                        <div className="spread-explanation">
+                          Vegas: {pred.vegas_spread > 0 ? pred.away_team : pred.home_team} by {Math.abs(pred.vegas_spread).toFixed(1)}
+                        </div>
+                        {isFinished && (
+                          vegasCovered === null ? (
+                            <span className="spread-result push">PUSH</span>
+                          ) : (
+                            <span className={`spread-result ${vegasCovered ? 'correct' : 'wrong'}`}>
+                              {vegasCovered ? '✓' : '✗'}
+                            </span>
+                          )
+                        )}
                       </div>
                     </div>
                     {pred.spread_difference !== null && Math.abs(pred.spread_difference) > 3 && (

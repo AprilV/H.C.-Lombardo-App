@@ -518,6 +518,17 @@
   text-align: center;
 }
 
+.spread-explanation {
+  font-size: 0.85rem;
+  color: #d1d5db;
+  text-align: center;
+  font-weight: 500;
+  padding: 4px 8px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
 .spread-value.ai-spread {
   background: rgba(0,212,255,0.15);
   color: #00d4ff;
@@ -1104,5 +1115,326 @@
 
   .legend-definition {
     font-size: 0.95rem;
+  }
+}
+
+/* ===================================================================
+   SPRINT 12: RESULTS SCORECARD & TRACKING STYLES
+   =================================================================== */
+
+/* Results Scorecard */
+.results-scorecard {
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.15) 0%, rgba(139, 92, 246, 0.15) 100%);
+  border: 2px solid rgba(0, 212, 255, 0.3);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.scorecard-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 20px;
+  color: #00d4ff;
+  text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+}
+
+.scorecard-stats {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.stat-box {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  padding: 20px 30px;
+  min-width: 280px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.stat-box:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 212, 255, 0.3);
+}
+
+.stat-box.ai-stat {
+  border: 2px solid rgba(74, 222, 128, 0.4);
+}
+
+.stat-box.vegas-stat {
+  border: 2px solid rgba(251, 191, 36, 0.4);
+}
+
+.stat-icon {
+  font-size: 2.5rem;
+}
+
+.stat-content {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.stat-percent {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #4ade80;
+}
+
+.push-count {
+  color: #ffa500;
+  font-weight: 700;
+}
+
+.push-note {
+  font-size: 0.85rem;
+  color: #ffa500;
+  font-weight: 500;
+  margin-left: 5px;
+}
+
+/* Actual Score Display on Cards */
+.actual-score-display {
+  background: rgba(74, 222, 128, 0.1);
+  border: 2px solid rgba(74, 222, 128, 0.3);
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 15px;
+}
+
+.actual-score-title {
+  text-align: center;
+  font-size: 0.9rem;
+  color: #4ade80;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.actual-score-teams {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 10px;
+}
+
+.actual-score-team {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.score-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #9ca3af;
+}
+
+.score-name.winner-name {
+  color: #4ade80;
+  font-weight: 700;
+}
+
+.score-number {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.score-sep {
+  font-size: 1.5rem;
+  color: #6b7280;
+}
+
+.actual-margin {
+  text-align: center;
+  font-size: 0.95rem;
+  color: #d1d5db;
+  font-style: italic;
+}
+
+/* Final Badge */
+.final-badge {
+  background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+  color: #000;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+  box-shadow: 0 2px 8px rgba(74, 222, 128, 0.4);
+}
+
+/* Result Indicators (Checkmarks) */
+.result-indicator {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-left: 10px;
+}
+
+.result-indicator.correct {
+  color: #4ade80;
+  text-shadow: 0 0 8px rgba(74, 222, 128, 0.6);
+}
+
+.result-indicator.wrong {
+  color: #ff4444;
+  text-shadow: 0 0 8px rgba(255, 68, 68, 0.6);
+}
+
+/* Spread Result Indicators */
+.spread-result {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-left: 8px;
+}
+
+.spread-result.correct {
+  color: #4ade80;
+}
+
+.spread-result.wrong {
+  color: #ff4444;
+}
+
+.spread-result.push {
+  color: #ffa500;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+/* Results Scorecard */
+.results-scorecard {
+  margin-bottom: 30px;
+  padding: 25px;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.scorecard-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+  text-align: center;
+  color: #00d4ff;
+}
+
+.scorecard-stats {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.stat-box {
+  flex: 1;
+  min-width: 200px;
+  max-width: 300px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.stat-box:hover {
+  border-color: rgba(0, 212, 255, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 212, 255, 0.2);
+}
+
+.stat-box.ai-stat {
+  border-color: rgba(0, 212, 255, 0.2);
+}
+
+.stat-box.ai-spread-stat {
+  border-color: rgba(139, 92, 246, 0.2);
+}
+
+.stat-box.vegas-stat {
+  border-color: rgba(251, 191, 36, 0.2);
+}
+
+.stat-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.stat-content {
+  flex: 1;
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  color: #9ca3af;
+  margin-bottom: 5px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-value {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 2px;
+}
+
+.stat-percent {
+  font-size: 1rem;
+  color: #00d4ff;
+  font-weight: 600;
+}
+
+/* Finished Card Styling */
+.prediction-card.finished {
+  border: 2px solid rgba(74, 222, 128, 0.4);
+  box-shadow: 0 4px 20px rgba(74, 222, 128, 0.2);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .scorecard-stats {
+    flex-direction: column;
+  }
+  
+  .stat-box {
+    min-width: auto;
+    width: 100%;
+  }
+  
+  .actual-score-teams {
+    flex-wrap: wrap;
+  }
+  
+  .score-number {
+    font-size: 1.5rem;
   }
 }

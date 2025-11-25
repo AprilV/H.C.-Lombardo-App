@@ -221,26 +221,63 @@ function LiveGamesTicker() {
                 )}
               </div>
 
+              {/* Final Score Result */}
+              {game.status === 'final' && (
+                <div className="ticker-final-result">
+                  <span className="final-label">Final:</span>
+                  <span className="final-result">
+                    {game.home_score > game.away_score 
+                      ? `${game.home_team} won by ${game.home_score - game.away_score}`
+                      : `${game.away_team} won by ${game.away_score - game.home_score}`}
+                  </span>
+                </div>
+              )}
+
               {/* Predictions (if available) */}
               {game.ai_prediction && (
                 <div className="ticker-predictions">
                   <div className="pred-line">
-                    <span className="pred-label">AI:</span>
-                    <span className={`pred-value ${game.ai_correct ? 'correct' : game.ai_correct === false ? 'wrong' : ''}`}>
-                      {game.ai_prediction}
-                      {game.ai_spread && ` ${game.ai_spread > 0 ? '+' : ''}${game.ai_spread}`}
-                    </span>
+                    <div className="pred-left">
+                      <span className="pred-icon">🤖</span>
+                      <span className="pred-text">
+                        AI: {game.ai_spread < 0 ? game.home_team : game.away_team} by {Math.abs(game.ai_spread)}
+                      </span>
+                    </div>
+                    {game.status === 'final' && (
+                      <span className={`pred-check ${
+                        game.ai_spread_covered === 'push' ? 'push' : 
+                        game.ai_spread_covered ? 'correct' : 'wrong'
+                      }`}>
+                        {game.ai_spread_covered === 'push' ? 'PUSH' : game.ai_spread_covered ? '✓' : '✗'}
+                      </span>
+                    )}
                   </div>
                   {game.vegas_spread && (
                     <div className="pred-line">
-                      <span className="pred-label">Vegas:</span>
-                      <span className="pred-value">{game.vegas_spread > 0 ? '+' : ''}{game.vegas_spread}</span>
+                      <div className="pred-left">
+                        <span className="pred-icon">🎰</span>
+                        <span className="pred-text">
+                          Vegas: {game.vegas_spread < 0 ? game.home_team : game.away_team} by {Math.abs(game.vegas_spread)}
+                        </span>
+                      </div>
+                      {game.status === 'final' && (
+                        <span className={`pred-check ${
+                          game.vegas_covered === 'push' ? 'push' : 
+                          game.vegas_covered ? 'correct' : 'wrong'
+                        }`}>
+                          {game.vegas_covered === 'push' ? 'PUSH' : game.vegas_covered ? '✓' : '✗'}
+                        </span>
+                      )}
                     </div>
                   )}
                   {game.vegas_total && (
                     <div className="pred-line">
-                      <span className="pred-label">O/U:</span>
-                      <span className="pred-value">{game.vegas_total}</span>
+                      <span className="pred-text">O/U: {game.vegas_total}</span>
+                      {game.status === 'final' && (
+                        <span className="ou-badge">
+                          {game.home_score + game.away_score > game.vegas_total ? 'OVER' : 'UNDER'}
+                        </span>
+                      )}
                     </div>
                   )}
                 </div>

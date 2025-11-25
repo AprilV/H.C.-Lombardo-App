@@ -98,17 +98,18 @@
 }
 
 .game-ticker-card {
-  min-width: 280px;
-  max-width: 280px;
-  width: 280px;
+  min-width: 340px;
+  max-width: 340px;
+  width: 340px;
   background: rgba(30, 30, 50, 0.85);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 8px;
-  padding: 12px;
+  padding: 14px;
   position: relative;
   flex-shrink: 0;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
   pointer-events: none;
+  overflow: hidden;
 }
 
 .game-ticker-card.in_progress {
@@ -221,26 +222,93 @@
 }
 
 .ticker-predictions {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .pred-line {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 8px 10px;
+  margin-bottom: 6px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+}
+
+.pred-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.pred-icon {
+  font-size: 16px;
+}
+
+.pred-text {
   font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.pred-check {
+  font-size: 18px;
+  font-weight: 700;
+  margin-left: 10px;
+}
+
+.pred-check.correct {
+  color: #4ade80;
+}
+
+.pred-check.wrong {
+  color: #ff4444;
+}
+
+.pred-check.push {
+  color: #ffa500;
+  font-size: 11px;
+}
+
+.ou-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  background: rgba(139, 92, 246, 0.3);
+  color: #a78bfa;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.ticker-final-result {
+  margin: 8px 0;
+  padding: 8px;
+  background: rgba(74, 222, 128, 0.15);
+  border-radius: 6px;
+  text-align: center;
+}
+
+.final-label {
+  font-size: 11px;
+  color: #4ade80;
+  text-transform: uppercase;
+  margin-right: 6px;
+  font-weight: 700;
+}
+
+.final-result {
+  font-size: 13px;
+  color: #fff;
+  font-weight: 600;
 }
 
 .pred-label {
   font-weight: 600;
   text-transform: uppercase;
   font-size: 11px;
-}
-
-.pred-label:contains("AI") {
-  color: #4ade80;
 }
 
 .pred-value {
