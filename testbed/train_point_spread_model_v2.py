@@ -249,7 +249,9 @@ def compute_rolling_features(games_df, stats_df):
             'success_differential': success_diff,
             
             # Betting lines (available pre-game)
-            'spread_line': game['spread_line'] if pd.notna(game['spread_line']) else 0.0,
+            # NFLverse uses inverted sign convention: positive = home favored
+            # We flip to standard convention: negative = favored
+            'spread_line': (-game['spread_line'] if pd.notna(game['spread_line']) else 0.0),
             'total_line': game['total_line'] if pd.notna(game['total_line']) else 47.0,
             'home_moneyline': game['home_moneyline'] if pd.notna(game['home_moneyline']) else -110,
             'away_moneyline': game['away_moneyline'] if pd.notna(game['away_moneyline']) else -110,
