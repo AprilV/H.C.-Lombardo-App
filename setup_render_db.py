@@ -15,11 +15,11 @@ def setup_database():
         # Skip schema recreation - using manually migrated data
         print("📋 Skipping schema recreation (preserving migrated data)...")
         
-        # Load NFL data - this will INSERT new data without dropping tables
-        print("🏈 Loading NFL data from NFLverse...")
-        result = os.system('python nfl_database_loader.py')
+        # Load current 2025 season data from NFLverse
+        print("🏈 Loading 2025 NFL data from NFLverse...")
+        result = os.system('python ingest_historical_games.py --production --seasons 2025')
         if result != 0:
-            print("⚠️ Data loading had warnings")
+            print("⚠️ Data loading had warnings but continuing...")
         
         print("✅ Database setup complete!")
         return True
