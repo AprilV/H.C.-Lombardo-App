@@ -31,11 +31,15 @@ RUN npm run build
 # Back to app directory
 WORKDIR /app
 
+# Copy startup script
+COPY start.sh /app/start.sh
+RUN chmod +x /app/start.sh
+
 # Expose port
 EXPOSE 8080
 
-# Set PORT environment variable if not set
+# Set default PORT
 ENV PORT=8080
 
-# Run database setup then start server
-CMD ["sh", "-c", "python setup_render_db.py || true && gunicorn api_server:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120"]
+# Run startup script
+CMD ["/app/start.sh"]
