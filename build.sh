@@ -1,5 +1,6 @@
 #!/bin/bash
 # Render build script
+# Updated 2025-11-25: Force rebuild with fresh frontend
 
 # Install Python dependencies
 pip install -r requirements.txt
