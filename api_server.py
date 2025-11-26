@@ -48,11 +48,11 @@ app.register_blueprint(live_scores_api)
 
 # Database configuration
 DB_CONFIG = {
-    'dbname': 'nfl_analytics',
-    'user': 'postgres',
-    'password': 'aprilv120',
-    'host': 'localhost',
-    'port': 5432
+    'dbname': os.getenv('DB_NAME', 'nfl_analytics'),
+    'user': os.getenv('DB_USER', 'postgres'),
+    'password': os.getenv('DB_PASSWORD', 'aprilv120'),
+    'host': os.getenv('DB_HOST', 'localhost'),
+    'port': os.getenv('DB_PORT', '5432')
 }
 
 def get_db_connection():
