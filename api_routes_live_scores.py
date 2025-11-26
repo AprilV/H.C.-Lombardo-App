@@ -1,7 +1,7 @@
 """
 Live Scores API - Fetches current week's games from ESPN with AI predictions
 """
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, current_app
 import requests
 from datetime import datetime
 import psycopg2
@@ -35,20 +35,17 @@ live_scores_api = Blueprint('live_scores_api', __name__)
 ESPN_SCOREBOARD_URL = "http://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard"
 
 def get_predictions_for_week(week, season=2025):
-    """Fetch AI and Vegas predictions from the ML predictions API"""
+    """Fetch AI and Vegas predictions by importing the predictor directly"""
     try:
-        # Call the ML predictions API directly to get fresh predictions
-        api_url = f'http://127.0.0.1:5000/api/ml/predict-week/{season}/{week}'
-        response = requests.get(api_url, timeout=10)
+        # Import the ML predictor directly instead of making HTTP call
+        from ml.predict_week import MLPredictor
         
-        if response.status_code != 200:
-            print(f"ERROR: ML API returned status {response.status_code}")
-            return {}
+        predictor = MLPredictor()
+        predictions_data = predictor.predict_week(season=season, week=week)
         
-        data = response.json()
-        predictions_list = data.get('predictions', [])
+        predictions_list = predictions_data.get('predictions', [])
         
-        print(f"DEBUG: Got {len(predictions_list)} predictions from ML API for Week {week} Season {season}")
+        print(f"DEBUG: Got {len(predictions_list)} predictions from ML predictor for Week {week} Season {season}")
         
         # Create lookup dictionary by teams
         predictions = {}
@@ -70,7 +67,7 @@ def get_predictions_for_week(week, season=2025):
         return predictions
         
     except Exception as e:
-        print(f"Error fetching predictions from ML API: {e}")
+        print(f"Error fetching predictions from ML predictor: {e}")
         return {}
 
 @live_scores_api.route('/api/live-scores', methods=['GET'])
