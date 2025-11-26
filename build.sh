@@ -4,9 +4,10 @@
 # Install Python dependencies
 pip install -r requirements.txt
 
-# Setup database (creates schema and loads NFL data)
-echo "🗄️  Setting up database..."
-python setup_render_db.py || echo "⚠️  Database setup skipped (may already exist)"
+# NOTE: Database setup must be run manually AFTER first deployment
+# because environment variables aren't available during build.
+# Run this command in Render Shell once app is deployed:
+# python setup_render_db.py
 
 # Build React frontend
 cd frontend
