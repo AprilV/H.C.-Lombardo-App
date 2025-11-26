@@ -1,11 +1,15 @@
 [phases.setup]
-nixPkgs = ["python310", "nodejs-18_x"]
+nixPkgs = ["python310", "python310Packages.pip", "python310Packages.virtualenv", "nodejs-18_x"]
 
 [phases.install]
-cmds = ["pip install -r requirements.txt", "cd frontend && npm install"]
+cmds = [
+    "python -m venv /opt/venv",
+    "/opt/venv/bin/pip install -r requirements.txt",
+    "cd frontend && npm install"
+]
 
 [phases.build]
 cmds = ["bash build.sh"]
 
 [start]
-cmd = "gunicorn api_server:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120"
+cmd = "/opt/venv/bin/gunicorn api_server:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120"
