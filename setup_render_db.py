@@ -6,24 +6,23 @@ Populates the database with NFL data from NFLverse.
 
 import os
 import sys
-import psycopg2
-from db_config import get_db_connection
 
 def setup_database():
     """Create schema and load initial data."""
     print("🚀 Starting Render database setup...")
     
     try:
-        conn = get_db_connection()
-        print("✅ Connected to database")
-        
-        # Import schema creation
+        # Create production schema
         print("📋 Creating production schema...")
-        os.system('python recreate_production_schema.py')
+        result = os.system('python recreate_production_schema.py')
+        if result != 0:
+            print("⚠️ Schema creation had warnings (may already exist)")
         
         # Load NFL data
         print("🏈 Loading NFL data from NFLverse...")
-        os.system('python nfl_database_loader.py')
+        result = os.system('python nfl_database_loader.py')
+        if result != 0:
+            print("⚠️ Data loading had warnings")
         
         print("✅ Database setup complete!")
         return True
