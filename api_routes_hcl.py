@@ -44,23 +44,26 @@ def get_teams():
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=RealDictCursor)
         
-        # Aggregate stats from team_game_stats table
+        # MODIFIED: Get teams from team_info and LEFT JOIN stats (so teams show even without games)
         query = """
             SELECT 
-                team,
-                COUNT(*) as games_played,
-                SUM(CASE WHEN result = 'W' THEN 1 ELSE 0 END) as wins,
-                SUM(CASE WHEN result = 'L' THEN 1 ELSE 0 END) as losses,
-                SUM(CASE WHEN result = 'T' THEN 1 ELSE 0 END) as ties,
-                ROUND(AVG(points)::numeric, 1) as ppg,
-                ROUND(AVG(total_yards)::numeric, 1) as yards_per_game,
-                ROUND(AVG(yards_per_play)::numeric, 2) as yards_per_play,
-                ROUND(AVG(completion_pct)::numeric, 1) as completion_pct,
-                SUM(turnovers) as total_turnovers
-            FROM hcl.team_game_stats
-            WHERE season = %s
-            GROUP BY team
-            ORDER BY team ASC
+                ti.team_abbr as team,
+                ti.team_name,
+                ti.conference,
+                ti.division,
+                COALESCE(COUNT(tgs.game_id), 0) as games_played,
+                COALESCE(SUM(CASE WHEN tgs.result = 'W' THEN 1 ELSE 0 END), 0) as wins,
+                COALESCE(SUM(CASE WHEN tgs.result = 'L' THEN 1 ELSE 0 END), 0) as losses,
+                COALESCE(SUM(CASE WHEN tgs.result = 'T' THEN 1 ELSE 0 END), 0) as ties,
+                ROUND(COALESCE(AVG(tgs.points), 0)::numeric, 1) as ppg,
+                ROUND(COALESCE(AVG(tgs.total_yards), 0)::numeric, 1) as yards_per_game,
+                ROUND(COALESCE(AVG(tgs.yards_per_play), 0)::numeric, 2) as yards_per_play,
+                ROUND(COALESCE(AVG(tgs.completion_pct), 0)::numeric, 1) as completion_pct,
+                COALESCE(SUM(tgs.turnovers), 0) as total_turnovers
+            FROM hcl.team_info ti
+            LEFT JOIN hcl.team_game_stats tgs ON ti.team_abbr = tgs.team AND tgs.season = %s
+            GROUP BY ti.team_abbr, ti.team_name, ti.conference, ti.division
+            ORDER BY ti.team_abbr ASC
         """
         
         cur.execute(query, (season,))
