@@ -43,7 +43,11 @@ def get_predictions_for_week(week, season=2025):
         predictor = WeeklyPredictor()
         predictions_data = predictor.predict_week(season=season, week=week)
         
-        predictions_list = predictions_data.get('predictions', [])
+        # Handle both dict and list returns (list when no games found)
+        if isinstance(predictions_data, list):
+            predictions_list = predictions_data
+        else:
+            predictions_list = predictions_data.get('predictions', [])
         
         print(f"DEBUG: Got {len(predictions_list)} predictions from ML predictor for Week {week} Season {season}")
         
