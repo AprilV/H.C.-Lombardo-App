@@ -47,8 +47,8 @@ def get_teams():
         # MODIFIED: Get teams from team_info and LEFT JOIN stats (so teams show even without games)
         query = """
             SELECT 
-                ti.team_abbr as team,
-                ti.team_name,
+                ti.team,
+                ti.full_name as team_name,
                 ti.conference,
                 ti.division,
                 COALESCE(COUNT(tgs.game_id), 0) as games_played,
@@ -61,9 +61,9 @@ def get_teams():
                 ROUND(COALESCE(AVG(tgs.completion_pct), 0)::numeric, 1) as completion_pct,
                 COALESCE(SUM(tgs.turnovers), 0) as total_turnovers
             FROM hcl.team_info ti
-            LEFT JOIN hcl.team_game_stats tgs ON ti.team_abbr = tgs.team AND tgs.season = %s
-            GROUP BY ti.team_abbr, ti.team_name, ti.conference, ti.division
-            ORDER BY ti.team_abbr ASC
+            LEFT JOIN hcl.team_game_stats tgs ON ti.team = tgs.team AND tgs.season = %s
+            GROUP BY ti.team, ti.full_name, ti.conference, ti.division
+            ORDER BY ti.team ASC
         """
         
         cur.execute(query, (season,))
