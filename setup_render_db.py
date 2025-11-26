@@ -12,13 +12,10 @@ def setup_database():
     print("🚀 Starting Render database setup...")
     
     try:
-        # Create production schema
-        print("📋 Creating production schema...")
-        result = os.system('python recreate_production_schema.py')
-        if result != 0:
-            print("⚠️ Schema creation had warnings (may already exist)")
+        # Skip schema recreation - using manually migrated data
+        print("📋 Skipping schema recreation (preserving migrated data)...")
         
-        # Load NFL data
+        # Load NFL data - this will INSERT new data without dropping tables
         print("🏈 Loading NFL data from NFLverse...")
         result = os.system('python nfl_database_loader.py')
         if result != 0:
