@@ -28,10 +28,11 @@ class WeeklyPredictor:
     
     def __init__(self):
         self.db_config = {
-            'dbname': 'nfl_analytics',
-            'user': 'postgres',
-            'password': os.getenv('DB_PASSWORD'),
-            'host': 'localhost'
+            'dbname': os.getenv('DB_NAME', 'nfl_analytics'),
+            'user': os.getenv('DB_USER', 'postgres'),
+            'password': os.getenv('DB_PASSWORD', ''),
+            'host': os.getenv('DB_HOST', 'localhost'),
+            'port': os.getenv('DB_PORT', '5432')
         }
         
         # Load WIN/LOSS model (classification)
