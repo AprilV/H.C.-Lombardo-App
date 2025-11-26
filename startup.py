@@ -273,6 +273,40 @@ class StartupManager:
             print(f"   ❌ Failed to start API server: {str(e)}")
             return False
     
+    def start_auto_update_service(self) -> bool:
+        """Start automated data update service"""
+        print("\n" + "="*70)
+        print("🤖 STARTING AUTO-UPDATE SERVICE")
+        print("="*70)
+        
+        try:
+            auto_update_script = self.project_root / "auto_update_service.py"
+            
+            if not auto_update_script.exists():
+                print(f"   ⚠️  Auto-update script not found: {auto_update_script}")
+                print("   Skipping auto-updates (you can run manually)")
+                return True  # Don't fail startup
+            
+            # Start auto-update service in new window (15 min interval)
+            process = subprocess.Popen(
+                ["powershell", "-NoExit", "-Command",
+                 f"cd '{self.project_root}' ; "
+                 f"Write-Host 'AUTO-UPDATE SERVICE - Updates every 15 minutes' -ForegroundColor Yellow ; "
+                 f"python '{auto_update_script}' --continuous 15"],
+                creationflags=subprocess.CREATE_NEW_CONSOLE
+            )
+            
+            self.processes['auto_update'] = process
+            print(f"   ✅ Auto-update service started (PID: {process.pid})")
+            print("   📅 Will update NFL data every 15 minutes")
+            print("   💡 Close the auto-update window to stop")
+            return True
+                
+        except Exception as e:
+            print(f"   ⚠️  Could not start auto-update service: {str(e)}")
+            print("   Continuing without auto-updates")
+            return True  # Don't fail startup
+    
     def start_react_frontend(self) -> bool:
         """Start React development server"""
         print("\n" + "="*70)
@@ -370,12 +404,15 @@ class StartupManager:
         # Step 3: Update live data
         self.update_live_data()
         
-        # Step 4: Start API server
+        # Step 4: Start auto-update service (background)
+        self.start_auto_update_service()
+        
+        # Step 5: Start API server
         if not self.start_api_server():
             print("\n❌ Startup aborted: API server failed to start")
             return False
         
-        # Step 5: Start React frontend
+        # Step 6: Start React frontend
         if not self.start_react_frontend():
             print("\n❌ Startup aborted: React frontend failed to start")
             return False
@@ -396,8 +433,10 @@ class StartupManager:
             print("   • React Frontend: http://localhost:3000")
             print("   • API Server:     http://localhost:5000")
             print("   • API Health:     http://localhost:5000/health")
-            print("\n💡 The system will automatically fetch live NFL data")
-            print("   To shutdown: Close the terminal windows or run shutdown.py")
+            print("\n🤖 Auto-Update Service:")
+            print("   • Updates NFL data every 15 minutes automatically")
+            print("   • Runs in background window (close window to stop)")
+            print("\n💡 To shutdown: Close the terminal windows or run shutdown.py")
             print("\n")
             
             # Open browser

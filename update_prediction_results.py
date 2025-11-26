@@ -23,7 +23,7 @@ What it does:
 
 import psycopg2
 from psycopg2.extras import RealDictCursor
-from db_config import DB_CONFIG
+from db_config import DATABASE_CONFIG as DB_CONFIG
 
 def update_prediction_results():
     """Update predictions with actual results from completed games"""
@@ -77,8 +77,8 @@ def update_prediction_results():
                 SELECT 
                     COUNT(*) as total_games,
                     SUM(CASE WHEN win_prediction_correct THEN 1 ELSE 0 END) as correct_predictions,
-                    ROUND(AVG(CASE WHEN win_prediction_correct THEN 100.0 ELSE 0.0 END), 2) as win_accuracy,
-                    ROUND(AVG(margin_prediction_error), 2) as avg_margin_error,
+                    ROUND(CAST(AVG(CASE WHEN win_prediction_correct THEN 100.0 ELSE 0.0 END) AS numeric), 2) as win_accuracy,
+                    ROUND(CAST(AVG(margin_prediction_error) AS numeric), 2) as avg_margin_error,
                     MAX(week) as latest_week
                 FROM hcl.ml_predictions
                 WHERE season = 2025
