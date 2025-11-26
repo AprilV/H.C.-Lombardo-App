@@ -35,7 +35,7 @@ function Homepage() {
   const fetchTeams = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${API_URL}/api/teams`);
+      const response = await fetch(`${API_URL}/api/hcl/teams?season=2025`);
       const data = await response.json();
       setTeams(data.teams || []);
     } catch (err) {
