@@ -35,4 +35,4 @@ WORKDIR /app
 EXPOSE 8080
 
 # Run database setup then start server
-CMD python setup_render_db.py || true && gunicorn api_server:app --bind 0.0.0.0:${PORT:-8080} --workers 2 --timeout 120
+CMD ["sh", "-c", "python setup_render_db.py || true && gunicorn api_server:app --bind 0.0.0.0:${PORT:-8080} --workers 2 --timeout 120"]
