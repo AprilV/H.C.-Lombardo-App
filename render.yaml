@@ -3,7 +3,7 @@ services:
     name: h-c-lombardo-app
     env: python
     buildCommand: bash build.sh
-    startCommand: gunicorn api_server:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120
+    startCommand: gunicorn api_server:app --workers 2 --timeout 120
     plan: free
     envVars:
       - key: PYTHON_VERSION
