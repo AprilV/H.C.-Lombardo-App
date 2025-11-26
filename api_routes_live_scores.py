@@ -38,9 +38,9 @@ def get_predictions_for_week(week, season=2025):
     """Fetch AI and Vegas predictions by importing the predictor directly"""
     try:
         # Import the ML predictor directly instead of making HTTP call
-        from ml.predict_week import MLPredictor
+        from ml.predict_week import WeeklyPredictor
         
-        predictor = MLPredictor()
+        predictor = WeeklyPredictor()
         predictions_data = predictor.predict_week(season=season, week=week)
         
         predictions_list = predictions_data.get('predictions', [])
