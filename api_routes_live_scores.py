@@ -211,10 +211,10 @@ def get_live_scores():
                             game_data['vegas_covered'] = 'push'
                         elif vegas_spread < 0:
                             # Home team favored - need to win by MORE than spread
-                            game_data['vegas_covered'] = actual_margin > abs(vegas_spread)
+                            game_data['vegas_covered'] = 'yes' if actual_margin > abs(vegas_spread) else 'no'
                         else:
                             # Away team favored - need to win by MORE than spread
-                            game_data['vegas_covered'] = actual_margin < -abs(vegas_spread)
+                            game_data['vegas_covered'] = 'yes' if actual_margin < -abs(vegas_spread) else 'no'
                         
                         # Calculate AI spread coverage
                         ai_spread = pred['ai_spread']
@@ -222,10 +222,10 @@ def get_live_scores():
                         # AI spreads are decimals, so no pushes
                         if ai_spread < 0:
                             # Home team favored - need to win by MORE than spread
-                            game_data['ai_spread_covered'] = actual_margin > abs(ai_spread)
+                            game_data['ai_spread_covered'] = 'yes' if actual_margin > abs(ai_spread) else 'no'
                         else:
                             # Away team favored - need to win by MORE than spread
-                            game_data['ai_spread_covered'] = actual_margin < -abs(ai_spread)
+                            game_data['ai_spread_covered'] = 'yes' if actual_margin < -abs(ai_spread) else 'no'
                     else:
                         game_data['ai_correct'] = None
                         game_data['vegas_covered'] = None
