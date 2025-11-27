@@ -68,7 +68,7 @@ function Homepage() {
   };
 
   const getTeamByAbbr = (abbr) => {
-    return teams.find(t => t.team === abbr) || { name: abbr, team: abbr, wins: 0, losses: 0, ties: 0 };
+    return teams.find(t => t.team === abbr) || { team_name: abbr, team: abbr, wins: 0, losses: 0, ties: 0 };
   };
 
   // Sort teams by NFL standings rules (simplified)
@@ -151,11 +151,11 @@ function Homepage() {
                         >
                           <img 
                             src={`/images/teams/${abbr.toLowerCase()}.png`}
-                            alt={team.name}
+                            alt={team.team_name || team.team || abbr}
                             className="team-logo-small"
                             onError={(e) => {e.target.style.display='none'}}
                           />
-                          <span className="team-name-short">{team.name}</span>
+                          <span className="team-name-short">{team.team_name || team.team || abbr}</span>
                           <span className="team-record">
                             {team.wins}-{team.losses}{team.ties > 0 ? `-${team.ties}` : ''}
                           </span>

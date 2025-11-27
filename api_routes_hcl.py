@@ -44,21 +44,23 @@ def get_teams():
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=RealDictCursor)
         
-        # Aggregate stats from team_game_stats table
+        # Aggregate stats from team_game_stats table with team names
         query = """
             SELECT 
-                team,
+                tgs.team,
+                t.name as team_name,
                 COUNT(*) as games_played,
-                SUM(CASE WHEN result = 'W' THEN 1 ELSE 0 END) as wins,
-                SUM(CASE WHEN result = 'L' THEN 1 ELSE 0 END) as losses,
-                ROUND(AVG(points)::numeric, 1) as ppg,
-                ROUND(AVG(total_yards)::numeric, 1) as yards_per_game,
-                ROUND(AVG(yards_per_play)::numeric, 2) as yards_per_play,
-                ROUND(AVG(completion_pct)::numeric, 1) as completion_pct,
-                SUM(turnovers) as total_turnovers
-            FROM hcl.team_game_stats
-            WHERE season = %s
-            GROUP BY team
+                SUM(CASE WHEN tgs.result = 'W' THEN 1 ELSE 0 END) as wins,
+                SUM(CASE WHEN tgs.result = 'L' THEN 1 ELSE 0 END) as losses,
+                ROUND(AVG(tgs.points)::numeric, 1) as ppg,
+                ROUND(AVG(tgs.total_yards)::numeric, 1) as yards_per_game,
+                ROUND(AVG(tgs.yards_per_play)::numeric, 2) as yards_per_play,
+                ROUND(AVG(tgs.completion_pct)::numeric, 1) as completion_pct,
+                SUM(tgs.turnovers) as total_turnovers
+            FROM hcl.team_game_stats tgs
+            LEFT JOIN public.teams t ON tgs.team = t.abbreviation
+            WHERE tgs.season = %s
+            GROUP BY tgs.team, t.name
             ORDER BY wins DESC, ppg DESC
         """
         
