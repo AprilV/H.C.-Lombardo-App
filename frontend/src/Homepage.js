@@ -68,7 +68,7 @@ function Homepage() {
   };
 
   const getTeamByAbbr = (abbr) => {
-    return teams.find(t => t.abbreviation === abbr) || { name: abbr, abbreviation: abbr, wins: 0, losses: 0, ties: 0 };
+    return teams.find(t => t.team === abbr) || { name: abbr, team: abbr, wins: 0, losses: 0, ties: 0 };
   };
 
   // Sort teams by NFL standings rules (simplified)
@@ -94,7 +94,7 @@ function Homepage() {
         // Tertiary: Alphabetical by team name
         return a.name.localeCompare(b.name);
       })
-      .map(team => team.abbreviation);
+      .map(team => team.team);
   };
 
   const handleTeamClick = (abbr) => {
