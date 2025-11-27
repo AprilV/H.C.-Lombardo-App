@@ -91,8 +91,8 @@ function Homepage() {
           return b.wins - a.wins;
         }
         
-        // Tertiary: Alphabetical by team name
-        return a.name.localeCompare(b.name);
+        // Tertiary: Alphabetical by team abbreviation
+        return (a.team || '').localeCompare(b.team || '');
       })
       .map(team => team.team);
   };
