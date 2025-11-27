@@ -156,7 +156,9 @@ function GameStatistics() {
         throw new Error(data.error || 'Failed to load teams');
       }
       
-      setTeamAList(data.teams);
+      // Sort teams alphabetically by abbreviation
+      const sortedTeams = data.teams.sort((a, b) => a.team.localeCompare(b.team));
+      setTeamAList(sortedTeams);
       setError(null);
     } catch (err) {
       setError(err.message);
@@ -175,7 +177,9 @@ function GameStatistics() {
         throw new Error(data.error || 'Failed to load teams');
       }
       
-      setTeamBList(data.teams);
+      // Sort teams alphabetically by abbreviation
+      const sortedTeams = data.teams.sort((a, b) => a.team.localeCompare(b.team));
+      setTeamBList(sortedTeams);
       setError(null);
     } catch (err) {
       setError(err.message);
