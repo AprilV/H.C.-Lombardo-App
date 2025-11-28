@@ -28,7 +28,15 @@ app = Flask(__name__, static_folder=BUILD_FOLDER, static_url_path='')
 # Enable CORS for React frontend and local HTML files
 CORS(app, resources={
     r"/*": {
-        "origins": ["http://localhost:3000", "http://127.0.0.1:3000", "http://localhost:5000", "http://127.0.0.1:5000", "null"],
+        "origins": [
+            "http://localhost:3000", 
+            "http://127.0.0.1:3000", 
+            "http://localhost:5000", 
+            "http://127.0.0.1:5000", 
+            "https://master.d2tamnlcbzo0d5.amplifyapp.com",
+            "https://nfl.aprilsykes.dev",
+            "null"
+        ],
         "methods": ["GET", "POST", "PUT", "DELETE"],
         "allow_headers": ["Content-Type"]
     }
