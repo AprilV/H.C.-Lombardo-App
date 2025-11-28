@@ -258,9 +258,9 @@ function LiveGamesTicker() {
                     {game.status === 'final' && (
                       <span className={`pred-check ${
                         game.ai_spread_covered === 'push' ? 'push' : 
-                        game.ai_spread_covered ? 'correct' : 'wrong'
+                        game.ai_spread_covered === 'yes' ? 'correct' : 'wrong'
                       }`}>
-                        {game.ai_spread_covered === 'push' ? 'PUSH' : game.ai_spread_covered ? '✓' : '✗'}
+                        {game.ai_spread_covered === 'push' ? 'PUSH' : game.ai_spread_covered === 'yes' ? '✓' : '✗'}
                       </span>
                     )}
                   </div>
@@ -275,9 +275,9 @@ function LiveGamesTicker() {
                       {game.status === 'final' && (
                         <span className={`pred-check ${
                           game.vegas_covered === 'push' ? 'push' : 
-                          game.vegas_covered ? 'correct' : 'wrong'
+                          game.vegas_covered === 'yes' ? 'correct' : 'wrong'
                         }`}>
-                          {game.vegas_covered === 'push' ? 'PUSH' : game.vegas_covered ? '✓' : '✗'}
+                          {game.vegas_covered === 'push' ? 'PUSH' : game.vegas_covered === 'yes' ? '✓' : '✗'}
                         </span>
                       )}
                     </div>
