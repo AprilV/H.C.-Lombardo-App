@@ -52,6 +52,7 @@ def get_teams():
                 COUNT(*) as games_played,
                 SUM(CASE WHEN tgs.result = 'W' THEN 1 ELSE 0 END) as wins,
                 SUM(CASE WHEN tgs.result = 'L' THEN 1 ELSE 0 END) as losses,
+                SUM(CASE WHEN tgs.result = 'T' THEN 1 ELSE 0 END) as ties,
                 ROUND(AVG(tgs.points)::numeric, 1) as ppg,
                 ROUND(AVG(tgs.total_yards)::numeric, 1) as yards_per_game,
                 ROUND(AVG(tgs.yards_per_play)::numeric, 2) as yards_per_play,
