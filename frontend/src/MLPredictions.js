@@ -13,6 +13,30 @@ function MLPredictions() {
   const [explanation, setExplanation] = useState(null);
   const [error, setError] = useState(null);
   const [seasonStats, setSeasonStats] = useState(null);
+  const [liveScores, setLiveScores] = useState({});
+
+  // Fetch live scores from ESPN
+  const fetchLiveScores = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/live-scores`);
+      const data = await response.json();
+      if (data.success && data.games) {
+        // Create a map of game scores by team matchup
+        const scoresMap = {};
+        data.games.forEach(game => {
+          const key = `${game.away_team}@${game.home_team}`;
+          scoresMap[key] = {
+            home_score: game.home_score,
+            away_score: game.away_score,
+            status: game.status
+          };
+        });
+        setLiveScores(scoresMap);
+      }
+    } catch (err) {
+      console.error('Error fetching live scores:', err);
+    }
+  };
 
   // Team logo helper
   const getTeamLogo = (team) => {
@@ -37,6 +61,11 @@ function MLPredictions() {
     fetchModelInfo();
     fetchExplanation();
     fetchSeasonStats();
+    fetchLiveScores();
+    
+    // Refresh live scores every 30 seconds
+    const interval = setInterval(fetchLiveScores, 30000);
+    return () => clearInterval(interval);
   }, []);
 
   const fetchSeasonStats = async () => {
@@ -146,16 +175,33 @@ function MLPredictions() {
       );
     }
 
+    // Merge live scores from ESPN API into predictions
+    const predictionsWithLiveScores = predictions.map(pred => {
+      const key = `${pred.away_team}@${pred.home_team}`;
+      const liveScore = liveScores[key];
+      
+      if (liveScore && liveScore.status !== 'scheduled') {
+        // Override with live scores from ESPN
+        return {
+          ...pred,
+          actual_home_score: liveScore.home_score,
+          actual_away_score: liveScore.away_score,
+          game_status: liveScore.status
+        };
+      }
+      return pred;
+    });
+
     return (
       <>
         <div className="predictions-header">
           <h2>🧠 Week {week} Predictions</h2>
-          <p className="predictions-subtitle">{season} Season - {predictions.length} Games</p>
+          <p className="predictions-subtitle">{season} Season - {predictionsWithLiveScores.length} Games</p>
         </div>
 
         {/* Results Scorecard - Always show, even for incomplete weeks */}
         {(() => {
-          const finishedGames = predictions.filter(p => p.actual_home_score !== null && p.actual_home_score !== undefined);
+          const finishedGames = predictionsWithLiveScores.filter(p => p.actual_home_score !== null && p.actual_home_score !== undefined);
           
           // Count AI correct predictions (winner picks)
           const aiCorrect = finishedGames.filter(p => p.correct === true).length;
@@ -338,7 +384,7 @@ function MLPredictions() {
         })()}
 
         <div className="predictions-grid">
-          {predictions.map((pred, idx) => {
+          {predictionsWithLiveScores.map((pred, idx) => {
             const isHomeWinner = pred.predicted_winner === pred.home_team;
             const winnerConfidence = (pred.confidence * 100).toFixed(1);
             const homeProb = (pred.home_win_prob * 100).toFixed(1);
