@@ -30,7 +30,7 @@ def main():
         
         # Run the update
         print("\n📊 Fetching from ESPN, TeamRankings, and other sources...")
-        fetcher.run_update()
+        fetcher.run_full_update()
         
         conn.commit()
         

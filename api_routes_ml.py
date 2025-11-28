@@ -594,6 +594,92 @@ def save_predictions():
         })
         
     except Exception as e:
+        return jsonify({'success': True, 'error': str(e)}), 500
+
+
+@ml_api.route('/api/ml/season-ai-vs-vegas/<int:season>', methods=['GET'])
+def get_season_ai_vs_vegas(season):
+    """
+    Get season-to-date AI vs Vegas spread performance
+    Shows how many games AI beat Vegas on spread coverage
+    """
+    try:
+        conn = psycopg2.connect(**get_predictor().db_config)
+        cur = conn.cursor()
+        
+        # Get all completed games with predictions for the season
+        cur.execute("""
+            SELECT 
+                p.game_id,
+                p.ai_spread,
+                p.vegas_spread,
+                g.home_score,
+                g.away_score
+            FROM hcl.ml_predictions p
+            JOIN hcl.games g ON p.game_id = g.game_id
+            WHERE p.season = %s
+              AND g.home_score IS NOT NULL
+              AND g.away_score IS NOT NULL
+              AND p.ai_spread IS NOT NULL
+              AND p.vegas_spread IS NOT NULL
+            ORDER BY g.week, g.game_date
+        """, (season,))
+        
+        games = cur.fetchall()
+        
+        ai_wins = 0
+        vegas_wins = 0
+        ties = 0
+        total = 0
+        
+        for game_id, ai_spread, vegas_spread, home_score, away_score in games:
+            actual_margin = home_score - away_score
+            total += 1
+            
+            # Check AI spread coverage
+            ai_result = actual_margin + ai_spread
+            ai_covered = False
+            if ai_result != 0:
+                if ai_spread < 0:
+                    ai_covered = actual_margin > abs(ai_spread)
+                else:
+                    ai_covered = actual_margin < -abs(ai_spread)
+            
+            # Check Vegas spread coverage
+            vegas_result = actual_margin + vegas_spread
+            vegas_covered = False
+            if vegas_result != 0:
+                if vegas_spread < 0:
+                    vegas_covered = actual_margin > abs(vegas_spread)
+                else:
+                    vegas_covered = actual_margin < -abs(vegas_spread)
+            
+            # Compare
+            if ai_covered and not vegas_covered:
+                ai_wins += 1
+            elif not ai_covered and vegas_covered:
+                vegas_wins += 1
+            elif ai_covered == vegas_covered:
+                ties += 1
+        
+        ai_pct = (ai_wins / total * 100) if total > 0 else 0
+        vegas_pct = (vegas_wins / total * 100) if total > 0 else 0
+        
+        cur.close()
+        conn.close()
+        
+        return jsonify({
+            'success': True,
+            'season': season,
+            'ai_wins': ai_wins,
+            'vegas_wins': vegas_wins,
+            'ties': ties,
+            'total_games': total,
+            'ai_percentage': round(ai_pct, 1),
+            'vegas_percentage': round(vegas_pct, 1)
+        })
+        
+    except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
 

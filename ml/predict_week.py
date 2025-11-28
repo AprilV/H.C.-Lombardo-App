@@ -69,7 +69,7 @@ class WeeklyPredictor:
                 kickoff_time_utc,
                 home_score,
                 away_score,
-                spread_line,
+                COALESCE(closing_spread, spread_line) as spread_line,  -- Use locked closing spread if available
                 total_line,
                 home_moneyline,
                 away_moneyline,

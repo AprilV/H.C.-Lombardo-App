@@ -12,6 +12,7 @@ function MLPredictions() {
   const [modelInfo, setModelInfo] = useState(null);
   const [explanation, setExplanation] = useState(null);
   const [error, setError] = useState(null);
+  const [seasonStats, setSeasonStats] = useState(null);
 
   // Team logo helper
   const getTeamLogo = (team) => {
@@ -35,7 +36,20 @@ function MLPredictions() {
     fetchUpcomingPredictions();
     fetchModelInfo();
     fetchExplanation();
+    fetchSeasonStats();
   }, []);
+
+  const fetchSeasonStats = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/ml/season-ai-vs-vegas/${season}`);
+      const data = await response.json();
+      if (data.success) {
+        setSeasonStats(data);
+      }
+    } catch (err) {
+      console.error('Error fetching season stats:', err);
+    }
+  };
 
   const fetchUpcomingPredictions = async () => {
     setLoading(true);
@@ -306,12 +320,15 @@ function MLPredictions() {
                   <div className="stat-box ai-vs-vegas-stat">
                     <div className="stat-icon">⚔️</div>
                     <div className="stat-content">
-                      <div className="stat-label">AI vs Vegas</div>
+                      <div className="stat-label">AI vs Vegas (Season)</div>
                       <div className="stat-value">
-                        {aiBeatsVegas} - {vegasBeatsAI}
+                        {seasonStats ? `${seasonStats.ai_wins} - ${seasonStats.vegas_wins}` : `${aiBeatsVegas} - ${vegasBeatsAI}`}
                       </div>
                       <div className="stat-percent">
-                        {aiBeatsVegas + vegasBeatsAI > 0 ? ((aiBeatsVegas / (aiBeatsVegas + vegasBeatsAI)) * 100).toFixed(1) : 0}% AI Wins
+                        AI: {seasonStats ? seasonStats.ai_percentage : (aiBeatsVegas + vegasBeatsAI > 0 ? ((aiBeatsVegas / (aiBeatsVegas + vegasBeatsAI)) * 100).toFixed(1) : 0)}%
+                      </div>
+                      <div className="stat-percent" style={{fontSize: '0.9rem', marginTop: '4px'}}>
+                        Vegas: {seasonStats ? seasonStats.vegas_percentage : (aiBeatsVegas + vegasBeatsAI > 0 ? ((vegasBeatsAI / (aiBeatsVegas + vegasBeatsAI)) * 100).toFixed(1) : 0)}%
                       </div>
                     </div>
                   </div>
