@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './MLPredictions.css';
 
-const API_URL = '';
+const API_URL = 'http://34.198.25.249:5000';
 
 function MLPredictions() {
   const [activeTab, setActiveTab] = useState('predictions');

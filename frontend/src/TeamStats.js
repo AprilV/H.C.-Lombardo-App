@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import './TeamStats.css';
 
-const API_URL = '';
+const API_URL = 'http://34.198.25.249:5000';
 
 function TeamStats() {
   const [searchParams] = useSearchParams();

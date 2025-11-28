@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import './Homepage.css';
 import LiveGamesTicker from './LiveGamesTicker';
 
-const API_URL = '';
+const API_URL = 'http://34.198.25.249:5000';
 
 // NFL Divisions
 const NFL_STRUCTURE = {
