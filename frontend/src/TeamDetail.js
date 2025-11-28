@@ -25,7 +25,7 @@ ChartJS.register(
   Filler
 );
 
-const API_URL = 'http://34.198.25.249:5000';
+const API_URL = 'https://api.aprilsykes.dev';
 
 // NFL Team Colors
 const TEAM_COLORS = {

@@ -10,7 +10,7 @@ import MLPredictions from './MLPredictions';
 import Admin from './Admin';
 import './App.css';
 
-const API_URL = 'http://34.198.25.249:5000';
+const API_URL = 'https://api.aprilsykes.dev';
 
 function App() {
   const [serverStatus, setServerStatus] = useState(null);

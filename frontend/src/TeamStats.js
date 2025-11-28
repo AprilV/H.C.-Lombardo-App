@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import './TeamStats.css';
 
-const API_URL = 'http://34.198.25.249:5000';
+const API_URL = 'https://api.aprilsykes.dev';
 
 function TeamStats() {
   const [searchParams] = useSearchParams();
