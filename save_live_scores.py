@@ -117,6 +117,7 @@ class LiveScoreSaver:
                 
                 result = cur.fetchone()
                 if not result:
+                    print(f"  ⚠️  No match: {game['away_team']}@{game['home_team']} on {game['game_date']}")
                     continue
                 
                 game_id, db_home_score, db_away_score, closing_spread, kickoff_time = result
