@@ -244,6 +244,13 @@ def run_server(host='127.0.0.1', port=5000, debug=False):
     else:
         logger.warning("[!] React build folder not found - run 'npm run build' in frontend/")
     
+    # Start background data updater
+    try:
+        updater.start()
+        logger.info("🔄 Background NFL data updater started (updates every 30 minutes)")
+    except Exception as e:
+        logger.warning(f"Failed to start background updater: {e}")
+    
     try:
         app.run(
             host=host,
@@ -254,8 +261,11 @@ def run_server(host='127.0.0.1', port=5000, debug=False):
         )
     except KeyboardInterrupt:
         logger.info("Server stopped by user")
+        updater.stop()
+        logger.info("Background updater stopped")
     except Exception as e:
         logger.error(f"Server error: {e}")
+        updater.stop()
         import traceback
         traceback.print_exc()
         sys.exit(1)
