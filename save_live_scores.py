@@ -93,7 +93,12 @@ class LiveScoreSaver:
             return
         
         try:
-            conn = psycopg2.connect(**self.db_config)
+            # Use Unix socket with peer authentication (no password needed)
+            conn = psycopg2.connect(
+                dbname=self.db_config['dbname'],
+                user=self.db_config['user'],
+                host='',  # Empty host = Unix socket
+            )
             cur = conn.cursor()
             
             updates = 0
