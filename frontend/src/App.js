@@ -60,8 +60,15 @@ function App() {
         </main>
 
         <footer className="App-footer">
-          <p>H.C. Lombardo NFL Analytics Platform  2025</p>
-          <p className="footer-note">Production Environment | PWA Ready</p>
+          <p>H.C. Lombardo NFL Analytics Platform 2025</p>
+          <div className="footer-credits-combined">
+            <span>Developed by </span>
+            <a href="https://www.aprilsykes.com" target="_blank" rel="noopener noreferrer">
+              April V. Sykes
+            </a>
+            <span> • Built with assistance from GitHub Copilot</span>
+          </div>
+          <p className="footer-note">This is for educational purposes only</p>
         </footer>
       </div>
     </Router>
