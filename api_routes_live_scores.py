@@ -13,6 +13,7 @@ load_dotenv()
 # Team abbreviation mapping (ESPN to Database)
 TEAM_ABBR_MAP = {
     'LAR': 'LA',  # ESPN uses LAR, database uses LA for Rams
+    'WSH': 'WAS', # ESPN uses WSH, database uses WAS for Washington
 }
 
 def normalize_team_abbr(abbr):
