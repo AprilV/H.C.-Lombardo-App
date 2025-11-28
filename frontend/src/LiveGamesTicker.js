@@ -31,37 +31,43 @@ function LiveGamesTicker() {
   }, []);
 
   const handleMouseDown = (e) => {
+    e.preventDefault();
     setIsDragging(true);
     setIsPaused(true);
-    setStartX(e.pageX - scrollContainerRef.current.offsetLeft);
-    setScrollLeft(scrollContainerRef.current.scrollLeft);
+    const container = scrollContainerRef.current;
+    setStartX(e.pageX);
+    setScrollLeft(container.scrollLeft);
   };
 
   const handleMouseUp = () => {
     setIsDragging(false);
-    setTimeout(() => setIsPaused(false), 3000); // Resume auto-scroll after 3 seconds
+    setTimeout(() => setIsPaused(false), 3000);
   };
 
   const handleMouseMove = (e) => {
     if (!isDragging) return;
     e.preventDefault();
-    const x = e.pageX - scrollContainerRef.current.offsetLeft;
-    const walk = (x - startX) * 2; // Multiply by 2 for faster scroll
-    scrollContainerRef.current.scrollLeft = scrollLeft - walk;
+    const container = scrollContainerRef.current;
+    const x = e.pageX;
+    const walk = startX - x; // Drag distance
+    container.scrollLeft = scrollLeft + walk;
   };
 
   const handleTouchStart = (e) => {
     setIsDragging(true);
     setIsPaused(true);
-    setStartX(e.touches[0].pageX - scrollContainerRef.current.offsetLeft);
-    setScrollLeft(scrollContainerRef.current.scrollLeft);
+    const container = scrollContainerRef.current;
+    setStartX(e.touches[0].pageX);
+    setScrollLeft(container.scrollLeft);
   };
 
   const handleTouchMove = (e) => {
     if (!isDragging) return;
-    const x = e.touches[0].pageX - scrollContainerRef.current.offsetLeft;
-    const walk = (x - startX) * 2;
-    scrollContainerRef.current.scrollLeft = scrollLeft - walk;
+    e.preventDefault();
+    const container = scrollContainerRef.current;
+    const x = e.touches[0].pageX;
+    const walk = startX - x;
+    container.scrollLeft = scrollLeft + walk;
   };
 
   const handleTouchEnd = () => {
