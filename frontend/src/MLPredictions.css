@@ -1172,6 +1172,14 @@
   border: 2px solid rgba(251, 191, 36, 0.4);
 }
 
+.stat-box.value-play-stat {
+  border: 2px solid rgba(168, 85, 247, 0.4);
+}
+
+.stat-box.ai-vs-vegas-stat {
+  border: 2px solid rgba(59, 130, 246, 0.4);
+}
+
 .stat-icon {
   font-size: 2.5rem;
 }
@@ -1211,6 +1219,14 @@
   color: #ffa500;
   font-weight: 500;
   margin-left: 5px;
+}
+
+.stat-note {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  font-weight: 400;
+  display: block;
+  margin-top: 2px;
 }
 
 /* Actual Score Display on Cards */

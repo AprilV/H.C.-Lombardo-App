@@ -139,12 +139,12 @@ function MLPredictions() {
           <p className="predictions-subtitle">{season} Season - {predictions.length} Games</p>
         </div>
 
-        {/* Results Scorecard */}
+        {/* Results Scorecard - Always show, even for incomplete weeks */}
         {(() => {
           const finishedGames = predictions.filter(p => p.actual_home_score !== null && p.actual_home_score !== undefined);
-          if (finishedGames.length > 0) {
-            // Count AI correct predictions (winner picks)
-            const aiCorrect = finishedGames.filter(p => p.correct === true).length;
+          
+          // Count AI correct predictions (winner picks)
+          const aiCorrect = finishedGames.filter(p => p.correct === true).length;
             
             // Count AI spread coverage (favorite covered)
             let aiSpreadCovered = 0;
@@ -191,6 +191,62 @@ function MLPredictions() {
                 if (covered) vegasCovered++;
               }
             });
+            
+            // Count value plays (AI differs from Vegas by 3+ points)
+            const valuePlays = finishedGames.filter(p => 
+              p.spread_difference !== null && 
+              Math.abs(p.spread_difference) >= 3.0
+            );
+            let valuePlayWins = 0;
+            
+            valuePlays.forEach(p => {
+              const actualMargin = p.actual_home_score - p.actual_away_score;
+              const aiResult = actualMargin + p.ai_spread;
+              
+              if (aiResult !== 0) {
+                let aiCovered = false;
+                if (p.ai_spread < 0) {
+                  aiCovered = actualMargin > Math.abs(p.ai_spread);
+                } else {
+                  aiCovered = actualMargin < -Math.abs(p.ai_spread);
+                }
+                if (aiCovered) valuePlayWins++;
+              }
+            });
+            
+            // Count AI vs Vegas head-to-head
+            let aiBeatsVegas = 0;
+            let vegasBeatsAI = 0;
+            
+            finishedGames.forEach(p => {
+              const actualMargin = p.actual_home_score - p.actual_away_score;
+              
+              // Check AI spread coverage
+              const aiResult = actualMargin + p.ai_spread;
+              let aiCovered = false;
+              if (aiResult !== 0) {
+                if (p.ai_spread < 0) {
+                  aiCovered = actualMargin > Math.abs(p.ai_spread);
+                } else {
+                  aiCovered = actualMargin < -Math.abs(p.ai_spread);
+                }
+              }
+              
+              // Check Vegas spread coverage
+              const vegasResult = actualMargin + p.vegas_spread;
+              let vegasCovered = false;
+              if (vegasResult !== 0) {
+                if (p.vegas_spread < 0) {
+                  vegasCovered = actualMargin > Math.abs(p.vegas_spread);
+                } else {
+                  vegasCovered = actualMargin < -Math.abs(p.vegas_spread);
+                }
+              }
+              
+              // Compare (only count when one beat the other, not ties)
+              if (aiCovered && !vegasCovered) aiBeatsVegas++;
+              else if (!aiCovered && vegasCovered) vegasBeatsAI++;
+            });
 
             return (
               <div className="results-scorecard">
@@ -234,198 +290,34 @@ function MLPredictions() {
                       </div>
                     </div>
                   </div>
-                </div>
-              </div>
-            );
-          }
-          return null;
-        })()}
-
-        {/* Value Plays Tracker */}
-        {(() => {
-          const valuePlays = predictions.filter(p => 
-            p.spread_difference !== null && 
-            p.spread_difference !== undefined && 
-            Math.abs(p.spread_difference) >= 3.0
-          );
-          
-          if (valuePlays.length > 0) {
-            const finishedValuePlays = valuePlays.filter(p => p.actual_home_score !== null);
-            let valuePlayWins = 0;
-            
-            finishedValuePlays.forEach(p => {
-              const actualMargin = p.actual_home_score - p.actual_away_score;
-              const aiResult = actualMargin + p.ai_spread;
-              let aiCovered = false;
-              
-              if (aiResult !== 0) {
-                if (p.ai_spread < 0) {
-                  aiCovered = actualMargin > Math.abs(p.ai_spread);
-                } else {
-                  aiCovered = actualMargin < -Math.abs(p.ai_spread);
-                }
-              }
-              
-              if (aiCovered) valuePlayWins++;
-            });
-            
-            return (
-              <div className="value-plays-card">
-                <div className="value-plays-header">
-                  <div className="value-plays-title">💎 Value Plays Tracker</div>
-                  <div className="value-plays-subtitle">
-                    Games where AI differs from Vegas by 3+ points
-                  </div>
-                </div>
-                <div className="value-plays-stats">
-                  <div className="value-stat">
-                    <div className="value-stat-label">Total Value Plays</div>
-                    <div className="value-stat-number">{valuePlays.length}</div>
-                  </div>
-                  <div className="value-stat">
-                    <div className="value-stat-label">Completed</div>
-                    <div className="value-stat-number">{finishedValuePlays.length}</div>
-                  </div>
-                  {finishedValuePlays.length > 0 && (
-                    <div className="value-stat highlight">
-                      <div className="value-stat-label">Value Play Record</div>
-                      <div className="value-stat-number">
-                        {valuePlayWins}-{finishedValuePlays.length - valuePlayWins}
-                        <span className="value-stat-percent">
-                          ({((valuePlayWins / finishedValuePlays.length) * 100).toFixed(1)}%)
-                        </span>
+                  <div className="stat-box value-play-stat">
+                    <div className="stat-icon">💎</div>
+                    <div className="stat-content">
+                      <div className="stat-label">Value Play Record</div>
+                      <div className="stat-value">
+                        {valuePlayWins} / {valuePlays.length}
+                      </div>
+                      <div className="stat-percent">
+                        {valuePlays.length > 0 ? ((valuePlayWins / valuePlays.length) * 100).toFixed(1) : 0}% Hit
+                        <span className="stat-note"> (AI ≥3pts diff)</span>
                       </div>
                     </div>
-                  )}
-                </div>
-                <div className="value-plays-list">
-                  {valuePlays.map((p, idx) => {
-                    const isFinished = p.actual_home_score !== null;
-                    const diff = p.spread_difference;
-                    const aiMore = diff > 0 ? p.home_team : p.away_team;
-                    const vegasMore = diff > 0 ? p.away_team : p.home_team;
-                    
-                    let aiCovered = null;
-                    if (isFinished) {
-                      const actualMargin = p.actual_home_score - p.actual_away_score;
-                      const aiResult = actualMargin + p.ai_spread;
-                      if (aiResult !== 0) {
-                        if (p.ai_spread < 0) {
-                          aiCovered = actualMargin > Math.abs(p.ai_spread);
-                        } else {
-                          aiCovered = actualMargin < -Math.abs(p.ai_spread);
-                        }
-                      }
-                    }
-                    
-                    return (
-                      <div key={idx} className={`value-play-item ${isFinished ? 'finished' : ''}`}>
-                        <div className="value-play-matchup">
-                          {p.away_team} @ {p.home_team}
-                          {p.status === 'in_progress' && <span className="mini-live-badge">🔴 LIVE</span>}
-                          {isFinished && <span className="mini-final-badge">FINAL</span>}
-                        </div>
-                        <div className="value-play-diff">
-                          AI favors {aiMore} by {Math.abs(diff).toFixed(1)} pts more than Vegas
-                        </div>
-                        {isFinished && (
-                          <div className={`value-play-result ${aiCovered ? 'win' : 'loss'}`}>
-                            {aiCovered ? '✓ AI Covered' : '✗ AI Failed'}
-                          </div>
-                        )}
+                  </div>
+                  <div className="stat-box ai-vs-vegas-stat">
+                    <div className="stat-icon">⚔️</div>
+                    <div className="stat-content">
+                      <div className="stat-label">AI vs Vegas</div>
+                      <div className="stat-value">
+                        {aiBeatsVegas} - {vegasBeatsAI}
                       </div>
-                    );
-                  })}
+                      <div className="stat-percent">
+                        {aiBeatsVegas + vegasBeatsAI > 0 ? ((aiBeatsVegas / (aiBeatsVegas + vegasBeatsAI)) * 100).toFixed(1) : 0}% AI Wins
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             );
-          }
-          return null;
-        })()}
-
-        {/* AI vs Vegas Comparison */}
-        {(() => {
-          const finishedGames = predictions.filter(p => p.actual_home_score !== null);
-          
-          if (finishedGames.length > 0) {
-            let aiWins = 0;
-            let vegasWins = 0;
-            let ties = 0;
-            
-            finishedGames.forEach(p => {
-              const actualMargin = p.actual_home_score - p.actual_away_score;
-              
-              // Check AI spread coverage
-              const aiResult = actualMargin + p.ai_spread;
-              let aiCovered = false;
-              if (aiResult !== 0) {
-                if (p.ai_spread < 0) {
-                  aiCovered = actualMargin > Math.abs(p.ai_spread);
-                } else {
-                  aiCovered = actualMargin < -Math.abs(p.ai_spread);
-                }
-              }
-              
-              // Check Vegas spread coverage
-              const vegasResult = actualMargin + p.vegas_spread;
-              let vegasCovered = false;
-              if (vegasResult !== 0) {
-                if (p.vegas_spread < 0) {
-                  vegasCovered = actualMargin > Math.abs(p.vegas_spread);
-                } else {
-                  vegasCovered = actualMargin < -Math.abs(p.vegas_spread);
-                }
-              }
-              
-              // Compare
-              if (aiCovered && !vegasCovered) aiWins++;
-              else if (!aiCovered && vegasCovered) vegasWins++;
-              else if (aiCovered === vegasCovered) ties++;
-            });
-            
-            return (
-              <div className="ai-vegas-comparison">
-                <div className="comparison-header">
-                  <div className="comparison-title">🤖 vs 🎰 Head-to-Head Spread Performance</div>
-                  <div className="comparison-subtitle">
-                    Who's better at beating the spread?
-                  </div>
-                </div>
-                <div className="comparison-scoreboard">
-                  <div className="comparison-team ai-team">
-                    <div className="comparison-icon">🤖</div>
-                    <div className="comparison-name">AI Model</div>
-                    <div className="comparison-score">{aiWins}</div>
-                  </div>
-                  <div className="comparison-vs">
-                    <div className="vs-text">VS</div>
-                    <div className="ties-text">{ties} Ties</div>
-                  </div>
-                  <div className="comparison-team vegas-team">
-                    <div className="comparison-icon">🎰</div>
-                    <div className="comparison-name">Vegas Lines</div>
-                    <div className="comparison-score">{vegasWins}</div>
-                  </div>
-                </div>
-                <div className="comparison-insight">
-                  {aiWins > vegasWins ? (
-                    <div className="insight-message ai-winning">
-                      🎯 AI is outperforming Vegas this week by {aiWins - vegasWins} game{aiWins - vegasWins > 1 ? 's' : ''}!
-                    </div>
-                  ) : vegasWins > aiWins ? (
-                    <div className="insight-message vegas-winning">
-                      📊 Vegas has the edge this week by {vegasWins - aiWins} game{vegasWins - aiWins > 1 ? 's' : ''}.
-                    </div>
-                  ) : (
-                    <div className="insight-message tied">
-                      ⚖️ It's a tie! Both AI and Vegas are performing equally well.
-                    </div>
-                  )}
-                </div>
-              </div>
-            );
-          }
-          return null;
         })()}
 
         <div className="predictions-grid">
