@@ -127,10 +127,10 @@ function Homepage() {
       {/* Live Games Ticker */}
       <LiveGamesTicker />
 
-      <div className="homepage-header" style={{marginTop: '40px'}}>
+      <div className="homepage-header">
         <h2>🏈 2025 NFL Season Standings</h2>
         <p className="season-subtitle">Conference & Division Standings</p>
-        <p className="season-subtitle" style={{marginTop: '10px', fontSize: '0.9rem', color: '#a8d5ff'}}>
+        <p className="season-subtitle">
           💡 Click on any team to view detailed stats
         </p>
       </div>
