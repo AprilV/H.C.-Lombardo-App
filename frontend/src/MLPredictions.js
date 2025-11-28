@@ -373,7 +373,7 @@ function MLPredictions() {
                       <div className="stat-percent">
                         AI: {seasonStats ? seasonStats.ai_percentage : (aiBeatsVegas + vegasBeatsAI > 0 ? ((aiBeatsVegas / (aiBeatsVegas + vegasBeatsAI)) * 100).toFixed(1) : 0)}%
                       </div>
-                      <div className="stat-percent" style={{fontSize: '0.9rem', marginTop: '4px'}}>
+                      <div className="stat-percent">
                         Vegas: {seasonStats ? seasonStats.vegas_percentage : (aiBeatsVegas + vegasBeatsAI > 0 ? ((vegasBeatsAI / (aiBeatsVegas + vegasBeatsAI)) * 100).toFixed(1) : 0)}%
                       </div>
                     </div>
@@ -1162,7 +1162,7 @@ function MLPredictions() {
               <p><strong>System converts point differential into actual scores:</strong></p>
               
               <p><strong>Formula:</strong></p>
-              <div className="metric-note" style={{fontFamily: 'monospace', background: 'rgba(0,0,0,0.3)', padding: '15px', borderRadius: '8px'}}>
+              <div className="metric-note" style={{fontFamily: 'monospace', background: 'rgba(0,0,0,0.3)', borderRadius: '8px'}}>
                 Point Differential = +6.1 (Buffalo favored)<br/>
                 Vegas Total Line = 43.5 (expected combined points)<br/>
                 <br/>
@@ -1175,7 +1175,7 @@ function MLPredictions() {
                 <strong>Result: BUF 18.7 - HOU 24.8</strong>
               </div>
 
-              <p style={{marginTop: '15px'}}><strong>Why use Vegas total?</strong> Betting totals incorporate real-world factors (weather, injuries, pace of play) that pure stats might miss. Combining AI margin with Vegas total gives most realistic score prediction.</p>
+              <p><strong>Why use Vegas total?</strong> Betting totals incorporate real-world factors (weather, injuries, pace of play) that pure stats might miss. Combining AI margin with Vegas total gives most realistic score prediction.</p>
             </div>
           </div>
 
@@ -1194,7 +1194,7 @@ function MLPredictions() {
                 Difference = AI (-6.1) - Vegas (-6.0) = -0.1<br/>
               </div>
 
-              <p style={{marginTop: '15px'}}><strong>Interpreting spread difference:</strong></p>
+              <p><strong>Interpreting spread difference:</strong></p>
               <ul>
                 <li><strong>0-3 point difference:</strong> AI and Vegas agree (no value play badge)</li>
                 <li><strong>3+ point difference:</strong> Significant disagreement (💎 VALUE PLAY appears)</li>
@@ -1209,7 +1209,7 @@ function MLPredictions() {
                 → Potential betting opportunity on Detroit to cover spread
               </div>
 
-              <p style={{marginTop: '15px'}}><strong>⚠️ Important:</strong> Value plays are statistical insights, not guaranteed winners. They identify where AI's analysis differs from market consensus, which may indicate mispriced lines.</p>
+              <p><strong>⚠️ Important:</strong> Value plays are statistical insights, not guaranteed winners. They identify where AI's analysis differs from market consensus, which may indicate mispriced lines.</p>
             </div>
           </div>
 
@@ -1271,7 +1271,7 @@ function MLPredictions() {
                 <strong>What does MAE mean?</strong> Mean Absolute Error measures average distance between prediction and actual result. MAE of 10.35 means predictions are typically within 10-11 points of actual margin. Lower is better.
               </div>
 
-              <p style={{marginTop: '15px'}}><strong>Validation approach:</strong></p>
+              <p><strong>Validation approach:</strong></p>
               <ul>
                 <li>Trained on 1999-2023 games</li>
                 <li>Validated on unseen 2024 games</li>
