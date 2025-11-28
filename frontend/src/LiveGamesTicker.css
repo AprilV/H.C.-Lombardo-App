@@ -1,8 +1,8 @@
 .live-games-ticker {
   background: transparent;
-  border-radius: 12px;
-  padding: 15px;
-  margin-bottom: 25px;
+  border-radius: 8px;
+  padding: 8px;
+  margin-bottom: 15px;
   overflow: hidden;
 }
 
@@ -10,19 +10,19 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
 .ticker-label {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 16px;
+  gap: 6px;
+  font-size: 14px;
   font-weight: 700;
   color: #fff;
   text-transform: uppercase;
-  letter-spacing: 1.5px;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  letter-spacing: 1px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .ticker-controls {
@@ -34,10 +34,10 @@
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.3);
   color: #fff;
-  padding: 8px 16px;
-  border-radius: 6px;
+  padding: 6px 12px;
+  border-radius: 4px;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 13px;
   font-weight: 700;
   transition: all 0.3s ease;
 }
