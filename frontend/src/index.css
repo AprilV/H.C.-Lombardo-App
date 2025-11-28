@@ -1,10 +1,10 @@
 html {
-  font-size: 14px; /* Base font size reduction for ultrawide monitors */
+  font-size: 12px; /* Base font size reduction for large monitors */
 }
 
 @media (min-width: 2560px) {
   html {
-    font-size: 13px; /* Further reduction for 4K+ ultrawide */
+    font-size: 10px; /* Further reduction for ultrawide monitors like 3270px */
   }
 }
 
