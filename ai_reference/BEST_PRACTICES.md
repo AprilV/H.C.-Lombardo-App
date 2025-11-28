@@ -105,7 +105,8 @@ Step 5: ROLLBACK (if needed)
 ❌ Accept less than 100% test pass rate  
 ❌ Make production changes without backup  
 ❌ Skip documentation  
-❌ Assume it works without verification  
+❌ **Assume or guess - CHECK THE CODE FIRST!**  
+❌ **Check root CSS files (index.css, App.css) BEFORE component styles**  
 ❌ Leave production broken while debugging  
 ❌ Hard-code values that should be configurable  
 ❌ Commit without testing first  
@@ -149,6 +150,9 @@ Step 5: ROLLBACK (if needed)
 21. **"Keep important files visible - don't bury them."**
 22. **"Match structure: if frontend/ exists, create backend/."**
 23. **"Group by function: docs/, tests/, utilities/ not scattered."**
+24. **"NEVER GUESS OR ASSUME - CHECK THE ACTUAL CODE!"**
+25. **"For CSS issues: Check index.css and App.css FIRST before component CSS!"**
+26. **"Root causes are usually in root files - start there!"**
 
 ---
 
