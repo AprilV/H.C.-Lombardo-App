@@ -350,7 +350,7 @@
 /* Empty State */
 .empty-diff-state {
   text-align: center;
-  padding: 60px 20px;
+  padding: 30px 20px;
 }
 
 .empty-icon {
@@ -485,7 +485,7 @@
 
 @media (max-width: 768px) {
   .matchup-header h1 {
-    font-size: 2.2em;
+    font-size: 1.6em;
   }
   
   .team-card {
@@ -499,7 +499,7 @@
 
 @media (max-width: 480px) {
   .matchup-header h1 {
-    font-size: 1.8em;
+    font-size: 1.4em;
   }
   
   .team-card-header h2 {
