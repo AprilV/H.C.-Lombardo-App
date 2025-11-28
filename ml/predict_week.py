@@ -347,12 +347,18 @@ class WeeklyPredictor:
             result['game_date'] = str(game['game_date']) if pd.notna(game['game_date']) else None
             result['kickoff_time'] = str(game['kickoff_time_utc']) if pd.notna(game['kickoff_time_utc']) else None
             
-            # Add actual results if game was played
+            # Determine game status
             if pd.notna(game['home_score']) and pd.notna(game['away_score']):
+                # Game has been played (completed)
+                result['status'] = 'final'
                 result['actual_home_score'] = int(game['home_score'])
                 result['actual_away_score'] = int(game['away_score'])
                 result['actual_winner'] = game['home_team'] if game['home_score'] > game['away_score'] else game['away_team']
                 result['correct'] = result['predicted_winner'] == result['actual_winner']
+            else:
+                # Game not started yet - check if it's in progress or scheduled
+                # For now, mark as scheduled (live API will provide in_progress status)
+                result['status'] = 'scheduled'
             
             predictions.append(result)
             
@@ -407,15 +413,11 @@ class WeeklyPredictor:
         # Get all predictions for the week
         all_predictions = self.predict_week(season, week)
         
-        # Filter to only games that haven't been played yet (game_date >= today)
-        from datetime import date
-        today = str(date.today())
+        # Return ALL games (scheduled, in-progress, and completed)
+        # The frontend will handle filtering/display based on game status
+        print(f"✅ Generated {len(all_predictions)} predictions (all games for the week)")
         
-        upcoming_only = [p for p in all_predictions if p.get('game_date', '') >= today]
-        
-        print(f"✅ Filtered to {len(upcoming_only)} upcoming games (removed {len(all_predictions) - len(upcoming_only)} already played)")
-        
-        return upcoming_only
+        return all_predictions
 
 
 def main():

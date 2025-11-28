@@ -1288,6 +1288,28 @@
   box-shadow: 0 2px 8px rgba(74, 222, 128, 0.4);
 }
 
+/* LIVE Badge */
+.live-badge {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: #fff;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+  animation: pulse-live 2s ease-in-out infinite;
+}
+
+@keyframes pulse-live {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
 /* Result Indicators (Checkmarks) */
 .result-indicator {
   font-size: 1.5rem;
@@ -1417,6 +1439,253 @@
 .prediction-card.finished {
   border: 2px solid rgba(74, 222, 128, 0.4);
   box-shadow: 0 4px 20px rgba(74, 222, 128, 0.2);
+}
+
+/* Value Plays Card */
+.value-plays-card {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 30px;
+  border: 2px solid #9333ea;
+  box-shadow: 0 4px 20px rgba(147, 51, 234, 0.3);
+}
+
+.value-plays-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.value-plays-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #a855f7;
+  margin-bottom: 8px;
+}
+
+.value-plays-subtitle {
+  font-size: 0.9rem;
+  color: #94a3b8;
+}
+
+.value-plays-stats {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.value-stat {
+  background: rgba(147, 51, 234, 0.1);
+  border-radius: 8px;
+  padding: 16px 24px;
+  text-align: center;
+  min-width: 150px;
+}
+
+.value-stat.highlight {
+  background: rgba(168, 85, 247, 0.2);
+  border: 1px solid #a855f7;
+}
+
+.value-stat-label {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.value-stat-number {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #a855f7;
+}
+
+.value-stat-percent {
+  font-size: 1rem;
+  color: #cbd5e1;
+  margin-left: 8px;
+}
+
+.value-plays-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.value-play-item {
+  background: rgba(30, 41, 59, 0.6);
+  border-radius: 8px;
+  padding: 16px;
+  border-left: 4px solid #9333ea;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.value-play-item.finished {
+  border-left-color: #22c55e;
+}
+
+.value-play-matchup {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #e2e8f0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.mini-live-badge {
+  background: #ef4444;
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.mini-final-badge {
+  background: #22c55e;
+  color: #000;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.value-play-diff {
+  font-size: 0.9rem;
+  color: #a855f7;
+  font-style: italic;
+}
+
+.value-play-result {
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 4px 0;
+}
+
+.value-play-result.win {
+  color: #22c55e;
+}
+
+.value-play-result.loss {
+  color: #ef4444;
+}
+
+/* AI vs Vegas Comparison */
+.ai-vegas-comparison {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 30px;
+  border: 2px solid #3b82f6;
+  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+}
+
+.comparison-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.comparison-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #60a5fa;
+  margin-bottom: 8px;
+}
+
+.comparison-subtitle {
+  font-size: 0.9rem;
+  color: #94a3b8;
+}
+
+.comparison-scoreboard {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-bottom: 24px;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.comparison-team {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  min-width: 140px;
+}
+
+.comparison-icon {
+  font-size: 3rem;
+}
+
+.comparison-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #cbd5e1;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.comparison-score {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #60a5fa;
+}
+
+.ai-team .comparison-score {
+  color: #a855f7;
+}
+
+.vegas-team .comparison-score {
+  color: #f59e0b;
+}
+
+.comparison-vs {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.vs-text {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #64748b;
+}
+
+.ties-text {
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+.comparison-insight {
+  background: rgba(59, 130, 246, 0.1);
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+}
+
+.insight-message {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.insight-message.ai-winning {
+  color: #a855f7;
+}
+
+.insight-message.vegas-winning {
+  color: #f59e0b;
+}
+
+.insight-message.tied {
+  color: #64748b;
 }
 
 /* Responsive adjustments */
