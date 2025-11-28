@@ -13,13 +13,22 @@ import psycopg2
 from datetime import datetime, timedelta
 import time
 import sys
-from db_config import get_db_config
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 class LiveScoreSaver:
     """Saves live NFL scores and locks spreads before kickoff"""
     
     def __init__(self):
-        self.db_config = get_db_config()
+        self.db_config = {
+            'dbname': os.getenv('DB_NAME', 'postgres'),
+            'user': os.getenv('DB_USER', 'postgres'),
+            'password': os.getenv('DB_PASSWORD', ''),
+            'host': os.getenv('DB_HOST', 'localhost'),
+            'port': os.getenv('DB_PORT', '5432')
+        }
         
     def get_espn_scores(self):
         """Fetch current scores from ESPN API"""
