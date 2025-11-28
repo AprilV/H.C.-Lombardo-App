@@ -3,6 +3,18 @@ import './LiveGamesTicker.css';
 
 const API_URL = 'https://api.aprilsykes.dev';
 
+// Map team abbreviations to logo filenames
+const teamLogoMap = {
+  'WSH': 'was',  // Washington
+  'LAR': 'lar',  // LA Rams
+  'LAC': 'lac',  // LA Chargers
+  'LA': 'lar',   // LA fallback to Rams
+};
+
+const getTeamLogoName = (abbr) => {
+  return (teamLogoMap[abbr] || abbr).toLowerCase();
+};
+
 function LiveGamesTicker() {
   const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -184,7 +196,7 @@ function LiveGamesTicker() {
               <div className="ticker-matchup">
                 <div className={`ticker-team ${game.away_score > game.home_score && game.status === 'final' ? 'winner' : ''}`}>
                   <img 
-                    src={`/images/teams/${game.away_team.toLowerCase()}.png`} 
+                    src={`/images/teams/${getTeamLogoName(game.away_team)}.png`} 
                     alt={game.away_team}
                     className="team-logo"
                     onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }}
@@ -195,7 +207,7 @@ function LiveGamesTicker() {
                 <div className="ticker-vs">@</div>
                 <div className={`ticker-team ${game.home_score > game.away_score && game.status === 'final' ? 'winner' : ''}`}>
                   <img 
-                    src={`/images/teams/${game.home_team.toLowerCase()}.png`} 
+                    src={`/images/teams/${getTeamLogoName(game.home_team)}.png`} 
                     alt={game.home_team}
                     className="team-logo"
                     onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }}
