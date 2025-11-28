@@ -4,6 +4,18 @@ import './TeamStats.css';
 
 const API_URL = 'https://api.aprilsykes.dev';
 
+// Map team abbreviations to logo filenames
+const teamLogoMap = {
+  'WSH': 'was',  // Washington
+  'WAS': 'was',  // Washington (alternate)
+  'LAR': 'lar',  // LA Rams
+  'LAC': 'lac',  // LA Chargers
+};
+
+const getTeamLogoName = (abbr) => {
+  return (teamLogoMap[abbr] || abbr).toLowerCase();
+};
+
 function TeamStats() {
   const [searchParams] = useSearchParams();
   const [teams, setTeams] = useState([]);
@@ -198,7 +210,7 @@ function TeamStats() {
           <div className="results-card">
             <div className="team-header-large">
               <img 
-                src={`/images/teams/${teamDetails.abbreviation?.toLowerCase()}.png`}
+                src={`/images/teams/${getTeamLogoName(teamDetails.abbreviation)}.png`}
                 alt={`${teamDetails.name} logo`}
                 className="team-logo-large"
                 onError={(e) => {e.target.style.display='none'}}

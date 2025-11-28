@@ -5,6 +5,18 @@ import LiveGamesTicker from './LiveGamesTicker';
 
 const API_URL = 'https://api.aprilsykes.dev';
 
+// Map team abbreviations to logo filenames
+const teamLogoMap = {
+  'WSH': 'was',  // Washington
+  'WAS': 'was',  // Washington (alternate)
+  'LAR': 'lar',  // LA Rams
+  'LAC': 'lac',  // LA Chargers
+};
+
+const getTeamLogoName = (abbr) => {
+  return (teamLogoMap[abbr] || abbr).toLowerCase();
+};
+
 // NFL Divisions
 const NFL_STRUCTURE = {
   AFC: {
@@ -150,7 +162,7 @@ function Homepage() {
                           onClick={() => handleTeamClick(abbr)}
                         >
                           <img 
-                            src={`/images/teams/${abbr.toLowerCase()}.png`}
+                            src={`/images/teams/${getTeamLogoName(abbr)}.png`}
                             alt={team.team_name || team.team || abbr}
                             className="team-logo-small"
                             onError={(e) => {e.target.style.display='none'}}
