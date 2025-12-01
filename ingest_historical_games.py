@@ -50,9 +50,15 @@ def get_db_connection(schema_prefix: str = 'hcl_test') -> psycopg2.extensions.co
         psycopg2 connection object
     """
     import os
-    from dotenv import load_dotenv
     
-    load_dotenv()
+    # Only load .env file if environment variables aren't already set
+    # (GitHub Actions sets them directly, local development uses .env)
+    if not os.getenv('DB_HOST'):
+        try:
+            from dotenv import load_dotenv
+            load_dotenv()
+        except ImportError:
+            logger.warning("python-dotenv not installed, using environment variables only")
     
     try:
         conn = psycopg2.connect(
