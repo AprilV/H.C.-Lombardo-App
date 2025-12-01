@@ -1,11 +1,8 @@
-name: Update NFL 2025 Season Data
+name: NFL 2025 Data Update
 
 on:
   schedule:
-    # Run every Monday at 2 AM UTC (after weekend games)
     - cron: '0 2 * * 1'
-  
-  # Allow manual trigger
   workflow_dispatch:
 
 jobs:
@@ -17,18 +14,11 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: refs/heads/master
-          fetch-depth: 0
       
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
-      
-      - name: Debug - Show current commit
-        run: |
-          git log -1 --oneline
-          echo "Checking line 53 of ingest_historical_games.py:"
-          sed -n '50,60p' ingest_historical_games.py
       
       - name: Install dependencies
         run: |
@@ -61,7 +51,8 @@ jobs:
               database=os.environ['DB_NAME'],
               user=os.environ['DB_USER'],
               password=os.environ['DB_PASSWORD'],
-              port=os.environ['DB_PORT']
+              port=os.environ['DB_PORT'],
+              sslmode='require'
           )
           cur = conn.cursor()
           cur.execute('SELECT COUNT(*), MAX(week) FROM hcl.games WHERE season = 2025 AND home_score IS NOT NULL')
