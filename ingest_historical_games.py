@@ -61,12 +61,17 @@ def get_db_connection(schema_prefix: str = 'hcl_test') -> psycopg2.extensions.co
             logger.warning("python-dotenv not installed, using environment variables only")
     
     try:
+        # Check if connecting to Render (requires SSL)
+        db_host = os.getenv('DB_HOST', 'localhost')
+        is_render = 'render.com' in db_host
+        
         conn = psycopg2.connect(
-            host=os.getenv('DB_HOST', 'localhost'),
+            host=db_host,
             port=os.getenv('DB_PORT', '5432'),
             database=os.getenv('DB_NAME', 'nfl_analytics'),
             user=os.getenv('DB_USER', 'postgres'),
-            password=os.getenv('DB_PASSWORD')
+            password=os.getenv('DB_PASSWORD'),
+            sslmode='require' if is_render else 'prefer'
         )
         logger.info(f"Connected to database: {os.getenv('DB_NAME')}")
         return conn
