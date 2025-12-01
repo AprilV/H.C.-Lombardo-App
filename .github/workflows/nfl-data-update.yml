@@ -19,7 +19,8 @@ jobs:
       
       - name: Update 2025 NFL data on EC2
         run: |
-          ssh -i ~/.ssh/ec2_key.pem -o ConnectTimeout=10 ubuntu@34.198.25.249 << 'EOF'
+          ssh -i ~/.ssh/ec2_key.pem -o ConnectTimeout=10 -o StrictHostKeyChecking=no ubuntu@34.198.25.249 << 'EOF'
+            set -e
             cd ~/H.C.-Lombardo-App
             source venv/bin/activate
             python ingest_historical_games.py --production --seasons 2025
@@ -27,7 +28,8 @@ jobs:
       
       - name: Verify update
         run: |
-          ssh -i ~/.ssh/ec2_key.pem -o ConnectTimeout=10 ubuntu@34.198.25.249 << 'EOF'
+          ssh -i ~/.ssh/ec2_key.pem -o ConnectTimeout=10 -o StrictHostKeyChecking=no ubuntu@34.198.25.249 << 'EOF'
+            set -e
             cd ~/H.C.-Lombardo-App
             source venv/bin/activate
             python -c "
