@@ -13,6 +13,12 @@ jobs:
       - name: Checkout latest code
         uses: actions/checkout@v4
       
+      - name: Show current commit
+        run: |
+          git log -1 --oneline
+          echo "File modified time:"
+          stat ingest_historical_games.py | grep Modify || ls -l ingest_historical_games.py
+      
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -50,7 +56,8 @@ jobs:
               user=os.environ['DB_USER'],
               password=os.environ['DB_PASSWORD'],
               port=os.environ['DB_PORT'],
-              sslmode='require'
+              sslmode='require',
+              gssencmode='disable'
           )
           cur = conn.cursor()
           cur.execute('SELECT COUNT(*), MAX(week) FROM hcl.games WHERE season = 2025 AND home_score IS NOT NULL')
