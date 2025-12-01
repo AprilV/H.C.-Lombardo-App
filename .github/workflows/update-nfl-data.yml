@@ -24,6 +24,12 @@ jobs:
         with:
           python-version: '3.11'
       
+      - name: Debug - Show current commit
+        run: |
+          git log -1 --oneline
+          echo "Checking line 53 of ingest_historical_games.py:"
+          sed -n '50,60p' ingest_historical_games.py
+      
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
