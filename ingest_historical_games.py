@@ -61,17 +61,13 @@ def get_db_connection(schema_prefix: str = 'hcl_test') -> psycopg2.extensions.co
             logger.warning("python-dotenv not installed, using environment variables only")
     
     try:
-        # Render database requires disabling GSS encryption to avoid protocol negotiation issues
-        # See: https://stackoverflow.com/questions/59190010/psycopg2-operationalerror-ssl-connection-has-been-closed-unexpectedly
+        # Connect to EC2 PostgreSQL database
         conn = psycopg2.connect(
             host=os.getenv('DB_HOST', 'localhost'),
             port=os.getenv('DB_PORT', '5432'),
             database=os.getenv('DB_NAME', 'nfl_analytics'),
             user=os.getenv('DB_USER', 'postgres'),
-            password=os.getenv('DB_PASSWORD'),
-            sslmode='require',
-            gssencmode='disable',
-            connect_timeout=10
+            password=os.getenv('DB_PASSWORD')
         )
         logger.info(f"Connected to database: {os.getenv('DB_NAME')}")
         return conn
