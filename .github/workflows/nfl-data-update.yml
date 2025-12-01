@@ -13,11 +13,13 @@ jobs:
       - name: Checkout latest code
         uses: actions/checkout@v4
       
-      - name: Show current commit
+      - name: Verify code has gssencmode fix
         run: |
           git log -1 --oneline
-          echo "File modified time:"
-          stat ingest_historical_games.py | grep Modify || ls -l ingest_historical_games.py
+          echo "Checking for gssencmode in ingest_historical_games.py:"
+          grep -A 2 "gssencmode" ingest_historical_games.py || echo "ERROR: gssencmode NOT FOUND!"
+          echo "Full connection block:"
+          grep -A 10 "psycopg2.connect" ingest_historical_games.py | head -15
       
       - name: Set up Python
         uses: actions/setup-python@v4
