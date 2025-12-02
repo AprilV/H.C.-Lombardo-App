@@ -40,8 +40,17 @@ def main():
     # Get 2025 play-by-play data
     print("\n📥 Downloading 2025 play-by-play data from nflverse...")
     print("   (This may take 1-2 minutes)...")
-    pbp = nfl.import_pbp_data([2025])
-    print(f"   ✅ Downloaded {len(pbp):,} plays")
+    try:
+        pbp = nfl.import_pbp_data([2025])
+        print(f"   ✅ Downloaded {len(pbp):,} plays")
+    except Exception as e:
+        print(f"   ❌ Failed to download play-by-play data: {str(e)[:100]}")
+        print("   ⚠️  Play-by-play data may not be available yet for 2025 season")
+        print("   ℹ️  This is normal if games just finished - nflverse updates within 24-48 hours")
+        print("   🔄 Exiting gracefully - will retry on next run")
+        cur.close()
+        conn.close()
+        return
     
     # Get all games from database
     print("\n📋 Getting 2025 games from database...")
