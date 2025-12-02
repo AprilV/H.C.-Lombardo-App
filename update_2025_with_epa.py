@@ -11,9 +11,14 @@ import nfl_data_py as nfl
 import pandas as pd
 from datetime import datetime
 import os
-from dotenv import load_dotenv
 
-load_dotenv()
+# Only load .env if environment variables aren't already set
+if not os.getenv('DB_HOST'):
+    try:
+        from dotenv import load_dotenv
+        load_dotenv()
+    except ImportError:
+        print("Warning: python-dotenv not installed, using environment variables only")
 
 def main():
     print("\n" + "="*80)
