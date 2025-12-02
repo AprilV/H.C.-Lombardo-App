@@ -389,7 +389,14 @@ def load_team_game_stats(conn, seasons: List[int], schema: str = 'hcl_test') -> 
     try:
         # Fetch play-by-play data from nflverse
         logger.info("Fetching play-by-play data from nflverse... (this may take a few minutes)")
-        pbp_data = nfl.import_pbp_data(seasons)
+        import traceback
+        try:
+            pbp_data = nfl.import_pbp_data(seasons)
+        except Exception as pbp_error:
+            logger.error(f"PBP import error: {pbp_error}")
+            logger.error("Full traceback:")
+            logger.error(traceback.format_exc())
+            raise
         logger.info(f"Fetched {len(pbp_data)} plays")
         
         # Get unique games
