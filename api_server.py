@@ -3,7 +3,7 @@ H.C. Lombardo NFL Analytics - Production API Server
 Flask + PostgreSQL + CORS for React frontend
 Serves both API endpoints and production React build
 """
-from flask import Flask, jsonify, send_from_directory
+from flask import Flask, jsonify, send_from_directory, request
 from flask_cors import CORS
 import psycopg2
 import sys
@@ -202,6 +202,129 @@ def get_team_by_abbr(abbreviation):
         logger.error(f"Failed to fetch team {abbreviation}: {e}")
         return jsonify({
             "error": str(e)
+        }), 500
+
+@app.route('/api/game-statistics')
+def get_game_statistics():
+    """Get game statistics from team_game_stats table"""
+    try:
+        # Get query parameters
+        season = request.args.get('season', type=int)
+        week = request.args.get('week', type=int)
+        team = request.args.get('team')
+        game_id = request.args.get('game_id')
+        limit = request.args.get('limit', default=100, type=int)
+        
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # Build query based on filters
+        query = """
+            SELECT 
+                game_id, team, opponent, is_home, season, week,
+                points, touchdowns, field_goals_made, field_goals_att,
+                total_yards, passing_yards, rushing_yards, plays, yards_per_play,
+                completions, passing_att, completion_pct, passing_tds, interceptions,
+                sacks_taken, sack_yards_lost, qb_rating,
+                rushing_att, yards_per_carry, rushing_tds,
+                third_down_conv, third_down_att, third_down_pct,
+                fourth_down_conv, fourth_down_att, fourth_down_pct,
+                red_zone_conv, red_zone_att, red_zone_pct,
+                turnovers, fumbles_lost, penalties, penalty_yards,
+                time_of_possession_sec, time_of_possession_pct,
+                result, epa_per_play, success_rate, total_epa
+            FROM hcl.team_game_stats
+            WHERE 1=1
+        """
+        params = []
+        
+        if season:
+            query += " AND season = %s"
+            params.append(season)
+        if week:
+            query += " AND week = %s"
+            params.append(week)
+        if team:
+            query += " AND UPPER(team) = UPPER(%s)"
+            params.append(team)
+        if game_id:
+            query += " AND game_id = %s"
+            params.append(game_id)
+            
+        query += " ORDER BY season DESC, week DESC, game_id LIMIT %s"
+        params.append(limit)
+        
+        cursor.execute(query, params)
+        stats = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        
+        stats_list = []
+        for stat in stats:
+            stats_list.append({
+                "game_id": stat[0],
+                "team": stat[1],
+                "opponent": stat[2],
+                "is_home": stat[3],
+                "season": stat[4],
+                "week": stat[5],
+                "points": stat[6],
+                "touchdowns": stat[7],
+                "field_goals_made": stat[8],
+                "field_goals_att": stat[9],
+                "total_yards": stat[10],
+                "passing_yards": stat[11],
+                "rushing_yards": stat[12],
+                "plays": stat[13],
+                "yards_per_play": float(stat[14]) if stat[14] is not None else None,
+                "completions": stat[15],
+                "passing_att": stat[16],
+                "completion_pct": float(stat[17]) if stat[17] is not None else None,
+                "passing_tds": stat[18],
+                "interceptions": stat[19],
+                "sacks_taken": stat[20],
+                "sack_yards_lost": stat[21],
+                "qb_rating": float(stat[22]) if stat[22] is not None else None,
+                "rushing_att": stat[23],
+                "yards_per_carry": float(stat[24]) if stat[24] is not None else None,
+                "rushing_tds": stat[25],
+                "third_down_conv": stat[26],
+                "third_down_att": stat[27],
+                "third_down_pct": float(stat[28]) if stat[28] is not None else None,
+                "fourth_down_conv": stat[29],
+                "fourth_down_att": stat[30],
+                "fourth_down_pct": float(stat[31]) if stat[31] is not None else None,
+                "red_zone_conv": stat[32],
+                "red_zone_att": stat[33],
+                "red_zone_pct": float(stat[34]) if stat[34] is not None else None,
+                "turnovers": stat[35],
+                "fumbles_lost": stat[36],
+                "penalties": stat[37],
+                "penalty_yards": stat[38],
+                "time_of_possession_sec": stat[39],
+                "time_of_possession_pct": float(stat[40]) if stat[40] is not None else None,
+                "result": stat[41],
+                "epa_per_play": float(stat[42]) if stat[42] is not None else None,
+                "success_rate": float(stat[43]) if stat[43] is not None else None,
+                "total_epa": float(stat[44]) if stat[44] is not None else None
+            })
+        
+        logger.info(f"Retrieved {len(stats_list)} game statistics")
+        return jsonify({
+            "count": len(stats_list),
+            "statistics": stats_list,
+            "filters": {
+                "season": season,
+                "week": week,
+                "team": team,
+                "game_id": game_id
+            }
+        })
+    except Exception as e:
+        logger.error(f"Failed to fetch game statistics: {e}")
+        return jsonify({
+            "error": str(e),
+            "message": "Failed to fetch game statistics"
         }), 500
 
 def run_server(host='127.0.0.1', port=5000, debug=False):
