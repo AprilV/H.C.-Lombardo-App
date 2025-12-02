@@ -29,6 +29,17 @@ jobs:
             exit 1
           }
       
+      - name: Update Python packages on EC2
+        run: |
+          ssh -i ~/.ssh/ec2_key.pem \
+            -o ConnectTimeout=10 \
+            -o StrictHostKeyChecking=no \
+            -o BatchMode=yes \
+            ubuntu@34.198.25.249 \
+            'cd /home/ubuntu/H.C.-Lombardo-App && source venv/bin/activate && pip install --upgrade nfl-data-py pandas' || {
+              echo "⚠️ Package update failed - continuing anyway"
+            }
+      
       - name: Update 2025 NFL data on EC2
         run: |
           ssh -i ~/.ssh/ec2_key.pem \
