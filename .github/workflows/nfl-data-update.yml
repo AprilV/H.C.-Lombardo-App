@@ -19,8 +19,24 @@ jobs:
       
       - name: Update 2025 NFL data on EC2
         run: |
-          ssh -i ~/.ssh/ec2_key.pem -o ConnectTimeout=10 -o StrictHostKeyChecking=no ubuntu@34.198.25.249 'cd ~/H.C.-Lombardo-App && source venv/bin/activate && python ingest_historical_games.py --production --seasons 2025'
+          ssh -i ~/.ssh/ec2_key.pem \
+            -o ConnectTimeout=10 \
+            -o StrictHostKeyChecking=no \
+            -o BatchMode=yes \
+            ubuntu@34.198.25.249 \
+            'cd /home/ubuntu/H.C.-Lombardo-App && source venv/bin/activate && python ingest_historical_games.py --production --seasons 2025' || {
+              echo "❌ SSH command failed - workflow stopped"
+              exit 1
+            }
       
       - name: Verify update
         run: |
-          ssh -i ~/.ssh/ec2_key.pem -o ConnectTimeout=10 -o StrictHostKeyChecking=no ubuntu@34.198.25.249 "cd ~/H.C.-Lombardo-App && source venv/bin/activate && python -c 'import psycopg2; conn = psycopg2.connect(host=\"localhost\", database=\"nfl_analytics\", user=\"nfl_user\", password=\"nfl2024\", port=5432); cur = conn.cursor(); cur.execute(\"SELECT COUNT(*), MAX(week) FROM hcl.games WHERE season = 2025 AND home_score IS NOT NULL\"); count, max_week = cur.fetchone(); print(f\"✅ 2025 Season: {count} completed games through Week {max_week}\"); conn.close()'"
+          ssh -i ~/.ssh/ec2_key.pem \
+            -o ConnectTimeout=10 \
+            -o StrictHostKeyChecking=no \
+            -o BatchMode=yes \
+            ubuntu@34.198.25.249 \
+            'cd /home/ubuntu/H.C.-Lombardo-App && source venv/bin/activate && python -c "import psycopg2; conn = psycopg2.connect(host=\"localhost\", database=\"nfl_analytics\", user=\"nfl_user\", password=\"nfl2024\", port=5432); cur = conn.cursor(); cur.execute(\"SELECT COUNT(*), MAX(week) FROM hcl.games WHERE season = 2025 AND home_score IS NOT NULL\"); count, max_week = cur.fetchone(); print(f\"✅ 2025 Season: {count} completed games through Week {max_week}\"); conn.close()"' || {
+              echo "❌ Verification failed"
+              exit 1
+            }
