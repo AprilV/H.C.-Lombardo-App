@@ -549,6 +549,89 @@ def load_team_game_stats(conn, seasons: List[int], schema: str = 'hcl_test') -> 
         raise
 
 
+def load_team_game_stats_simple(conn, seasons: List[int], schema: str = 'hcl_test') -> int:
+    """
+    Load basic team-game stats from games table (simplified version without pbp data).
+    
+    Args:
+        conn: Database connection
+        seasons: List of seasons to load
+        schema: Database schema
+        
+    Returns:
+        Number of team-game records inserted
+    """
+    logger.info(f"Loading team-game stats (simple) for seasons: {seasons}")
+    
+    try:
+        with conn.cursor() as cur:
+            # Insert home team stats
+            cur.execute(f"""
+                INSERT INTO {schema}.team_game_stats 
+                (game_id, team, opponent, is_home, season, week, points, result, created_at, updated_at)
+                SELECT 
+                    game_id,
+                    home_team,
+                    away_team,
+                    true,
+                    season,
+                    week,
+                    home_score,
+                    CASE 
+                        WHEN home_score > away_score THEN 'W'
+                        WHEN home_score < away_score THEN 'L'
+                        ELSE 'T'
+                    END,
+                    NOW(),
+                    NOW()
+                FROM {schema}.games
+                WHERE season = ANY(%s) AND home_score IS NOT NULL
+                ON CONFLICT (game_id, team) DO UPDATE SET
+                    points = EXCLUDED.points,
+                    result = EXCLUDED.result,
+                    updated_at = NOW()
+            """, (seasons,))
+            home_count = cur.rowcount
+            
+            # Insert away team stats
+            cur.execute(f"""
+                INSERT INTO {schema}.team_game_stats 
+                (game_id, team, opponent, is_home, season, week, points, result, created_at, updated_at)
+                SELECT 
+                    game_id,
+                    away_team,
+                    home_team,
+                    false,
+                    season,
+                    week,
+                    away_score,
+                    CASE 
+                        WHEN away_score > home_score THEN 'W'
+                        WHEN away_score < home_score THEN 'L'
+                        ELSE 'T'
+                    END,
+                    NOW(),
+                    NOW()
+                FROM {schema}.games
+                WHERE season = ANY(%s) AND away_score IS NOT NULL
+                ON CONFLICT (game_id, team) DO UPDATE SET
+                    points = EXCLUDED.points,
+                    result = EXCLUDED.result,
+                    updated_at = NOW()
+            """, (seasons,))
+            away_count = cur.rowcount
+            
+            conn.commit()
+            total = home_count + away_count
+            logger.info(f"Inserted {total} team-game records into {schema}.team_game_stats")
+            return total
+            
+    except Exception as e:
+        logger.error(f"Failed to load team-game stats: {e}")
+        conn.rollback()
+        raise
+
+
 def refresh_views(conn, schema: str = 'hcl_test'):
     """
     Refresh materialized views after data load.
@@ -654,10 +737,14 @@ def main():
         else:
             logger.info("Skipped schedule loading")
         
-        # Load team-game statistics
+        # Load team-game statistics (using simple method from games table)
         if not args.skip_stats:
-            stats_loaded = load_team_game_stats(conn, args.seasons, schema)
-            logger.info(f"✓ Loaded {stats_loaded} team-game records")
+            try:
+                stats_loaded = load_team_game_stats_simple(conn, args.seasons, schema)
+                logger.info(f"✓ Loaded {stats_loaded} team-game records")
+            except Exception as e:
+                logger.warning(f"Stats loading failed: {e}")
+                logger.info("Continuing without team stats...")
         else:
             logger.info("Skipped stats loading")
         
