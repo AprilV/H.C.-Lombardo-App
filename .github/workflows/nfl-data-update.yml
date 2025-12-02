@@ -15,7 +15,19 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/ec2_key.pem
           chmod 600 ~/.ssh/ec2_key.pem
+          # Verify key file was created and has content
+          if [ ! -s ~/.ssh/ec2_key.pem ]; then
+            echo "❌ ERROR: SSH key file is empty or missing!"
+            exit 1
+          fi
+          echo "✅ SSH key file created ($(wc -l < ~/.ssh/ec2_key.pem) lines)"
           ssh-keyscan -H 34.198.25.249 >> ~/.ssh/known_hosts
+          # Test SSH connection
+          echo "🔍 Testing SSH connection..."
+          ssh -i ~/.ssh/ec2_key.pem -o ConnectTimeout=10 -o StrictHostKeyChecking=no -v ubuntu@34.198.25.249 'echo "SSH connection successful"' || {
+            echo "❌ ERROR: SSH connection test failed!"
+            exit 1
+          }
       
       - name: Update 2025 NFL data on EC2
         run: |
