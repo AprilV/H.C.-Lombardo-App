@@ -1,4 +1,11 @@
-# Railway Dockerfile for H.C. Lombardo App
+# OBSOLETE: This Dockerfile is not currently used
+# 
+# Current deployment:
+# - Frontend: AWS Amplify (automatic builds from GitHub)
+# - Backend: Direct deployment on EC2 via SSH
+#
+# This file is kept for reference in case of future containerization
+
 FROM python:3.10-slim
 
 # Install Node.js

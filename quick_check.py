@@ -1,10 +1,15 @@
 import psycopg2
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 conn = psycopg2.connect(
-    dbname='nfl_analytics',
-    user='nfl_user', 
-    password='rzkKyzQq9pTas14pXDJU3fm8cCZObAh5',
-    host='dpg-d4j30ah5pdvs739551m0-a.oregon-postgres.render.com'
+    host=os.getenv('DB_HOST', 'localhost'),
+    port=os.getenv('DB_PORT', '5432'),
+    database=os.getenv('DB_NAME', 'nfl_analytics'),
+    user=os.getenv('DB_USER', 'postgres'),
+    password=os.getenv('DB_PASSWORD')
 )
 cur = conn.cursor()
 
@@ -16,7 +21,7 @@ cur.execute("""
 """)
 cols = [r[0] for r in cur.fetchall()]
 
-print(f"\n✅ RENDER team_game_stats has {len(cols)} columns\n")
+print(f"\n✅ team_game_stats has {len(cols)} columns\n")
 
 epa_cols = [c for c in cols if 'epa' in c.lower() or 'cpoe' in c.lower() or 'wpa' in c.lower()]
 print(f"EPA-related columns: {epa_cols if epa_cols else '❌ NONE!'}\n")

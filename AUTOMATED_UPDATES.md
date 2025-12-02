@@ -1,19 +1,33 @@
 # Automated NFL Data Updates
 
 ## Overview
-The H.C. Lombardo App now has **automated weekly updates** for the 2025 NFL season using GitHub Actions.
+The H.C. Lombardo App has **automated weekly updates** for the 2025 NFL season using GitHub Actions.
 
-## How It Works
+## Architecture
 
-### Data Structure
-- **Historical Data (1999-2024)**: Static, loaded once, never changes
-- **Current Season (2025)**: Updates weekly with latest games and EPA calculations
+### Database Location
+- **Production**: PostgreSQL 14 on AWS EC2 (localhost)
+- **Host**: localhost (internal to EC2)
+- **External IP**: 34.198.25.249 (SSH only)
+- **Database**: nfl_analytics
+- **Schema**: hcl
+- **User**: nfl_user / nfl2024
 
-### Update Schedule
+### Update Mechanism
+GitHub Actions workflow:
+1. SSH into EC2 instance (ubuntu@34.198.25.249)
+2. Navigate to `~/H.C.-Lombardo-App`
+3. Activate Python virtual environment
+4. Run `python ingest_historical_games.py --production --seasons 2025`
+5. Script connects to localhost PostgreSQL
+6. Downloads latest nflverse data
+7. Updates hcl.games and hcl.team_game_stats tables
+
+## Update Schedule
 - **Automatic**: Every Monday at 2 AM UTC (after weekend games)
 - **Manual**: Can be triggered anytime from GitHub Actions tab
 
-### What Gets Updated
+## What Gets Updated
 1. **New 2025 games** from nflverse (schedules, scores, betting lines)
 2. **EPA statistics** calculated from play-by-play data:
    - epa_per_play (offensive efficiency)
@@ -21,66 +35,65 @@ The H.C. Lombardo App now has **automated weekly updates** for the 2025 NFL seas
    - success_rate (down/distance context)
    - explosive_play_pct
    - And 10+ other advanced metrics
-
-3. **Team performance stats**:
-   - Points, yards, turnovers
-   - Third down conversions
-   - Red zone efficiency
-   - Time of possession
+3. **Team performance stats**: Points, yards, turnovers, third down conversions, etc.
 
 ## Setup Instructions
 
-### 1. Add Secrets to GitHub Repository
+### 1. Add SSH Key to GitHub Secrets
 
 Go to your repository: **Settings → Secrets and variables → Actions → New repository secret**
 
-Add these 4 secrets:
+Add secret:
 
 | Secret Name | Value |
 |------------|-------|
-| `RENDER_DB_HOST` | `dpg-d4j30ah5pdvs739551m0-a.oregon-postgres.render.com` |
-| `RENDER_DB_NAME` | `nfl_analytics` |
-| `RENDER_DB_USER` | `nfl_user` |
-| `RENDER_DB_PASSWORD` | `rzkKyzQq9pTas14pXDJU3fm8cCZObAh5` |
+| `EC2_SSH_KEY` | Contents of `hc-lombardo-key.pem` private key file |
 
 ### 2. Enable GitHub Actions
 
 1. Go to **Actions** tab in your GitHub repository
 2. If disabled, click **"I understand my workflows, go ahead and enable them"**
-3. You should see the workflow: **"Update NFL 2025 Season Data"**
+3. You should see the workflow: **"NFL 2025 Data Update"**
 
 ### 3. Test Manual Run
 
-1. Go to **Actions** → **Update NFL 2025 Season Data**
+1. Go to **Actions** → **NFL 2025 Data Update**
 2. Click **"Run workflow"** dropdown
 3. Click green **"Run workflow"** button
 4. Watch it run (~5-10 minutes)
 
-## Manual Updates (If Needed)
-
-If you need to update data immediately (not wait for Monday):
+## Manual Updates
 
 ### Option A: Use GitHub Actions UI
 1. Go to Actions tab
-2. Select "Update NFL 2025 Season Data"
+2. Select "NFL 2025 Data Update"
 3. Click "Run workflow"
 
-### Option B: Run Locally
+### Option B: SSH to EC2 and Run Manually
 ```bash
-# Set environment variables to point to Render
-export DB_HOST=dpg-d4j30ah5pdvs739551m0-a.oregon-postgres.render.com
-export DB_NAME=nfl_analytics
-export DB_USER=nfl_user
-export DB_PASSWORD=rzkKyzQq9pTas14pXDJU3fm8cCZObAh5
-export DB_PORT=5432
+# SSH to EC2
+ssh -i ~/.ssh/hc-lombardo-key.pem ubuntu@34.198.25.249
 
-# Run the update
+# Navigate to app directory
+cd ~/H.C.-Lombardo-App
+
+# Activate virtual environment
+source venv/bin/activate
+
+# Run update script
 python ingest_historical_games.py --production --seasons 2025
 ```
 
-Or use the wrapper script:
+### Option C: Run Locally (for testing)
 ```bash
-python load_2025_to_render_with_epa.py
+# Make sure .env file has correct local credentials:
+# DB_HOST=localhost
+# DB_NAME=nfl_analytics
+# DB_USER=postgres
+# DB_PASSWORD=aprilv120
+
+# Run the update
+python ingest_historical_games.py --production --seasons 2025
 ```
 
 ## Monitoring Updates
@@ -93,37 +106,32 @@ Visit your app and check:
 
 ### View Update Logs
 1. Go to **Actions** tab
-2. Click on latest **"Update NFL 2025 Season Data"** run
-3. Expand **"Update 2025 season data"** step
-4. See detailed logs of what was updated
+2. Click on latest **"NFL 2025 Data Update"** run
+3. Expand steps to see detailed logs
 
-### Verify Database
-Run this to check what's in Render database:
+### Verify Database (from EC2)
 ```bash
-python -c "
-import psycopg2
-conn = psycopg2.connect('postgresql://nfl_user:rzkKyzQq9pTas14pXDJU3fm8cCZObAh5@dpg-d4j30ah5pdvs739551m0-a.oregon-postgres.render.com/nfl_analytics')
-cur = conn.cursor()
-cur.execute('SELECT COUNT(*), MAX(week) FROM hcl.games WHERE season = 2025 AND home_score IS NOT NULL')
-count, max_week = cur.fetchone()
-print(f'2025 Season: {count} completed games through Week {max_week}')
-conn.close()
-"
+ssh -i ~/.ssh/hc-lombardo-key.pem ubuntu@34.198.25.249
+psql -U nfl_user -h localhost -d nfl_analytics << 'EOF'
+SELECT COUNT(*), MAX(week), MAX(game_date) 
+FROM hcl.games 
+WHERE season = 2025 AND home_score IS NOT NULL;
+EOF
 ```
 
 ## Troubleshooting
 
 ### Update Failed
 1. Check GitHub Actions logs for errors
-2. Verify secrets are set correctly
-3. Make sure Render database is accessible
-4. Try manual run: `python load_2025_to_render_with_epa.py`
+2. Verify EC2_SSH_KEY secret is set correctly
+3. Test SSH connection: `ssh -i ~/.ssh/hc-lombardo-key.pem ubuntu@34.198.25.249`
+4. Try manual run from EC2
 
 ### Website Not Showing New Data
 1. Hard refresh browser (Ctrl+Shift+R)
-2. Check Render logs: https://dashboard.render.com → h-c-lombardo-app → Logs
-3. Verify API working: https://h-c-lombardo-app.onrender.com/api/teams
-4. Restart Render service if needed
+2. Check API health: https://api.aprilsykes.dev/health
+3. Verify database on EC2 has latest data
+4. Restart Gunicorn: `pkill -9 gunicorn && cd ~/H.C.-Lombardo-App && source venv/bin/activate && nohup gunicorn --bind 0.0.0.0:5000 --workers 2 --timeout 120 api_server:app > gunicorn.log 2>&1 &`
 
 ### Missing EPA Stats
 If team_game_stats has games but no EPA data:
@@ -138,19 +146,15 @@ If team_game_stats has games but no EPA data:
 - **This workflow uses**: ~10 minutes/week = 40 min/month
 - **Plenty of headroom!**
 
-### Render Database
-- **Free tier**: Expires after 90 days (Feb 24, 2026)
-- **Workaround**: Export data before expiration, create new free database
-- **Or upgrade**: $7/month for permanent database
+### AWS EC2
+- **Instance**: t3.micro (free tier eligible)
+- **Cost**: ~$8/month if not on free tier
+- **Storage**: Standard EBS volume
 
 ## Future Enhancements
 
 1. **Notifications**: Add Slack/Discord webhook when updates complete
 2. **Error alerts**: Email if update fails
 3. **Multi-season**: Extend to update current season dynamically (2026, 2027, etc.)
-4. **Backup automation**: Weekly database exports to GitHub
+4. **Backup automation**: Weekly database exports to S3
 5. **Performance tracking**: Log how long updates take
-
-## Questions?
-
-Check the logs or run manual update to debug issues.

@@ -1,8 +1,6 @@
 #!/bin/bash
-# Railway startup script
+# EC2 Production Startup Script
+# This script starts the Gunicorn API server on EC2
 
-# Run database setup (ignore errors)
-python setup_render_db.py || true
-
-# Start gunicorn
-exec gunicorn api_server:app --bind 0.0.0.0:${PORT:-8080} --workers 2 --timeout 120
+# Start gunicorn on port 5000 (Nginx proxies to this)
+exec gunicorn api_server:app --bind 0.0.0.0:5000 --workers 2 --timeout 120

@@ -1,18 +1,14 @@
-#!/bin/bash
-# Render build script
-# Updated 2025-11-25: Force rebuild with fresh frontend
+#!/usr/bin/env
+# AWS Amplify Build Script (Frontend Only)
+# Backend builds happen on EC2 manually
 
-# Install Python dependencies
+echo "📦 Installing Python dependencies..."
 pip install -r requirements.txt
 
-# Setup database (creates schema and loads NFL data)
-echo "🗄️  Setting up database..."
-python setup_render_db.py || echo "⚠️  Database setup skipped (may already exist)"
-
-# Build React frontend
+echo "🎨 Building React frontend..."
 cd frontend
 npm install
 npm run build
 cd ..
 
-echo "Build complete!"
+echo "✅ Build complete!"

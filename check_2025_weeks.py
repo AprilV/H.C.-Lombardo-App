@@ -2,10 +2,18 @@
 """Check what 2025 weeks we have"""
 
 import psycopg2
+import os
+from dotenv import load_dotenv
 
-RENDER_URL = "postgresql://nfl_user:rzkKyzQq9pTas14pXDJU3fm8cCZObAh5@dpg-d4j30ah5pdvs739551m0-a.oregon-postgres.render.com/nfl_analytics"
+load_dotenv()
 
-conn = psycopg2.connect(RENDER_URL)
+conn = psycopg2.connect(
+    host=os.getenv('DB_HOST', 'localhost'),
+    port=os.getenv('DB_PORT', '5432'),
+    database=os.getenv('DB_NAME', 'nfl_analytics'),
+    user=os.getenv('DB_USER', 'postgres'),
+    password=os.getenv('DB_PASSWORD')
+)
 cur = conn.cursor()
 
 print("\n📅 2025 Season Games by Week:")

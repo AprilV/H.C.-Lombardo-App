@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Update Render database with EPA calculations for 2025 season ONLY
+Update database with EPA calculations for 2025 season ONLY
 Uses nflverse play-by-play data to calculate EPA stats
 Updates existing team_game_stats records with EPA values
 """
@@ -10,17 +10,25 @@ from psycopg2.extras import execute_values
 import nfl_data_py as nfl
 import pandas as pd
 from datetime import datetime
+import os
+from dotenv import load_dotenv
 
-RENDER_URL = "postgresql://nfl_user:rzkKyzQq9pTas14pXDJU3fm8cCZObAh5@dpg-d4j30ah5pdvs739551m0-a.oregon-postgres.render.com/nfl_analytics"
+load_dotenv()
 
 def main():
     print("\n" + "="*80)
-    print("📊 UPDATING RENDER WITH EPA CALCULATIONS FOR 2025")
+    print("📊 UPDATING DATABASE WITH EPA CALCULATIONS FOR 2025")
     print("="*80)
     
-    # Connect to Render
-    print("\n🌐 Connecting to Render database...")
-    conn = psycopg2.connect(RENDER_URL)
+    # Connect to database
+    print("\n🌐 Connecting to database...")
+    conn = psycopg2.connect(
+        host=os.getenv('DB_HOST', 'localhost'),
+        port=os.getenv('DB_PORT', '5432'),
+        database=os.getenv('DB_NAME', 'nfl_analytics'),
+        user=os.getenv('DB_USER', 'postgres'),
+        password=os.getenv('DB_PASSWORD')
+    )
     cur = conn.cursor()
     print("   ✅ Connected")
     
@@ -140,10 +148,7 @@ def main():
     
     print("\n" + "="*80)
     print("✅ EPA UPDATE COMPLETE!")
-    print("="*80)
-    print("\n🌐 Your website should now show ML predictions!")
-    print("   https://h-c-lombardo-app.onrender.com/ml-predictions")
-    print("\n")
+    print("="*80 + "\n")
 
 
 if __name__ == "__main__":

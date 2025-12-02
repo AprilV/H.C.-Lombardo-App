@@ -1,9 +1,17 @@
 #!/usr/bin/env python3
-"""Compare Render vs Local database to find missing data"""
+"""This script is obsolete - we only use EC2 localhost PostgreSQL database now.
 
-import psycopg2
+To check database status, use:
+- verify_2025.py
+- check_2025_weeks.py  
+- quick_check.py
 
-RENDER_URL = "postgresql://nfl_user:rzkKyzQq9pTas14pXDJU3fm8cCZObAh5@dpg-d4j30ah5pdvs739551m0-a.oregon-postgres.render.com/nfl_analytics"
+Render database was deprecated and removed.
+"""
+
+print("⚠️  This script is obsolete. Render database no longer exists.")
+print("Use verify_2025.py or check_2025_weeks.py instead.")
+
 
 print("\n" + "="*80)
 print("🔍 RENDER vs LOCAL DATABASE COMPARISON")
