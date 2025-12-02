@@ -171,6 +171,15 @@ def get_team_details(team_abbr):
                 ROUND(AVG(early_down_success_rate)::numeric, 1) as early_down_success_rate,
                 ROUND(AVG(starting_field_pos_yds)::numeric, 1) as starting_field_pos_yds,
                 
+                -- EPA (Expected Points Added) Metrics
+                ROUND(AVG(epa_per_play)::numeric, 3) as epa_per_play,
+                ROUND(AVG(pass_epa)::numeric, 3) as pass_epa,
+                ROUND(AVG(rush_epa)::numeric, 3) as rush_epa,
+                ROUND(AVG(success_rate)::numeric, 1) as success_rate,
+                ROUND(AVG(explosive_play_pct)::numeric, 1) as explosive_play_pct,
+                ROUND(AVG(stuff_rate)::numeric, 1) as stuff_rate,
+                ROUND(AVG(scramble_rate)::numeric, 1) as scramble_rate,
+                
                 -- Home/Away splits
                 ROUND(AVG(CASE WHEN is_home THEN points END)::numeric, 1) as ppg_home,
                 ROUND(AVG(CASE WHEN NOT is_home THEN points END)::numeric, 1) as ppg_away,
@@ -254,6 +263,12 @@ def get_team_games(team_abbr):
                 ROUND(tgs.completion_pct::numeric, 1) as completion_pct,
                 tgs.turnovers,
                 ROUND(tgs.third_down_pct::numeric, 1) as third_down_pct,
+                -- EPA stats (NULL for upcoming games)
+                ROUND(tgs.epa_per_play::numeric, 3) as epa_per_play,
+                ROUND(tgs.pass_epa::numeric, 3) as pass_epa,
+                ROUND(tgs.rush_epa::numeric, 3) as rush_epa,
+                ROUND(tgs.success_rate::numeric, 1) as success_rate,
+                ROUND(tgs.explosive_play_pct::numeric, 1) as explosive_play_pct,
                 -- Betting lines
                 g.spread_line,
                 g.total_line,
