@@ -41,6 +41,18 @@ jobs:
               exit 1
             }
       
+      - name: Calculate EPA and advanced stats on EC2
+        run: |
+          ssh -i ~/.ssh/ec2_key.pem \
+            -o ConnectTimeout=10 \
+            -o StrictHostKeyChecking=no \
+            -o BatchMode=yes \
+            ubuntu@34.198.25.249 \
+            'cd /home/ubuntu/H.C.-Lombardo-App && source venv/bin/activate && python update_2025_with_epa.py' || {
+              echo "❌ EPA calculation failed - workflow stopped"
+              exit 1
+            }
+      
       - name: Verify update
         run: |
           ssh -i ~/.ssh/ec2_key.pem \
