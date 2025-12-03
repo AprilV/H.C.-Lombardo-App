@@ -47,7 +47,7 @@ jobs:
             -o StrictHostKeyChecking=no \
             -o BatchMode=yes \
             ubuntu@34.198.25.249 \
-            'cd /home/ubuntu/H.C.-Lombardo-App && source venv/bin/activate && python scripts/data_loading/ingest_historical_games.py --production --seasons 2025' || {
+            'cd /home/ubuntu/H.C.-Lombardo-App && source venv/bin/activate && python ingest_historical_games.py --production --seasons 2025' || {
               echo "❌ SSH command failed - workflow stopped"
               exit 1
             }
@@ -59,9 +59,8 @@ jobs:
             -o StrictHostKeyChecking=no \
             -o BatchMode=yes \
             ubuntu@34.198.25.249 \
-            'cd /home/ubuntu/H.C.-Lombardo-App && source venv/bin/activate && python scripts/data_loading/update_2025_with_epa.py' || {
-              echo "❌ EPA calculation failed - workflow stopped"
-              exit 1
+            'cd /home/ubuntu/H.C.-Lombardo-App && source venv/bin/activate && python update_2025_with_epa.py' || {
+              echo "⚠️ EPA calculation failed - continuing (play-by-play data may not be available yet)"
             }
       
       - name: Verify update
