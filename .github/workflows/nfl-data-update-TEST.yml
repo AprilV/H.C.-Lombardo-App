@@ -33,33 +33,7 @@ jobs:
             --query "InstanceInformationList[0].PingStatus" \
             --output text
       
-      - name: Pull latest code on EC2
-        run: |
-          echo "📥 Pulling latest code from GitHub..."
-          COMMAND_ID=$(aws ssm send-command \
-            --instance-ids ${{ secrets.EC2_INSTANCE_ID }} \
-            --document-name "AWS-RunShellScript" \
-            --comment "TEST: Pull latest code" \
-            --parameters 'commands=[
-              "cd /home/ubuntu/H.C.-Lombardo-App",
-              "git pull origin master"
-            ]' \
-            --output text \
-            --query "Command.CommandId")
-          
-          echo "Command ID: $COMMAND_ID"
-          
-          # Wait for command to complete
-          aws ssm wait command-executed \
-            --instance-id ${{ secrets.EC2_INSTANCE_ID }} \
-            --command-id $COMMAND_ID
-          
-          echo "✅ Git pull output:"
-          aws ssm get-command-invocation \
-            --instance-id ${{ secrets.EC2_INSTANCE_ID }} \
-            --command-id $COMMAND_ID \
-            --query "StandardOutputContent" \
-            --output text
+      # Skipping git pull - using existing code on EC2
       
       - name: Load data to TEST schema (hcl_test)
         run: |
