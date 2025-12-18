@@ -54,9 +54,7 @@ jobs:
           # Wait for command to complete
           aws ssm wait command-executed \
             --instance-id ${{ secrets.EC2_INSTANCE_ID }} \
-            --command-id $COMMAND_ID \
-            --max-attempts 60 \
-            --delay 1
+            --command-id $COMMAND_ID
           
           echo "✅ Git pull output:"
           aws ssm get-command-invocation \
@@ -89,9 +87,7 @@ jobs:
           # Wait for completion (max 10 minutes)
           aws ssm wait command-executed \
             --instance-id ${{ secrets.EC2_INSTANCE_ID }} \
-            --command-id $COMMAND_ID \
-            --max-attempts 120 \
-            --delay 5
+            --command-id $COMMAND_ID
           
           echo "📊 Test data load output:"
           aws ssm get-command-invocation \
