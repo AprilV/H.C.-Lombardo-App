@@ -42,8 +42,6 @@ jobs:
             --comment "TEST: Pull latest code" \
             --parameters 'commands=[
               "cd /home/ubuntu/H.C.-Lombardo-App",
-              "git fetch origin",
-              "git reset --hard origin/master",
               "git pull origin master"
             ]' \
             --output text \
