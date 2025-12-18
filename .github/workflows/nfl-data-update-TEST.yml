@@ -76,7 +76,7 @@ jobs:
             --parameters "commands=[
               \"cd /home/ubuntu/H.C.-Lombardo-App\",
               \"source venv/bin/activate\",
-              \"python ingest_historical_games.py --testbed --seasons $SEASONS\"
+              \"python scripts/data_loading/ingest_historical_games.py --testbed --seasons $SEASONS\"
             ]" \
             --output text \
             --query "Command.CommandId")
