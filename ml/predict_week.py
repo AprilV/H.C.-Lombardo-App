@@ -1,15 +1,15 @@
 """
 NFL Weekly Game Predictions
 
-This script uses the trained V2 neural network to predict upcoming games.
+This script uses the trained XGBoost models to predict upcoming games.
 It computes rolling features from previous games and generates predictions.
 
 Usage:
     python ml/predict_week.py --season 2025 --week 10
     python ml/predict_week.py --upcoming  # Next week's games
 
-Sprint 9: Machine Learning Predictions
-Date: November 6, 2025
+Sprint 10: XGBoost Model Integration
+Date: December 18, 2025
 """
 
 import psycopg2
@@ -35,24 +35,21 @@ class WeeklyPredictor:
             'port': os.getenv('DB_PORT', '5432')
         }
         
-        # Load WIN/LOSS model (classification)
+        # Load XGBoost WIN/LOSS model (classification)
         model_dir = 'ml/models'
-        self.win_model = joblib.load(f'{model_dir}/nfl_neural_network_v2.pkl')
-        self.win_scaler = joblib.load(f'{model_dir}/scaler_v2.pkl')
+        self.win_model = joblib.load(f'{model_dir}/xgb_winner.pkl')
         
-        with open(f'{model_dir}/feature_names_v2.txt', 'r') as f:
+        with open(f'{model_dir}/xgb_winner_features.txt', 'r') as f:
             self.win_feature_names = [line.strip() for line in f.readlines()]
         
-        # Load POINT SPREAD model (regression) - NOW IN PRODUCTION
-        spread_dir = 'ml/models'
-        self.spread_model = joblib.load(f'{spread_dir}/point_spread_model.pkl')
-        self.spread_scaler = joblib.load(f'{spread_dir}/point_spread_scaler.pkl')
+        # Load XGBoost POINT SPREAD model (regression)
+        self.spread_model = joblib.load(f'{model_dir}/xgb_spread.pkl')
         
-        with open(f'{spread_dir}/point_spread_features.txt', 'r') as f:
+        with open(f'{model_dir}/xgb_spread_features.txt', 'r') as f:
             self.spread_feature_names = [line.strip() for line in f.readlines()]
         
-        print(f"Loaded win/loss model with {len(self.win_feature_names)} features")
-        print(f"Loaded point spread model with {len(self.spread_feature_names)} features")
+        print(f"✓ Loaded XGBoost win/loss model with {len(self.win_feature_names)} features")
+        print(f"✓ Loaded XGBoost point spread model with {len(self.spread_feature_names)} features")
     
     def fetch_schedule(self, season, week):
         """Fetch games scheduled for the given week"""
@@ -240,18 +237,16 @@ class WeeklyPredictor:
         if 'total_line' in self.win_feature_names:
             features['total_line'] = total_line if total_line is not None else 0.0
         
-        # PREDICT WIN/LOSS (Classification Model)
+        # PREDICT WIN/LOSS (XGBoost Classification)
         X_win = np.array([[features.get(name, 0.0) for name in self.win_feature_names]])
-        X_win_scaled = self.win_scaler.transform(X_win)
         
-        win_prediction = self.win_model.predict(X_win_scaled)[0]  # 1 = home win, 0 = away win
-        win_confidence = self.win_model.predict_proba(X_win_scaled)[0]
+        win_prediction = self.win_model.predict(X_win)[0]  # 1 = home win, 0 = away win
+        win_confidence = self.win_model.predict_proba(X_win)[0]
         
-        # PREDICT POINT SPREAD (Regression Model)
+        # PREDICT POINT SPREAD (XGBoost Regression)
         X_spread = np.array([[features.get(name, 0.0) for name in self.spread_feature_names]])
-        X_spread_scaled = self.spread_scaler.transform(X_spread)
         
-        predicted_margin = self.spread_model.predict(X_spread_scaled)[0]  # Positive = home favored
+        predicted_margin = self.spread_model.predict(X_spread)[0]  # Positive = home favored
         
         # Calculate predicted scores using point spread + total line
         avg_total = total_line if total_line is not None else 47.0
