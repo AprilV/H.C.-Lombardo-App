@@ -50,7 +50,7 @@ class NFLNeuralNetworkV2:
         
         conn = psycopg2.connect(**self.db_config)
         
-        # Fetch games with betting lines
+        # Fetch games with betting lines (2020-2025 only)
         query = """
         SELECT 
             g.game_id,
@@ -67,12 +67,13 @@ class NFLNeuralNetworkV2:
         FROM hcl.games g
         WHERE g.home_score IS NOT NULL
           AND g.away_score IS NOT NULL
+          AND g.season >= 2020
         ORDER BY g.season, g.week, g.game_id
         """
         
         games_df = pd.read_sql(query, conn)
         
-        # Also fetch all team_game_stats for computing rolling features
+        # Also fetch all team_game_stats for computing rolling features (2020-2025)
         stats_query = """
         SELECT 
             game_id,
@@ -92,6 +93,7 @@ class NFLNeuralNetworkV2:
             red_zone_pct,
             time_of_possession_pct
         FROM hcl.team_game_stats
+        WHERE season >= 2020
         ORDER BY season, week, game_id
         """
         
