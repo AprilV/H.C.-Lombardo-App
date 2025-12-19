@@ -301,8 +301,6 @@ def main():
     print(f"Weight distribution:")
     print(f"  2020-2021: {np.sum(df_train['season'] <= 2021):,} games × 0.5 weight")
     print(f"  2022-2023: {np.sum(df_train['season'] >= 2022):,} games × 2.0 weight")
-    print(f"  2011-2018 (middle): {np.sum((df_train['season'] >= 2011) & (df_train['season'] < 2019)):,} games ├ù 1.0 weight")
-    print(f"  2019-2023 (modern): {np.sum(df_train['season'] >= 2019):,} games ├ù 2.0 weight")
     print(f"  Effective training size: {np.sum(weights):,.0f} weighted samples")
     
     # Scale features
@@ -351,9 +349,9 @@ def main():
         print(f"   Γ£à MAE looks reasonable ({val_metrics['mae']:.2f}) - no obvious leakage")
     
     # Save model
-    print_subheader("SAVING MODEL TO TESTBED")
+    print_subheader("SAVING MODEL")
     
-    output_dir = 'testbed/models'
+    output_dir = 'ml/models'
     os.makedirs(output_dir, exist_ok=True)
     
     model_path = f'{output_dir}/point_spread_model.pkl'
