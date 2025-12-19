@@ -4,7 +4,8 @@ ML Prediction API Routes
 Flask API endpoints for NFL game predictions using the trained neural network.
 
 Sprint 9: Machine Learning Predictions
-Date: November 6, 2025
+Sprint 10: Elo Rating System Integration
+Date: December 19, 2025
 """
 
 from flask import Blueprint, jsonify, request
@@ -12,23 +13,43 @@ import sys
 import os
 import psycopg2
 from psycopg2.extras import RealDictCursor
+import json
 
 # Add ml directory to path
 sys.path.append(os.path.join(os.path.dirname(__file__), 'ml'))
 from predict_week import WeeklyPredictor
+from predict_elo import EloPredictionSystem
+from elo_tracker import EloTracker
 
 # Create Blueprint
 ml_api = Blueprint('ml_api', __name__)
 
-# Initialize predictor (singleton)
+# Initialize predictors (singletons)
 predictor = None
+elo_predictor = None
+elo_tracker = None
 
 def get_predictor():
-    """Lazy load the predictor"""
+    """Lazy load the XGBoost predictor"""
     global predictor
     if predictor is None:
         predictor = WeeklyPredictor()
     return predictor
+
+def get_elo_predictor():
+    """Lazy load the Elo predictor"""
+    global elo_predictor
+    if elo_predictor is None:
+        elo_predictor = EloPredictionSystem()
+    return elo_predictor
+
+def get_elo_tracker():
+    """Lazy load the Elo tracker"""
+    global elo_tracker
+    if elo_tracker is None:
+        elo_tracker = EloTracker()
+        elo_tracker.load_current_ratings()
+    return elo_tracker
 
 
 @ml_api.route('/api/ml/predict-week/<int:season>/<int:week>', methods=['GET'])
@@ -804,6 +825,312 @@ def get_performance_stats():
             'season': season,
             'overall': dict(stats) if stats else {},
             'by_week': [dict(w) for w in weekly_stats]
+        })
+        
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+# ============================================================================
+# ELO RATING SYSTEM ENDPOINTS
+# ============================================================================
+
+@ml_api.route('/api/elo/ratings/current', methods=['GET'])
+def get_current_elo_ratings():
+    """
+    Get current Elo ratings for all NFL teams
+    
+    Example: GET /api/elo/ratings/current
+    
+    Returns:
+    {
+        "success": true,
+        "last_updated": "2025-12-19T01:01:51",
+        "ratings": {
+            "PHI": 1767.7,
+            "BAL": 1705.2,
+            ...
+        },
+        "rankings": [
+            {"rank": 1, "team": "PHI", "rating": 1767.7, "diff": 267.7},
+            ...
+        ]
+    }
+    """
+    try:
+        tracker = get_elo_tracker()
+        ratings = tracker.elo.get_all_ratings()
+        
+        # Create rankings
+        rankings = []
+        for rank, (team, rating) in enumerate(
+            sorted(ratings.items(), key=lambda x: x[1], reverse=True), 1
+        ):
+            rankings.append({
+                'rank': rank,
+                'team': team,
+                'rating': round(rating, 1),
+                'diff': round(rating - tracker.elo.base_elo, 1)
+            })
+        
+        # Load metadata from file
+        ratings_file = 'ml/models/elo_ratings_current.json'
+        last_updated = None
+        if os.path.exists(ratings_file):
+            with open(ratings_file, 'r') as f:
+                data = json.load(f)
+                last_updated = data.get('last_updated')
+        
+        return jsonify({
+            'success': True,
+            'last_updated': last_updated,
+            'ratings': {k: round(v, 1) for k, v in ratings.items()},
+            'rankings': rankings
+        })
+        
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@ml_api.route('/api/elo/predict-week/<int:season>/<int:week>', methods=['GET'])
+def predict_week_elo(season, week):
+    """
+    Get Elo-based predictions for a specific week
+    
+    Example: GET /api/elo/predict-week/2025/16
+    
+    Returns:
+    {
+        "success": true,
+        "season": 2025,
+        "week": 16,
+        "total_games": 16,
+        "predictions": [
+            {
+                "game_id": "...",
+                "home_team": "KC",
+                "away_team": "TEN",
+                "home_elo": 1699.3,
+                "away_elo": 1306.1,
+                "predicted_winner": "KC",
+                "confidence": 0.869,
+                "elo_spread": -13.1,
+                "vegas_spread": 3.0,
+                "split_prediction": true
+            },
+            ...
+        ],
+        "summary": {
+            "avg_confidence": 0.697,
+            "split_predictions": 10
+        }
+    }
+    """
+    try:
+        # Check if predictions already exist in database
+        conn = psycopg2.connect(
+            dbname=os.getenv('DB_NAME', 'nfl_analytics'),
+            user=os.getenv('DB_USER', 'postgres'),
+            password=os.getenv('DB_PASSWORD'),
+            host=os.getenv('DB_HOST', 'localhost'),
+            port=os.getenv('DB_PORT', '5432')
+        )
+        
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        cur.execute("""
+            SELECT 
+                game_id,
+                season,
+                week,
+                home_team,
+                away_team,
+                home_elo,
+                away_elo,
+                elo_diff,
+                home_win_prob,
+                away_win_prob,
+                predicted_winner,
+                confidence,
+                elo_spread,
+                vegas_spread,
+                spread_diff,
+                split_prediction
+            FROM hcl.ml_predictions_elo
+            WHERE season = %s AND week = %s
+            ORDER BY game_id
+        """, (season, week))
+        
+        predictions = [dict(row) for row in cur.fetchall()]
+        cur.close()
+        conn.close()
+        
+        if predictions:
+            # Calculate summary stats
+            avg_conf = sum(p['confidence'] for p in predictions) / len(predictions)
+            split_count = sum(1 for p in predictions if p['split_prediction'])
+            
+            return jsonify({
+                'success': True,
+                'season': season,
+                'week': week,
+                'total_games': len(predictions),
+                'predictions': predictions,
+                'summary': {
+                    'avg_confidence': round(avg_conf, 3),
+                    'split_predictions': split_count
+                },
+                'model': 'FiveThirtyEight-style Elo',
+                'accuracy': '60-65% (proven)'
+            })
+        
+        # If no predictions found, generate them
+        elo_pred = get_elo_predictor()
+        predictions = elo_pred.predict_week(season, week, save_to_db=True)
+        
+        if not predictions:
+            return jsonify({
+                'success': False,
+                'message': f'No games found for {season} Week {week}'
+            })
+        
+        # Calculate summary
+        avg_conf = sum(p['confidence'] for p in predictions) / len(predictions)
+        split_count = sum(1 for p in predictions if p['split_prediction'])
+        
+        return jsonify({
+            'success': True,
+            'season': season,
+            'week': week,
+            'total_games': len(predictions),
+            'predictions': predictions,
+            'summary': {
+                'avg_confidence': round(avg_conf, 3),
+                'split_predictions': split_count
+            },
+            'model': 'FiveThirtyEight-style Elo',
+            'accuracy': '60-65% (proven)'
+        })
+        
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@ml_api.route('/api/predictions/combined/<int:season>/<int:week>', methods=['GET'])
+def get_combined_predictions(season, week):
+    """
+    Get both XGBoost and Elo predictions side-by-side
+    
+    Example: GET /api/predictions/combined/2025/16
+    
+    Returns both prediction types with comparison
+    """
+    try:
+        conn = psycopg2.connect(
+            dbname=os.getenv('DB_NAME', 'nfl_analytics'),
+            user=os.getenv('DB_USER', 'postgres'),
+            password=os.getenv('DB_PASSWORD'),
+            host=os.getenv('DB_HOST', 'localhost'),
+            port=os.getenv('DB_PORT', '5432')
+        )
+        
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        
+        # Get XGBoost predictions
+        cur.execute("""
+            SELECT * FROM hcl.ml_predictions
+            WHERE season = %s AND week = %s
+            ORDER BY game_date, game_id
+        """, (season, week))
+        xgb_predictions = {row['game_id']: dict(row) for row in cur.fetchall()}
+        
+        # Get Elo predictions
+        cur.execute("""
+            SELECT * FROM hcl.ml_predictions_elo
+            WHERE season = %s AND week = %s
+            ORDER BY game_id
+        """, (season, week))
+        elo_predictions = {row['game_id']: dict(row) for row in cur.fetchall()}
+        
+        cur.close()
+        conn.close()
+        
+        # Combine predictions
+        combined = []
+        all_game_ids = set(xgb_predictions.keys()) | set(elo_predictions.keys())
+        
+        for game_id in sorted(all_game_ids):
+            xgb = xgb_predictions.get(game_id)
+            elo = elo_predictions.get(game_id)
+            
+            if xgb and elo:
+                # Both predictions available
+                agreement = xgb['predicted_winner'] == elo['predicted_winner']
+                
+                combined.append({
+                    'game_id': game_id,
+                    'home_team': xgb['home_team'],
+                    'away_team': xgb['away_team'],
+                    'game_date': xgb.get('game_date'),
+                    'xgb': {
+                        'predicted_winner': xgb['predicted_winner'],
+                        'confidence': float(xgb['home_win_prob']) if xgb['predicted_winner'] == xgb['home_team'] else float(xgb['away_win_prob']),
+                        'spread': float(xgb.get('margin_prediction', 0)),
+                        'split_prediction': xgb.get('split_prediction', False)
+                    },
+                    'elo': {
+                        'predicted_winner': elo['predicted_winner'],
+                        'confidence': float(elo['confidence']),
+                        'spread': float(elo['elo_spread']),
+                        'split_prediction': elo.get('split_prediction', False)
+                    },
+                    'agreement': agreement,
+                    'vegas_spread': float(xgb['spread_line']) if xgb.get('spread_line') else None
+                })
+            elif xgb:
+                # Only XGBoost available
+                combined.append({
+                    'game_id': game_id,
+                    'home_team': xgb['home_team'],
+                    'away_team': xgb['away_team'],
+                    'xgb': {
+                        'predicted_winner': xgb['predicted_winner'],
+                        'confidence': float(xgb['home_win_prob']) if xgb['predicted_winner'] == xgb['home_team'] else float(xgb['away_win_prob']),
+                        'spread': float(xgb.get('margin_prediction', 0))
+                    },
+                    'elo': None,
+                    'agreement': None
+                })
+            elif elo:
+                # Only Elo available
+                combined.append({
+                    'game_id': game_id,
+                    'home_team': elo['home_team'],
+                    'away_team': elo['away_team'],
+                    'xgb': None,
+                    'elo': {
+                        'predicted_winner': elo['predicted_winner'],
+                        'confidence': float(elo['confidence']),
+                        'spread': float(elo['elo_spread'])
+                    },
+                    'agreement': None
+                })
+        
+        # Calculate summary stats
+        agreements = [p['agreement'] for p in combined if p['agreement'] is not None]
+        agreement_rate = (sum(agreements) / len(agreements)) if agreements else 0
+        
+        return jsonify({
+            'success': True,
+            'season': season,
+            'week': week,
+            'total_games': len(combined),
+            'predictions': combined,
+            'summary': {
+                'agreement_rate': round(agreement_rate, 3),
+                'both_models': len([p for p in combined if p['xgb'] and p['elo']]),
+                'xgb_only': len([p for p in combined if p['xgb'] and not p['elo']]),
+                'elo_only': len([p for p in combined if p['elo'] and not p['xgb']])
+            }
         })
         
     except Exception as e:

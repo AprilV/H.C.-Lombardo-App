@@ -5,10 +5,14 @@ const API_URL = 'https://api.aprilsykes.dev';
 
 function MLPredictions() {
   const [activeTab, setActiveTab] = useState('predictions');
+  const [predictionModel, setPredictionModel] = useState('xgb'); // 'xgb', 'elo', 'combined'
   const [season, setSeason] = useState(2025);
   const [week, setWeek] = useState(null);
   const [loading, setLoading] = useState(false);
   const [predictions, setPredictions] = useState([]);
+  const [eloPredictions, setEloPredictions] = useState([]);
+  const [combinedPredictions, setCombinedPredictions] = useState([]);
+  const [eloRatings, setEloRatings] = useState(null);
   const [modelInfo, setModelInfo] = useState(null);
   const [explanation, setExplanation] = useState(null);
   const [error, setError] = useState(null);
@@ -58,6 +62,7 @@ function MLPredictions() {
   // Fetch upcoming week predictions on load
   useEffect(() => {
     fetchUpcomingPredictions();
+    fetchEloRatings();
     fetchModelInfo();
     fetchExplanation();
     fetchSeasonStats();
@@ -67,6 +72,73 @@ function MLPredictions() {
     const interval = setInterval(fetchLiveScores, 30000);
     return () => clearInterval(interval);
   }, []);
+
+  // Fetch predictions when model type changes
+  useEffect(() => {
+    if (week) {
+      if (predictionModel === 'xgb') {
+        fetchWeekPredictions();
+      } else if (predictionModel === 'elo') {
+        fetchEloPredictions();
+      } else if (predictionModel === 'combined') {
+        fetchCombinedPredictions();
+      }
+    }
+  }, [predictionModel, week, season]);
+
+  const fetchEloRatings = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/elo/ratings/current`);
+      const data = await response.json();
+      if (data.success) {
+        setEloRatings(data);
+      }
+    } catch (err) {
+      console.error('Error fetching Elo ratings:', err);
+    }
+  };
+
+  const fetchEloPredictions = async () => {
+    if (!week) return;
+    
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(`${API_URL}/api/elo/predict-week/${season}/${week}`);
+      const data = await response.json();
+      
+      if (data.success) {
+        setEloPredictions(data.predictions || []);
+      } else {
+        setError(data.message || 'Failed to load Elo predictions');
+      }
+    } catch (err) {
+      console.error('Error fetching Elo predictions:', err);
+      setError('Failed to load Elo predictions');
+    }
+    setLoading(false);
+  };
+
+  const fetchCombinedPredictions = async () => {
+    if (!week) return;
+    
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(`${API_URL}/api/predictions/combined/${season}/${week}`);
+      const data = await response.json();
+      
+      if (data.success) {
+        setCombinedPredictions(data.predictions || []);
+      } else {
+        setError('Failed to load combined predictions');
+      }
+    } catch (err) {
+      console.error('Error fetching combined predictions:', err);
+      setError('Failed to load combined predictions');
+    }
+    setLoading(false);
+  };
 
   const fetchSeasonStats = async () => {
     try {
@@ -1295,6 +1367,14 @@ function MLPredictions() {
       <div className="ml-predictions-header">
         <h1>🧠 ML Predictions</h1>
         <div className="header-controls">
+          <div className="model-selector">
+            <label>Model:</label>
+            <select value={predictionModel} onChange={(e) => setPredictionModel(e.target.value)}>
+              <option value="xgb">🤖 XGBoost</option>
+              <option value="elo">📈 Elo Ratings</option>
+              <option value="combined">⚡ Combined</option>
+            </select>
+          </div>
           <div className="season-selector">
             <label>Season:</label>
             <select value={season} onChange={(e) => setSeason(Number(e.target.value))}>
@@ -1313,7 +1393,11 @@ function MLPredictions() {
               onChange={(e) => setWeek(Number(e.target.value))}
               placeholder="Auto"
             />
-            <button className="predict-btn" onClick={fetchWeekPredictions}>
+            <button className="predict-btn" onClick={() => {
+              if (predictionModel === 'xgb') fetchWeekPredictions();
+              else if (predictionModel === 'elo') fetchEloPredictions();
+              else fetchCombinedPredictions();
+            }}>
               Predict Week
             </button>
           </div>
