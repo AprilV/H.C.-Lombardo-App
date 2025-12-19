@@ -27,7 +27,7 @@ def print_header(text):
     print(f"  {text}")
     print("=" * 80)
 
-def load_data(schema='hcl_test'):
+def load_data(schema='hcl'):
     """Load game data from database"""
     print(f"\nConnecting to database schema: {schema}")
     
