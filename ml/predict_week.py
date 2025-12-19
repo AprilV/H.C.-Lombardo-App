@@ -48,8 +48,8 @@ class WeeklyPredictor:
         with open(f'{model_dir}/xgb_spread_features.txt', 'r') as f:
             self.spread_feature_names = [line.strip() for line in f.readlines()]
         
-        print(f"✓ Loaded XGBoost win/loss model with {len(self.win_feature_names)} features")
-        print(f"✓ Loaded XGBoost point spread model with {len(self.spread_feature_names)} features")
+        print(f"[OK] Loaded XGBoost win/loss model with {len(self.win_feature_names)} features")
+        print(f"[OK] Loaded XGBoost point spread model with {len(self.spread_feature_names)} features")
     
     def fetch_schedule(self, season, week):
         """Fetch games scheduled for the given week"""
@@ -83,135 +83,92 @@ class WeeklyPredictor:
         
         return df
     
-    def fetch_team_stats(self, season, week, team):
-        """Fetch team's statistics BEFORE the target week"""
+    def fetch_team_cumulative_stats(self, season, week, team):
+        """Fetch cumulative stats for a team BEFORE the target week (matches training query)"""
         conn = psycopg2.connect(**self.db_config)
         
-        # Get all games this team played BEFORE this week
         query = """
+            WITH game_stats AS (
+                SELECT 
+                    tgs.game_id, tgs.team, g.season, g.week,
+                    tgs.points, tgs.total_yards, tgs.passing_yards, tgs.rushing_yards,
+                    tgs.yards_per_play, tgs.turnovers, tgs.third_down_pct, tgs.red_zone_pct,
+                    tgs.epa_per_play, tgs.success_rate, tgs.pass_epa, tgs.rush_epa,
+                    tgs.cpoe, tgs.pass_success_rate, tgs.rush_success_rate,
+                    tgs.completion_pct, tgs.qb_rating, tgs.interceptions, tgs.sacks_taken,
+                    tgs.yards_per_carry, tgs.explosive_play_pct, tgs.time_of_possession_pct
+                FROM hcl.team_game_stats tgs
+                JOIN hcl.games g ON tgs.game_id = g.game_id
+                WHERE g.season = %s
+                  AND g.week < %s
+                  AND tgs.team = %s
+                  AND g.is_postseason = FALSE
+            )
             SELECT 
-                g.game_id,
-                g.season,
-                g.week,
-                g.home_team,
-                g.away_team,
-                g.home_score,
-                g.away_score,
-                tgs.points,
-                tgs.total_yards,
-                tgs.turnovers,
-                tgs.touchdowns,
-                tgs.epa_per_play,
-                tgs.success_rate,
-                tgs.pass_epa,
-                tgs.rush_epa,
-                tgs.cpoe,
-                tgs.yards_per_play,
-                tgs.third_down_pct,
-                tgs.red_zone_pct
-            FROM hcl.games g
-            JOIN hcl.team_game_stats tgs 
-                ON g.game_id = tgs.game_id
-            WHERE g.season = %s
-            AND g.week < %s
-            AND (g.home_team = %s OR g.away_team = %s)
-            AND tgs.team = %s
-            AND g.is_postseason = false
-            ORDER BY g.week;
+                AVG(points) as avg_ppg,
+                AVG(total_yards) as avg_yards,
+                AVG(passing_yards) as avg_pass_yards,
+                AVG(rushing_yards) as avg_rush_yards,
+                AVG(yards_per_play) as avg_ypp,
+                AVG(turnovers) as avg_turnovers,
+                AVG(third_down_pct) as avg_3rd_pct,
+                AVG(red_zone_pct) as avg_rz_pct,
+                AVG(epa_per_play) as avg_epa,
+                AVG(success_rate) as avg_success,
+                AVG(pass_epa) as avg_pass_epa,
+                AVG(rush_epa) as avg_rush_epa,
+                AVG(cpoe) as avg_cpoe,
+                AVG(pass_success_rate) as avg_pass_success,
+                AVG(rush_success_rate) as avg_rush_success,
+                AVG(completion_pct) as avg_comp_pct,
+                AVG(qb_rating) as avg_qb_rating,
+                AVG(interceptions) as avg_ints,
+                AVG(sacks_taken) as avg_sacks,
+                AVG(yards_per_carry) as avg_ypc,
+                AVG(explosive_play_pct) as avg_explosive,
+                AVG(time_of_possession_pct) as avg_top
+            FROM game_stats
         """
         
-        df = pd.read_sql(query, conn, params=(season, week, team, team, team))
+        df = pd.read_sql(query, conn, params=(season, week, team))
         conn.close()
         
-        return df
+        if len(df) == 0 or df.iloc[0]['avg_ppg'] is None:
+            return None
+        
+        return df.iloc[0].to_dict()
     
     def compute_rolling_features(self, season, week, home_team, away_team):
         """
-        Compute rolling features for a matchup
-        Same logic as training but for a single game
+        Compute features matching the 46-feature XGBoost model
         """
+        # Fetch cumulative stats for both teams
+        home_stats = self.fetch_team_cumulative_stats(season, week, home_team)
+        away_stats = self.fetch_team_cumulative_stats(season, week, away_team)
+        
+        # Default values (league averages) if no prior games
+        defaults = {
+            'avg_ppg': 20, 'avg_yards': 320, 'avg_pass_yards': 220, 'avg_rush_yards': 100,
+            'avg_ypp': 5.0, 'avg_turnovers': 1.0, 'avg_3rd_pct': 40.0, 'avg_rz_pct': 55.0,
+            'avg_epa': 0.0, 'avg_success': 45.0, 'avg_pass_epa': 0.0, 'avg_rush_epa': 0.0,
+            'avg_cpoe': 0.0, 'avg_pass_success': 45.0, 'avg_rush_success': 45.0,
+            'avg_comp_pct': 63.0, 'avg_qb_rating': 90.0, 'avg_ints': 0.8, 'avg_sacks': 2.0,
+            'avg_ypc': 4.3, 'avg_explosive': 10.0, 'avg_top': 50.0
+        }
+        
+        if home_stats is None:
+            home_stats = defaults
+        if away_stats is None:
+            away_stats = defaults
+        
+        # Build feature dictionary matching model feature names
         features = {}
+        for key in defaults.keys():
+            stat_name = key.replace('avg_', '')
+            features[f'home_{stat_name}'] = home_stats.get(key, defaults[key])
+            features[f'away_{stat_name}'] = away_stats.get(key, defaults[key])
         
-        # Fetch stats for both teams
-        home_stats = self.fetch_team_stats(season, week, home_team)
-        away_stats = self.fetch_team_stats(season, week, away_team)
-        
-        # If no previous games, use league averages (or zeros)
-        if len(home_stats) == 0 or len(away_stats) == 0:
-            print(f"⚠️  Warning: Limited data for {home_team} vs {away_team} in week {week}")
-            # Return default features (zeros)
-            return {name: 0.0 for name in self.win_feature_names}
-        
-        # HOME TEAM SEASON STATS (all games so far)
-        features['home_ppg_season'] = home_stats['points'].mean()
-        features['home_ypg_season'] = home_stats['total_yards'].mean()
-        features['home_tpg_season'] = home_stats['touchdowns'].mean()
-        features['home_epa_season'] = home_stats['epa_per_play'].mean()
-        features['home_success_season'] = home_stats['success_rate'].mean()
-        features['home_ypp_season'] = home_stats['yards_per_play'].mean()
-        features['home_3rd_pct_season'] = home_stats['third_down_pct'].mean()
-        features['home_pass_epa_season'] = home_stats['pass_epa'].mean()
-        features['home_rush_epa_season'] = home_stats['rush_epa'].mean()
-        features['home_cpoe_season'] = home_stats['cpoe'].mean()
-        
-        # HOME TEAM RECENT FORM (last 3 games)
-        if len(home_stats) >= 3:
-            last_3 = home_stats.tail(3)
-            features['home_ppg_l3'] = last_3['points'].mean()
-            features['home_epa_l3'] = last_3['epa_per_play'].mean()
-            features['home_success_l3'] = last_3['success_rate'].mean()
-        else:
-            features['home_ppg_l3'] = features['home_ppg_season']
-            features['home_epa_l3'] = features['home_epa_season']
-            features['home_success_l3'] = features['home_success_season']
-        
-        # HOME TEAM RECENT FORM (last 5 games)
-        if len(home_stats) >= 5:
-            last_5 = home_stats.tail(5)
-            features['home_ppg_l5'] = last_5['points'].mean()
-            features['home_epa_l5'] = last_5['epa_per_play'].mean()
-            features['home_success_l5'] = last_5['success_rate'].mean()
-        else:
-            features['home_ppg_l5'] = features['home_ppg_season']
-            features['home_epa_l5'] = features['home_epa_season']
-            features['home_success_l5'] = features['home_success_season']
-        
-        # AWAY TEAM SEASON STATS
-        features['away_ppg_season'] = away_stats['points'].mean()
-        features['away_ypg_season'] = away_stats['total_yards'].mean()
-        features['away_tpg_season'] = away_stats['touchdowns'].mean()
-        features['away_epa_season'] = away_stats['epa_per_play'].mean()
-        features['away_success_season'] = away_stats['success_rate'].mean()
-        features['away_ypp_season'] = away_stats['yards_per_play'].mean()
-        features['away_3rd_pct_season'] = away_stats['third_down_pct'].mean()
-        features['away_pass_epa_season'] = away_stats['pass_epa'].mean()
-        features['away_rush_epa_season'] = away_stats['rush_epa'].mean()
-        features['away_cpoe_season'] = away_stats['cpoe'].mean()
-        
-        # AWAY TEAM RECENT FORM (last 3)
-        if len(away_stats) >= 3:
-            last_3 = away_stats.tail(3)
-            features['away_ppg_l3'] = last_3['points'].mean()
-            features['away_epa_l3'] = last_3['epa_per_play'].mean()
-            features['away_success_l3'] = last_3['success_rate'].mean()
-        else:
-            features['away_ppg_l3'] = features['away_ppg_season']
-            features['away_epa_l3'] = features['away_epa_season']
-            features['away_success_l3'] = features['away_success_season']
-        
-        # AWAY TEAM RECENT FORM (last 5)
-        if len(away_stats) >= 5:
-            last_5 = away_stats.tail(5)
-            features['away_ppg_l5'] = last_5['points'].mean()
-            features['away_epa_l5'] = last_5['epa_per_play'].mean()
-            features['away_success_l5'] = last_5['success_rate'].mean()
-        else:
-            features['away_ppg_l5'] = features['away_ppg_season']
-            features['away_epa_l5'] = features['away_epa_season']
-            features['away_success_l5'] = features['away_success_season']
-        
-        # MATCHUP DIFFERENTIALS
-        features['epa_differential'] = features['home_epa_season'] - features['away_epa_season']
+        return features
         features['ppg_differential'] = features['home_ppg_season'] - features['away_ppg_season']
         features['success_differential'] = features['home_success_season'] - features['away_success_season']
         features['ypp_differential'] = features['home_ypp_season'] - features['away_ypp_season']
@@ -235,7 +192,7 @@ class WeeklyPredictor:
         if 'spread_line' in self.win_feature_names:
             features['spread_line'] = spread_line if spread_line is not None else 0.0
         if 'total_line' in self.win_feature_names:
-            features['total_line'] = total_line if total_line is not None else 0.0
+            features['total_line'] = total_line if total_line is not None else 44.0
         
         # PREDICT WIN/LOSS (XGBoost Classification)
         X_win = np.array([[features.get(name, 0.0) for name in self.win_feature_names]])
@@ -311,7 +268,7 @@ class WeeklyPredictor:
         schedule = self.fetch_schedule(season, week)
         
         if len(schedule) == 0:
-            print(f"❌ No games found for Week {week}")
+            print(f"[ERROR] No games found for Week {week}")
             return []
         
         print(f"Found {len(schedule)} games\n")
@@ -363,7 +320,7 @@ class WeeklyPredictor:
             print(f"   > Prediction: {winner} wins ({conf:.1f}% confidence)")
             
             if 'correct' in result:
-                status = "✅ CORRECT" if result['correct'] else "❌ WRONG"
+                status = "[CORRECT]" if result['correct'] else "[WRONG]"
                 print(f"   {status} (Actual: {result['actual_winner']} won)")
             
             print()
@@ -397,7 +354,7 @@ class WeeklyPredictor:
         conn.close()
         
         if len(df) == 0:
-            print("❌ No upcoming games found")
+            print("[ERROR] No upcoming games found")
             return []
         
         season = int(df.iloc[0]['season'])
@@ -410,7 +367,7 @@ class WeeklyPredictor:
         
         # Return ALL games (scheduled, in-progress, and completed)
         # The frontend will handle filtering/display based on game status
-        print(f"✅ Generated {len(all_predictions)} predictions (all games for the week)")
+        print(f"[OK] Generated {len(all_predictions)} predictions (all games for the week)")
         
         return all_predictions
 
@@ -441,7 +398,7 @@ def main():
         import json
         with open(output_file, 'w') as f:
             json.dump(predictions, f, indent=2, default=str)
-        print(f"💾 Predictions saved to {output_file}")
+        print(f"[SAVED] Predictions saved to {output_file}")
 
 
 if __name__ == "__main__":
