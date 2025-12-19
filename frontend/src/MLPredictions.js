@@ -252,11 +252,12 @@ function MLPredictions() {
               }
             });
             
-            // Count value plays (AI differs from Vegas by 3+ points)
-            const valuePlays = finishedGames.filter(p => 
-              p.spread_difference !== null && 
-              Math.abs(p.spread_difference) >= 3.0
-            );
+            // Count split predictions (AI differs from Vegas by 7+ points OR 15%+ probability)
+            const valuePlays = finishedGames.filter(p => {
+              const spreadDiff = p.spread_difference !== null ? Math.abs(p.spread_difference) : 0;
+              const probDiff = p.vegas_spread !== null ? Math.abs((p.home_win_prob || 0.5) - 0.5) : 0;
+              return spreadDiff >= 7.0 || probDiff >= 0.15;
+            });
             let valuePlayWins = 0;
             
             valuePlays.forEach(p => {
@@ -351,15 +352,15 @@ function MLPredictions() {
                     </div>
                   </div>
                   <div className="stat-box value-play-stat">
-                    <div className="stat-icon">💎</div>
+                    <div className="stat-icon">⚡</div>
                     <div className="stat-content">
-                      <div className="stat-label">Value Play Record</div>
+                      <div className="stat-label">Split Predictions</div>
                       <div className="stat-value">
                         {valuePlayWins} / {valuePlays.length}
                       </div>
                       <div className="stat-percent">
                         {valuePlays.length > 0 ? ((valuePlayWins / valuePlays.length) * 100).toFixed(1) : 0}% Hit
-                        <span className="stat-note"> (AI ≥3pts diff)</span>
+                        <span className="stat-note"> (AI ≥7pts diff)</span>
                       </div>
                     </div>
                   </div>
@@ -608,10 +609,10 @@ function MLPredictions() {
                         )}
                       </div>
                     </div>
-                    {pred.spread_difference !== null && Math.abs(pred.spread_difference) > 3 && (
+                    {pred.spread_difference !== null && Math.abs(pred.spread_difference) >= 7 && (
                       <div className="value-indicator">
                         <span className="value-badge">
-                          💎 Value Play: AI differs by {Math.abs(pred.spread_difference).toFixed(1)} pts
+                          ⚡ Split Prediction: AI {pred.ai_spread > pred.vegas_spread ? 'more confident' : 'less confident'} ({Math.abs(pred.spread_difference).toFixed(1)} pts)
                         </span>
                       </div>
                     )}
