@@ -18,6 +18,7 @@ import joblib
 import os
 from dotenv import load_dotenv
 from datetime import datetime
+from db_config import DATABASE_CONFIG
 
 load_dotenv()
 
@@ -35,7 +36,6 @@ class NFLNeuralNetworkV2:
         self.feature_names = []
         
         # Database connection - use environment variables
-        from db_config import DATABASE_CONFIG
         self.db_config = DATABASE_CONFIG
     
     def fetch_training_data(self):
