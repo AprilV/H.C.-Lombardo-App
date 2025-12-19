@@ -48,21 +48,17 @@ def print_subheader(title):
 
 def calculate_sample_weights(years):
     """
-    Calculate sample weights based on recency
-    Recent games (2019+) get 2x weight
-    Middle era (2011-2018) gets 1x weight
-    Older games (1999-2010) get 0.5x weight
+    Calculate sample weights based on recency (simplified for 2020-2025)
+    2020-2021: 0.5x weight (older games)
+    2022-2023: 2.0x weight (recent games, emphasize modern NFL)
     """
     weights = np.ones(len(years))
     
-    # Older era: 1999-2010 (pre-rule changes)
-    weights[years < 2011] = 0.5
+    # Older: 2020-2021
+    weights[years <= 2021] = 0.5
     
-    # Middle era: 2011-2018 (transition)
-    weights[(years >= 2011) & (years < 2019)] = 1.0
-    
-    # Modern era: 2019-2025 (current NFL)
-    weights[years >= 2019] = 2.0
+    # Recent: 2022-2023 (modern passing-heavy NFL)
+    weights[years >= 2022] = 2.0
     
     return weights
 
@@ -75,188 +71,54 @@ def fetch_training_data():
     
     conn = psycopg2.connect(**DB_CONFIG)
     
+    # Simplified query - just get completed games from 2020-2025 with their stats
     query = """
-        WITH team_rolling_stats AS (
-            SELECT 
-                tgs.game_id,
-                tgs.team,
-                g.season,
-                g.week,
-                g.home_team,
-                g.away_team,
-                g.home_score,
-                g.away_score,
-                
-                -- Rolling season stats (all games BEFORE this one)
-                AVG(tgs2.points) OVER (
-                    PARTITION BY tgs.team, tgs.season 
-                    ORDER BY g2.week 
-                    ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING
-                ) as ppg_season,
-                
-                AVG(tgs2.total_yards) OVER (
-                    PARTITION BY tgs.team, tgs.season 
-                    ORDER BY g2.week 
-                    ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING
-                ) as ypg_season,
-                
-                AVG(tgs2.touchdowns) OVER (
-                    PARTITION BY tgs.team, tgs.season 
-                    ORDER BY g2.week 
-                    ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING
-                ) as tpg_season,
-                
-                AVG(tgs2.epa_per_play) OVER (
-                    PARTITION BY tgs.team, tgs.season 
-                    ORDER BY g2.week 
-                    ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING
-                ) as epa_season,
-                
-                AVG(tgs2.success_rate) OVER (
-                    PARTITION BY tgs.team, tgs.season 
-                    ORDER BY g2.week 
-                    ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING
-                ) as success_season,
-                
-                AVG(tgs2.yards_per_play) OVER (
-                    PARTITION BY tgs.team, tgs.season 
-                    ORDER BY g2.week 
-                    ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING
-                ) as ypp_season,
-                
-                AVG(tgs2.third_down_pct) OVER (
-                    PARTITION BY tgs.team, tgs.season 
-                    ORDER BY g2.week 
-                    ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING
-                ) as third_down_season,
-                
-                AVG(tgs2.pass_epa) OVER (
-                    PARTITION BY tgs.team, tgs.season 
-                    ORDER BY g2.week 
-                    ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING
-                ) as pass_epa_season,
-                
-                AVG(tgs2.rush_epa) OVER (
-                    PARTITION BY tgs.team, tgs.season 
-                    ORDER BY g2.week 
-                    ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING
-                ) as rush_epa_season,
-                
-                AVG(tgs2.cpoe) OVER (
-                    PARTITION BY tgs.team, tgs.season 
-                    ORDER BY g2.week 
-                    ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING
-                ) as cpoe_season,
-                
-                -- Last 3 games
-                AVG(tgs2.points) OVER (
-                    PARTITION BY tgs.team, tgs.season 
-                    ORDER BY g2.week 
-                    ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-                ) as ppg_l3,
-                
-                AVG(tgs2.epa_per_play) OVER (
-                    PARTITION BY tgs.team, tgs.season 
-                    ORDER BY g2.week 
-                    ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-                ) as epa_l3,
-                
-                AVG(tgs2.success_rate) OVER (
-                    PARTITION BY tgs.team, tgs.season 
-                    ORDER BY g2.week 
-                    ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING
-                ) as success_l3,
-                
-                -- Last 5 games
-                AVG(tgs2.points) OVER (
-                    PARTITION BY tgs.team, tgs.season 
-                    ORDER BY g2.week 
-                    ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-                ) as ppg_l5,
-                
-                AVG(tgs2.epa_per_play) OVER (
-                    PARTITION BY tgs.team, tgs.season 
-                    ORDER BY g2.week 
-                    ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-                ) as epa_l5,
-                
-                AVG(tgs2.success_rate) OVER (
-                    PARTITION BY tgs.team, tgs.season 
-                    ORDER BY g2.week 
-                    ROWS BETWEEN 5 PRECEDING AND 1 PRECEDING
-                ) as success_l5,
-                
-                -- Vegas lines
-                g.spread_line,
-                g.total_line
-                
-            FROM hcl.team_game_stats tgs
-            JOIN hcl.games g ON tgs.game_id = g.game_id
-            JOIN hcl.team_game_stats tgs2 ON tgs2.team = tgs.team AND tgs2.season = tgs.season
-            JOIN hcl.games g2 ON tgs2.game_id = g2.game_id
-            WHERE g.season >= 2020
-            AND g.is_postseason = FALSE
-            AND g.home_score IS NOT NULL  -- Only completed games
-            AND g.away_score IS NOT NULL
-        )
-        
         SELECT 
-            home.game_id,
-            home.season,
-            home.week,
-            home.home_team,
-            home.away_team,
-            home.home_score,
-            home.away_score,
-            (home.home_score - home.away_score) as point_differential,
+            g.game_id,
+            g.season,
+            g.week,
+            g.home_team,
+            g.away_team,
+            g.home_score,
+            g.away_score,
+            (g.home_score - g.away_score) as point_differential,
             
-            -- Home team features
-            COALESCE(home.ppg_season, 20) as home_ppg_season,
-            COALESCE(home.ypg_season, 320) as home_ypg_season,
-            COALESCE(home.tpg_season, 2.5) as home_tpg_season,
-            COALESCE(home.epa_season, 0) as home_epa_season,
-            COALESCE(home.success_season, 0.40) as home_success_season,
-            COALESCE(home.ypp_season, 5.5) as home_ypp_season,
-            COALESCE(home.third_down_season, 38) as home_third_down_season,
-            COALESCE(home.pass_epa_season, 0) as home_pass_epa_season,
-            COALESCE(home.rush_epa_season, 0) as home_rush_epa_season,
-            COALESCE(home.cpoe_season, 0) as home_cpoe_season,
-            COALESCE(home.ppg_l3, home.ppg_season, 20) as home_ppg_l3,
-            COALESCE(home.epa_l3, home.epa_season, 0) as home_epa_l3,
-            COALESCE(home.success_l3, home.success_season, 0.40) as home_success_l3,
-            COALESCE(home.ppg_l5, home.ppg_season, 20) as home_ppg_l5,
-            COALESCE(home.epa_l5, home.epa_season, 0) as home_epa_l5,
-            COALESCE(home.success_l5, home.success_season, 0.40) as home_success_l5,
+            -- Home team stats
+            COALESCE(h.points, 20) as home_ppg_season,
+            COALESCE(h.total_yards, 320) as home_ypg_season,
+            COALESCE(h.touchdowns, 2.5) as home_tpg_season,
+            COALESCE(h.epa_per_play, 0) as home_epa_season,
+            COALESCE(h.success_rate, 0.40) as home_success_season,
+            COALESCE(h.yards_per_play, 5.5) as home_ypp_season,
+            COALESCE(h.third_down_pct, 38) as home_third_down_season,
+            COALESCE(h.pass_epa, 0) as home_pass_epa_season,
+            COALESCE(h.rush_epa, 0) as home_rush_epa_season,
+            COALESCE(h.cpoe, 0) as home_cpoe_season,
             
-            -- Away team features
-            COALESCE(away.ppg_season, 20) as away_ppg_season,
-            COALESCE(away.ypg_season, 320) as away_ypg_season,
-            COALESCE(away.tpg_season, 2.5) as away_tpg_season,
-            COALESCE(away.epa_season, 0) as away_epa_season,
-            COALESCE(away.success_season, 0.40) as away_success_season,
-            COALESCE(away.ypp_season, 5.5) as away_ypp_season,
-            COALESCE(away.third_down_season, 38) as away_third_down_season,
-            COALESCE(away.pass_epa_season, 0) as away_pass_epa_season,
-            COALESCE(away.rush_epa_season, 0) as away_rush_epa_season,
-            COALESCE(away.cpoe_season, 0) as away_cpoe_season,
-            COALESCE(away.ppg_l3, away.ppg_season, 20) as away_ppg_l3,
-            COALESCE(away.epa_l3, away.epa_season, 0) as away_epa_l3,
-            COALESCE(away.success_l3, away.success_season, 0.40) as away_success_l3,
-            COALESCE(away.ppg_l5, away.ppg_season, 20) as away_ppg_l5,
-            COALESCE(away.epa_l5, away.epa_season, 0) as away_epa_l5,
-            COALESCE(away.success_l5, away.success_season, 0.40) as away_success_l5,
+            -- Away team stats  
+            COALESCE(a.points, 20) as away_ppg_season,
+            COALESCE(a.total_yards, 320) as away_ypg_season,
+            COALESCE(a.touchdowns, 2.5) as away_tpg_season,
+            COALESCE(a.epa_per_play, 0) as away_epa_season,
+            COALESCE(a.success_rate, 0.40) as away_success_season,
+            COALESCE(a.yards_per_play, 5.5) as away_ypp_season,
+            COALESCE(a.third_down_pct, 38) as away_third_down_season,
+            COALESCE(a.pass_epa, 0) as away_pass_epa_season,
+            COALESCE(a.rush_epa, 0) as away_rush_epa_season,
+            COALESCE(a.cpoe, 0) as away_cpoe_season,
             
             -- Vegas lines
-            COALESCE(home.spread_line, 0) as spread_line,
-            COALESCE(home.total_line, 44) as total_line
+            COALESCE(g.spread_line, 0) as spread_line,
+            COALESCE(g.total_line, 44) as total_line
             
-        FROM team_rolling_stats home
-        JOIN team_rolling_stats away 
-            ON home.game_id = away.game_id 
-            AND home.team = home.home_team 
-            AND away.team = home.away_team
-        WHERE home.ppg_season IS NOT NULL  -- Filter out first games with no history
-        ORDER BY home.season, home.week, home.game_id;
+        FROM hcl.games g
+        LEFT JOIN hcl.team_game_stats h ON g.game_id = h.game_id AND h.team = g.home_team
+        LEFT JOIN hcl.team_game_stats a ON g.game_id = a.game_id AND a.team = g.away_team
+        WHERE g.season >= 2020
+          AND g.is_postseason = FALSE
+          AND g.home_score IS NOT NULL
+          AND g.away_score IS NOT NULL
+        ORDER BY g.season, g.week, g.game_id;
     """
     
     df = pd.read_sql(query, conn)
@@ -272,28 +134,17 @@ def prepare_features(df):
     """Create feature matrix and target variable"""
     print_subheader("PREPARING FEATURES")
     
-    # Feature columns (41 features - same as win/loss model)
+    # Feature columns - simplified (20 features instead of 40)
     feature_cols = [
         # Home team season stats (10)
         'home_ppg_season', 'home_ypg_season', 'home_tpg_season', 'home_epa_season',
         'home_success_season', 'home_ypp_season', 'home_third_down_season',
         'home_pass_epa_season', 'home_rush_epa_season', 'home_cpoe_season',
         
-        # Home team recent form (6)
-        'home_ppg_l3', 'home_epa_l3', 'home_success_l3',
-        'home_ppg_l5', 'home_epa_l5', 'home_success_l5',
-        
         # Away team season stats (10)
         'away_ppg_season', 'away_ypg_season', 'away_tpg_season', 'away_epa_season',
         'away_success_season', 'away_ypp_season', 'away_third_down_season',
-        'away_pass_epa_season', 'away_rush_epa_season', 'away_cpoe_season',
-        
-        # Away team recent form (6)
-        'away_ppg_l3', 'away_epa_l3', 'away_success_l3',
-        'away_ppg_l5', 'away_epa_l5', 'away_success_l5',
-        
-        # Vegas lines (2)
-        'spread_line', 'total_line'
+        'away_pass_epa_season', 'away_rush_epa_season', 'away_cpoe_season'
     ]
     
     # Add matchup differentials (4)
@@ -438,17 +289,18 @@ def main():
     y_test = y[test_mask]
     df_test = df[test_mask]
     
-    print(f"Training Set (1999-2023): {len(X_train):,} games")
-    print(f"Validation Set (2024):    {len(X_val):,} games")
-    print(f"Test Set (2025):          {len(X_test):,} games")
+    print(f"Training Set (2020-2023): {len(X_train):,} games")
+    print(f"Validation Set (2024):     {len(X_val):,} games")
+    print(f"Test Set (2025):           {len(X_test):,} games")
     
-    # Calculate sample weights
+    # Calculate sample weights - simplified for 2020-2025 data
     print_subheader("CALCULATING SAMPLE WEIGHTS (RECENCY EMPHASIS)")
     
     weights = calculate_sample_weights(df_train['season'].values)
     
     print(f"Weight distribution:")
-    print(f"  1999-2010 (older):  {np.sum(df_train['season'] < 2011):,} games ├ù 0.5 weight")
+    print(f"  2020-2021: {np.sum(df_train['season'] <= 2021):,} games × 0.5 weight")
+    print(f"  2022-2023: {np.sum(df_train['season'] >= 2022):,} games × 2.0 weight")
     print(f"  2011-2018 (middle): {np.sum((df_train['season'] >= 2011) & (df_train['season'] < 2019)):,} games ├ù 1.0 weight")
     print(f"  2019-2023 (modern): {np.sum(df_train['season'] >= 2019):,} games ├ù 2.0 weight")
     print(f"  Effective training size: {np.sum(weights):,.0f} weighted samples")
