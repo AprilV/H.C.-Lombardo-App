@@ -16,8 +16,12 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 import joblib
 import os
+import sys
 from dotenv import load_dotenv
 from datetime import datetime
+
+# Add parent directory to path to import db_config
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from db_config import DATABASE_CONFIG
 
 load_dotenv()
