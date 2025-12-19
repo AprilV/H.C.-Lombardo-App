@@ -56,7 +56,7 @@ class WeeklyPredictor:
         conn = psycopg2.connect(**self.db_config)
         
         query = """
-            SELECT 
+            SELECT
                 game_id,
                 season,
                 week,
@@ -66,7 +66,7 @@ class WeeklyPredictor:
                 kickoff_time_utc,
                 home_score,
                 away_score,
-                COALESCE(closing_spread, spread_line) as spread_line,  -- Use locked closing spread if available
+                spread_line,
                 total_line,
                 home_moneyline,
                 away_moneyline,
