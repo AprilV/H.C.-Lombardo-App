@@ -831,6 +831,44 @@ def get_performance_stats():
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
+@ml_api.route('/api/ml/available-weeks', methods=['GET'])
+def get_available_weeks():
+    """
+    Get list of all weeks with predictions available
+    
+    Returns weeks from both XGBoost and Elo predictions
+    """
+    try:
+        conn = psycopg2.connect(**get_predictor().db_config)
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        
+        # Get all weeks with predictions from either table
+        cur.execute("""
+            SELECT DISTINCT season, week, COUNT(*) as game_count
+            FROM (
+                SELECT season, week, game_id FROM hcl.ml_predictions
+                UNION
+                SELECT season, week, game_id FROM hcl.ml_predictions_elo
+            ) combined
+            GROUP BY season, week
+            ORDER BY season DESC, week DESC
+        """)
+        
+        weeks = [dict(row) for row in cur.fetchall()]
+        
+        cur.close()
+        conn.close()
+        
+        return jsonify({
+            'success': True,
+            'weeks': weeks,
+            'total': len(weeks)
+        })
+        
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
 # ============================================================================
 # ELO RATING SYSTEM ENDPOINTS
 # ============================================================================

@@ -7,6 +7,7 @@ import MatchupAnalyzer from './MatchupAnalyzer';
 import TeamDetail from './TeamDetail';
 import Analytics from './Analytics';
 import MLPredictions from './MLPredictions';
+import MLPredictionsRedesign from './MLPredictionsRedesign';
 import Admin from './Admin';
 import './App.css';
 
@@ -53,7 +54,8 @@ function App() {
             <Route path="/game-statistics" element={<GameStatistics />} />
             <Route path="/matchup-analyzer" element={<MatchupAnalyzer />} />
             <Route path="/analytics" element={<Analytics />} />
-            <Route path="/ml-predictions" element={<MLPredictions />} />
+            <Route path="/ml-predictions" element={<MLPredictionsRedesign />} />
+            <Route path="/ml-predictions-old" element={<MLPredictions />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="/team/:teamAbbr" element={<TeamDetail />} />
           </Routes>
