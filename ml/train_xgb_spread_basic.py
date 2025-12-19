@@ -42,58 +42,52 @@ def load_data(schema='hcl'):
     query = f"""
         WITH game_stats AS (
             SELECT 
-                tgs.game_id, tgs.team, g.season, g.week, g.game_date,
-                -- Basic Scoring & Yardage
-                tgs.points, tgs.total_yards, tgs.passing_yards, tgs.rushing_yards,
-                tgs.yards_per_play, tgs.turnovers,
-                -- Efficiency Metrics
-                tgs.third_down_pct, tgs.red_zone_pct, tgs.fourth_down_pct,
-                -- EPA & Advanced Metrics
-                tgs.epa_per_play, tgs.success_rate, tgs.pass_epa, tgs.rush_epa,
-                tgs.cpoe, tgs.pass_success_rate, tgs.rush_success_rate,
-                -- Passing Stats
-                tgs.completion_pct, tgs.qb_rating, tgs.interceptions, tgs.sacks_taken,
-                tgs.air_yards_per_att,
-                -- Rushing Stats
-                tgs.yards_per_carry, tgs.explosive_play_pct,
-                -- Time & Drives
-                tgs.time_of_possession_pct, tgs.early_down_success_rate
+                tgs.game_id,
+                tgs.team,
+                g.season,
+                g.week,
+                g.game_date,
+                tgs.points,
+                tgs.total_yards,
+                tgs.passing_yards,
+                tgs.rushing_yards,
+                tgs.yards_per_play,
+                tgs.turnovers,
+                tgs.third_down_pct,
+                tgs.red_zone_pct
             FROM {schema}.team_game_stats tgs
             JOIN {schema}.games g ON tgs.game_id = g.game_id
-            WHERE g.season >= 2020 AND g.is_postseason = FALSE
+            WHERE g.season >= 2020
+              AND g.is_postseason = FALSE
         ),
         cumulative_stats AS (
             SELECT 
-                game_id, team, season, week,
-                -- All metrics averaged from PRIOR games only
-                AVG(points) OVER w as avg_ppg,
-                AVG(total_yards) OVER w as avg_yards,
-                AVG(passing_yards) OVER w as avg_pass_yards,
-                AVG(rushing_yards) OVER w as avg_rush_yards,
-                AVG(yards_per_play) OVER w as avg_yards_per_play,
-                AVG(turnovers) OVER w as avg_turnovers,
-                AVG(third_down_pct) OVER w as avg_third_down_pct,
-                AVG(red_zone_pct) OVER w as avg_red_zone_pct,
-                AVG(fourth_down_pct) OVER w as avg_fourth_down_pct,
-                AVG(epa_per_play) OVER w as avg_epa,
-                AVG(success_rate) OVER w as avg_success_rate,
-                AVG(pass_epa) OVER w as avg_pass_epa,
-                AVG(rush_epa) OVER w as avg_rush_epa,
-                AVG(cpoe) OVER w as avg_cpoe,
-                AVG(pass_success_rate) OVER w as avg_pass_success,
-                AVG(rush_success_rate) OVER w as avg_rush_success,
-                AVG(completion_pct) OVER w as avg_completion_pct,
-                AVG(qb_rating) OVER w as avg_qb_rating,
-                AVG(interceptions) OVER w as avg_interceptions,
-                AVG(sacks_taken) OVER w as avg_sacks,
-                AVG(air_yards_per_att) OVER w as avg_air_yards,
-                AVG(yards_per_carry) OVER w as avg_ypc,
-                AVG(explosive_play_pct) OVER w as avg_explosive,
-                AVG(time_of_possession_pct) OVER w as avg_top,
-                AVG(early_down_success_rate) OVER w as avg_early_down_success
-            FROM game_stats
-            WINDOW w AS (PARTITION BY team, season ORDER BY week ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING
-        )
+                game_id,
+                team,
+                season,
+                week,
+                -- Calculate averages from PRIOR games only (exclude current game)
+                AVG(points) OVER (
+                    PARTITION BY team, season 
+                    ORDER BY week 
+                    ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING
+                ) as avg_ppg,
+                AVG(total_yards) OVER (
+                    PARTITION BY team, season 
+                    ORDER BY week 
+                    ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING
+                ) as avg_yards,
+                AVG(passing_yards) OVER (
+                    PARTITION BY team, season 
+                    ORDER BY week 
+                    ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING
+                ) as avg_pass_yards,
+                AVG(rushing_yards) OVER (
+                    PARTITION BY team, season 
+                    ORDER BY week 
+                    ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING
+                ) as avg_rush_yards,
+                AVG(yards_per_play) OVER (
                     PARTITION BY team, season 
                     ORDER BY week 
                     ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING
@@ -272,7 +266,7 @@ def main():
     print("Data: 2020-2025 seasons from hcl_test schema")
     
     # Load data
-    df = load_data(schema='hcl')
+    df = load_data(schema='hcl_test')
     
     # Prepare features
     X, y, feature_cols = prepare_features(df)
