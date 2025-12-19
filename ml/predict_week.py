@@ -236,15 +236,15 @@ class WeeklyPredictor:
             'predicted_winner': spread_predicted_winner,
             
             # Score predictions
-            'predicted_home_score': predicted_home_score,
-            'predicted_away_score': predicted_away_score,
-            'predicted_margin': round(predicted_margin, 1),
+            'predicted_home_score': float(predicted_home_score),
+            'predicted_away_score': float(predicted_away_score),
+            'predicted_margin': float(predicted_margin),
             
             # Spread analysis
-            'ai_spread': round(ai_spread, 1),
-            'vegas_spread': spread_line,
-            'spread_difference': spread_difference,
-            'total_line': total_line,
+            'ai_spread': float(ai_spread),
+            'vegas_spread': float(spread_line) if spread_line is not None else None,
+            'spread_difference': float(spread_difference) if spread_difference is not None else None,
+            'total_line': float(total_line) if total_line is not None else None,
             
             # Key factors
             'key_factors': {

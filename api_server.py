@@ -8,16 +8,31 @@ from flask_cors import CORS
 import psycopg2
 import sys
 import os
-from logging_config import setup_logging
-from dashboard_api import register_dashboard_routes
+import logging
+
+try:
+    from logging_config import setup_logging
+    loggers = setup_logging()
+    logger = loggers['api']
+except ImportError:
+    logging.basicConfig(level=logging.INFO)
+    logger = logging.getLogger(__name__)
+
+try:
+    from dashboard_api import register_dashboard_routes
+except ImportError:
+    register_dashboard_routes = None
+    logger.warning("dashboard_api not found")
+
 from api_routes_hcl import hcl_bp
 from api_routes_ml import ml_api
 from api_routes_live_scores import live_scores_api
-from background_updater import updater
 
-# Initialize logger
-loggers = setup_logging()
-logger = loggers['api']
+try:
+    from background_updater import updater
+except ImportError:
+    updater = None
+    logger.warning("background_updater not found")
 
 # Get build folder path
 BUILD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'frontend', 'build')
@@ -43,12 +58,12 @@ CORS(app, resources={
 })
 
 # Register dashboard API routes
-register_dashboard_routes(app)
+if register_dashboard_routes:
+    register_dashboard_routes(app)
 
 # Register HCL API routes
 app.register_blueprint(hcl_bp)
 
-# Register ML API routes
 # Register ML API routes
 app.register_blueprint(ml_api)
 
