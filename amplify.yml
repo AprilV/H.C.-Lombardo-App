@@ -24,3 +24,6 @@ customHeaders:
     headers:
       - key: 'Cache-Control'
         value: 'no-cache'
+# SPA routing - redirect all paths to index.html
+# This must be configured in Amplify Console under "Rewrites and redirects"
+# Rule: Source=</^[^.]+$|\.(?!(css|gif|ico|jpg|js|png|txt|svg|woff|ttf|map|json)$)([^.]+$)/> Target=/index.html Type=200
