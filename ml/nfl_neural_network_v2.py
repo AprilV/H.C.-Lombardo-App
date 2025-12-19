@@ -34,13 +34,9 @@ class NFLNeuralNetworkV2:
         self.scaler = StandardScaler()
         self.feature_names = []
         
-        # Database connection
-        self.db_config = {
-            'dbname': 'nfl_analytics',
-            'user': 'postgres',
-            'password': os.getenv('DB_PASSWORD'),
-            'host': 'localhost'
-        }
+        # Database connection - use environment variables
+        from db_config import DATABASE_CONFIG
+        self.db_config = DATABASE_CONFIG
     
     def fetch_training_data(self):
         """Fetch game-level data (not team_game_stats!)"""
