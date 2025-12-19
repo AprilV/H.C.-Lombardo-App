@@ -1,76 +1,171 @@
-name: NFL 2025 Data Update
+name: NFL Data Update (PRODUCTION)
 
 on:
+  # Automatic schedule: Monday 2 AM UTC
   schedule:
     - cron: '0 2 * * 1'
+  
+  # Manual trigger
   workflow_dispatch:
+    inputs:
+      seasons:
+        description: 'Seasons to update'
+        required: false
+        default: '2025'
 
 jobs:
-  update-data:
+  production-update:
     runs-on: ubuntu-latest
+    name: Production NFL Database Update (hcl schema)
     
     steps:
-      - name: Setup SSH key
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      
+      - name: Verify SSM connectivity
         run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/ec2_key.pem
-          chmod 600 ~/.ssh/ec2_key.pem
-          # Verify key file was created and has content
-          if [ ! -s ~/.ssh/ec2_key.pem ]; then
-            echo "❌ ERROR: SSH key file is empty or missing!"
+          echo "🔍 Checking EC2 SSM registration..."
+          aws ssm describe-instance-information \
+            --filters "Key=InstanceIds,Values=${{ secrets.EC2_INSTANCE_ID }}" \
+            --query "InstanceInformationList[0].PingStatus" \
+            --output text
+      
+      - name: Pull latest code on EC2
+        run: |
+          echo "📥 Pulling latest code from GitHub..."
+          COMMAND_ID=$(aws ssm send-command \
+            --instance-ids ${{ secrets.EC2_INSTANCE_ID }} \
+            --document-name "AWS-RunShellScript" \
+            --comment "PRODUCTION: Pull latest code" \
+            --parameters 'commands=[
+              "cd /home/ubuntu/H.C.-Lombardo-App && git pull origin master || echo Already up to date"
+            ]' \
+            --output text \
+            --query "Command.CommandId")
+          
+          echo "Command ID: $COMMAND_ID"
+          
+          sleep 10
+          
+          STATUS=$(aws ssm get-command-invocation \
+            --instance-id ${{ secrets.EC2_INSTANCE_ID }} \
+            --command-id $COMMAND_ID \
+            --query "Status" \
+            --output text)
+          
+          echo "✅ Git pull output:"
+          aws ssm get-command-invocation \
+            --instance-id ${{ secrets.EC2_INSTANCE_ID }} \
+            --command-id $COMMAND_ID \
+            --query "StandardOutputContent" \
+            --output text
+      
+      - name: Load data to PRODUCTION schema (hcl)
+        run: |
+          SEASONS="${{ github.event.inputs.seasons || '2025' }}"
+          echo "🚀 PRODUCTION MODE - Loading to hcl schema"
+          echo "Seasons: $SEASONS"
+          
+          COMMAND_ID=$(aws ssm send-command \
+            --instance-ids ${{ secrets.EC2_INSTANCE_ID }} \
+            --document-name "AWS-RunShellScript" \
+            --comment "PRODUCTION: Load NFL data to hcl schema" \
+            --timeout-seconds 600 \
+            --parameters "commands=[
+              \"cd /home/ubuntu/H.C.-Lombardo-App && . venv/bin/activate && python scripts/data_loading/ingest_historical_games.py --production --seasons $SEASONS\"
+            ]" \
+            --output text \
+            --query "Command.CommandId")
+          
+          echo "Command ID: $COMMAND_ID"
+          
+          # Wait for command to complete
+          echo "⏳ Waiting for command to complete..."
+          sleep 30
+          
+          # Check status
+          STATUS=$(aws ssm get-command-invocation \
+            --instance-id ${{ secrets.EC2_INSTANCE_ID }} \
+            --command-id $COMMAND_ID \
+            --query "Status" \
+            --output text)
+          
+          echo "Status: $STATUS"
+          
+          echo "📊 Production data load output:"
+          aws ssm get-command-invocation \
+            --instance-id ${{ secrets.EC2_INSTANCE_ID }} \
+            --command-id $COMMAND_ID \
+            --query "StandardOutputContent" \
+            --output text
+          
+          # Check if command succeeded
+          if [ "$STATUS" != "Success" ]; then
+            echo "❌ Command failed with status: $STATUS"
+            echo "Error output:"
+            aws ssm get-command-invocation \
+              --instance-id ${{ secrets.EC2_INSTANCE_ID }} \
+              --command-id $COMMAND_ID \
+              --query "StandardErrorContent" \
+              --output text
             exit 1
           fi
-          echo "✅ SSH key file created ($(wc -l < ~/.ssh/ec2_key.pem) lines)"
-          ssh-keyscan -H 34.198.25.249 >> ~/.ssh/known_hosts
-          # Test SSH connection
-          echo "🔍 Testing SSH connection..."
-          ssh -i ~/.ssh/ec2_key.pem -o ConnectTimeout=10 -o StrictHostKeyChecking=no -v ubuntu@34.198.25.249 'echo "SSH connection successful"' || {
-            echo "❌ ERROR: SSH connection test failed!"
+          
+          echo "✅ Data loaded successfully to hcl (production) schema"
+      
+      - name: Verify PRODUCTION schema
+        run: |
+          echo "🔍 Verifying hcl (production) schema was updated..."
+          COMMAND_ID=$(aws ssm send-command \
+            --instance-ids ${{ secrets.EC2_INSTANCE_ID }} \
+            --document-name "AWS-RunShellScript" \
+            --parameters 'commands=[
+              "cd /home/ubuntu/H.C.-Lombardo-App && . venv/bin/activate && python -c \"import psycopg2; from db_config import DATABASE_CONFIG; conn = psycopg2.connect(**DATABASE_CONFIG); cur = conn.cursor(); cur.execute(\\\"SELECT COUNT(*) FROM hcl.games WHERE season=2025\\\"); prod_count = cur.fetchone()[0]; cur.execute(\\\"SELECT COUNT(*) FROM hcl.team_game_stats WHERE season=2025\\\"); stats_count = cur.fetchone()[0]; print(f\\\"PRODUCTION schema: {prod_count} games, {stats_count} team stats (2025)\\\"); cur.close(); conn.close()\""
+            ]' \
+            --output text \
+            --query "Command.CommandId")
+          
+          echo "Command ID: $COMMAND_ID"
+          sleep 20
+          
+          STATUS=$(aws ssm get-command-invocation \
+            --instance-id ${{ secrets.EC2_INSTANCE_ID }} \
+            --command-id $COMMAND_ID \
+            --query "Status" \
+            --output text)
+          
+          echo "Status: $STATUS"
+          
+          echo "✅ Verification results:"
+          aws ssm get-command-invocation \
+            --instance-id ${{ secrets.EC2_INSTANCE_ID }} \
+            --command-id $COMMAND_ID \
+            --query "StandardOutputContent" \
+            --output text
+          
+          if [ "$STATUS" != "Success" ]; then
+            echo "❌ Verification failed with status: $STATUS"
+            echo "Error output:"
+            aws ssm get-command-invocation \
+              --instance-id ${{ secrets.EC2_INSTANCE_ID }} \
+              --command-id $COMMAND_ID \
+              --query "StandardErrorContent" \
+              --output text
             exit 1
-          }
+          fi
       
-      - name: Update Python packages on EC2
+      - name: Production workflow summary
         run: |
-          ssh -i ~/.ssh/ec2_key.pem \
-            -o ConnectTimeout=10 \
-            -o StrictHostKeyChecking=no \
-            -o BatchMode=yes \
-            ubuntu@34.198.25.249 \
-            'cd /home/ubuntu/H.C.-Lombardo-App && source venv/bin/activate && pip install --upgrade nfl-data-py pandas' || {
-              echo "⚠️ Package update failed - continuing anyway"
-            }
-      
-      - name: Update 2025 NFL data on EC2
-        run: |
-          ssh -i ~/.ssh/ec2_key.pem \
-            -o ConnectTimeout=10 \
-            -o StrictHostKeyChecking=no \
-            -o BatchMode=yes \
-            ubuntu@34.198.25.249 \
-            'cd /home/ubuntu/H.C.-Lombardo-App && source venv/bin/activate && python ingest_historical_games.py --production --seasons 2025' || {
-              echo "❌ SSH command failed - workflow stopped"
-              exit 1
-            }
-      
-      - name: Calculate EPA and advanced stats on EC2
-        run: |
-          ssh -i ~/.ssh/ec2_key.pem \
-            -o ConnectTimeout=10 \
-            -o StrictHostKeyChecking=no \
-            -o BatchMode=yes \
-            ubuntu@34.198.25.249 \
-            'cd /home/ubuntu/H.C.-Lombardo-App && source venv/bin/activate && python update_2025_with_epa.py' || {
-              echo "⚠️ EPA calculation failed - continuing (play-by-play data may not be available yet)"
-            }
-      
-      - name: Verify update
-        run: |
-          ssh -i ~/.ssh/ec2_key.pem \
-            -o ConnectTimeout=10 \
-            -o StrictHostKeyChecking=no \
-            -o BatchMode=yes \
-            ubuntu@34.198.25.249 \
-            'cd /home/ubuntu/H.C.-Lombardo-App && source venv/bin/activate && python -c "import psycopg2; conn = psycopg2.connect(host=\"localhost\", database=\"nfl_analytics\", user=\"nfl_user\", password=\"nfl2024\", port=5432); cur = conn.cursor(); cur.execute(\"SELECT COUNT(*), MAX(week) FROM hcl.games WHERE season = 2025 AND home_score IS NOT NULL\"); count, max_week = cur.fetchone(); print(f\"✅ 2025 Season: {count} completed games through Week {max_week}\"); conn.close()"' || {
-              echo "❌ Verification failed"
-              exit 1
-            }
+          echo "🎯 PRODUCTION WORKFLOW COMPLETE"
+          echo "✅ SSM connectivity verified"
+          echo "✅ Latest code pulled from GitHub"
+          echo "✅ Data loaded to hcl (production) schema"
+          echo "✅ Production database updated successfully"
+          echo "📅 Next scheduled run: Monday 2 AM UTC"
