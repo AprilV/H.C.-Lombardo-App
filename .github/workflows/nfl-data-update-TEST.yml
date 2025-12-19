@@ -83,10 +83,18 @@ jobs:
           
           echo "Command ID: $COMMAND_ID"
           
-          # Wait for completion (max 10 minutes)
-          aws ssm wait command-executed \
+          # Wait for command to complete
+          echo "⏳ Waiting for command to complete..."
+          sleep 30
+          
+          # Check status
+          STATUS=$(aws ssm get-command-invocation \
             --instance-id ${{ secrets.EC2_INSTANCE_ID }} \
-            --command-id $COMMAND_ID
+            --command-id $COMMAND_ID \
+            --query "Status" \
+            --output text)
+          
+          echo "Status: $STATUS"
           
           echo "📊 Test data load output:"
           aws ssm get-command-invocation \
@@ -94,6 +102,20 @@ jobs:
             --command-id $COMMAND_ID \
             --query "StandardOutputContent" \
             --output text
+          
+          # Check if command succeeded
+          if [ "$STATUS" != "Success" ]; then
+            echo "❌ Command failed with status: $STATUS"
+            echo "Error output:"
+            aws ssm get-command-invocation \
+              --instance-id ${{ secrets.EC2_INSTANCE_ID }} \
+              --command-id $COMMAND_ID \
+              --query "StandardErrorContent" \
+              --output text
+            exit 1
+          fi
+          
+          echo "✅ Data loaded successfully to hcl_test schema"
       
       - name: Verify TEST schema (not production)
         run: |
