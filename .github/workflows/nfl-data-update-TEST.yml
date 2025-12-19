@@ -41,8 +41,7 @@ jobs:
             --document-name "AWS-RunShellScript" \
             --comment "TEST: Pull latest code" \
             --parameters 'commands=[
-              "cd /home/ubuntu/H.C.-Lombardo-App",
-              "git pull origin master || echo Already up to date"
+              "cd /home/ubuntu/H.C.-Lombardo-App && git pull origin master || echo Already up to date"
             ]' \
             --output text \
             --query "Command.CommandId")
@@ -74,9 +73,7 @@ jobs:
             --comment "TEST: Load NFL data to hcl_test schema" \
             --timeout-seconds 600 \
             --parameters "commands=[
-              \"cd /home/ubuntu/H.C.-Lombardo-App\",
-              \"source venv/bin/activate\",
-              \"python scripts/data_loading/ingest_historical_games.py --testbed --seasons $SEASONS\"
+              \"cd /home/ubuntu/H.C.-Lombardo-App && . venv/bin/activate && python scripts/data_loading/ingest_historical_games.py --testbed --seasons $SEASONS\"
             ]" \
             --output text \
             --query "Command.CommandId")
