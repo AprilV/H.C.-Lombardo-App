@@ -121,16 +121,19 @@ jobs:
             --instance-ids ${{ secrets.EC2_INSTANCE_ID }} \
             --document-name "AWS-RunShellScript" \
             --parameters 'commands=[
-              "cd /home/ubuntu/H.C.-Lombardo-App",
-              "source venv/bin/activate",
-              "python -c \"import psycopg2; conn = psycopg2.connect(dbname=\\\"nfl_analytics\\\", user=\\\"nfl_user\\\", password=\\\"nfl2024\\\", host=\\\"localhost\\\"); cur = conn.cursor(); cur.execute(\\\"SELECT COUNT(*) FROM hcl_test.games WHERE season=2025\\\"); test_count = cur.fetchone()[0]; cur.execute(\\\"SELECT COUNT(*) FROM hcl.games WHERE season=2025\\\"); prod_count = cur.fetchone()[0]; print(f\\\"TEST schema: {test_count} games (2025)\\\"); print(f\\\"PROD schema: {prod_count} games (2025)\\\"); print(f\\\"Production unchanged: YES\\\"); cur.close(); conn.close()\""
+              "cd /home/ubuntu/H.C.-Lombardo-App && . venv/bin/activate && python -c \"import psycopg2; conn = psycopg2.connect(dbname=\\\"nfl_analytics\\\", user=\\\"nfl_user\\\", password=\\\"nfl2024\\\", host=\\\"localhost\\\"); cur = conn.cursor(); cur.execute(\\\"SELECT COUNT(*) FROM hcl_test.games WHERE season=2025\\\"); test_count = cur.fetchone()[0]; cur.execute(\\\"SELECT COUNT(*) FROM hcl.games WHERE season=2025\\\"); prod_count = cur.fetchone()[0]; print(f\\\"TEST schema: {test_count} games (2025)\\\"); print(f\\\"PROD schema: {prod_count} games (2025)\\\"); print(f\\\"Production unchanged: YES\\\"); cur.close(); conn.close()\""
             ]' \
             --output text \
             --query "Command.CommandId")
           
-          aws ssm wait command-executed \
+          echo "Command ID: $COMMAND_ID"
+          sleep 10
+          
+          STATUS=$(aws ssm get-command-invocation \
             --instance-id ${{ secrets.EC2_INSTANCE_ID }} \
-            --command-id $COMMAND_ID
+            --command-id $COMMAND_ID \
+            --query "Status" \
+            --output text)
           
           echo "✅ Verification results:"
           aws ssm get-command-invocation \
@@ -138,6 +141,11 @@ jobs:
             --command-id $COMMAND_ID \
             --query "StandardOutputContent" \
             --output text
+          
+          if [ "$STATUS" != "Success" ]; then
+            echo "❌ Verification failed"
+            exit 1
+          fi
       
       - name: Test workflow summary
         run: |
