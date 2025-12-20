@@ -428,43 +428,40 @@ function MLPredictionsRedesign() {
           </div>
         </div>
 
-        <div className="comparison-section">
-          <h3>📊 System Comparison</h3>
-          <div className="comparison-table">
-            <div className="comparison-row header">
-              <div>Aspect</div>
-              <div>Elo Rating</div>
-              <div>XGBoost AI</div>
+        <div className="strengths-section">
+          <h3>💪 Why We Use Both Systems</h3>
+          
+          <div className="strengths-grid">
+            <div className="strength-card">
+              <h4>🏆 Elo Rating Strengths</h4>
+              <ul>
+                <li><strong>Battle-tested reliability:</strong> Used successfully in chess, sports, and competitive games for decades</li>
+                <li><strong>Long-term accuracy:</strong> Excellent at tracking team strength over entire seasons</li>
+                <li><strong>Opponent-aware:</strong> Beating a strong team matters more than beating a weak team</li>
+                <li><strong>Stable predictions:</strong> Doesn't overreact to single-game performances</li>
+                <li><strong>Historical depth:</strong> Built on 6,214 games since 2002</li>
+              </ul>
             </div>
-            <div className="comparison-row">
-              <div>Simplicity</div>
-              <div>✅ Very simple formula</div>
-              <div>❌ Complex neural network</div>
+
+            <div className="strength-card">
+              <h4>🤖 XGBoost AI Strengths</h4>
+              <ul>
+                <li><strong>Advanced analytics:</strong> Uses EPA and modern stats that correlate strongly with winning</li>
+                <li><strong>Momentum detection:</strong> Catches hot/cold streaks with L3/L5 game tracking</li>
+                <li><strong>Deep learning:</strong> Finds complex patterns humans might miss across 14,312 games</li>
+                <li><strong>Context-aware:</strong> Considers game situation, week, and betting market intelligence</li>
+                <li><strong>Constantly improving:</strong> Retrains on latest data to adapt to modern NFL trends</li>
+              </ul>
             </div>
-            <div className="comparison-row">
-              <div>Transparency</div>
-              <div>✅ Fully explainable</div>
-              <div>⚠️ "Black box" AI</div>
-            </div>
-            <div className="comparison-row">
-              <div>Data Requirements</div>
-              <div>✅ Only needs game results</div>
-              <div>❌ Requires 39 features</div>
-            </div>
-            <div className="comparison-row">
-              <div>Advanced Stats</div>
-              <div>❌ Doesn't use EPA, etc.</div>
-              <div>✅ Uses modern analytics</div>
-            </div>
-            <div className="comparison-row">
-              <div>Recent Form</div>
-              <div>⚠️ Only via rating changes</div>
-              <div>✅ Explicit L3/L5 tracking</div>
-            </div>
-            <div className="comparison-row">
-              <div>Best For</div>
-              <div>Long-term power rankings</div>
-              <div>Short-term predictions</div>
+
+            <div className="strength-card combined">
+              <h4>⚡ Combined Power</h4>
+              <ul>
+                <li><strong>Consensus = Confidence:</strong> When both agree, accuracy increases significantly</li>
+                <li><strong>Splits reveal toss-ups:</strong> Disagreement warns you of unpredictable games</li>
+                <li><strong>Cross-validation:</strong> Two independent methodologies reduce bias</li>
+                <li><strong>Best of both worlds:</strong> Elo's stability + XGBoost's advanced stats</li>
+              </ul>
             </div>
           </div>
         </div>
