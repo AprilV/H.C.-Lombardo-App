@@ -1,247 +1,144 @@
 # ⚠️ STOP! READ THIS BEFORE DOING ANYTHING ⚠️
 
-**THIS FILE EXISTS BECAUSE YOU KEEP MAKING THE SAME MISTAKES**
+# READ_THIS_FIRST.md
+## Mandatory Orientation for AI Assistants
+
+STATUS: REQUIRED — READ BEFORE ANY ACTION  
+AUDIENCE: AI ASSISTANTS ONLY  
+AUTHORITY: SUBORDINATE ONLY TO AI_EXECUTION_CONTRACT.md
+
+This document exists to prevent repeated failures, assumptions, and partial execution.
+It must be read BEFORE any work begins.
+
+If this document is not read in full, all output is invalid.
 
 ---
 
-## 🚨 CRITICAL RULES - NO EXCEPTIONS
+## 1. PURPOSE OF THIS DOCUMENT
 
-### 1. **CHECK YOUR CURRENT SPRINT STATUS FIRST**
-- **DO NOT ASSUME** what sprint we're on
-- **READ** `dr.foster/README.md` to see current sprint
-- **READ** `dr.foster.md` for complete project history
-- **CHECK** git log to see latest commits
-- **As of Nov 20, 2025:** We are on **SPRINT 10 COMPLETE** (NOT Sprint 7!)
+This project is complex, interconnected, and sensitive to partial or incorrect changes.
 
-### 2. **NEVER TOUCH PRODUCTION FILES DIRECTLY**
-- ❌ **DO NOT** modify files in `c:\IS330\H.C Lombardo App\` root
-- ❌ **DO NOT** modify `api_routes_hcl.py` in production
-- ❌ **DO NOT** modify `frontend/src/` files in production
-- ❌ **DO NOT** run `npm run build` in production without testing first
-- ✅ **ONLY** work in `testbed/prototypes/[feature_name]/`
+Past failures occurred due to:
+- Skimming documentation
+- Making assumptions
+- Fixing symptoms instead of systems
+- Prioritizing speed over correctness
+- Applying local fixes without understanding global impact
 
-### 3. **MANDATORY WORKFLOW - FOLLOW EXACTLY**
-```
-Step 1: Read dr.foster folder files to understand current state
-Step 2: Create feature in testbed/prototypes/[feature_name]/
-Step 3: Write comprehensive tests
-Step 4: Run tests until 100% pass rate
-Step 5: Create timestamped backup of production files
-Step 6: Get user approval before touching production
-Step 7: Deploy to production
-Step 8: Verify deployment works
-Step 9: If broken, immediate rollback
-```
-
-### 4. **FILES YOU MUST READ BEFORE STARTING ANY WORK**
-1. `ai_reference/READ_THIS_FIRST.md` (THIS FILE!)
-2. `ai_reference/BEST_PRACTICES.md` - Development rules
-3. `ai_reference/STARTUP_GUIDE.md` - How to start/stop app
-4. `ai_reference/STARTUP_MODES.md` - Dev vs Production modes
-5. `dr.foster/README.md` - Current sprint status
-6. `dr.foster.md` - Complete project history
+This document exists to stop those behaviors.
 
 ---
 
-## 📋 CURRENT PROJECT STATE
+## 2. REQUIRED ACTIONS BEFORE DOING ANYTHING
 
-### **Application:** H.C. Lombardo NFL Analytics
-- **Course:** IS330
-- **Student:** April V. Sykes
-- **Current Status:** Sprint 10 Complete
-- **Last Commit:** feae9b5f - "Fix team detail page: restore all game stats, add team logos, fix navigation, update database loader"
-- **Commit Date:** Recent (check git log for exact date)
+Before responding to ANY request, the AI MUST:
 
-### **Technology Stack:**
-- **Database:** PostgreSQL `nfl_analytics` 
-  - Schema: `hcl` (historical data 1999-2025)
-  - Schema: `public` (live standings)
-- **Backend:** Flask REST API (Python)
-  - Main file: `api_server.py`
-  - Routes: `api_routes_hcl.py`, `api_routes_ml.py`
-  - Port: 5000
-- **Frontend:** React 18.2.0
-  - Source: `frontend/src/`
-  - Build: `frontend/build/` (served by Flask)
-  - Development Port: 3000 (dev mode only)
-  - Production Port: 5000 (Flask serves React build)
+1. Read **AI_EXECUTION_CONTRACT.md** in full.
+2. Read **BEST_PRACTICES.md** in full.
+3. Confirm that compliance with both documents is possible.
 
-### **Environments:**
-1. **Production:** `c:\IS330\H.C Lombardo App\`
-   - Files in root directory
-   - NEVER modify directly
-   - Always use git restore if broken
-   
-2. **Testbed:** `c:\IS330\H.C Lombardo App\testbed\`
-   - ALL development happens here first
-   - Create `testbed/prototypes/[feature_name]/` for new features
-   - Test until 100% pass rate
-   - Only then migrate to production
+If compliance is not possible:
+→ STOP  
+→ ASK QUESTIONS  
+→ WAIT
 
-### **Startup Procedures:**
-- **Production Mode:** `START.bat` (port 5000 only, optimized build)
-- **Dev Mode:** `START-DEV.bat` (port 3000 + 5000, hot reload)
-- **Stop:** `STOP.bat` (graceful shutdown)
-- **Never:** Manually run `python api_server.py` without understanding context
+Proceeding without completing these steps is a FAILURE.
 
 ---
 
-## 🚫 MISTAKES YOU KEEP MAKING
+## 3. ASSUMPTIONS ARE FORBIDDEN
 
-### **Mistake #1: Assuming Sprint Number**
-❌ You assumed Sprint 7 when we're on Sprint 10
-✅ **FIX:** Read `dr.foster/README.md` FIRST to see current sprint
+The AI is NOT allowed to assume:
 
-### **Mistake #2: Modifying Production Directly**
-❌ You modified `api_routes_hcl.py` and `TeamDetail.js` in production
-❌ You broke the entire team detail page
-✅ **FIX:** Work in `testbed/prototypes/` ONLY
+- What the user wants beyond explicit instructions
+- That prior context is still valid
+- That “similar” solutions apply
+- That speed is preferred
+- That partial fixes are acceptable
 
-### **Mistake #3: Not Following BEST_PRACTICES.md**
-❌ You skip testbed, skip tests, skip backups
-❌ You make changes user never approved
-✅ **FIX:** Follow the documented workflow exactly
-
-### **Mistake #4: Overconfidence**
-❌ You think you understand the project without reading docs
-❌ You make wholesale changes without checking what data is being received
-✅ **FIX:** Be humble, read docs, ask before changing anything
-
-### **Mistake #5: Not Understanding Data Flow**
-❌ You changed API endpoints without checking what fields the frontend expects
-❌ You broke stats, charts, and display because field names didn't match
-✅ **FIX:** Check API response structure, check frontend code that consumes it
+If something is not explicitly stated:
+→ ASK
 
 ---
 
-## 📖 WHAT YOU NEED TO KNOW ABOUT THIS APP
+## 4. THIS IS NOT A TOY PROJECT
 
-### **Database Schema:**
-- **hcl.games** - Individual game records (1999-2025)
-- **hcl.team_game_stats** - Team performance per game (47+ metrics)
-- **hcl.team_season_stats** - Aggregated season stats
-- Materialized views for performance
-- EPA (Expected Points Added) - most important predictive stat
+This codebase is NOT:
 
-### **API Endpoints (api_routes_hcl.py):**
-- `GET /api/hcl/teams` - List all teams
-- `GET /api/hcl/teams/<abbr>` - Team season stats
-- `GET /api/hcl/teams/<abbr>/games` - Team game history
-- `GET /api/hcl/games/<game_id>` - Individual game details
+- A sandbox
+- A tutorial
+- A demo environment
+- A place for experimentation without approval
 
-### **Frontend Pages:**
-- **Home** - Team standings grid
-- **TeamDetail** - Individual team page (stats, charts, game history)
-- **MatchupAnalyzer** - Compare two teams
-- **GameStatistics** - Historical game lookups
-- **MLPredictions** - Neural network predictions
-- **Analytics** - Advanced analytics dashboard
+Changes can have cascading effects.
 
-### **Current Features (Sprint 10):**
-- ✅ 32 NFL teams with live standings
-- ✅ Historical data 1999-2025 (7,263 games)
-- ✅ 47 statistical metrics per game
-- ✅ EPA/Success Rate calculations
-- ✅ 3-layer neural network for predictions
-- ✅ Chart.js visualizations
-- ✅ Team logos from ESPN
-- ✅ Responsive design
-- ✅ PWA capabilities
+Treat all changes as potentially system-wide.
 
 ---
 
-## 🎯 WHEN USER ASKS FOR CHANGES
+## 5. WHAT FAILURE LOOKS LIKE
 
-### **Step 1: STOP and READ**
-- [ ] Read this file (READ_THIS_FIRST.md)
-- [ ] Read BEST_PRACTICES.md
-- [ ] Read dr.foster/README.md for current sprint
-- [ ] Check git status to see what's modified
-- [ ] Check git log to see recent commits
+The AI has FAILED if it:
 
-### **Step 2: UNDERSTAND the Request**
-- [ ] What exactly does user want?
-- [ ] What files are involved?
-- [ ] What's the current behavior?
-- [ ] What should the new behavior be?
-- [ ] Have I verified the current code by reading it?
+- Skips reading required documents
+- Guesses intent or scope
+- Fixes only one instance of a repeated issue
+- Leaves dead, duplicate, or commented-out code
+- Applies changes without identifying impact
+- Proceeds without asking when uncertain
 
-### **Step 3: PLAN in Testbed**
-- [ ] Create `testbed/prototypes/[feature_name]/`
-- [ ] Write test file with expected behavior
-- [ ] Write implementation
-- [ ] Run tests until 100% pass
-
-### **Step 4: ASK for Approval**
-- [ ] Show user what you tested
-- [ ] Show test results (100% pass required)
-- [ ] Explain what will change in production
-- [ ] Wait for approval before touching production
-
-### **Step 5: DEPLOY Carefully**
-- [ ] Create backup: `backups/[filename]_backup_YYYYMMDD_HHMMSS.py`
-- [ ] Make ONE change at a time
-- [ ] Test after EACH change
-- [ ] If anything breaks, rollback immediately
+Failure is not negotiable.
 
 ---
 
-## 💡 REMEMBER
+## 6. WHAT SUCCESS LOOKS LIKE
 
-**USER HAS SPENT 10 WEEKS BUILDING THIS APP**
+Correct behavior includes:
 
-You can break it in seconds by:
-- Not reading documentation
-- Assuming you know better
-- Modifying production directly
-- Skipping tests
-- Being overconfident
-
-**BE HUMBLE. BE CAREFUL. FOLLOW THE RULES.**
+- Asking questions early
+- Identifying full scope before acting
+- Applying consistent system-wide changes
+- Cleaning up obsolete code
+- Preserving existing behavior unless instructed otherwise
+- Preferring correctness over speed
 
 ---
 
-## 🔧 EMERGENCY RECOVERY
+## 7. QUESTION-FIRST EXPECTATION
 
-If you broke production:
+When in doubt, the AI MUST ask questions.
 
-```powershell
-# Step 1: Stop everything
-cd "c:\IS330\H.C Lombardo App"
-Stop-Process -Name python* -Force
+Silence is not acceptable.
+Guessing is not acceptable.
+“Best effort” is not acceptable.
 
-# Step 2: Restore from git
-git status  # See what you modified
-git restore [filename]  # Restore each file
-# OR
-git restore .  # Restore everything
-
-# Step 3: Rebuild frontend if needed
-cd frontend
-npm run build
-
-# Step 4: Restart server
-cd ..
-START.bat
-```
+Questions are REQUIRED when uncertainty exists.
 
 ---
 
-## 📌 FINAL CHECKLIST BEFORE EVERY ACTION
+## 8. CONSEQUENCES OF IGNORING THIS DOCUMENT
 
-- [ ] Did I read this file?
-- [ ] Did I check current sprint in dr.foster/README.md?
-- [ ] Am I working in testbed/ (not production)?
-- [ ] Did I write tests first?
-- [ ] Did I get user approval?
-- [ ] Do I have backups ready?
-- [ ] Do I understand what I'm changing and why?
+Ignoring this document results in:
 
-**IF YOU ANSWERED "NO" TO ANY OF THESE, STOP AND FIX IT.**
+- Incorrect output
+- Rework
+- Loss of trust
+- Wasted time
+
+These outcomes are avoidable by following the rules.
 
 ---
 
-**Last Updated:** November 20, 2025  
-**Reason:** You keep making the same mistakes. Read this file EVERY TIME.  
-**Consequence:** User has to restore from git because you broke production.  
-**Solution:** FOLLOW THIS FILE EXACTLY.
+## 9. FINAL WARNING
+
+If you have not read and understood:
+- **AI_EXECUTION_CONTRACT.md**
+- **BEST_PRACTICES.md**
+
+DO NOT PROCEED.
+
+STOP.
+ASK.
+WAIT.
+
+END OF ORIENTATION

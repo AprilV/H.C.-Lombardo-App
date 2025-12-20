@@ -67,9 +67,12 @@ STOP.bat
 - `scripts/data_loading/auto_update_service.py` - Continuous updates
 
 ### Documentation (READ FIRST)
-- `docs/ai_reference/READ_THIS_FIRST.md` - **START HERE**
+- `docs/ai_reference/READ_THIS_FIRST.md` - **START HERE** (AI behavior contracts)
+- `docs/ai_reference/ARCHITECTURE.md` - Complete system architecture
 - `docs/ai_reference/BEST_PRACTICES.md` - Development workflow
-- `docs/ai_reference/AI_MASTER_REFERENCE.md` - Complete system guide
+- `docs/ai_reference/NFL_SPREAD_BETTING_GUIDE.md` - Spread betting logic
+- `docs/ai_reference/PREDICTION_TRACKING_SYSTEM.md` - ML prediction tracking
+- `docs/ai_reference/QUICK_START_HCL.md` - Quick start guide
 
 ## GitHub Actions
 
