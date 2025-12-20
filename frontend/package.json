@@ -1,8 +1,8 @@
 {
   "name": "hc-lombardo-frontend",
-  "version": "1.0.1",
+  "version": "0.1.0",
   "private": true,
-  "description": "H.C. Lombardo NFL Analytics Frontend - Production",
+  "description": "H.C. Lombardo NFL Analytics Frontend - Alpha",
   "dependencies": {
     "chart.js": "^4.4.0",
     "lottie-react": "^2.4.1",
