@@ -337,6 +337,31 @@
   font-size: 0.9rem;
 }
 
+.split-info {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  flex-direction: column;
+  gap: 10px;
+}
+
+.split-note {
+  text-align: center;
+  font-size: 0.85rem;
+  color: #ffa500;
+  font-style: italic;
+}
+
+.model-conf.vegas {
+  margin-top: 5px;
+  width: 100%;
+}
+
+.model-conf.vegas .model-label,
+.model-conf.vegas .conf-value {
+  font-size: 0.95rem;
+}
+
 .pick-footer {
   margin-top: 15px;
   padding-top: 10px;

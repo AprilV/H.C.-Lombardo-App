@@ -131,6 +131,14 @@ function MLPredictionsRedesign() {
                           <span className="model-label">🤖 XGBoost:</span>
                           <span className="conf-value">{(xgbConf * 100).toFixed(0)}%</span>
                         </div>
+                        <div className="model-conf vegas">
+                          <span className="model-label">🎰 Vegas:</span>
+                          <span className="conf-value">
+                            {game.vegas_spread !== null ? 
+                              `${game.home_team} ${game.vegas_spread > 0 ? '+' : ''}${game.vegas_spread.toFixed(1)}` : 
+                              'Not available'}
+                          </span>
+                        </div>
                       </div>
                     </>
                   ) : (
@@ -155,15 +163,21 @@ function MLPredictionsRedesign() {
                           <div className="split-conf">{(xgbConf * 100).toFixed(0)}%</div>
                         </div>
                       </div>
+
+                      <div className="model-breakdown split-info">
+                        <div className="split-note">Models disagree - toss-up game</div>
+                        <div className="model-conf vegas">
+                          <span className="model-label">🎰 Vegas Line:</span>
+                          <span className="conf-value">
+                            {game.vegas_spread !== null ? 
+                              `${game.home_team} ${game.vegas_spread > 0 ? '+' : ''}${game.vegas_spread.toFixed(1)}` : 
+                              'Not available'}
+                          </span>
+                        </div>
+                      </div>
                     </>
                   )}
                 </div>
-
-                {game.vegas_spread && (
-                  <div className="pick-footer">
-                    <span className="vegas-line">Vegas: {game.home_team} {game.vegas_spread > 0 ? '+' : ''}{game.vegas_spread.toFixed(1)}</span>
-                  </div>
-                )}
               </div>
             );
           })}
