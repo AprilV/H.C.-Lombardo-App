@@ -207,13 +207,13 @@ function MLPredictionsRedesign() {
           {combinedData.map((game, idx) => {
             const eloSpread = game.elo?.spread || 0;
             const xgbSpread = game.xgb?.spread || 0;
-            const vegasSpread = game.vegas_spread || 0;
+            const vegasSpread = game.vegas_spread;
 
-            const eloEdge = Math.abs(eloSpread - vegasSpread);
-            const xgbEdge = Math.abs(xgbSpread - vegasSpread);
+            const eloEdge = vegasSpread !== null && vegasSpread !== undefined ? Math.abs(eloSpread - vegasSpread) : 0;
+            const xgbEdge = vegasSpread !== null && vegasSpread !== undefined ? Math.abs(xgbSpread - vegasSpread) : 0;
             const maxEdge = Math.max(eloEdge, xgbEdge);
 
-            const hasValue = maxEdge >= 3.0;
+            const hasValue = vegasSpread !== null && vegasSpread !== undefined && maxEdge >= 3.0;
 
             return (
               <div key={idx} className={`table-row ${hasValue ? 'value-play' : ''}`}>
@@ -239,7 +239,9 @@ function MLPredictionsRedesign() {
 
                 <div className="col-spread vegas-col">
                   <span className="spread-value">
-                    {game.home_team} {vegasSpread > 0 ? '+' : ''}{vegasSpread.toFixed(1)}
+                    {vegasSpread !== null && vegasSpread !== undefined ? 
+                      `${game.home_team} ${vegasSpread > 0 ? '+' : ''}${vegasSpread.toFixed(1)}` : 
+                      'N/A'}
                   </span>
                 </div>
 
