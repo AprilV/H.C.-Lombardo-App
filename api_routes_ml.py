@@ -1112,7 +1112,7 @@ def get_combined_predictions(season, week):
                     'xgb': {
                         'predicted_winner': xgb['predicted_winner'],
                         'confidence': float(xgb['home_win_prob']) if xgb['predicted_winner'] == xgb['home_team'] else float(xgb['away_win_prob']),
-                        'spread': float(xgb.get('margin_prediction', 0)),
+                        'spread': float(xgb.get('ai_spread', 0)),
                         'split_prediction': xgb.get('split_prediction', False)
                     },
                     'elo': {
@@ -1122,7 +1122,7 @@ def get_combined_predictions(season, week):
                         'split_prediction': elo.get('split_prediction', False)
                     },
                     'agreement': agreement,
-                    'vegas_spread': float(xgb['spread_line']) if xgb.get('spread_line') else None
+                    'vegas_spread': float(xgb['vegas_spread']) if xgb.get('vegas_spread') else None
                 })
             elif xgb:
                 # Only XGBoost available
@@ -1130,13 +1130,15 @@ def get_combined_predictions(season, week):
                     'game_id': game_id,
                     'home_team': xgb['home_team'],
                     'away_team': xgb['away_team'],
+                    'game_date': xgb.get('game_date'),
                     'xgb': {
                         'predicted_winner': xgb['predicted_winner'],
                         'confidence': float(xgb['home_win_prob']) if xgb['predicted_winner'] == xgb['home_team'] else float(xgb['away_win_prob']),
-                        'spread': float(xgb.get('margin_prediction', 0))
+                        'spread': float(xgb.get('ai_spread', 0))
                     },
                     'elo': None,
-                    'agreement': None
+                    'agreement': None,
+                    'vegas_spread': float(xgb['vegas_spread']) if xgb.get('vegas_spread') else None
                 })
             elif elo:
                 # Only Elo available
