@@ -1073,19 +1073,29 @@ def get_combined_predictions(season, week):
         
         cur = conn.cursor(cursor_factory=RealDictCursor)
         
-        # Get XGBoost predictions
+        # Get XGBoost predictions WITH Vegas spread from games table
         cur.execute("""
-            SELECT * FROM hcl.ml_predictions
-            WHERE season = %s AND week = %s
-            ORDER BY game_date, game_id
+            SELECT 
+                p.*,
+                g.spread_line as vegas_spread,
+                g.total_line as vegas_total
+            FROM hcl.ml_predictions p
+            LEFT JOIN hcl.games g ON p.game_id = g.game_id
+            WHERE p.season = %s AND p.week = %s
+            ORDER BY p.game_date, p.game_id
         """, (season, week))
         xgb_predictions = {row['game_id']: dict(row) for row in cur.fetchall()}
         
-        # Get Elo predictions
+        # Get Elo predictions WITH Vegas spread from games table
         cur.execute("""
-            SELECT * FROM hcl.ml_predictions_elo
-            WHERE season = %s AND week = %s
-            ORDER BY game_id
+            SELECT 
+                e.*,
+                g.spread_line as vegas_spread,
+                g.total_line as vegas_total
+            FROM hcl.ml_predictions_elo e
+            LEFT JOIN hcl.games g ON e.game_id = g.game_id
+            WHERE e.season = %s AND e.week = %s
+            ORDER BY e.game_id
         """, (season, week))
         elo_predictions = {row['game_id']: dict(row) for row in cur.fetchall()}
         
