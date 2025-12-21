@@ -6,7 +6,12 @@ Updates NFL data every 30 minutes
 """
 import logging
 import time
+import sys
+import os
 from datetime import datetime
+
+# Add scripts/maintenance to path
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'scripts', 'maintenance'))
 from multi_source_data_fetcher import MultiSourceDataFetcher
 
 # Configure logging
