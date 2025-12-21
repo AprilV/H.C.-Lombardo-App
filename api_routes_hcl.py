@@ -178,7 +178,6 @@ def get_team_details(team_abbr):
                 ROUND(AVG(success_rate)::numeric, 1) as success_rate,
                 ROUND(AVG(explosive_play_pct)::numeric, 1) as explosive_play_pct,
                 ROUND(AVG(stuff_rate)::numeric, 1) as stuff_rate,
-                ROUND(AVG(scramble_rate)::numeric, 1) as scramble_rate,
                 
                 -- Home/Away splits
                 ROUND(AVG(CASE WHEN is_home THEN points END)::numeric, 1) as ppg_home,
