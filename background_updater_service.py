@@ -46,7 +46,7 @@ def main():
             
             # Run the data fetcher
             fetcher = MultiSourceDataFetcher()
-            fetcher.run_update()
+            fetcher.run_full_update()
             
             logger.info("✅ Automatic update complete")
             logger.info(f"⏰ Next update in {update_interval_minutes} minutes")
