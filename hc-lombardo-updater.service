@@ -1,0 +1,18 @@
+[Unit]
+Description=HC Lombardo Background Data Updater
+After=postgresql.service hc-lombardo.service
+
+[Service]
+User=ubuntu
+WorkingDirectory=/home/ubuntu/H.C.-Lombardo-App
+Environment="PATH=/home/ubuntu/H.C.-Lombardo-App/venv/bin"
+Environment="DB_NAME=nfl_analytics"
+Environment="DB_USER=nfl_user"
+Environment="DB_PASSWORD=aprilv120"
+Environment="DB_HOST=localhost"
+ExecStart=/home/ubuntu/H.C.-Lombardo-App/venv/bin/python3 /home/ubuntu/H.C.-Lombardo-App/background_updater_service.py
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
