@@ -1,0 +1,201 @@
+/* ===================================
+   LIVE GAMES TICKER - CLASSIC LIGHT MODE
+   MATCH STANDINGS PAGE COLOR SCHEME
+   =================================== */
+
+/* TICKER CONTAINER - LIGHT BLUE BACKGROUND LIKE ANALYTICS */
+[data-theme="classic-light"] .live-games-ticker {
+  background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%) !important;
+  padding: 20px !important;
+  border-radius: 8px !important;
+}
+
+/* TICKER HEADER BAR - DARK NAVY LIKE ANALYTICS HEADER */
+[data-theme="classic-light"] .ticker-header-bar {
+  background: linear-gradient(135deg, #1E293B 0%, #334155 100%) !important;
+  border: 2px solid #1976D2 !important;
+  border-radius: 6px !important;
+  padding: 15px 20px !important;
+  box-shadow: 0 4px 12px rgba(30, 41, 59, 0.3) !important;
+}
+
+[data-theme="classic-light"] .ticker-label {
+  color: #42A5F5 !important;
+  font-size: 1.4rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 1px !important;
+}
+
+[data-theme="classic-light"] .live-dot {
+  background: #FF1744 !important;
+}
+
+/* GAME TICKER CARDS - WHITE LIKE ANALYTICS CARDS */
+[data-theme="classic-light"] .game-ticker-card {
+  background: #FFFFFF !important;
+  border: 2px solid #E0E0E0 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+  transition: all 0.3s ease !important;
+}
+
+[data-theme="classic-light"] .game-ticker-card:hover {
+  border-color: #1976D2 !important;
+  box-shadow: #FFFFFF !important;
+  box-shadow: 0 6px 16px rgba(198, 40, 40, 0.3) !important;
+}
+
+[data-theme="classic-light"] .game-ticker-card.final {
+  border-color: #2E7D32 !important;
+  background: #FFFFFF !important;
+  box-shadow: 0 4px 12px rgba(46, 125, 50, 0.2) !important;
+}
+
+/* STATUS BADGES */
+[data-theme="classic-light"] .status-live {
+  background: #C62828 !important;
+  color: #FFFFFF !important;
+  font-size: 1.1rem !important;
+  font-weight: 700 !important;
+  padding: 5px 12px !important;
+}
+
+[data-theme="classic-light"] .status-final {
+  background: #2E7D32 !important;
+  color: #FFFFFF !important;
+  font-size: 1.1rem !important;
+  font-weight: 700 !important;
+  padding: 5px 12px !important;
+}
+
+[data-theme="classic-light"] .status-scheduled {
+  background: rgba(255, 255, 255, 0.2) !important;
+  color: #FFFFFF !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  font-size: 1.1rem !important;
+  font-weight: 600 !important;
+  padding: 5px 12px !important;
+}
+
+/* TEXT - DARK ON WHITE CARDS LIKE ANALYTICS */
+[data-theme="classic-light"] .game-date {
+  color: #1976D2 !important;
+  font-size: 1.3rem !important;
+  font-weight: 700 !important;
+}
+
+[data-theme="classic-light"] .game-time {
+  color: #757575 !important;
+  font-size: 1.2rem !important;
+  font-weight: 600 !important;
+}
+
+/* TEAM INFO - DARK TEXT ON WHITE CARDS */
+[data-theme="classic-light"] .ticker-team {
+  color: #212121 !important;
+  font-size: 1.3rem !important;
+  font-weight: 700 !important;
+}
+
+[data-theme="classic-light"] .ticker-team.winner {
+  color: #1976D2 !important;
+  font-weight: 800 !important;
+}
+
+[data-theme="classic-light"] .team-name {
+  color: #212121 !important;
+  font-size: 1.3rem !important;
+  font-weight: 600 !important;
+}
+
+[data-theme="classic-light"] .team-score {
+  color: #1976D2 !important;
+  font-size: 1.5rem !important;
+  font-weight: 800 !important;
+}
+
+[data-theme="classic-light"] .ticker-team.winner .team-score {
+  color: #0D47A1 !important;
+  font-size: 1.7rem !important;
+}
+
+/* PREDICTIONS - DARK TEXT ON WHITE CARDS */
+[data-theme="classic-light"] .prediction-label {
+  color: #757575 !important;
+  font-size: 1.1rem !important;
+  font-weight: 600 !important;
+}
+
+[data-theme="classic-light"] .prediction-value {
+  color: #1976D2 !important;
+  font-size: 1.2rem !important;
+  font-weight: 700 !important;
+}
+
+/* VEGAS LINE - LIGHT BLUE BADGE WITH WHITE TEXT */
+[data-theme="classic-light"] .vegas-line {
+  color: #FFFFFF !important;
+  background: linear-gradient(135deg, #42A5F5 0%, #1E88E5 100%) !important;
+  border: 1px solid #1976D2 !important;
+  font-size: 1.1rem !important;
+  font-weight: 600 !important;
+  padding: 4px 10px !important;
+  border-radius: 4px !important;
+}
+
+/* PREDICTION LINES - LIGHT BLUE CONTAINERS WITH WHITE TEXT */
+[data-theme="classic-light"] .pred-line {
+  background: linear-gradient(135deg, #42A5F5 0%, #1E88E5 100%) !important;
+  border: 1px solid #1976D2 !important;
+}
+
+[data-theme="classic-light"] .pred-text {
+  color: #FFFFFF !important;
+  font-weight: 600 !important;
+}
+
+[data-theme="classic-light"] .pred-icon {
+  filter: brightness(0) invert(1) !important;
+}
+
+/* NAVIGATION BUTTONS - MATERIAL BLUE */
+[data-theme="classic-light"] .scroll-btn {
+  background: #FFFFFF !important;
+  color: #1976D2 !important;
+  border: 2px solid #1976D2 !important;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15) !important;
+  font-weight: 700 !important;
+}
+
+[data-theme="classic-light"] .scroll-btn:hover {
+  background: #1976D2 !important;
+  color: #FFFFFF !important;
+  border-color: #1565C0 !important;
+  box-shadow: 0 5px 15px rgba(25, 118, 210, 0.3) !important;
+  transform: scale(1.05);
+}
+
+[data-theme="classic-light"] .scroll-btn:disabled {
+  background: #F5F5F5 !important;
+  color: #BDBDBD !important;
+  border-color: #E0E0E0 !important;
+  box-shadow: none !important;
+}
+
+/* TICKER HEADER - REMOVED DUPLICATE */
+/* SCROLLBAR */
+[data-theme="classic-light"] .live-games-scroll-container::-webkit-scrollbar {
+  height: 12px;
+}
+
+[data-theme="classic-light"] .live-games-scroll-container::-webkit-scrollbar-track {
+  background: #F5F5F5;
+}
+
+[data-theme="classic-light"] .live-games-scroll-container::-webkit-scrollbar-thumb {
+  background: #BDBDBD;
+  border-radius: 6px;
+}
+
+[data-theme="classic-light"] .live-games-scroll-container::-webkit-scrollbar-thumb:hover {
+  background: #9E9E9E;
+}

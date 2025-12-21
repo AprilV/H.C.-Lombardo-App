@@ -1,0 +1,261 @@
+/* ===================================
+   TEAM DETAIL - CLASSIC LIGHT MODE
+   COMPLETE MATERIAL DESIGN OVERRIDES
+   =================================== */
+
+/* CONTAINER - LIGHT GRADIENT BACKGROUND */
+[data-theme="classic-light"] .team-detail-container {
+  background: linear-gradient(135deg, #FAFAFA 0%, #F5F5F5 100%) !important;
+  color: #212121 !important;
+  min-height: 100vh !important;
+}
+
+[data-theme="classic-light"] .team-detail {
+  background: linear-gradient(135deg, #FAFAFA 0%, #F5F5F5 100%) !important;
+  color: #212121 !important;
+}
+
+/* HEADER SECTION */
+[data-theme="classic-light"] .team-detail-header {
+  background: #FFFFFF !important;
+  border-bottom: 3px solid #1976D2 !important;
+  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.15) !important;
+  padding: 30px !important;
+}
+
+[data-theme="classic-light"] .team-header {
+  background: #FFFFFF !important;
+  border: 2px solid #1976D2 !important;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08) !important;
+  padding: 30px !important;
+  border-radius: 8px !important;
+}
+
+[data-theme="classic-light"] .team-name {
+  color: #1976D2 !important;
+  font-size: 3.5rem !important;
+  font-weight: 700 !important;
+  text-shadow: none !important;
+}
+
+[data-theme="classic-light"] .team-record {
+  color: #FFFFFF !important;
+  background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%) !important;
+  font-size: 1.4rem !important;
+  font-weight: 700 !important;
+  padding: 10px 20px !important;
+  border-radius: 25px !important;
+}
+
+[data-theme="classic-light"] .badge {
+  color: #757575 !important;
+  background: #F5F5F5 !important;
+  border: 2px solid #E0E0E0 !important;
+  font-size: 1.1rem !important;
+  font-weight: 600 !important;
+  padding: 8px 16px !important;
+}
+
+/* BACK BUTTON */
+[data-theme="classic-light"] .back-btn {
+  background: #FFFFFF !important;
+  color: #1976D2 !important;
+  border: 2px solid #1976D2 !important;
+  font-size: 1.2rem !important;
+  font-weight: 700 !important;
+  padding: 12px 24px !important;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1) !important;
+}
+
+[data-theme="classic-light"] .back-btn:hover {
+  background: #1976D2 !important;
+  color: #FFFFFF !important;
+  border-color: #1565C0 !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 16px rgba(25, 118, 210, 0.3) !important;
+}
+
+/* STATS OVERVIEW */
+[data-theme="classic-light"] .stats-overview {
+  background: transparent !important;
+  padding: 30px !important;
+}
+
+[data-theme="classic-light"] .stats-grid {
+  background: #FFFFFF !important;
+  border: 2px solid #E0E0E0 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+  padding: 25px !important;
+  border-radius: 8px !important;
+  gap: 20px !important;
+}
+
+[data-theme="classic-light"] .stat-box {
+  background: linear-gradient(135deg, #F5F5F5 0%, #FAFAFA 100%) !important;
+  border: 2px solid #E0E0E0 !important;
+  padding: 20px !important;
+  border-radius: 8px !important;
+  transition: all 0.3s ease !important;
+}
+
+[data-theme="classic-light"] .stat-box:hover {
+  border-color: #1976D2 !important;
+  box-shadow: 0 6px 16px rgba(25, 118, 210, 0.2) !important;
+  transform: translateY(-3px) !important;
+}
+
+[data-theme="classic-light"] .stat-label {
+  color: #757575 !important;
+  font-size: 1.2rem !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+}
+
+[data-theme="classic-light"] .stat-value {
+  color: #1976D2 !important;
+  font-size: 2.5rem !important;
+  font-weight: 700 !important;
+}
+
+/* CHART CONTAINER */
+[data-theme="classic-light"] .chart-container {
+  background: #FFFFFF !important;
+  border: 2px solid #E0E0E0 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+  padding: 25px !important;
+  border-radius: 8px !important;
+  margin-top: 25px !important;
+}
+
+/* GAMES TABLE */
+[data-theme="classic-light"] .games-table {
+  background: #FFFFFF !important;
+  border: 2px solid #E0E0E0 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+}
+
+[data-theme="classic-light"] .games-table table {
+  width: 100% !important;
+}
+
+[data-theme="classic-light"] .games-table th {
+  background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%) !important;
+  color: #FFFFFF !important;
+  font-size: 1.3rem !important;
+  font-weight: 700 !important;
+  padding: 15px !important;
+  border: none !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+}
+
+[data-theme="classic-light"] .games-table td {
+  color: #212121 !important;
+  font-size: 1.2rem !important;
+  padding: 15px !important;
+  border-bottom: 1px solid #E0E0E0 !important;
+}
+
+[data-theme="classic-light"] .games-table tbody tr {
+  transition: background 0.2s ease !important;
+}
+
+[data-theme="classic-light"] .games-table tbody tr:hover {
+  background: #F5F5F5 !important;
+}
+
+[data-theme="classic-light"] .games-table tbody tr:last-child td {
+  border-bottom: none !important;
+}
+
+/* WIN/LOSS CELLS */
+[data-theme="classic-light"] .win-cell {
+  color: #2E7D32 !important;
+  font-weight: 700 !important;
+  font-size: 1.3rem !important;
+}
+
+[data-theme="classic-light"] .loss-cell {
+  color: #C62828 !important;
+  font-weight: 700 !important;
+  font-size: 1.3rem !important;
+}
+
+[data-theme="classic-light"] .tie-cell {
+  color: #F57C00 !important;
+  font-weight: 700 !important;
+  font-size: 1.3rem !important;
+}
+
+/* OPPONENT CELL */
+[data-theme="classic-light"] .opponent-cell {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+
+[data-theme="classic-light"] .opponent-logo {
+  width: 36px !important;
+  height: 36px !important;
+  object-fit: contain !important;
+}
+
+[data-theme="classic-light"] .division-badge {
+  background: #1976D2 !important;
+  color: #FFFFFF !important;
+  font-size: 0.9rem !important;
+  font-weight: 700 !important;
+  padding: 4px 8px !important;
+  border-radius: 4px !important;
+  margin-left: 8px !important;
+}
+
+/* LOADING & ERROR STATES */
+[data-theme="classic-light"] .loading {
+  color: #1976D2 !important;
+  font-size: 1.5rem !important;
+  font-weight: 600 !important;
+}
+
+[data-theme="classic-light"] .error {
+  color: #C62828 !important;
+  background: #FFEBEE !important;
+  border: 2px solid #EF5350 !important;
+  font-size: 1.3rem !important;
+  padding: 20px !important;
+  border-radius: 8px !important;
+}
+
+[data-theme="classic-light"] .loading-spinner {
+  border-color: rgba(25, 118, 210, 0.2) !important;
+  border-top-color: #1976D2 !important;
+}
+
+/* TEAM LOGO */
+[data-theme="classic-light"] .team-logo-large {
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15)) !important;
+}
+
+/* SCROLLBAR */
+[data-theme="classic-light"] .games-table::-webkit-scrollbar {
+  width: 12px !important;
+  height: 12px !important;
+}
+
+[data-theme="classic-light"] .games-table::-webkit-scrollbar-track {
+  background: #F5F5F5 !important;
+}
+
+[data-theme="classic-light"] .games-table::-webkit-scrollbar-thumb {
+  background: #BDBDBD !important;
+  border-radius: 6px !important;
+}
+
+[data-theme="classic-light"] .games-table::-webkit-scrollbar-thumb:hover {
+  background: #9E9E9E !important;
+}
+
+
