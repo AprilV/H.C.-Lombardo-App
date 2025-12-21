@@ -26,9 +26,7 @@ ChartJS.register(
   Filler
 );
 
-const API_URL = process.env.NODE_ENV === 'production' 
-  ? 'https://api.aprilsykes.dev' 
-  : 'http://localhost:5000';
+const API_URL = 'https://api.aprilsykes.dev';
 
 // NFL Team Colors
 const TEAM_COLORS = {
