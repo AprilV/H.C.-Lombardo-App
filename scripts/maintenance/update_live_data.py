@@ -7,6 +7,7 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 import time
 import logging
+import os
 from datetime import datetime
 from typing import Optional
 
@@ -19,12 +20,13 @@ logger = logging.getLogger(__name__)
 
 
 def get_db_connection():
-    """Get database connection"""
+    """Get database connection using environment variables"""
     return psycopg2.connect(
-        dbname='nfl_analytics',
-        user='postgres',
-        password='',
-        host=''  # Unix socket
+        host=os.getenv('DB_HOST', 'localhost'),
+        port=os.getenv('DB_PORT', '5432'),
+        database=os.getenv('DB_NAME', 'nfl_analytics'),
+        user=os.getenv('DB_USER', 'postgres'),
+        password=os.getenv('DB_PASSWORD', 'aprilv120')
     )
 
 
