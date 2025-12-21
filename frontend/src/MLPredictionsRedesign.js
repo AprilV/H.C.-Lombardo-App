@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './MLPredictionsRedesign.css';
+import './MLPredictionsRedesign-light.css';
 
 const API_URL = 'https://api.aprilsykes.dev';
 
@@ -281,7 +282,7 @@ function MLPredictionsRedesign() {
   return (
     <div className="ml-predictions-redesign">
       <div className="page-header">
-        <h1>🧠 NFL Predictions</h1>
+        <h1>🧠 AI NFL Predictions</h1>
         <p className="subtitle">Combined AI Analysis: Elo + XGBoost + Vegas</p>
       </div>
 

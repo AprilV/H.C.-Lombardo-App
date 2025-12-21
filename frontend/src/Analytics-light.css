@@ -1,0 +1,489 @@
+/* ===================================
+   ANALYTICS - CLASSIC LIGHT MODE
+   COMPLETE OVERRIDES - Material Design
+   =================================== */
+
+/* Container */
+[data-theme="classic-light"] .analytics-container {
+  background: linear-gradient(135deg, #FAFAFA 0%, #F5F5F5 100%);
+  color: #212121;
+}
+
+/* Header - Increased size */
+[data-theme="classic-light"] .analytics-header {
+  background: #FFFFFF;
+  border: 2px solid #1976D2;
+  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.15);
+  padding: 40px;
+}
+
+[data-theme="classic-light"] .analytics-header h1 {
+  font-size: 3.5rem !important;
+  background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 700;
+}
+
+/* Season Selector */
+[data-theme="classic-light"] .season-selector {
+  background: transparent;
+}
+
+[data-theme="classic-light"] .season-selector label {
+  color: #1976D2;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+[data-theme="classic-light"] .season-selector select {
+  background: #FFFFFF;
+  color: #212121;
+  border: 2px solid #1976D2;
+  font-size: 1.2rem;
+  padding: 12px 18px;
+}
+
+[data-theme="classic-light"] .season-selector select:hover {
+  background: #F5F5F5;
+  border-color: #1565C0;
+}
+
+/* Tabs - Increased size and contrast */
+[data-theme="classic-light"] .analytics-tabs {
+  background: transparent;
+  gap: 15px;
+}
+
+[data-theme="classic-light"] .tab {
+  background: #FFFFFF;
+  color: #757575;
+  border: 2px solid #E0E0E0;
+  font-size: 1.2rem;
+  padding: 15px 30px;
+}
+
+[data-theme="classic-light"] .tab:hover {
+  background: #F5F5F5;
+  color: #1976D2;
+  border-color: #1976D2;
+}
+
+[data-theme="classic-light"] .tab.active {
+  background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%);
+  color: #FFFFFF;
+  border-color: #1976D2;
+  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
+}
+
+/* Summary Grid */
+[data-theme="classic-light"] .summary-grid {
+  gap: 25px;
+}
+
+[data-theme="classic-light"] .insight-card {
+  background: #FFFFFF;
+  border: 2px solid #E0E0E0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  padding: 30px;
+}
+
+[data-theme="classic-light"] .insight-card:hover {
+  border-color: #1976D2;
+  box-shadow: 0 6px 16px rgba(25, 118, 210, 0.2);
+  transform: translateY(-3px);
+}
+
+[data-theme="classic-light"] .insight-card.highlight {
+  border-color: #1976D2;
+  border-width: 3px;
+  background: linear-gradient(135deg, #E3F2FD 0%, #FFFFFF 100%);
+}
+
+[data-theme="classic-light"] .insight-card h3 {
+  color: #1976D2;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+/* Stats - Much larger text */
+[data-theme="classic-light"] .team-name {
+  color: #1976D2;
+  font-size: 3.5rem !important;
+  font-weight: 700;
+}
+
+[data-theme="classic-light"] .stat-large {
+  background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-size: 4rem !important;
+  font-weight: 700;
+}
+
+[data-theme="classic-light"] .stat-medium {
+  color: #1976D2;
+  font-size: 2.5rem !important;
+  font-weight: 600;
+}
+
+[data-theme="classic-light"] .stat-label {
+  color: #757575;
+  font-size: 1.3rem !important;
+  font-weight: 500;
+}
+
+[data-theme="classic-light"] .stat-small {
+  color: #616161;
+  font-size: 1.1rem !important;
+}
+
+[data-theme="classic-light"] .record {
+  color: #212121;
+  font-size: 2rem !important;
+  font-weight: 600;
+}
+
+/* Weather Items */
+[data-theme="classic-light"] .weather-comparison {
+  gap: 15px;
+}
+
+[data-theme="classic-light"] .weather-item {
+  background: #F5F5F5;
+  border: 2px solid #E0E0E0;
+  padding: 12px 20px;
+  border-radius: 8px;
+}
+
+[data-theme="classic-light"] .roof-type {
+  color: #1976D2;
+  font-weight: 600;
+  font-size: 1.2rem;
+}
+
+[data-theme="classic-light"] .ppg {
+  color: #212121;
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+/* Data Tables - Much larger text */
+[data-theme="classic-light"] .data-table-container {
+  background: #FFFFFF;
+  border: 2px solid #E0E0E0;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="classic-light"] .data-table-container h2 {
+  color: #1976D2;
+  font-size: 2.5rem !important;
+  font-weight: 600;
+}
+
+[data-theme="classic-light"] .data-table {
+  font-size: 1.2rem !important;
+}
+
+[data-theme="classic-light"] .data-table thead {
+  background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%);
+}
+
+[data-theme="classic-light"] .data-table th {
+  color: #FFFFFF;
+  font-size: 1.3rem !important;
+  padding: 18px 15px;
+  font-weight: 600;
+}
+
+[data-theme="classic-light"] .data-table tbody tr {
+  border-bottom: 1px solid #E0E0E0;
+}
+
+[data-theme="classic-light"] .data-table tbody tr:hover {
+  background: #E3F2FD;
+}
+
+[data-theme="classic-light"] .data-table tbody tr.highlight-row {
+  background: #E8F5E9;
+}
+
+[data-theme="classic-light"] .data-table td {
+  color: #212121;
+  padding: 15px 12px;
+  font-size: 1.15rem !important;
+}
+
+[data-theme="classic-light"] .team-cell {
+  color: #1976D2;
+  font-weight: 700;
+  font-size: 1.4rem !important;
+}
+
+[data-theme="classic-light"] .record-cell {
+  color: #1976D2;
+  font-size: 1.25rem !important;
+  font-weight: 600;
+}
+
+[data-theme="classic-light"] .highlight-cell {
+  color: #1976D2;
+  font-size: 1.4rem !important;
+  font-weight: 700;
+}
+
+[data-theme="classic-light"] .referee-cell {
+  color: #1976D2;
+  font-weight: 600;
+  font-size: 1.3rem !important;
+}
+
+[data-theme="classic-light"] .referee-name {
+  color: #1976D2;
+  font-size: 1.8rem !important;
+  font-weight: 600;
+}
+
+/* Status Colors - High Contrast */
+[data-theme="classic-light"] .good {
+  color: #2E7D32 !important;
+  font-weight: 700;
+  font-size: 1.3rem !important;
+}
+
+[data-theme="classic-light"] .bad {
+  color: #C62828 !important;
+  font-weight: 700;
+  font-size: 1.3rem !important;
+}
+
+[data-theme="classic-light"] .warning {
+  color: #F57C00 !important;
+  font-weight: 700;
+  font-size: 1.3rem !important;
+}
+
+/* Custom Builder */
+[data-theme="classic-light"] .custom-builder {
+  background: #FFFFFF;
+  border: 2px solid #E0E0E0;
+  padding: 40px;
+}
+
+[data-theme="classic-light"] .custom-builder h2 {
+  color: #1976D2;
+  font-size: 2.5rem !important;
+}
+
+[data-theme="classic-light"] .builder-controls {
+  gap: 40px;
+}
+
+[data-theme="classic-light"] .control-group label {
+  color: #1976D2;
+  font-size: 1.4rem !important;
+  font-weight: 600;
+}
+
+[data-theme="classic-light"] .control-group select {
+  background: #FFFFFF;
+  color: #212121;
+  border: 2px solid #1976D2;
+  font-size: 1.2rem !important;
+  padding: 14px 22px;
+}
+
+[data-theme="classic-light"] .control-group select option {
+  background: #FFFFFF;
+  color: #212121;
+  font-size: 1.2rem;
+  padding: 12px;
+}
+
+[data-theme="classic-light"] .stat-selector h3 {
+  color: #212121;
+  font-size: 1.8rem !important;
+}
+
+[data-theme="classic-light"] .selector-header h3 {
+  color: #212121;
+  font-size: 2rem !important;
+}
+
+/* Buttons */
+[data-theme="classic-light"] .btn-select-all {
+  background: linear-gradient(135deg, #2E7D32, #1B5E20);
+  font-size: 1.2rem !important;
+  padding: 12px 24px;
+}
+
+[data-theme="classic-light"] .btn-select-all:hover {
+  background: linear-gradient(135deg, #1B5E20, #0D4710);
+}
+
+[data-theme="classic-light"] .btn-reset {
+  background: linear-gradient(135deg, #C62828, #B71C1C);
+  font-size: 1.2rem !important;
+  padding: 12px 24px;
+}
+
+[data-theme="classic-light"] .btn-reset:hover {
+  background: linear-gradient(135deg, #B71C1C, #8B0000);
+}
+
+/* Stat Categories */
+[data-theme="classic-light"] .stat-category {
+  background: #FFFFFF;
+  border: 2px solid #E0E0E0;
+  padding: 25px;
+}
+
+[data-theme="classic-light"] .stat-category h4 {
+  color: #1976D2;
+  font-size: 1.6rem !important;
+  margin-bottom: 15px;
+}
+
+[data-theme="classic-light"] .stat-checkboxes label {
+  color: #212121;
+  font-size: 1.2rem !important;
+  padding: 10px 0;
+}
+
+[data-theme="classic-light"] .stat-checkboxes input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  margin-right: 12px;
+  accent-color: #1976D2;
+}
+
+/* Stat Legend */
+[data-theme="classic-light"] .stat-legend {
+  background: #E3F2FD;
+  border: 2px solid #1976D2;
+  padding: 30px;
+  border-radius: 12px;
+  margin-bottom: 30px;
+}
+
+[data-theme="classic-light"] .stat-legend h3 {
+  color: #1976D2;
+  font-size: 2rem !important;
+  margin-bottom: 20px;
+}
+
+[data-theme="classic-light"] .stat-legend p {
+  color: #212121;
+  font-size: 1.3rem !important;
+  line-height: 1.8;
+  margin: 10px 0;
+}
+
+[data-theme="classic-light"] .stat-legend strong {
+  color: #1976D2;
+  font-size: 1.4rem !important;
+}
+
+/* Insight Content */
+[data-theme="classic-light"] .insight-content {
+  padding: 10px;
+}
+
+/* Empty State */
+[data-theme="classic-light"] .empty-builder-state {
+  background: #F5F5F5;
+  border: 2px dashed #BDBDBD;
+  padding: 60px 40px;
+  text-align: center;
+  border-radius: 12px;
+}
+
+[data-theme="classic-light"] .empty-builder-state .empty-icon {
+  font-size: 4rem !important;
+  margin-bottom: 20px;
+}
+
+[data-theme="classic-light"] .empty-builder-state h3 {
+  color: #757575;
+  font-size: 2rem !important;
+  margin-bottom: 15px;
+}
+
+[data-theme="classic-light"] .empty-builder-state p {
+  color: #9E9E9E;
+  font-size: 1.3rem !important;
+  line-height: 1.6;
+  margin: 10px 0;
+}
+
+/* Filter Groups */
+[data-theme="classic-light"] .filter-group {
+  background: #F5F5F5;
+  border: 2px solid #E0E0E0;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+[data-theme="classic-light"] .filter-group label {
+  color: #757575;
+  font-size: 1.2rem !important;
+  font-weight: 600;
+}
+
+[data-theme="classic-light"] .filter-group select,
+[data-theme="classic-light"] .filter-group input {
+  background: #FFFFFF;
+  color: #212121;
+  border: 2px solid #E0E0E0;
+  font-size: 1.1rem !important;
+  padding: 12px;
+}
+
+[data-theme="classic-light"] .apply-filters-btn {
+  background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%);
+  color: #FFFFFF;
+  font-size: 1.3rem !important;
+  padding: 14px 28px;
+  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
+}
+
+[data-theme="classic-light"] .apply-filters-btn:hover {
+  box-shadow: 0 6px 16px rgba(25, 118, 210, 0.4);
+  background: linear-gradient(135deg, #1565C0 0%, #0D47A1 100%);
+}
+
+/* Scrollbar - Light Gray */
+[data-theme="classic-light"] .analytics-container ::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+[data-theme="classic-light"] .analytics-container ::-webkit-scrollbar-track {
+  background: #F5F5F5;
+  border-radius: 6px;
+}
+
+[data-theme="classic-light"] .analytics-container ::-webkit-scrollbar-thumb {
+  background: #BDBDBD;
+  border-radius: 6px;
+  border: 2px solid #F5F5F5;
+}
+
+[data-theme="classic-light"] .analytics-container ::-webkit-scrollbar-thumb:hover {
+  background: #9E9E9E;
+}
+
+/* Loading State */
+[data-theme="classic-light"] .loading {
+  color: #1976D2;
+  font-size: 1.5rem !important;
+  padding: 40px;
+  text-align: center;
+}
+
+/* Analytics Content Area */
+[data-theme="classic-light"] .analytics-content {
+  min-height: 400px;
+}

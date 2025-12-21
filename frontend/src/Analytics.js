@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './Analytics.css';
+import './Analytics-light.css';
 
 const API_URL = 'https://api.aprilsykes.dev';
 

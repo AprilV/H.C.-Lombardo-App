@@ -1,3 +1,93 @@
+/* ============================================
+   THEME SYSTEM - CSS Custom Properties
+   ============================================ */
+
+/* Executive Dark Mode (Default) */
+:root,
+[data-theme="executive-dark"] {
+  --bg-primary: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+  --bg-secondary: #27272A;
+  --bg-card: #18181B;
+  --text-primary: #FFFFFF;
+  --text-secondary: #CBD5E1;
+  --accent-primary: #F59E0B;
+  --accent-secondary: #D97706;
+  --border-color: #475569;
+  --shadow: rgba(245, 158, 11, 0.3);
+}
+
+/* Classic Light Mode - Material Design Inspired */
+[data-theme="classic-light"] {
+  --bg-primary: linear-gradient(135deg, #FAFAFA 0%, #F5F5F5 100%);
+  --bg-secondary: #F5F5F5;
+  --bg-card: #FFFFFF;
+  --text-primary: #212121;
+  --text-secondary: #757575;
+  --accent-primary: #1976D2;
+  --accent-secondary: #1565C0;
+  --border-color: #E0E0E0;
+  --shadow: rgba(0, 0, 0, 0.1);
+}
+
+/* NFL Mode */
+[data-theme="nfl-mode"] {
+  --bg-primary: linear-gradient(135deg, rgba(213, 10, 10, 0.85) 0%, rgba(1, 51, 105, 0.85) 100%);
+  --bg-secondary: rgba(255, 255, 255, 0.1);
+  --bg-card: rgba(255, 255, 255, 0.08);
+  --text-primary: #ffffff;
+  --text-secondary: #ddd;
+  --accent-primary: #FFD700;
+  --accent-secondary: #FFA500;
+  --border-color: rgba(255, 215, 0, 0.3);
+  --shadow: rgba(255, 215, 0, 0.2);
+}
+
+/* ============================================
+   THEME-SPECIFIC OVERRIDES
+   ============================================ */
+
+/* Classic Light - App Header */
+[data-theme="classic-light"] .App-header {
+  background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%);
+  border-bottom: 4px solid #0D47A1;
+  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
+}
+
+[data-theme="classic-light"] .App-header h1 {
+  color: #FFFFFF;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="classic-light"] .subtitle {
+  color: #E3F2FD;
+  opacity: 0.95;
+}
+
+/* Classic Light - Scrollbar */
+[data-theme="classic-light"] ::-webkit-scrollbar {
+  width: 14px;
+  height: 14px;
+}
+
+[data-theme="classic-light"] ::-webkit-scrollbar-track {
+  background: #F5F5F5;
+  border-radius: 7px;
+}
+
+[data-theme="classic-light"] ::-webkit-scrollbar-thumb {
+  background: #BDBDBD;
+  border-radius: 7px;
+  border: 3px solid #F5F5F5;
+}
+
+[data-theme="classic-light"] ::-webkit-scrollbar-thumb:hover {
+  background: #9E9E9E;
+}
+
+/* ============================================
+   BASE STYLES
+   ============================================ */
+
 * {
   margin: 0;
   padding: 0;
@@ -10,8 +100,10 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: linear-gradient(135deg, rgba(26,26,46,0.98) 0%, rgba(22,33,62,0.98) 100%);
+  background: var(--bg-primary);
   min-height: 100vh;
+  color: var(--text-primary);
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
 .App {

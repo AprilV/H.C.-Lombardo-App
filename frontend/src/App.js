@@ -1,14 +1,15 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { ThemeProvider } from './contexts/ThemeContext';
 import SideMenu from './SideMenu';
 import Homepage from './Homepage';
-import GameStatistics from './GameStatistics';
-import MatchupAnalyzer from './MatchupAnalyzer';
+import TeamComparison from './TeamComparison';
 import TeamDetail from './TeamDetail';
 import Analytics from './Analytics';
 import MLPredictions from './MLPredictions';
 import MLPredictionsRedesign from './MLPredictionsRedesign';
 import Admin from './Admin';
+import Settings from './Settings';
 import './App.css';
 
 const API_URL = 'https://api.aprilsykes.dev';
@@ -31,8 +32,9 @@ function App() {
   };
 
   return (
-    <Router>
-      <div className="App">
+    <ThemeProvider>
+      <Router>
+        <div className="App">
         <header className="App-header">
           <img 
             src="https://a.espncdn.com/i/teamlogos/leagues/500/nfl.png" 
@@ -51,11 +53,13 @@ function App() {
 
           <Routes>
             <Route path="/" element={<Homepage />} />
-            <Route path="/game-statistics" element={<GameStatistics />} />
-            <Route path="/matchup-analyzer" element={<MatchupAnalyzer />} />
+            <Route path="/team-comparison" element={<TeamComparison />} />
+            <Route path="/game-statistics" element={<TeamComparison />} />
+            <Route path="/matchup-analyzer" element={<TeamComparison />} />
             <Route path="/analytics" element={<Analytics />} />
             <Route path="/ml-predictions" element={<MLPredictionsRedesign />} />
             <Route path="/ml-predictions-old" element={<MLPredictions />} />
+            <Route path="/settings" element={<Settings />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="/team/:teamAbbr" element={<TeamDetail />} />
           </Routes>
@@ -72,8 +76,9 @@ function App() {
           </div>
           <p className="footer-note">This is for educational purposes only</p>
         </footer>
-      </div>
-    </Router>
+        </div>
+      </Router>
+    </ThemeProvider>
   );
 }
 

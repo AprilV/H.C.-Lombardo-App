@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './LiveGamesTicker.css';
+import './LiveGamesTicker-light.css';
 
 const API_URL = 'https://api.aprilsykes.dev';
 

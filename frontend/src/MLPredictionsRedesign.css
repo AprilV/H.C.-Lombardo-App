@@ -80,7 +80,7 @@
 }
 
 .simple-legend .legend-text strong {
-  color: #00d4ff;
+  color: #F59E0B;
   display: block;
   margin-bottom: 3px;
 }
@@ -113,13 +113,13 @@
 
 .week-selector-redesign label {
   font-weight: 600;
-  color: #00d4ff;
+  color: #F59E0B;
 }
 
 .week-selector-redesign select {
   padding: 10px 15px;
   background: rgba(255, 255, 255, 0.95);
-  border: 2px solid rgba(0, 212, 255, 0.5);
+  border: 2px solid rgba(245, 158, 11, 0.5);
   border-radius: 8px;
   color: #000;
   font-size: 1rem;
@@ -129,25 +129,25 @@
 }
 
 .week-selector-redesign select:hover {
-  border-color: #00d4ff;
+  border-color: #F59E0B;
 }
 
 .load-btn {
   padding: 10px 30px;
-  background: linear-gradient(135deg, #00d4ff 0%, #0095ff 100%);
-  border: 2px solid rgba(0, 212, 255, 0.5);
+  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+  border: 2px solid rgba(245, 158, 11, 0.5);
   border-radius: 8px;
   color: #000;
   font-weight: 600;
   font-size: 1rem;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(0, 212, 255, 0.4);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
 }
 
 .load-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 212, 255, 0.6);
+  box-shadow: 0 6px 16px rgba(245, 158, 11, 0.6);
 }
 
 /* View Tabs */
@@ -161,7 +161,7 @@
 .view-tab {
   padding: 12px 30px;
   background: rgba(255, 255, 255, 0.05);
-  border: 2px solid rgba(0, 212, 255, 0.3);
+  border: 2px solid rgba(245, 158, 11, 0.3);
   border-radius: 8px;
   color: #fff;
   font-size: 1rem;
@@ -171,14 +171,14 @@
 }
 
 .view-tab.active {
-  background: linear-gradient(135deg, #00d4ff 0%, #0095ff 100%);
-  border-color: #00ffff;
+  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+  border-color: #F59E0B;
   color: #000;
 }
 
 .view-tab:hover:not(.active) {
-  background: rgba(0, 212, 255, 0.1);
-  border-color: #00d4ff;
+  background: rgba(245, 158, 11, 0.1);
+  border-color: #F59E0B;
 }
 
 /* Section Headers */
@@ -190,7 +190,7 @@
 .section-header h2 {
   font-size: 2rem;
   margin: 0 0 10px 0;
-  color: #00d4ff;
+  color: #F59E0B;
 }
 
 .section-header p {
@@ -293,7 +293,7 @@
 .winner-team {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #00d4ff;
+  color: #F59E0B;
 }
 
 .confidence-bar {
@@ -308,7 +308,7 @@
 
 .confidence-fill {
   height: 100%;
-  background: linear-gradient(90deg, #00d4ff 0%, #0095ff 100%);
+  background: linear-gradient(90deg, #F59E0B 0%, #D97706 100%);
   transition: width 0.5s ease;
 }
 
@@ -344,7 +344,7 @@
 .conf-value {
   font-size: 1.1rem;
   font-weight: 600;
-  color: #00d4ff;
+  color: #F59E0B;
 }
 
 /* Split Predictions */
@@ -400,7 +400,7 @@
 .split-conf {
   font-size: 1.1rem;
   font-weight: 600;
-  color: #00d4ff;
+  color: #F59E0B;
 }
 
 .vs-divider {
@@ -467,13 +467,13 @@
 }
 
 .table-header {
-  background: linear-gradient(135deg, rgba(0, 212, 255, 0.2) 0%, rgba(0, 149, 255, 0.2) 100%);
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(217, 119, 6, 0.2) 100%);
   font-weight: 700;
   font-size: 1.1rem;
-  color: #00d4ff;
+  color: #F59E0B;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  border-bottom: 3px solid #00d4ff;
+  border-bottom: 3px solid #F59E0B;
   position: sticky;
   top: 0;
   z-index: 10;
@@ -586,8 +586,8 @@
 .loading-spinner {
   width: 50px;
   height: 50px;
-  border: 4px solid rgba(0, 212, 255, 0.3);
-  border-top-color: #00d4ff;
+  border: 4px solid rgba(245, 158, 11, 0.3);
+  border-top-color: #F59E0B;
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin: 0 auto 20px;
@@ -640,8 +640,8 @@
    INTRO PANEL - Explains Elo, XGBoost, Vegas Line
    ============================================================================ */
 .intro-panel {
-  background: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(0, 149, 255, 0.1) 100%);
-  border: 2px solid rgba(0, 212, 255, 0.3);
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(217, 119, 6, 0.1) 100%);
+  border: 2px solid rgba(245, 158, 11, 0.3);
   border-radius: 12px;
   padding: 25px;
   margin-bottom: 30px;
@@ -659,7 +659,7 @@
 }
 
 .intro-content strong {
-  color: #00d4ff;
+  color: #F59E0B;
   font-weight: 700;
 }
 
@@ -688,13 +688,13 @@
 
 .ml-predictions-tabs .tab:hover {
   background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(0, 212, 255, 0.5);
-  color: #00d4ff;
+  border-color: rgba(245, 158, 11, 0.5);
+  color: #F59E0B;
 }
 
 .ml-predictions-tabs .tab.active {
-  background: linear-gradient(135deg, #00d4ff 0%, #0095ff 100%);
-  border-color: #00d4ff;
+  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+  border-color: #F59E0B;
   color: #0a0e27;
   font-weight: 700;
 }

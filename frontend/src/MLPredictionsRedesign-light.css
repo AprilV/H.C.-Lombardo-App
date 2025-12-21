@@ -1,0 +1,621 @@
+/* ===================================
+   ML PREDICTIONS - CLASSIC LIGHT MODE
+   MATERIAL DESIGN - CORRECT CLASS NAMES
+   =================================== */
+
+/* CONTAINER */
+[data-theme="classic-light"] .ml-predictions-redesign {
+  background: linear-gradient(135deg, #FAFAFA 0%, #F5F5F5 100%);
+  color: #212121;
+}
+
+/* PAGE HEADER */
+[data-theme="classic-light"] .page-header {
+  background: #FFFFFF;
+  border: 3px solid #1976D2;
+  box-shadow: 0 6px 16px rgba(25, 118, 210, 0.2);
+}
+
+[data-theme="classic-light"] .page-header h1 {
+  font-size: 3.5rem !important;
+  background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 700;
+  text-shadow: none;
+}
+
+[data-theme="classic-light"] .page-header .subtitle {
+  color: #757575;
+  font-size: 1.4rem !important;
+}
+
+/* SIMPLE LEGEND - FIX ALL GOLD TEXT */
+[data-theme="classic-light"] .simple-legend {
+  background: #FFFFFF !important;
+  border: 2px solid #1976D2 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+  padding: 30px !important;
+}
+
+[data-theme="classic-light"] .legend-row {
+  gap: 25px !important;
+  margin-bottom: 20px !important;
+}
+
+[data-theme="classic-light"] .simple-legend .legend-item {
+  background: #FAFAFA !important;
+  border: 1px solid #E0E0E0 !important;
+  padding: 18px !important;
+  border-radius: 8px !important;
+}
+
+[data-theme="classic-light"] .simple-legend .legend-item:hover {
+  background: #E3F2FD !important;
+  border-color: #1976D2 !important;
+  transform: translateY(-2px) !important;
+}
+
+[data-theme="classic-light"] .simple-legend .legend-icon {
+  font-size: 2.5rem !important;
+}
+
+[data-theme="classic-light"] .simple-legend .legend-text {
+  font-size: 1.4rem !important;
+  line-height: 1.5 !important;
+  color: #424242 !important;
+}
+
+[data-theme="classic-light"] .simple-legend .legend-text strong {
+  color: #1976D2 !important;
+  font-size: 1.5rem !important;
+  display: block !important;
+  margin-bottom: 4px !important;
+  font-weight: 700 !important;
+}
+
+[data-theme="classic-light"] .legend-title {
+  color: #1976D2;
+  font-size: 2rem !important;
+}
+
+[data-theme="classic-light"] .legend-label {
+  color: #1976D2;
+  font-size: 1.3rem !important;
+}
+
+[data-theme="classic-light"] .legend-description {
+  color: #616161;
+  font-size: 1.2rem !important;
+}
+
+/* WEEK SELECTOR - FIX GOLD BORDERS AND TEXT */
+[data-theme="classic-light"] .week-selector-redesign {
+  background: #FFFFFF;
+  border: 2px solid #E0E0E0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="classic-light"] .week-selector-redesign label {
+  color: #1976D2 !important;
+  font-size: 1.6rem !important;
+  font-weight: 700 !important;
+}
+
+[data-theme="classic-light"] .week-selector-redesign select {
+  background: #FFFFFF !important;
+  border: 2px solid #1976D2 !important;
+  color: #212121 !important;
+  font-size: 1.4rem !important;
+  padding: 12px 18px !important;
+  min-width: 140px !important;
+  font-weight: 600 !important;
+}
+
+[data-theme="classic-light"] .week-selector-redesign select:hover {
+  border-color: #1565C0 !important;
+  background: #E3F2FD !important;
+}
+
+[data-theme="classic-light"] .week-selector-redesign select:focus {
+  outline: 3px solid #BBDEFB !important;
+  border-color: #1976D2 !important;
+}
+
+[data-theme="classic-light"] .week-selector-redesign h2 {
+  color: #1976D2 !important;
+  font-size: 2.5rem !important;
+  border-bottom: 3px solid #1976D2 !important;
+}
+
+[data-theme="classic-light"] .week-selector-redesign p {
+  color: #757575;
+  font-size: 1.3rem !important;
+}
+
+[data-theme="classic-light"] .week-buttons {
+  background: #F5F5F5;
+}
+
+[data-theme="classic-light"] .week-option {
+  background: #FFFFFF !important;
+  color: #616161 !important;
+  border: 2px solid #E0E0E0 !important;
+  font-size: 1.3rem !important;
+  padding: 16px 28px !important;
+}
+
+[data-theme="classic-light"] .week-option:hover {
+  background: #E3F2FD !important;
+  border-color: #1976D2 !important;
+  color: #1976D2 !important;
+}
+
+[data-theme="classic-light"] .week-option.selected {
+  background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%) !important;
+  color: #FFFFFF !important;
+  border-color: #1976D2 !important;
+  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3) !important;
+}
+
+/* LOAD BUTTON - FIX THE GOLD! */
+[data-theme="classic-light"] .load-btn {
+  background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%) !important;
+  color: #FFFFFF !important;
+  border: 2px solid #1976D2 !important;
+  font-size: 1.5rem !important;
+  padding: 12px 36px !important;
+  box-shadow: 0 6px 16px rgba(25, 118, 210, 0.3) !important;
+}
+
+[data-theme="classic-light"] .load-btn:hover {
+  background: linear-gradient(135deg, #1565C0 0%, #0D47A1 100%) !important;
+  box-shadow: 0 8px 20px rgba(25, 118, 210, 0.4) !important;
+}
+
+/* VIEW TABS */
+[data-theme="classic-light"] .view-tabs {
+  background: transparent;
+}
+
+[data-theme="classic-light"] .view-tab {
+  background: #FFFFFF !important;
+  color: #757575 !important;
+  border: 2px solid #E0E0E0 !important;
+  font-size: 1.3rem !important;
+  padding: 14px 32px !important;
+}
+
+[data-theme="classic-light"] .view-tab:hover {
+  background: #E3F2FD !important;
+  color: #1976D2 !important;
+  border-color: #1976D2 !important;
+}
+
+[data-theme="classic-light"] .view-tab.active {
+  background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%) !important;
+  color: #FFFFFF !important;
+  border-color: #1976D2 !important;
+  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3) !important;
+}
+
+/* SECTION HEADER */
+[data-theme="classic-light"] .section-header h2 {
+  color: #1976D2 !important;
+  font-size: 2.5rem !important;
+}
+
+[data-theme="classic-light"] .section-header p {
+  color: #757575 !important;
+  font-size: 1.3rem !important;
+}
+
+/* WINNER PICKS VIEW */
+[data-theme="classic-light"] .winner-picks-view {
+  background: transparent;
+}
+
+/* GAME CARD */
+[data-theme="classic-light"] .game-card {
+  background: #FFFFFF !important;
+  border: 2px solid #E0E0E0 !important;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08) !important;
+}
+
+[data-theme="classic-light"] .game-card:hover {
+  border-color: #1976D2 !important;
+  box-shadow: 0 8px 20px rgba(25, 118, 210, 0.2) !important;
+}
+
+[data-theme="classic-light"] .game-time {
+  color: #616161 !important;
+  font-size: 1.3rem !important;
+}
+
+/* WINNER DISPLAY - FIX THE GOLD! */
+[data-theme="classic-light"] .winner-display {
+  background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%) !important;
+  border: 3px solid #2E7D32 !important;
+  box-shadow: 0 6px 16px rgba(46, 125, 50, 0.25) !important;
+}
+
+[data-theme="classic-light"] .winner-team {
+  color: #1B5E20 !important;
+  font-size: 2.2rem !important;
+  font-weight: 700 !important;
+}
+
+[data-theme="classic-light"] .winner-logo {
+  filter: none;
+}
+
+/* CONFIDENCE BAR - FIX THE GOLD! */
+[data-theme="classic-light"] .confidence-bar {
+  background: #F5F5F5 !important;
+  border: 2px solid #E0E0E0 !important;
+}
+
+[data-theme="classic-light"] .confidence-fill {
+  background: linear-gradient(90deg, #1976D2 0%, #1565C0 100%) !important;
+}
+
+[data-theme="classic-light"] .confidence-text {
+  color: #FFFFFF !important;
+  font-size: 1.4rem !important;
+  font-weight: 700 !important;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* SPLIT DISPLAY */
+[data-theme="classic-light"] .split-display {
+  background: #F5F5F5 !important;
+  border: 2px solid #E0E0E0 !important;
+}
+
+[data-theme="classic-light"] .split-winner {
+  border-right: 2px solid #E0E0E0 !important;
+}
+
+[data-theme="classic-light"] .split-team {
+  color: #212121 !important;
+  font-size: 1.6rem !important;
+}
+
+[data-theme="classic-light"] .split-conf {
+  color: #1976D2 !important;
+  font-size: 1.3rem !important;
+}
+
+/* SPREAD VIEW */
+[data-theme="classic-light"] .spreads-view {
+  background: transparent;
+}
+
+[data-theme="classic-light"] .spreads-grid {
+  background: transparent;
+}
+
+[data-theme="classic-light"] .spread-card {
+  background: #FFFFFF !important;
+  border: 2px solid #E0E0E0 !important;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08) !important;
+}
+
+[data-theme="classic-light"] .spread-card:hover {
+  border-color: #1976D2 !important;
+  box-shadow: 0 8px 20px rgba(25, 118, 210, 0.2) !important;
+}
+
+[data-theme="classic-light"] .spread-header {
+  background: #F5F5F5 !important;
+  border-bottom: 2px solid #E0E0E0 !important;
+  color: #616161 !important;
+  font-size: 1.3rem !important;
+}
+
+[data-theme="classic-light"] .team-row {
+  border-bottom: 2px solid #F5F5F5 !important;
+}
+
+[data-theme="classic-light"] .team-info {
+  color: #212121 !important;
+}
+
+[data-theme="classic-light"] .team-name {
+  color: #212121 !important;
+  font-size: 1.8rem !important;
+}
+
+[data-theme="classic-light"] .team-record {
+  color: #757575 !important;
+  font-size: 1.3rem !important;
+}
+
+[data-theme="classic-light"] .spread-value {
+  color: #1976D2 !important;
+  font-size: 1.6rem !important;
+  font-weight: 700 !important;
+}
+
+[data-theme="classic-light"] .prediction-info {
+  background: #E3F2FD !important;
+  border-top: 2px solid #1976D2 !important;
+}
+
+[data-theme="classic-light"] .prediction-label {
+  color: #1976D2 !important;
+  font-size: 1.3rem !important;
+}
+
+[data-theme="classic-light"] .predicted-team {
+  color: #1B5E20 !important;
+  font-size: 1.8rem !important;
+  font-weight: 700 !important;
+}
+
+/* PREDICTED WINNER CLASS */
+[data-theme="classic-light"] .predicted-winner {
+  background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%) !important;
+  border: 3px solid #2E7D32 !important;
+}
+
+/* INTRO PANEL */
+[data-theme="classic-light"] .intro-panel {
+  background: #FFFFFF !important;
+  border: 3px solid #1976D2 !important;
+  box-shadow: 0 6px 16px rgba(25, 118, 210, 0.2) !important;
+}
+
+[data-theme="classic-light"] .intro-title {
+  color: #1976D2 !important;
+  font-size: 2.5rem !important;
+}
+
+[data-theme="classic-light"] .intro-content {
+  color: #616161 !important;
+  font-size: 1.3rem !important;
+}
+
+[data-theme="classic-light"] .intro-content strong {
+  color: #1976D2 !important;
+}
+
+/* LOADING STATES */
+[data-theme="classic-light"] .loading-container {
+  color: #1976D2 !important;
+  font-size: 1.8rem !important;
+}
+
+[data-theme="classic-light"] .loading-spinner {
+  border-color: rgba(25, 118, 210, 0.1) !important;
+  border-top-color: #1976D2 !important;
+}
+
+/* ERROR STATE */
+[data-theme="classic-light"] .error-container {
+  background: #FFEBEE !important;
+  border: 2px solid #C62828 !important;
+  color: #B71C1C !important;
+  font-size: 1.3rem !important;
+}
+
+/* PICK CARD BORDERS - FIX GOLD/GREEN */
+[data-theme="classic-light"] .pick-card {
+  background: #FFFFFF !important;
+  border: 2px solid #E0E0E0 !important;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08) !important;
+}
+
+[data-theme="classic-light"] .pick-card.agreement {
+  border: 3px solid #1976D2 !important;
+  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.2) !important;
+}
+
+[data-theme="classic-light"] .pick-card.disagreement {
+  border: 3px solid #1976D2 !important;
+  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.2) !important;
+}
+
+/* CONSENSUS BADGE - FIX GREEN */
+[data-theme="classic-light"] .consensus-badge {
+  background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%) !important;
+  border: 2px solid #1976D2 !important;
+  color: #0D47A1 !important;
+  font-size: 1.3rem !important;
+  padding: 10px 24px !important;
+  font-weight: 700 !important;
+}
+
+/* SPLIT BADGE - MATERIAL BLUE */
+[data-theme="classic-light"] .split-badge {
+  background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%) !important;
+  border: 2px solid #1976D2 !important;
+  color: #0D47A1 !important;
+  font-size: 1.3rem !important;
+  padding: 10px 24px !important;
+  font-weight: 700 !important;
+}
+
+/* SPLIT NOTE - DARK GRAY */
+[data-theme="classic-light"] .split-note {
+  color: #616161 !important;
+  font-size: 1.4rem !important;
+  font-weight: 600 !important;
+}
+
+/* SPLIT CONF - FIX GOLD */
+[data-theme="classic-light"] .split-conf {
+  color: #1976D2 !important;
+  font-size: 1.6rem !important;
+  font-weight: 700 !important;
+}
+
+/* SPLIT MODEL */
+[data-theme="classic-light"] .split-model {
+  color: #757575 !important;
+  font-size: 1.3rem !important;
+}
+
+/* SPLIT WINNER TEXT */
+[data-theme="classic-light"] .split-winner span {
+  color: #212121 !important;
+  font-size: 1.5rem !important;
+  font-weight: 700 !important;
+}
+
+/* MODEL LABEL - FIX VEGAS LINE GOLD */
+[data-theme="classic-light"] .model-label {
+  color: #757575 !important;
+  font-size: 1.3rem !important;
+  font-weight: 600 !important;
+}
+
+/* CONF VALUE - FIX GOLD */
+[data-theme="classic-light"] .conf-value {
+  color: #1976D2 !important;
+  font-size: 1.5rem !important;
+  font-weight: 700 !important;
+}
+
+/* VEGAS CONF */
+[data-theme="classic-light"] .model-conf.vegas .model-label,
+[data-theme="classic-light"] .model-conf.vegas .conf-value {
+  font-size: 1.4rem !important;
+}
+
+/* MATCHUP TEAMS */
+[data-theme="classic-light"] .matchup-teams {
+  font-size: 1.6rem !important;
+}
+
+[data-theme="classic-light"] .team-name {
+  color: #212121 !important;
+  font-size: 1.6rem !important;
+}
+
+[data-theme="classic-light"] .vs {
+  color: #9E9E9E !important;
+  font-size: 1.3rem !important;
+}
+
+/* GAME TIME */
+[data-theme="classic-light"] .game-time {
+  color: #616161 !important;
+  font-size: 1.4rem !important;
+}
+
+/* PICK FOOTER */
+[data-theme="classic-light"] .pick-footer {
+  border-top: 2px solid #E0E0E0 !important;
+}
+
+[data-theme="classic-light"] .vegas-line {
+  color: #757575 !important;
+  font-size: 1.3rem !important;
+}
+
+/* SCROLLBAR */
+[data-theme="classic-light"] .ml-predictions-redesign ::-webkit-scrollbar {
+  width: 14px;
+  height: 14px;
+}
+
+[data-theme="classic-light"] .ml-predictions-redesign ::-webkit-scrollbar-track {
+  background: #F5F5F5;
+}
+
+[data-theme="classic-light"] .ml-predictions-redesign ::-webkit-scrollbar-thumb {
+  background: #BDBDBD;
+  border-radius: 7px;
+  border: 3px solid #F5F5F5;
+}
+
+[data-theme="classic-light"] .ml-predictions-redesign ::-webkit-scrollbar-thumb:hover {
+  background: #9E9E9E;
+}
+/* POINT SPREADS TABLE - FIX ALL GOLD */
+[data-theme="classic-light"] .spreads-table {
+  background: #FFFFFF !important;
+  border: 2px solid #E0E0E0 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+}
+
+[data-theme="classic-light"] .table-header {
+  background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%) !important;
+  color: #FFFFFF !important;
+  font-size: 1.4rem !important;
+  font-weight: 700 !important;
+  border-bottom: 3px solid #1976D2 !important;
+  padding: 18px 20px !important;
+}
+
+[data-theme="classic-light"] .table-header > div {
+  color: #FFFFFF !important;
+  font-weight: 700 !important;
+}
+
+[data-theme="classic-light"] .table-row {
+  border-bottom: 1px solid #E0E0E0 !important;
+  background: #FFFFFF !important;
+}
+
+[data-theme="classic-light"] .table-row:hover {
+  background: #F5F5F5 !important;
+}
+
+[data-theme="classic-light"] .table-row.value-play {
+  background: #E3F2FD !important;
+  border-left: 4px solid #1976D2 !important;
+}
+
+[data-theme="classic-light"] .col-matchup {
+  font-size: 1.3rem !important;
+}
+
+[data-theme="classic-light"] .team-abbr {
+  color: #212121 !important;
+  font-weight: 700 !important;
+  font-size: 1.3rem !important;
+}
+
+[data-theme="classic-light"] .at-symbol {
+  color: #757575 !important;
+  font-size: 1.2rem !important;
+}
+
+[data-theme="classic-light"] .col-spread {
+  font-size: 1.3rem !important;
+}
+
+[data-theme="classic-light"] .spread-value {
+  color: #1976D2 !important;
+  font-weight: 700 !important;
+  font-size: 1.3rem !important;
+}
+
+[data-theme="classic-light"] .spread-value.edge-highlight {
+  color: #1976D2 !important;
+  font-weight: 800 !important;
+}
+
+[data-theme="classic-light"] .vegas-col {
+  color: #757575 !important;
+}
+
+[data-theme="classic-light"] .col-edge {
+  font-size: 1.3rem !important;
+}
+
+[data-theme="classic-light"] .edge-badge {
+  background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%) !important;
+  border: 2px solid #1976D2 !important;
+  color: #0D47A1 !important;
+  font-size: 1.2rem !important;
+  font-weight: 700 !important;
+  padding: 8px 16px !important;
+}
+
+[data-theme="classic-light"] .no-edge {
+  color: #9E9E9E !important;
+}

@@ -55,12 +55,12 @@ function SideMenu() {
           </Link>
 
           <Link 
-            to="/game-statistics" 
-            className={`menu-item ${isActive('/game-statistics')}`}
+            to="/team-comparison" 
+            className={`menu-item ${isActive('/team-comparison')}`}
             onClick={closeMenu}
           >
             <span className="menu-icon">📊</span>
-            <span className="menu-text">Historical Stats</span>
+            <span className="menu-text">Team Comparison</span>
           </Link>
 
           <Link 
@@ -84,17 +84,6 @@ function SideMenu() {
           <div className="menu-divider"></div>
 
           <Link 
-            to="/matchup-analyzer" 
-            className={`menu-item ${isActive('/matchup-analyzer')}`}
-            onClick={closeMenu}
-          >
-            <span className="menu-icon">🎯</span>
-            <span className="menu-text">Matchup Analyzer</span>
-          </Link>
-
-          <div className="menu-divider"></div>
-
-          <Link 
             to="/admin" 
             className={`menu-item ${isActive('/admin')}`}
             onClick={closeMenu}
@@ -105,10 +94,14 @@ function SideMenu() {
 
           <div className="menu-divider"></div>
 
-          <div className="menu-item disabled">
+          <Link 
+            to="/settings" 
+            className={`menu-item ${isActive('/settings')}`}
+            onClick={closeMenu}
+          >
             <span className="menu-icon">⚙️</span>
             <span className="menu-text">Settings</span>
-          </div>
+          </Link>
 
           <div className="menu-item disabled">
             <span className="menu-icon">ℹ️</span>

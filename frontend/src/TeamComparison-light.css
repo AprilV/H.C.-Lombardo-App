@@ -1,0 +1,110 @@
+/* ===================================
+   TEAM COMPARISON - CLASSIC LIGHT MODE
+   =================================== */
+
+[data-theme="classic-light"] .team-comparison-container {
+  background: linear-gradient(135deg, #F5F5F5 0%, #FAFAFA 100%);
+  color: #212121;
+}
+
+[data-theme="classic-light"] .team-comparison-header {
+  background: #FFFFFF;
+  border: 2px solid #E0E0E0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="classic-light"] .team-comparison-header h1 {
+  color: #1976D2;
+}
+
+[data-theme="classic-light"] .tab-navigation {
+  background: #F5F5F5;
+  border: 2px solid #E0E0E0;
+}
+
+[data-theme="classic-light"] .tab-btn {
+  background: #FFFFFF;
+  color: #757575;
+  border-right: 1px solid #E0E0E0;
+}
+
+[data-theme="classic-light"] .tab-btn:hover {
+  background: #FAFAFA;
+  color: #1976D2;
+}
+
+[data-theme="classic-light"] .tab-btn.active {
+  background: #FFFFFF;
+  color: #1976D2;
+  border-bottom: 3px solid #1976D2;
+}
+
+[data-theme="classic-light"] .team-selectors {
+  background: #FFFFFF;
+  border: 2px solid #E0E0E0;
+}
+
+[data-theme="classic-light"] .team-selector select {
+  background: #F5F5F5;
+  color: #212121;
+  border: 2px solid #E0E0E0;
+}
+
+[data-theme="classic-light"] .team-selector select:focus {
+  border-color: #1976D2;
+}
+
+[data-theme="classic-light"] .comparison-grid {
+  background: #FFFFFF;
+  border: 2px solid #E0E0E0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="classic-light"] .stat-row {
+  border-bottom: 1px solid #FAFAFA;
+}
+
+[data-theme="classic-light"] .stat-label {
+  color: #757575;
+  border-right: 2px solid #E0E0E0;
+}
+
+[data-theme="classic-light"] .stat-value {
+  color: #212121;
+}
+
+[data-theme="classic-light"] .stat-value.winner {
+  color: #1976D2;
+  background: rgba(0, 102, 204, 0.08);
+}
+
+[data-theme="classic-light"] .differential-bar {
+  background: #FAFAFA;
+}
+
+[data-theme="classic-light"] .differential-fill {
+  background: linear-gradient(90deg, #1976D2 0%, #1565C0 100%);
+}
+
+[data-theme="classic-light"] .season-selector {
+  background: #FFFFFF;
+  border: 2px solid #E0E0E0;
+}
+
+[data-theme="classic-light"] .season-selector select {
+  background: #F5F5F5;
+  color: #212121;
+  border: 2px solid #E0E0E0;
+}
+
+[data-theme="classic-light"] .load-comparison-btn {
+  background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%);
+  color: #FFFFFF;
+  box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
+}
+
+[data-theme="classic-light"] .load-comparison-btn:hover {
+  box-shadow: 0 6px 16px rgba(0, 102, 204, 0.4);
+}
+
+
