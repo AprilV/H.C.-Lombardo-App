@@ -13,6 +13,7 @@ from datetime import datetime
 # Add scripts/maintenance to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'scripts', 'maintenance'))
 from multi_source_data_fetcher import MultiSourceDataFetcher
+from update_live_data import update_current_season_scores
 
 # Configure logging
 logging.basicConfig(
@@ -44,9 +45,16 @@ def main():
             logger.info(f"🔄 AUTOMATIC DATA UPDATE - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
             logger.info("=" * 70)
             
-            # Run the data fetcher
+            # 1. Update team standings (ESPN + TeamRankings)
+            logger.info("📊 Updating team standings...")
             fetcher = MultiSourceDataFetcher()
             fetcher.run_full_update()
+            
+            # 2. Update game scores and stats (NFLverse)
+            logger.info("🏈 Updating game scores and stats...")
+            games_updated, stats_updated = update_current_season_scores()
+            logger.info(f"   - Updated {games_updated} game scores")
+            logger.info(f"   - Updated {stats_updated} team game stats")
             
             logger.info("✅ Automatic update complete")
             logger.info(f"⏰ Next update in {update_interval_minutes} minutes")
