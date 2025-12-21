@@ -4,7 +4,7 @@ import './Homepage.css';
 import './Homepage-light.css';
 import LiveGamesTicker from './LiveGamesTicker';
 
-const API_URL = 'https://api.aprilsykes.dev';
+const API_URL = process.env.REACT_APP_API_URL || 'https://api.aprilsykes.dev';
 
 // Map team abbreviations to logo filenames
 const teamLogoMap = {
@@ -127,6 +127,28 @@ function Homepage() {
     <div className="homepage">
       {/* Live Games Ticker */}
       <LiveGamesTicker />
+
+      {/* AI Prediction Methodology */}
+      <div className="prediction-methodology">
+        <h3>🤖 Our Prediction Systems</h3>
+        <div className="methodology-grid">
+          <div className="method-card">
+            <div className="method-icon">📊</div>
+            <div className="method-title">ELO Rating System</div>
+            <div className="method-desc">Dynamic team strength ratings updated after every game, accounting for margin of victory, home-field advantage, and recent performance trends. Proven methodology used by FiveThirtyEight.</div>
+          </div>
+          <div className="method-card">
+            <div className="method-icon">⚡</div>
+            <div className="method-title">XGBoost ML Model</div>
+            <div className="method-desc">Gradient boosting trained on 2020-2025 NFL data analyzing 50+ statistical features including offensive efficiency, defensive metrics, and situational performance.</div>
+          </div>
+          <div className="method-card">
+            <div className="method-icon">🎰</div>
+            <div className="method-title">Vegas Comparison</div>
+            <div className="method-desc">Both prediction systems are displayed alongside Vegas spreads, allowing you to identify value opportunities where our models disagree with the betting market.</div>
+          </div>
+        </div>
+      </div>
 
       {/* Executive Header with Proper Hierarchy */}
       <div className="homepage-header-executive">

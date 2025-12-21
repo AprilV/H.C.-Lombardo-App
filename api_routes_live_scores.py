@@ -36,7 +36,7 @@ live_scores_api = Blueprint('live_scores_api', __name__)
 ESPN_SCOREBOARD_URL = "http://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard"
 
 def get_predictions_for_week(week, season=2025):
-    """Fetch AI and Vegas predictions by importing the predictor directly"""
+    """Fetch AI, ELO, and Vegas predictions"""
     try:
         # Import the ML predictor directly instead of making HTTP call
         from ml.predict_week import WeeklyPredictor
@@ -50,9 +50,9 @@ def get_predictions_for_week(week, season=2025):
         else:
             predictions_list = predictions_data.get('predictions', [])
         
-        print(f"DEBUG: Got {len(predictions_list)} predictions from ML predictor for Week {week} Season {season}")
+        print(f"DEBUG: Got {len(predictions_list)} XGBoost predictions for Week {week} Season {season}")
         
-        # Create lookup dictionary by teams
+        # Create lookup dictionary by teams for XGBoost predictions
         predictions = {}
         
         for pred in predictions_list:
@@ -65,14 +65,57 @@ def get_predictions_for_week(week, season=2025):
                 'vegas_spread': pred.get('vegas_spread'),
                 'vegas_total': pred.get('total_line')
             }
-            print(f"DEBUG: Added prediction {key} -> AI: {pred.get('predicted_winner')}, Vegas: {pred.get('vegas_spread')}")
+            print(f"DEBUG: Added XGBoost prediction {key} -> AI: {pred.get('predicted_winner')}, Vegas: {pred.get('vegas_spread')}")
+        
+        # Fetch ELO predictions from ml_predictions_elo table
+        try:
+            conn = get_db_connection()
+            cur = conn.cursor()
+            
+            elo_query = """
+                SELECT home_team, away_team, elo_spread, predicted_winner
+                FROM hcl.ml_predictions_elo
+                WHERE season = %s AND week = %s
+            """
+            cur.execute(elo_query, (season, week))
+            elo_rows = cur.fetchall()
+            
+            print(f"DEBUG: Got {len(elo_rows)} ELO predictions from database")
+            
+            for row in elo_rows:
+                home_team, away_team, elo_spread, elo_winner = row
+                key = f"{away_team}@{home_team}"
+                
+                # Add ELO predictions to existing dict or create new entry
+                if key in predictions:
+                    predictions[key]['elo_spread'] = float(elo_spread) if elo_spread else None
+                    predictions[key]['elo_predicted_winner'] = elo_winner
+                else:
+                    # ELO prediction exists but no XGBoost - still add it
+                    predictions[key] = {
+                        'ai_predicted_winner': None,
+                        'ai_spread': None,
+                        'elo_spread': float(elo_spread) if elo_spread else None,
+                        'elo_predicted_winner': elo_winner,
+                        'vegas_spread': None,
+                        'vegas_total': None
+                    }
+                
+                print(f"DEBUG: Added ELO prediction {key} -> ELO: {elo_winner}, Spread: {elo_spread}")
+            
+            cur.close()
+            conn.close()
+            
+        except Exception as elo_err:
+            print(f"Warning: Could not fetch ELO predictions: {elo_err}")
+            # Continue without ELO predictions
         
         print(f"DEBUG: Total predictions in dict: {len(predictions)}")
         
         return predictions
         
     except Exception as e:
-        print(f"Error fetching predictions from ML predictor: {e}")
+        print(f"Error fetching predictions: {e}")
         return {}
 
 @live_scores_api.route('/api/live-scores', methods=['GET'])
@@ -185,10 +228,12 @@ def get_live_scores():
                 
                 if matchup_key in predictions:
                     pred = predictions[matchup_key]
-                    game_data['ai_prediction'] = pred['ai_predicted_winner']
-                    game_data['ai_spread'] = pred['ai_spread']
-                    game_data['vegas_spread'] = pred['vegas_spread']
-                    game_data['vegas_total'] = pred['vegas_total']
+                    game_data['ai_prediction'] = pred.get('ai_predicted_winner')
+                    game_data['ai_spread'] = pred.get('ai_spread')
+                    game_data['elo_prediction'] = pred.get('elo_predicted_winner')
+                    game_data['elo_spread'] = pred.get('elo_spread')
+                    game_data['vegas_spread'] = pred.get('vegas_spread')
+                    game_data['vegas_total'] = pred.get('vegas_total')
                     
                     # Determine if AI prediction was correct (only for final games)
                     if game_status == 'final':
@@ -199,44 +244,72 @@ def get_live_scores():
                         else:
                             actual_winner = 'TIE'
                         
-                        game_data['ai_correct'] = (pred['ai_predicted_winner'] == actual_winner)
+                        game_data['ai_correct'] = (pred.get('ai_predicted_winner') == actual_winner)
+                        game_data['elo_correct'] = (pred.get('elo_predicted_winner') == actual_winner)
                         
                         # Calculate spread coverage
                         actual_margin = game_data['home_score'] - game_data['away_score']
                         
                         # Calculate Vegas spread coverage
-                        vegas_spread = pred['vegas_spread']
+                        vegas_spread = pred.get('vegas_spread')
                         
-                        # Check if it's a push
-                        if actual_margin == -vegas_spread:
-                            game_data['vegas_covered'] = 'push'
-                        elif vegas_spread < 0:
-                            # Home team favored - need to win by MORE than spread
-                            game_data['vegas_covered'] = 'yes' if actual_margin > abs(vegas_spread) else 'no'
+                        if vegas_spread is not None:
+                            # Check if it's a push
+                            if actual_margin == -vegas_spread:
+                                game_data['vegas_covered'] = 'push'
+                            elif vegas_spread < 0:
+                                # Home team favored - need to win by MORE than spread
+                                game_data['vegas_covered'] = 'yes' if actual_margin > abs(vegas_spread) else 'no'
+                            else:
+                                # Away team favored - need to win by MORE than spread
+                                game_data['vegas_covered'] = 'yes' if actual_margin < -abs(vegas_spread) else 'no'
                         else:
-                            # Away team favored - need to win by MORE than spread
-                            game_data['vegas_covered'] = 'yes' if actual_margin < -abs(vegas_spread) else 'no'
+                            game_data['vegas_covered'] = None
                         
-                        # Calculate AI spread coverage
-                        ai_spread = pred['ai_spread']
+                        # Calculate AI spread coverage (XGBoost)
+                        ai_spread = pred.get('ai_spread')
                         
-                        # AI spreads are decimals, so no pushes
-                        if ai_spread < 0:
-                            # Home team favored - need to win by MORE than spread
-                            game_data['ai_spread_covered'] = 'yes' if actual_margin > abs(ai_spread) else 'no'
+                        if ai_spread is not None:
+                            # AI spreads are decimals, so no pushes
+                            if ai_spread < 0:
+                                # Home team favored - need to win by MORE than spread
+                                game_data['ai_spread_covered'] = 'yes' if actual_margin > abs(ai_spread) else 'no'
+                            else:
+                                # Away team favored - need to win by MORE than spread
+                                game_data['ai_spread_covered'] = 'yes' if actual_margin < -abs(ai_spread) else 'no'
                         else:
-                            # Away team favored - need to win by MORE than spread
-                            game_data['ai_spread_covered'] = 'yes' if actual_margin < -abs(ai_spread) else 'no'
+                            game_data['ai_spread_covered'] = None
+                        
+                        # Calculate ELO spread coverage
+                        elo_spread = pred.get('elo_spread')
+                        
+                        if elo_spread is not None:
+                            # ELO spreads are decimals, so no pushes
+                            if elo_spread < 0:
+                                # Home team favored - need to win by MORE than spread
+                                game_data['elo_spread_covered'] = 'yes' if actual_margin > abs(elo_spread) else 'no'
+                            else:
+                                # Away team favored - need to win by MORE than spread
+                                game_data['elo_spread_covered'] = 'yes' if actual_margin < -abs(elo_spread) else 'no'
+                        else:
+                            game_data['elo_spread_covered'] = None
                     else:
                         game_data['ai_correct'] = None
+                        game_data['elo_correct'] = None
                         game_data['vegas_covered'] = None
                         game_data['ai_spread_covered'] = None
+                        game_data['elo_spread_covered'] = None
                 else:
                     game_data['ai_prediction'] = None
                     game_data['ai_spread'] = None
+                    game_data['elo_prediction'] = None
+                    game_data['elo_spread'] = None
                     game_data['vegas_spread'] = None
                     game_data['vegas_total'] = None
                     game_data['ai_correct'] = None
+                    game_data['elo_correct'] = None
+                    game_data['ai_spread_covered'] = None
+                    game_data['elo_spread_covered'] = None
                     game_data['ai_spread_covered'] = None
                 
                 games.append(game_data)

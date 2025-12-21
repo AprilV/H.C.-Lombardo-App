@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './LiveGamesTicker.css';
 import './LiveGamesTicker-light.css';
 
-const API_URL = 'https://api.aprilsykes.dev';
+const API_URL = process.env.REACT_APP_API_URL || 'https://api.aprilsykes.dev';
 
 // Map team abbreviations to logo filenames
 const teamLogoMap = {
@@ -164,7 +164,10 @@ function LiveGamesTicker() {
       <div className="ticker-header-bar">
         <div className="ticker-label">
           <span className="live-dot"></span>
-          LIVE SCORES • AI PREDICTIONS • VEGAS LINES
+          LIVE SCORES • ELO • AI (XGBoost) • VEGAS LINES
+        </div>
+        <div className="ticker-info" title="Two independent prediction systems: ELO ratings and XGBoost machine learning, compared against Vegas spreads">
+          ℹ️
         </div>
         <div className="ticker-controls">
           <button className="scroll-btn" onClick={scrollLeftBtn} title="Scroll Left">
@@ -253,24 +256,44 @@ function LiveGamesTicker() {
               )}
 
               {/* Predictions (if available) */}
-              {game.ai_prediction && (
+              {(game.elo_spread || game.ai_spread || game.vegas_spread) && (
                 <div className="ticker-predictions">
-                  <div className="pred-line">
-                    <div className="pred-left">
-                      <span className="pred-icon">🤖</span>
-                      <span className="pred-text">
-                        AI: {game.ai_spread < 0 ? game.home_team : game.away_team} by {Math.abs(game.ai_spread)}
-                      </span>
+                  {game.elo_spread && (
+                    <div className="pred-line">
+                      <div className="pred-left">
+                        <span className="pred-icon">📊</span>
+                        <span className="pred-text" title="ELO Rating System">
+                          ELO: {game.elo_spread < 0 ? game.home_team : game.away_team} by {Math.abs(game.elo_spread)}
+                        </span>
+                      </div>
+                      {game.status === 'final' && (
+                        <span className={`pred-check ${
+                          game.elo_spread_covered === 'push' ? 'push' : 
+                          game.elo_spread_covered === 'yes' ? 'correct' : 'wrong'
+                        }`}>
+                          {game.elo_spread_covered === 'push' ? 'PUSH' : game.elo_spread_covered === 'yes' ? '✓' : '✗'}
+                        </span>
+                      )}
                     </div>
-                    {game.status === 'final' && (
-                      <span className={`pred-check ${
-                        game.ai_spread_covered === 'push' ? 'push' : 
-                        game.ai_spread_covered === 'yes' ? 'correct' : 'wrong'
-                      }`}>
-                        {game.ai_spread_covered === 'push' ? 'PUSH' : game.ai_spread_covered === 'yes' ? '✓' : '✗'}
-                      </span>
-                    )}
-                  </div>
+                  )}
+                  {game.ai_spread && (
+                    <div className="pred-line">
+                      <div className="pred-left">
+                        <span className="pred-icon">🤖</span>
+                        <span className="pred-text" title="XGBoost Machine Learning">
+                          AI: {game.ai_spread < 0 ? game.home_team : game.away_team} by {Math.abs(game.ai_spread)}
+                        </span>
+                      </div>
+                      {game.status === 'final' && (
+                        <span className={`pred-check ${
+                          game.ai_spread_covered === 'push' ? 'push' : 
+                          game.ai_spread_covered === 'yes' ? 'correct' : 'wrong'
+                        }`}>
+                          {game.ai_spread_covered === 'push' ? 'PUSH' : game.ai_spread_covered === 'yes' ? '✓' : '✗'}
+                        </span>
+                      )}
+                    </div>
+                  )}
                   {game.vegas_spread && (
                     <div className="pred-line">
                       <div className="pred-left">
