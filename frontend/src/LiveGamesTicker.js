@@ -262,8 +262,11 @@ function LiveGamesTicker() {
                     <div className="pred-line">
                       <div className="pred-left">
                         <span className="pred-icon">📊</span>
-                        <span className="pred-text" title="ELO Rating System">
-                          ELO: {game.elo_spread < 0 ? game.home_team : game.away_team} by {Math.abs(game.elo_spread)}
+                        <span className="pred-text" title="ELO Spread Prediction - For betting against the spread">
+                          ELO Spread: {(() => {
+                            const rounded = Math.round(game.elo_spread * 2) / 2;
+                            return rounded < 0 ? `${game.home_team} ${rounded}` : `${game.away_team} +${rounded}`;
+                          })()}
                         </span>
                       </div>
                       {game.status === 'final' && (
@@ -276,12 +279,30 @@ function LiveGamesTicker() {
                       )}
                     </div>
                   )}
+                  {game.elo_prediction && (
+                    <div className="pred-line pred-winner">
+                      <div className="pred-left">
+                        <span className="pred-icon">🏆</span>
+                        <span className="pred-text" title="ELO Moneyline Prediction - For moneyline betting">
+                          ELO Moneyline: {game.elo_prediction}
+                        </span>
+                      </div>
+                      {game.status === 'final' && game.elo_correct !== null && (
+                        <span className={`pred-check ${game.elo_correct ? 'correct' : 'wrong'}`}>
+                          {game.elo_correct ? '✓' : '✗'}
+                        </span>
+                      )}
+                    </div>
+                  )}
                   {game.ai_spread && (
                     <div className="pred-line">
                       <div className="pred-left">
                         <span className="pred-icon">🤖</span>
-                        <span className="pred-text" title="XGBoost Machine Learning">
-                          AI: {game.ai_spread < 0 ? game.home_team : game.away_team} by {Math.abs(game.ai_spread)}
+                        <span className="pred-text" title="XGBoost Spread Prediction - For betting against the spread">
+                          AI Spread: {(() => {
+                            const rounded = Math.round(game.ai_spread * 2) / 2;
+                            return rounded < 0 ? `${game.home_team} ${rounded}` : `${game.away_team} +${rounded}`;
+                          })()}
                         </span>
                       </div>
                       {game.status === 'final' && (
@@ -294,12 +315,30 @@ function LiveGamesTicker() {
                       )}
                     </div>
                   )}
+                  {game.ai_prediction && (
+                    <div className="pred-line pred-winner">
+                      <div className="pred-left">
+                        <span className="pred-icon">🏆</span>
+                        <span className="pred-text" title="XGBoost Moneyline Prediction - For moneyline betting">
+                          AI Moneyline: {game.ai_prediction}
+                        </span>
+                      </div>
+                      {game.status === 'final' && game.ai_correct !== null && (
+                        <span className={`pred-check ${game.ai_correct ? 'correct' : 'wrong'}`}>
+                          {game.ai_correct ? '✓' : '✗'}
+                        </span>
+                      )}
+                    </div>
+                  )}
                   {game.vegas_spread && (
                     <div className="pred-line">
                       <div className="pred-left">
                         <span className="pred-icon">🎰</span>
-                        <span className="pred-text">
-                          Vegas: {game.vegas_spread < 0 ? game.home_team : game.away_team} by {Math.abs(game.vegas_spread)}
+                        <span className="pred-text" title="Vegas Spread - Official betting line">
+                          Vegas Spread: {(() => {
+                            const rounded = Math.round(game.vegas_spread * 2) / 2;
+                            return rounded < 0 ? `${game.home_team} ${rounded}` : `${game.away_team} +${rounded}`;
+                          })()}
                         </span>
                       </div>
                       {game.status === 'final' && (
