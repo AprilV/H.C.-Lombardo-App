@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './Admin.css';
 import ModelPerformance from './ModelPerformance';
 
-const API_URL = 'https://api.aprilsykes.dev';
+const API_URL = process.env.REACT_APP_API_URL || 'https://api.aprilsykes.dev';
 
 function Admin() {
   const [activeTab, setActiveTab] = useState('system');

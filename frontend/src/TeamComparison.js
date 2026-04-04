@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import './TeamComparison.css';
 import './TeamComparison-light.css';
 
-const API_URL = 'https://api.aprilsykes.dev';
+const API_URL = process.env.REACT_APP_API_URL || 'https://api.aprilsykes.dev';
 
 // All available statistics organized by category
 const STAT_CATEGORIES = {

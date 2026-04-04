@@ -98,7 +98,8 @@ PostgreSQL on EC2 localhost:
 
 ## Support
 
-Class: IS330 - Database & Application Development  
+Program: Senior Capstone Project  
 Student: April V. Sykes  
-Instructor: Dr. Foster  
-Institution: Olympic College
+Advisor: Richard Becker  
+Institution: Olympic College  
+Term: Spring 2026 (April 6 – June 13)

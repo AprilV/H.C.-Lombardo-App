@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './ModelPerformance.css';
 
-const API_URL = 'https://api.aprilsykes.dev';
+const API_URL = process.env.REACT_APP_API_URL || 'https://api.aprilsykes.dev';
 
 function ModelPerformance() {
   const [performanceData, setPerformanceData] = useState(null);

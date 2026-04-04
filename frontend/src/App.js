@@ -12,7 +12,8 @@ import Admin from './Admin';
 import Settings from './Settings';
 import './App.css';
 
-const API_URL = 'https://api.aprilsykes.dev';
+const API_URL = process.env.REACT_APP_API_URL || 'https://api.aprilsykes.dev';
+console.log('🔍 API_URL configured as:', API_URL);
 
 function App() {
   const [serverStatus, setServerStatus] = useState(null);

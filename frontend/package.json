@@ -14,6 +14,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "start:test": "set REACT_APP_API_URL=http://100.48.43.144:5000&&react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
