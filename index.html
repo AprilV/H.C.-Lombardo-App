@@ -1477,6 +1477,22 @@
 
         .dash-live-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(213,10,10,0.4); }
 
+        /* ── GANTT CHART ── */
+        .gantt-wrap { min-width: 520px; }
+        .gantt-header { display: flex; margin-bottom: 0.5rem; padding-left: 130px; }
+        .gantt-week-label { flex: 1; font-size: 0.65rem; color: var(--muted); text-align: center; white-space: nowrap; }
+        .gantt-row { display: flex; align-items: center; margin-bottom: 0.45rem; position: relative; }
+        .gantt-label { width: 130px; flex-shrink: 0; font-size: 0.78rem; color: #f1f5f9; font-weight: 600; padding-right: 0.75rem; }
+        .gantt-label span { display: block; font-size: 0.68rem; color: var(--muted); font-weight: 400; }
+        .gantt-track { flex: 1; height: 28px; background: rgba(255,255,255,0.05); border-radius: 4px; position: relative; overflow: visible; }
+        .gantt-bar { position: absolute; top: 4px; height: 20px; border-radius: 3px; }
+        .gantt-bar.done    { background: linear-gradient(90deg, #059669, #10b981); }
+        .gantt-bar.active  { background: linear-gradient(90deg, #D50A0A, #f97316); }
+        .gantt-bar.upcoming{ background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); }
+        .gantt-today { position: absolute; top: -4px; width: 2px; background: #FFD700; height: calc(100% + 8px); z-index: 5; box-shadow: 0 0 6px rgba(255,215,0,0.7); }
+        .gantt-today-label { position: absolute; top: -18px; font-size: 0.62rem; color: #FFD700; font-weight: 700; transform: translateX(-50%); white-space: nowrap; }
+        .gantt-pct { position: absolute; right: -34px; top: 50%; transform: translateY(-50%); font-size: 0.7rem; color: var(--muted); white-space: nowrap; }
+
         /* ── DEFINITION OF DONE ── */
         .dod-item {
             font-size: 0.83rem;
@@ -1701,51 +1717,10 @@
     </div>
 
     <!-- ── CRITICAL PATH / MILESTONE TIMELINE ── -->
-    <div class="dash-section-label">Critical Path — Sprint to Launch</div>
+    <div class="dash-section-label">Gantt — Spring 2026 Sprint Timeline</div>
     <div class="chart-card" style="margin-bottom:0;">
-        <div class="chart-card-subtitle" style="margin-bottom:1.25rem;">Each sprint is a dependency on the one before it. Sprint 12 must complete before 13 can start. The project cannot launch until all 5 sprints ship in sequence.</div>
-        <div class="milestone-track">
-            <div class="milestone-line"></div>
-            <div class="milestone-line-done" style="width:1.5%;"></div>
-            <div class="milestone-nodes">
-                <div class="milestone-node">
-                    <div class="m-dot active"></div>
-                    <div class="m-label">Sprint 12</div>
-                    <div class="m-date">Apr 6–18</div>
-                    <div class="m-status active">Active</div>
-                </div>
-                <div class="milestone-node">
-                    <div class="m-dot future"></div>
-                    <div class="m-label">Sprint 13</div>
-                    <div class="m-date">Apr 20–May 2</div>
-                    <div class="m-status future">Data &amp; Clean</div>
-                </div>
-                <div class="milestone-node">
-                    <div class="m-dot future"></div>
-                    <div class="m-label">Sprint 14</div>
-                    <div class="m-date">May 4–16</div>
-                    <div class="m-status future">ML Retrain</div>
-                </div>
-                <div class="milestone-node">
-                    <div class="m-dot future"></div>
-                    <div class="m-label">Sprint 15</div>
-                    <div class="m-date">May 18–30</div>
-                    <div class="m-status future">UI Polish</div>
-                </div>
-                <div class="milestone-node">
-                    <div class="m-dot future"></div>
-                    <div class="m-label">Sprint 16</div>
-                    <div class="m-date">Jun 1–13</div>
-                    <div class="m-status future">Hardening</div>
-                </div>
-                <div class="milestone-node">
-                    <div class="m-dot launch"></div>
-                    <div class="m-label">🚀 Launch</div>
-                    <div class="m-date">Jun 13, 2026</div>
-                    <div class="m-status launch">Target</div>
-                </div>
-            </div>
-        </div>
+        <div class="chart-card-subtitle" style="margin-bottom:1.25rem;">Full 10-week term at a glance. Each sprint is a dependency on the one before it. The gold line marks today.</div>
+        <div id="gantt-chart" style="overflow-x:auto;"></div>
     </div>
 
 </div><!-- /dash-wrap -->
@@ -3425,6 +3400,81 @@ initBacklog();
 
     window.initHoursLog = render;
     render();
+})();
+
+/* ── GANTT CHART ── */
+(function buildGantt() {
+    var container = document.getElementById('gantt-chart');
+    if (!container) return;
+
+    // Term: Apr 6 – Jun 13 = 68 days total
+    var TERM_START = new Date('2026-04-06');
+    var TERM_END   = new Date('2026-06-13');
+    var TERM_DAYS  = 68;
+
+    var sprints = [
+        { label: 'Sprint 12', sub: 'Diagnose & Restore', start: '2026-04-06', end: '2026-04-18', status: 'active'  },
+        { label: 'Sprint 13', sub: 'Data & Clean',        start: '2026-04-20', end: '2026-05-02', status: 'upcoming'},
+        { label: 'Sprint 14', sub: 'ML Retrain',          start: '2026-05-04', end: '2026-05-16', status: 'upcoming'},
+        { label: 'Sprint 15', sub: 'UI & UX Polish',      start: '2026-05-18', end: '2026-05-30', status: 'upcoming'},
+        { label: 'Sprint 16', sub: 'Hardening & Release', start: '2026-06-01', end: '2026-06-13', status: 'upcoming'},
+    ];
+
+    // Today position
+    var today = new Date(); today.setHours(0,0,0,0);
+    var todayPct = Math.min(Math.max(((today - TERM_START) / 86400000) / TERM_DAYS * 100, 0), 100);
+
+    // Sprint 12 completion from checkboxes
+    var allCbs = document.querySelectorAll('#tab-sprint12 input[type="checkbox"]');
+    var checkedCount = 0;
+    allCbs.forEach(function(cb){ if (cb.checked) checkedCount++; });
+    var s12pct = allCbs.length ? Math.round(checkedCount / allCbs.length * 100) : 0;
+
+    // Week labels (10 weeks)
+    var headerHTML = '<div class="gantt-header">';
+    for (var w = 0; w < 10; w++) {
+        var wDate = new Date(TERM_START); wDate.setDate(wDate.getDate() + w * 7);
+        var mo = wDate.toLocaleString('default', { month: 'short' });
+        headerHTML += '<div class="gantt-week-label">W' + (w+1) + '<br><span style="font-size:0.6rem;">' + mo + ' ' + wDate.getDate() + '</span></div>';
+    }
+    headerHTML += '</div>';
+
+    // Rows
+    var rowsHTML = '';
+    sprints.forEach(function(s) {
+        var sStart = new Date(s.start); sStart.setHours(0,0,0,0);
+        var sEnd   = new Date(s.end);   sEnd.setHours(0,0,0,0);
+        var leftPct  = ((sStart - TERM_START) / 86400000) / TERM_DAYS * 100;
+        var widthPct = ((sEnd   - sStart)     / 86400000 + 1) / TERM_DAYS * 100;
+
+        // Completion fill for active sprint
+        var fillBar = '';
+        if (s.status === 'active' && s12pct > 0) {
+            fillBar = '<div class="gantt-bar done" style="left:' + leftPct + '%;width:' + (widthPct * s12pct / 100) + '%;"></div>';
+        }
+
+        var pctLabel = s.status === 'active' ? s12pct + '%' : (s.status === 'done' ? '100%' : '');
+
+        rowsHTML +=
+            '<div class="gantt-row">' +
+                '<div class="gantt-label">' + s.label + '<span>' + s.sub + '</span></div>' +
+                '<div class="gantt-track">' +
+                    '<div class="gantt-bar ' + s.status + '" style="left:' + leftPct + '%;width:' + widthPct + '%;"></div>' +
+                    fillBar +
+                    (pctLabel ? '<div class="gantt-pct">' + pctLabel + '</div>' : '') +
+                '</div>' +
+            '</div>';
+    });
+
+    // Today line (rendered inside a relative wrapper over the tracks)
+    var todayLineHTML =
+        '<div style="position:relative; margin-left:130px;">' +
+            '<div class="gantt-today" style="left:' + todayPct + '%;">' +
+                '<div class="gantt-today-label">Today</div>' +
+            '</div>' +
+        '</div>';
+
+    container.innerHTML = '<div class="gantt-wrap">' + headerHTML + todayLineHTML + rowsHTML + '</div>';
 })();
 
 /* ── WEEKLY REPORT GENERATOR ── */
