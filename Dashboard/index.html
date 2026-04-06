@@ -3454,17 +3454,19 @@ initBacklog();
 
 /* ── HOURS LOG ── */
 (function initHoursLog() {
-    const WEEKS = [
-        { num: 1, dates: 'Apr 6 – Apr 12',  sprint: 'S12' },
-        { num: 2, dates: 'Apr 13 – Apr 18', sprint: 'S12' },
-        { num: 3, dates: 'Apr 20 – Apr 26', sprint: 'S13' },
-        { num: 4, dates: 'Apr 27 – May 2',  sprint: 'S13' },
-        { num: 5, dates: 'May 4 – May 10',  sprint: 'S14' },
-        { num: 6, dates: 'May 11 – May 16', sprint: 'S14' },
-        { num: 7, dates: 'May 18 – May 24', sprint: 'S15' },
-        { num: 8, dates: 'May 25 – May 30', sprint: 'S15' },
-        { num: 9, dates: 'Jun 1 – Jun 7',   sprint: 'S16' },
-        { num: 10,dates: 'Jun 8 – Jun 13',  sprint: 'S16' },
+    // ── HARDCODED HOURS DATA — Claude updates this each week ──
+    // To update: change hours and notes for each week. Leave future weeks at 0/''.
+    const HOURS_DATA = [
+        { num:1,  dates:'Apr 6 – Apr 12',  sprint:'S12', hours:7,   notes:'Full PM dashboard build — Gantt, Risk Register, Decision Log, Hours Log, Weekly Report, Retrospective, Definition of Done, Sprint board, burndown/burnup/velocity charts, nav tabs, deploy process.' },
+        { num:2,  dates:'Apr 13 – Apr 18', sprint:'S12', hours:0,   notes:'' },
+        { num:3,  dates:'Apr 20 – Apr 26', sprint:'S13', hours:0,   notes:'' },
+        { num:4,  dates:'Apr 27 – May 2',  sprint:'S13', hours:0,   notes:'' },
+        { num:5,  dates:'May 4 – May 10',  sprint:'S14', hours:0,   notes:'' },
+        { num:6,  dates:'May 11 – May 16', sprint:'S14', hours:0,   notes:'' },
+        { num:7,  dates:'May 18 – May 24', sprint:'S15', hours:0,   notes:'' },
+        { num:8,  dates:'May 25 – May 30', sprint:'S15', hours:0,   notes:'' },
+        { num:9,  dates:'Jun 1 – Jun 7',   sprint:'S16', hours:0,   notes:'' },
+        { num:10, dates:'Jun 8 – Jun 13',  sprint:'S16', hours:0,   notes:'' },
     ];
 
     // Determine current week index (0-based) by date
@@ -3474,75 +3476,40 @@ initBacklog();
     const daysSinceStart = Math.floor((today - TERM_START) / 86400000);
     const currentWeekIdx = Math.min(Math.max(Math.floor(daysSinceStart / 7), 0), 9);
 
-    const STORAGE_KEY = 'hcl_hours_log';
-
-    function load() {
-        try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
-        catch(e) { return {}; }
-    }
-    function save(data) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    }
-
     function render() {
-        const data = load();
         const container = document.getElementById('hours-rows');
         if (!container) return;
         container.innerHTML = '';
 
-        WEEKS.forEach(function(w, i) {
-            const key = 'w' + w.num;
-            const saved = data[key] || { hours: '', notes: '' };
+        HOURS_DATA.forEach(function(w, i) {
             const isCurrent = i === currentWeekIdx;
-
             const row = document.createElement('div');
             row.className = 'hours-row' + (isCurrent ? ' current-week' : '');
-
             row.innerHTML =
                 '<div class="hours-week-label">' +
                     '<span class="week-num">Week ' + w.num + '</span>' +
-                    (isCurrent ? '<span style="font-size:0.7rem;color:#FFD700;"> ← current</span> ' : '') +
+                    (isCurrent ? '<span style="font-size:0.7rem;color:#FFD700;"> ← current</span>' : '') +
                     '<span style="display:block;font-size:0.75rem;margin-top:0.1rem;">' + w.dates + '</span>' +
                 '</div>' +
                 '<div class="hours-sprint-badge">' + w.sprint + '</div>' +
-                '<div><input class="hours-input" type="number" min="0" max="80" step="0.5" placeholder="0" value="' + (saved.hours || '') + '" data-week="' + key + '" data-field="hours" /></div>' +
-                '<input class="hours-notes" type="text" maxlength="120" placeholder="What you worked on…" value="' + (saved.notes || '').replace(/"/g, '&quot;') + '" data-week="' + key + '" data-field="notes" />';
-
+                '<div style="text-align:center;"><span style="font-size:1rem;font-weight:700;color:' + (w.hours > 0 ? '#FFD700' : 'rgba(255,255,255,0.2)') + ';">' + (w.hours > 0 ? w.hours : '—') + '</span></div>' +
+                '<div style="font-size:0.8rem;color:var(--muted);padding-left:0.75rem;">' + (w.notes || '<span style="color:rgba(255,255,255,0.2);">—</span>') + '</div>';
             container.appendChild(row);
         });
 
-        // Attach listeners
-        container.querySelectorAll('[data-week]').forEach(function(el) {
-            el.addEventListener('input', function() {
-                const data2 = load();
-                const week = el.dataset.week;
-                const field = el.dataset.field;
-                if (!data2[week]) data2[week] = { hours: '', notes: '' };
-                data2[week][field] = el.value;
-                save(data2);
-                updateSummary(data2);
-            });
-        });
-
-        updateSummary(data);
-    }
-
-    function updateSummary(data) {
+        // Summary
         var total = 0, weeksLogged = 0;
-        WEEKS.forEach(function(w) {
-            const val = parseFloat((data['w' + w.num] || {}).hours || 0);
-            if (val > 0) { total += val; weeksLogged++; }
-        });
+        HOURS_DATA.forEach(function(w) { if (w.hours > 0) { total += w.hours; weeksLogged++; } });
         const avg = weeksLogged > 0 ? (total / weeksLogged).toFixed(1) : '0';
         const weeksLeft = Math.max(0, 10 - currentWeekIdx - 1);
-
         const el = function(id) { return document.getElementById(id); };
-        if (el('hours-total'))        el('hours-total').textContent        = total % 1 === 0 ? total : total.toFixed(1);
+        if (el('hours-total'))        el('hours-total').textContent        = total || '0';
         if (el('hours-avg'))          el('hours-avg').textContent          = avg;
         if (el('hours-weeks-logged')) el('hours-weeks-logged').textContent = weeksLogged;
         if (el('hours-weeks-left'))   el('hours-weeks-left').textContent   = weeksLeft;
     }
 
+    window.HOURS_DATA = HOURS_DATA; // expose for report generator
     window.initHoursLog = render;
     render();
 })();
@@ -3639,14 +3606,21 @@ function showSprintView(view, btn) {
     if (btn) btn.classList.add('active');
 }
 
-// Retro autosave
+// Retro — hardcoded values, updated by Claude at sprint close
 (function initRetro() {
-    var fields = ['retro-s12-well', 'retro-s12-bad', 'retro-s12-improve'];
-    fields.forEach(function(id) {
+    var RETRO_DATA = {
+        'retro-s12-well':    '',  // filled at sprint close Apr 18
+        'retro-s12-bad':     '',  // filled at sprint close Apr 18
+        'retro-s12-improve': '',  // filled at sprint close Apr 18
+    };
+    Object.keys(RETRO_DATA).forEach(function(id) {
         var el = document.getElementById(id);
         if (!el) return;
-        el.value = localStorage.getItem('hcl_' + id) || '';
-        el.addEventListener('input', function(){ localStorage.setItem('hcl_' + id, el.value); });
+        if (RETRO_DATA[id]) {
+            el.value = RETRO_DATA[id];
+            el.readOnly = true;
+            el.style.color = '#f1f5f9';
+        }
     });
 })();
 
@@ -3790,9 +3764,13 @@ function showSprintView(view, btn) {
         ],
     };
 
-    // Load hours data from localStorage (same key as Hours Log tab)
+    // Load hours data from hardcoded HOURS_DATA array
     function getHoursData() {
-        try { return JSON.parse(localStorage.getItem('hcl_hours_log')) || {}; } catch(e) { return {}; }
+        var result = {};
+        (window.HOURS_DATA || []).forEach(function(w) {
+            result['w' + w.num] = { hours: w.hours || '', notes: w.notes || '' };
+        });
+        return result;
     }
 
     // Get completed sprint 12 task labels from the board
@@ -3818,14 +3796,30 @@ function showSprintView(view, btn) {
         return Math.min(Math.max(Math.floor(days / 7) + 1, 1), 10);
     }
 
-    // Save issues text as user types
+    // ── HARDCODED ISSUES DATA — Claude updates this each week ──
+    var ISSUES_DATA = {
+        w1:  { issues: '', prevention: '' },
+        w2:  { issues: '', prevention: '' },
+        w3:  { issues: '', prevention: '' },
+        w4:  { issues: '', prevention: '' },
+        w5:  { issues: '', prevention: '' },
+        w6:  { issues: '', prevention: '' },
+        w7:  { issues: '', prevention: '' },
+        w8:  { issues: '', prevention: '' },
+        w9:  { issues: '', prevention: '' },
+        w10: { issues: '', prevention: '' },
+    };
+
     function bindIssuesSave() {
+        // Issues are now hardcoded — pre-fill fields from data, read-only if filled
+        var weekNum = parseInt(document.getElementById('report-week-select').value);
+        var key = 'w' + weekNum;
+        var data = ISSUES_DATA[key] || {};
         ['report-issues','report-prevention'].forEach(function(id) {
             var el = document.getElementById(id);
             if (!el) return;
-            var key = 'hcl_report_' + id;
-            el.value = localStorage.getItem(key) || '';
-            el.addEventListener('input', function() { localStorage.setItem(key, el.value); });
+            var field = id === 'report-issues' ? 'issues' : 'prevention';
+            el.value = data[field] || '';
         });
     }
 
