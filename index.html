@@ -1572,6 +1572,7 @@
         <button class="nav-tab" onclick="showTab('sprint12', this)">⚡ Sprint 12</button>
         <button class="nav-tab" onclick="showTab('backlog', this)">📋 Backlog</button>
         <button class="nav-tab" onclick="showTab('hours', this)">⏱️ Hours Log</button>
+        <button class="nav-tab" onclick="showTab('report', this)">📝 Weekly Report</button>
         <button class="nav-tab" onclick="showTab('about', this)">👤 About</button>
     </div>
 </div>
@@ -2431,6 +2432,52 @@
 
         <p style="color:var(--muted); font-size:0.78rem; margin-top:0.75rem;">Hours save automatically. Data is stored locally in your browser.</p>
 
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!--  TAB: WEEKLY REPORT                          -->
+<!-- ══════════════════════════════════════════════ -->
+<div id="tab-report" class="tab-panel">
+    <div style="max-width:860px; margin:2rem auto; padding:0 2rem;">
+
+        <h2 style="font-size:1.4rem; font-weight:700; color:#f1f5f9; margin-bottom:0.25rem;">Weekly Progress Report</h2>
+        <p style="color:var(--muted); font-size:0.88rem; margin-bottom:1.5rem;">Auto-filled from your Hours Log and Sprint board. Fill in the issues section, then copy into Canvas.</p>
+
+        <!-- Week selector -->
+        <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem; flex-wrap:wrap;">
+            <label style="font-size:0.85rem; color:var(--muted); font-weight:600;">Generate report for week:</label>
+            <select id="report-week-select" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,215,0,0.3); border-radius:0.4rem; color:#f1f5f9; font-size:0.88rem; padding:0.4rem 0.75rem; outline:none;">
+                <option value="1">Week 1 — Apr 6–12 (Sprint 12)</option>
+                <option value="2">Week 2 — Apr 13–18 (Sprint 12)</option>
+                <option value="3">Week 3 — Apr 20–26 (Sprint 13)</option>
+                <option value="4">Week 4 — Apr 27–May 2 (Sprint 13)</option>
+                <option value="5">Week 5 — May 4–10 (Sprint 14)</option>
+                <option value="6">Week 6 — May 11–16 (Sprint 14)</option>
+                <option value="7">Week 7 — May 18–24 (Sprint 15)</option>
+                <option value="8">Week 8 — May 25–30 (Sprint 15)</option>
+                <option value="9">Week 9 — Jun 1–7 (Sprint 16)</option>
+                <option value="10">Week 10 — Jun 8–13 (Sprint 16)</option>
+            </select>
+            <button onclick="generateReport()" style="background:linear-gradient(135deg,#D50A0A,#A00808); color:white; border:none; border-radius:0.4rem; padding:0.45rem 1.25rem; font-size:0.88rem; font-weight:700; cursor:pointer;">Generate</button>
+        </div>
+
+        <!-- Issues input (user fills this in) -->
+        <div style="background:var(--card); border:1px solid var(--border); border-radius:0.6rem; padding:1.25rem; margin-bottom:1.25rem;">
+            <label style="font-size:0.82rem; font-weight:700; color:#FFD700; display:block; margin-bottom:0.5rem;">Issues that arose this week &amp; how they were / will be addressed:</label>
+            <textarea id="report-issues" rows="3" placeholder="e.g. EC2 was unreachable — resolved by restarting the Flask service via SSH." style="width:100%; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.15); border-radius:0.4rem; color:#f1f5f9; font-size:0.85rem; padding:0.6rem 0.75rem; outline:none; resize:vertical; font-family:inherit;"></textarea>
+
+            <label style="font-size:0.82rem; font-weight:700; color:#FFD700; display:block; margin-top:1rem; margin-bottom:0.5rem;">How could one of those issues have been prevented or mitigated?</label>
+            <textarea id="report-prevention" rows="2" placeholder="e.g. Setting up a health-check alert would have caught the outage sooner." style="width:100%; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.15); border-radius:0.4rem; color:#f1f5f9; font-size:0.85rem; padding:0.6rem 0.75rem; outline:none; resize:vertical; font-family:inherit;"></textarea>
+        </div>
+
+        <!-- Output -->
+        <div style="position:relative;">
+            <button onclick="copyReport()" id="copy-btn" style="position:absolute; top:0.75rem; right:0.75rem; background:rgba(255,215,0,0.15); border:1px solid rgba(255,215,0,0.4); color:#FFD700; border-radius:0.35rem; padding:0.3rem 0.9rem; font-size:0.78rem; font-weight:700; cursor:pointer; z-index:2;">Copy</button>
+            <pre id="report-output" style="background:rgba(0,0,0,0.4); border:1px solid var(--border); border-radius:0.6rem; padding:1.5rem 1.25rem; font-family:'Segoe UI',system-ui,sans-serif; font-size:0.85rem; color:#e2e8f0; white-space:pre-wrap; word-break:break-word; min-height:200px; line-height:1.7;">Click Generate to build your report.</pre>
+        </div>
+
+        <p style="color:var(--muted); font-size:0.76rem; margin-top:0.6rem;">Issues text saves automatically. Click Copy, then paste into Canvas.</p>
     </div>
 </div>
 
@@ -3378,6 +3425,183 @@ initBacklog();
 
     window.initHoursLog = render;
     render();
+})();
+
+/* ── WEEKLY REPORT GENERATOR ── */
+(function() {
+    const WEEK_META = [
+        { num:1,  dates:'Apr 6–12, 2026',   sprint:'Sprint 12 — Diagnose & Restore', sprintDates:'Apr 6–18' },
+        { num:2,  dates:'Apr 13–18, 2026',  sprint:'Sprint 12 — Diagnose & Restore', sprintDates:'Apr 6–18' },
+        { num:3,  dates:'Apr 20–26, 2026',  sprint:'Sprint 13 — Data & Clean',        sprintDates:'Apr 20–May 2' },
+        { num:4,  dates:'Apr 27–May 2, 2026',sprint:'Sprint 13 — Data & Clean',       sprintDates:'Apr 20–May 2' },
+        { num:5,  dates:'May 4–10, 2026',   sprint:'Sprint 14 — ML Retrain',          sprintDates:'May 4–16' },
+        { num:6,  dates:'May 11–16, 2026',  sprint:'Sprint 14 — ML Retrain',          sprintDates:'May 4–16' },
+        { num:7,  dates:'May 18–24, 2026',  sprint:'Sprint 15 — UI & UX Polish',      sprintDates:'May 18–30' },
+        { num:8,  dates:'May 25–30, 2026',  sprint:'Sprint 15 — UI & UX Polish',      sprintDates:'May 18–30' },
+        { num:9,  dates:'Jun 1–7, 2026',    sprint:'Sprint 16 — Hardening & Release', sprintDates:'Jun 1–13' },
+        { num:10, dates:'Jun 8–13, 2026',   sprint:'Sprint 16 — Hardening & Release', sprintDates:'Jun 1–13' },
+    ];
+
+    const NEXT_SPRINT_GOALS = {
+        'Sprint 12 — Diagnose & Restore': [
+            'Complete all Sprint 12 diagnosis tasks (Areas 3–5)',
+            'Document all production issues in Production Issue Log',
+            'Update CLAUDE.md with current system state',
+        ],
+        'Sprint 13 — Data & Clean': [
+            'Load 2025 NFL season data into PostgreSQL',
+            'Remove all hardcoded credentials (BUG-003/004/005)',
+            'Validate data integrity — row counts and spot checks',
+        ],
+        'Sprint 14 — ML Retrain': [
+            'Retrain XGBoost classifier and spread regressor on 2025 data',
+            'Recalculate Elo ratings through 2025 season',
+            'Verify no data leakage in feature pipeline',
+        ],
+        'Sprint 15 — UI & UX Polish': [
+            'Test every page on mobile (375px)',
+            'Fix any broken layouts or missing loading states',
+            'Full production walkthrough — zero console errors',
+        ],
+        'Sprint 16 — Hardening & Release': [
+            'Enable rate limiting on Flask API',
+            'Final security audit — no exposed credentials',
+            'Write and submit final performance report',
+        ],
+    };
+
+    // Load hours data from localStorage (same key as Hours Log tab)
+    function getHoursData() {
+        try { return JSON.parse(localStorage.getItem('hcl_hours_log')) || {}; } catch(e) { return {}; }
+    }
+
+    // Get completed sprint 12 task labels from the board
+    function getSprint12Tasks() {
+        var done = [], notDone = [];
+        document.querySelectorAll('#tab-sprint12 .task-item').forEach(function(label) {
+            var cb = label.querySelector('input[type="checkbox"]');
+            var textEl = label.querySelector('.task-text');
+            if (!cb || !textEl) return;
+            // Get just the main text, strip sub-commands
+            var text = textEl.childNodes[0] ? textEl.childNodes[0].textContent.trim() : textEl.textContent.trim();
+            if (cb.checked) done.push(text);
+            else notDone.push(text);
+        });
+        return { done: done, notDone: notDone };
+    }
+
+    // Auto-select current week on tab open
+    var TERM_START = new Date('2026-04-06');
+    function getCurrentWeekNum() {
+        var today = new Date(); today.setHours(0,0,0,0);
+        var days = Math.floor((today - TERM_START) / 86400000);
+        return Math.min(Math.max(Math.floor(days / 7) + 1, 1), 10);
+    }
+
+    // Save issues text as user types
+    function bindIssuesSave() {
+        ['report-issues','report-prevention'].forEach(function(id) {
+            var el = document.getElementById(id);
+            if (!el) return;
+            var key = 'hcl_report_' + id;
+            el.value = localStorage.getItem(key) || '';
+            el.addEventListener('input', function() { localStorage.setItem(key, el.value); });
+        });
+    }
+
+    window.generateReport = function() {
+        var weekNum = parseInt(document.getElementById('report-week-select').value);
+        var meta = WEEK_META[weekNum - 1];
+        var hoursData = getHoursData();
+        var weekKey = 'w' + weekNum;
+        var hoursThisWeek = parseFloat((hoursData[weekKey] || {}).hours || 0) || 0;
+        var weekNotes = (hoursData[weekKey] || {}).notes || '';
+
+        // Total hours so far (weeks 1 through selected week)
+        var totalHours = 0;
+        for (var i = 1; i <= weekNum; i++) {
+            totalHours += parseFloat((hoursData['w'+i] || {}).hours || 0) || 0;
+        }
+
+        // Tasks — only read Sprint 12 board for now (S12 weeks); generic for others
+        var taskSection = '';
+        if (meta.sprint.indexOf('Sprint 12') !== -1) {
+            var tasks = getSprint12Tasks();
+            var doneList   = tasks.done.length   ? tasks.done.map(function(t){ return '    ✓ ' + t; }).join('\n') : '    (none checked off yet)';
+            var notDoneList= tasks.notDone.length ? tasks.notDone.slice(0,5).map(function(t){ return '    ○ ' + t; }).join('\n') : '    (all tasks complete)';
+            taskSection =
+                'ACTUAL PROGRESS THIS WEEK\n' +
+                'Completed:\n' + doneList + '\n\n' +
+                'Not yet completed:\n' + notDoneList;
+        } else {
+            taskSection =
+                'ACTUAL PROGRESS THIS WEEK\n' +
+                (weekNotes ? weekNotes : '(Add notes in the Hours Log tab for this week)');
+        }
+
+        // Next week goals
+        var nextWeekMeta = WEEK_META[Math.min(weekNum, 9)];
+        var nextGoals = NEXT_SPRINT_GOALS[nextWeekMeta.sprint] || [];
+        var nextGoalsList = nextGoals.map(function(g){ return '  • ' + g; }).join('\n');
+
+        var issues = (document.getElementById('report-issues').value || '').trim() || '(fill in above)';
+        var prevention = (document.getElementById('report-prevention').value || '').trim() || '(fill in above)';
+
+        var report =
+'IS 330 — Senior Capstone Weekly Progress Report\n' +
+'Student: April V. Sykes\n' +
+'Week ' + meta.num + ' of 10  |  ' + meta.dates + '\n' +
+'Current Sprint: ' + meta.sprint + ' (' + meta.sprintDates + ')\n' +
+'─────────────────────────────────────────────────────\n\n' +
+
+'HOURS\n' +
+'Hours worked this week: ' + (hoursThisWeek || '—') + '\n' +
+'Total hours this term:  ' + (totalHours || '—') + '\n\n' +
+
+'EXPECTED PROGRESS THIS WEEK\n' +
+(meta.sprint.indexOf('Sprint 12') !== -1
+    ? '  Complete EC2/backend diagnosis, database checks, and API endpoint testing.\n  Goal: full production status map documented before fixing anything.'
+    : nextGoals.slice(0,3).map(function(g){ return '  • ' + g; }).join('\n')) + '\n\n' +
+
+taskSection + '\n\n' +
+
+'ISSUES & HOW ADDRESSED\n' + issues + '\n\n' +
+
+'PREVENTION / MITIGATION\n' + prevention + '\n\n' +
+
+'EXPECTED PROGRESS NEXT WEEK\n' + nextGoalsList + '\n\n' +
+
+'RELATION TO ORIGINAL OBJECTIVES\n' +
+'This work advances the Spring 2026 capstone objective of deploying a fully functional\n' +
+'NFL analytics application to production (AWS Amplify + EC2) by June 13, 2026.\n' +
+'Each sprint builds on the last in a fixed dependency chain — production cannot launch\n' +
+'until all 5 sprints (12–16) complete in sequence.\n';
+
+        document.getElementById('report-output').textContent = report;
+    };
+
+    window.copyReport = function() {
+        var text = document.getElementById('report-output').textContent;
+        if (text === 'Click Generate to build your report.') return;
+        navigator.clipboard.writeText(text).then(function() {
+            var btn = document.getElementById('copy-btn');
+            btn.textContent = 'Copied!';
+            setTimeout(function(){ btn.textContent = 'Copy'; }, 2000);
+        });
+    };
+
+    // Set week selector to current week and bind saves on DOM ready
+    document.addEventListener('DOMContentLoaded', function() {
+        var sel = document.getElementById('report-week-select');
+        if (sel) sel.value = getCurrentWeekNum();
+        bindIssuesSave();
+    });
+    // Also run immediately in case DOM is already ready
+    (function() {
+        var sel = document.getElementById('report-week-select');
+        if (sel) sel.value = getCurrentWeekNum();
+        bindIssuesSave();
+    })();
 })();
 
 </script>
