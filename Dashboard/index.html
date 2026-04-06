@@ -1473,6 +1473,68 @@
         }
 
         .dash-live-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(213,10,10,0.4); }
+
+        /* ── DEFINITION OF DONE ── */
+        .dod-item {
+            font-size: 0.83rem;
+            color: var(--muted);
+            padding: 0.4rem 0.5rem 0.4rem 1.4rem;
+            position: relative;
+            border-radius: 0.3rem;
+        }
+        .dod-item::before {
+            content: '☐';
+            position: absolute;
+            left: 0;
+            color: rgba(255,215,0,0.5);
+            font-size: 0.9rem;
+        }
+        details summary::-webkit-details-marker { display: none; }
+        details[open] summary { border-bottom: 1px solid var(--border-subtle); margin-bottom: 0; }
+
+        /* ── HOURS LOG ── */
+        .hours-row {
+            display: grid;
+            grid-template-columns: 1fr 80px 80px 1fr;
+            gap: 0;
+            padding: 0.55rem 1.25rem;
+            border-bottom: 1px solid var(--border-subtle);
+            align-items: center;
+        }
+        .hours-row:last-child { border-bottom: none; }
+        .hours-row.current-week { background: rgba(255,215,0,0.05); }
+        .hours-week-label { font-size: 0.83rem; color: var(--muted); }
+        .hours-week-label .week-num { font-weight: 700; color: #f1f5f9; margin-right: 0.4rem; }
+        .hours-sprint-badge { font-size: 0.7rem; color: var(--muted); text-align: center; }
+        .hours-input {
+            width: 64px;
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,215,0,0.2);
+            border-radius: 0.35rem;
+            color: #FFD700;
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-align: center;
+            padding: 0.3rem 0;
+            margin: 0 auto;
+            display: block;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .hours-input:focus { border-color: #FFD700; background: rgba(255,215,0,0.08); }
+        .hours-notes {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 0.35rem;
+            color: var(--muted);
+            font-size: 0.8rem;
+            padding: 0.3rem 0.6rem;
+            width: 100%;
+            outline: none;
+            margin-left: 0.75rem;
+            transition: border-color 0.2s;
+        }
+        .hours-notes:focus { border-color: rgba(255,215,0,0.3); color: #f1f5f9; }
     </style>
 </head>
 <body>
@@ -1506,6 +1568,7 @@
         <button class="nav-tab" onclick="showTab('sprints', this)">🗓️ Sprint Plan</button>
         <button class="nav-tab" onclick="showTab('sprint12', this)">⚡ Sprint 12</button>
         <button class="nav-tab" onclick="showTab('backlog', this)">📋 Backlog</button>
+        <button class="nav-tab" onclick="showTab('hours', this)">⏱️ Hours Log</button>
         <button class="nav-tab" onclick="showTab('about', this)">👤 About</button>
     </div>
 </div>
@@ -1825,6 +1888,109 @@
                 <div style="font-size:0.85rem; color:var(--muted); padding:0.5rem 0; border-bottom:1px solid var(--border);">PRD-6 &nbsp;·&nbsp; Create Production Issue Log</div>
                 <div style="font-size:0.85rem; color:var(--muted); padding:0.5rem 0; border-bottom:1px solid var(--border);">PRD-7 &nbsp;·&nbsp; Fix CORS errors if blocking all API calls</div>
                 <div style="font-size:0.85rem; color:var(--muted); padding:0.5rem 0;">DOC-1 &nbsp;·&nbsp; Update CLAUDE.md with current accurate state</div>
+            </div>
+        </div>
+
+        <!-- ── DEFINITION OF DONE ── -->
+        <div style="margin-top:2rem;">
+            <h3 style="font-size:1.1rem; font-weight:700; color:#FFD700; margin-bottom:0.35rem;">Definition of Done</h3>
+            <p style="color:var(--muted); font-size:0.82rem; margin-bottom:1rem;">A sprint is <strong style="color:#10b981;">Done</strong> only when every item below is checked off for that sprint's deliverables.</p>
+
+            <div style="display:flex; flex-direction:column; gap:0.75rem;">
+
+                <!-- Sprint 12 -->
+                <details style="background:var(--card); border:1px solid var(--border); border-radius:0.6rem; overflow:hidden;">
+                    <summary style="padding:0.9rem 1.25rem; cursor:pointer; display:flex; align-items:center; gap:0.75rem; font-weight:700; font-size:0.9rem; color:#f1f5f9; list-style:none; user-select:none;">
+                        <span style="background:rgba(213,10,10,0.25); color:#f87171; border:1px solid rgba(213,10,10,0.4); border-radius:9999px; padding:0.1rem 0.65rem; font-size:0.72rem; font-weight:700;">Active</span>
+                        Sprint 12 — Diagnose &amp; Restore
+                        <span style="margin-left:auto; color:var(--muted); font-size:0.8rem;">Apr 6 – Apr 18</span>
+                    </summary>
+                    <div style="padding:0 1.25rem 1rem; display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:0.4rem; margin-top:0.25rem;">
+                        <div class="dod-item">EC2 SSH access confirmed, service running</div>
+                        <div class="dod-item">All 26 API endpoints tested and returning data</div>
+                        <div class="dod-item">PostgreSQL verified running with correct schema</div>
+                        <div class="dod-item">REACT_APP_API_URL confirmed in Amplify env vars</div>
+                        <div class="dod-item">Every frontend page loads without console errors</div>
+                        <div class="dod-item">Production Issue Log created and committed</div>
+                        <div class="dod-item">CLAUDE.md updated to reflect current state</div>
+                        <div class="dod-item">Code committed and pushed to GitHub</div>
+                    </div>
+                </details>
+
+                <!-- Sprint 13 -->
+                <details style="background:var(--card); border:1px solid var(--border); border-radius:0.6rem; overflow:hidden;">
+                    <summary style="padding:0.9rem 1.25rem; cursor:pointer; display:flex; align-items:center; gap:0.75rem; font-weight:700; font-size:0.9rem; color:#f1f5f9; list-style:none; user-select:none;">
+                        <span style="background:rgba(255,255,255,0.07); color:var(--muted); border:1px solid rgba(255,255,255,0.15); border-radius:9999px; padding:0.1rem 0.65rem; font-size:0.72rem; font-weight:700;">Upcoming</span>
+                        Sprint 13 — Data &amp; Clean
+                        <span style="margin-left:auto; color:var(--muted); font-size:0.8rem;">Apr 20 – May 2</span>
+                    </summary>
+                    <div style="padding:0 1.25rem 1rem; display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:0.4rem; margin-top:0.25rem;">
+                        <div class="dod-item">2025 NFL season data loaded into PostgreSQL</div>
+                        <div class="dod-item">All 3 hardcoded passwords removed (BUG-003/004/005)</div>
+                        <div class="dod-item">Credentials moved to environment variables</div>
+                        <div class="dod-item">Data validated — row counts and spot-checks pass</div>
+                        <div class="dod-item">Background updater confirmed working in production</div>
+                        <div class="dod-item">No secrets in git history or committed files</div>
+                        <div class="dod-item">Code committed and pushed to GitHub</div>
+                    </div>
+                </details>
+
+                <!-- Sprint 14 -->
+                <details style="background:var(--card); border:1px solid var(--border); border-radius:0.6rem; overflow:hidden;">
+                    <summary style="padding:0.9rem 1.25rem; cursor:pointer; display:flex; align-items:center; gap:0.75rem; font-weight:700; font-size:0.9rem; color:#f1f5f9; list-style:none; user-select:none;">
+                        <span style="background:rgba(255,255,255,0.07); color:var(--muted); border:1px solid rgba(255,255,255,0.15); border-radius:9999px; padding:0.1rem 0.65rem; font-size:0.72rem; font-weight:700;">Upcoming</span>
+                        Sprint 14 — ML Retrain
+                        <span style="margin-left:auto; color:var(--muted); font-size:0.8rem;">May 4 – May 16</span>
+                    </summary>
+                    <div style="padding:0 1.25rem 1rem; display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:0.4rem; margin-top:0.25rem;">
+                        <div class="dod-item">XGBoost winner classifier retrained on 2025 data</div>
+                        <div class="dod-item">Spread regressor retrained, MAE documented</div>
+                        <div class="dod-item">Elo ratings recalculated through 2025 season</div>
+                        <div class="dod-item">Model accuracy ≥ baseline (prior season performance)</div>
+                        <div class="dod-item">No data leakage confirmed in feature pipeline</div>
+                        <div class="dod-item">ML Predictions page shows live results in production</div>
+                        <div class="dod-item">Model performance metrics recorded in ModelPerformance tab</div>
+                        <div class="dod-item">Code committed and pushed to GitHub</div>
+                    </div>
+                </details>
+
+                <!-- Sprint 15 -->
+                <details style="background:var(--card); border:1px solid var(--border); border-radius:0.6rem; overflow:hidden;">
+                    <summary style="padding:0.9rem 1.25rem; cursor:pointer; display:flex; align-items:center; gap:0.75rem; font-weight:700; font-size:0.9rem; color:#f1f5f9; list-style:none; user-select:none;">
+                        <span style="background:rgba(255,255,255,0.07); color:var(--muted); border:1px solid rgba(255,255,255,0.15); border-radius:9999px; padding:0.1rem 0.65rem; font-size:0.72rem; font-weight:700;">Upcoming</span>
+                        Sprint 15 — UI &amp; UX Polish
+                        <span style="margin-left:auto; color:var(--muted); font-size:0.8rem;">May 18 – May 30</span>
+                    </summary>
+                    <div style="padding:0 1.25rem 1rem; display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:0.4rem; margin-top:0.25rem;">
+                        <div class="dod-item">Every page tested on mobile (375px width)</div>
+                        <div class="dod-item">No broken layouts or overflow issues on any screen size</div>
+                        <div class="dod-item">Live Scores, Analytics, ML Predictions fully functional</div>
+                        <div class="dod-item">No 404 errors on any navigation path</div>
+                        <div class="dod-item">Loading states / error states shown where applicable</div>
+                        <div class="dod-item">Advisor (Becker) demo-ready — clean first impression</div>
+                        <div class="dod-item">Code committed and pushed to GitHub</div>
+                    </div>
+                </details>
+
+                <!-- Sprint 16 -->
+                <details style="background:var(--card); border:1px solid var(--border); border-radius:0.6rem; overflow:hidden;">
+                    <summary style="padding:0.9rem 1.25rem; cursor:pointer; display:flex; align-items:center; gap:0.75rem; font-weight:700; font-size:0.9rem; color:#f1f5f9; list-style:none; user-select:none;">
+                        <span style="background:rgba(255,255,255,0.07); color:var(--muted); border:1px solid rgba(255,255,255,0.15); border-radius:9999px; padding:0.1rem 0.65rem; font-size:0.72rem; font-weight:700;">Upcoming</span>
+                        Sprint 16 — Hardening &amp; Release
+                        <span style="margin-left:auto; color:var(--muted); font-size:0.8rem;">Jun 1 – Jun 13</span>
+                    </summary>
+                    <div style="padding:0 1.25rem 1rem; display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:0.4rem; margin-top:0.25rem;">
+                        <div class="dod-item">Rate limiting enabled on Flask API</div>
+                        <div class="dod-item">No credentials, passwords, or keys in any file</div>
+                        <div class="dod-item">HTTPS confirmed — all traffic encrypted</div>
+                        <div class="dod-item">Final performance report written and submitted</div>
+                        <div class="dod-item">README updated for public audience</div>
+                        <div class="dod-item">App publicly accessible and stable for 48+ hours</div>
+                        <div class="dod-item">Capstone advisor sign-off received</div>
+                        <div class="dod-item">Code committed, tagged v1.0, pushed to GitHub</div>
+                    </div>
+                </details>
+
             </div>
         </div>
 
@@ -2223,10 +2389,53 @@
     </div>
 </div>
 
+<!-- ══════════════════════════════════════════════ -->
+<!--  TAB: HOURS LOG                              -->
+<!-- ══════════════════════════════════════════════ -->
+<div id="tab-hours" class="tab-panel">
+    <div style="max-width:900px; margin:2rem auto; padding:0 2rem;">
+
+        <h2 style="font-size:1.4rem; font-weight:700; color:#f1f5f9; margin-bottom:0.25rem;">Hours Log</h2>
+        <p style="color:var(--muted); font-size:0.88rem; margin-bottom:1.5rem;">Weekly hours for Spring 2026 &nbsp;·&nbsp; Apr 6 – Jun 13 &nbsp;·&nbsp; Submitted to Advisor: Richard Becker</p>
+
+        <!-- Summary strip -->
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:1rem; margin-bottom:1.75rem;">
+            <div style="background:var(--card); border:1px solid var(--border); border-radius:0.6rem; padding:1rem 1.25rem; text-align:center;">
+                <div style="font-size:1.8rem; font-weight:900; color:#FFD700;" id="hours-total">0</div>
+                <div style="font-size:0.75rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.08em; margin-top:0.2rem;">Total Hours</div>
+            </div>
+            <div style="background:var(--card); border:1px solid var(--border); border-radius:0.6rem; padding:1rem 1.25rem; text-align:center;">
+                <div style="font-size:1.8rem; font-weight:900; color:#10b981;" id="hours-avg">0</div>
+                <div style="font-size:0.75rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.08em; margin-top:0.2rem;">Avg hrs/week</div>
+            </div>
+            <div style="background:var(--card); border:1px solid var(--border); border-radius:0.6rem; padding:1rem 1.25rem; text-align:center;">
+                <div style="font-size:1.8rem; font-weight:900; color:#93c5fd;" id="hours-weeks-logged">0</div>
+                <div style="font-size:0.75rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.08em; margin-top:0.2rem;">Weeks Logged</div>
+            </div>
+            <div style="background:var(--card); border:1px solid var(--border); border-radius:0.6rem; padding:1rem 1.25rem; text-align:center;">
+                <div style="font-size:1.8rem; font-weight:900; color:#f97316;" id="hours-weeks-left">10</div>
+                <div style="font-size:0.75rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.08em; margin-top:0.2rem;">Weeks Remaining</div>
+            </div>
+        </div>
+
+        <!-- Week rows -->
+        <div style="background:var(--card); border:1px solid var(--border); border-radius:0.75rem; overflow:hidden; backdrop-filter:blur(8px);">
+            <div style="display:grid; grid-template-columns:1fr 80px 80px 1fr; gap:0; padding:0.6rem 1.25rem; border-bottom:1px solid var(--border); font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:var(--muted);">
+                <span>Week</span><span style="text-align:center;">Sprint</span><span style="text-align:center;">Hours</span><span style="padding-left:0.75rem;">Notes</span>
+            </div>
+            <div id="hours-rows"></div>
+        </div>
+
+        <p style="color:var(--muted); font-size:0.78rem; margin-top:0.75rem;">Hours save automatically. Data is stored locally in your browser.</p>
+
+    </div>
+</div>
+
 <!-- FOOTER -->
 <footer>
     <p>H.C. Lombardo NFL Analytics &nbsp;·&nbsp; Senior Capstone Project &nbsp;·&nbsp; April V. Sykes &nbsp;·&nbsp; Olympic College &nbsp;·&nbsp; Spring 2026</p>
     <p style="margin-top:0.4rem;">Advisor: Richard Becker &nbsp;·&nbsp; Data: NFLverse, ESPN API &nbsp;·&nbsp; For educational purposes only</p>
+    <p style="margin-top:0.4rem;">Built with <a href="https://claude.ai/code" target="_blank" rel="noopener" style="color:#FFD700; text-decoration:none;">Claude Code</a> &nbsp;·&nbsp; Anthropic</p>
 </footer>
 
 <!-- ══════════════════════════════════════════════════════════════ -->
@@ -3072,6 +3281,101 @@ rebuildCharts();
 // Initialize on load
 initTasks();
 initBacklog();
+
+/* ── HOURS LOG ── */
+(function initHoursLog() {
+    const WEEKS = [
+        { num: 1, dates: 'Apr 6 – Apr 12',  sprint: 'S12' },
+        { num: 2, dates: 'Apr 13 – Apr 18', sprint: 'S12' },
+        { num: 3, dates: 'Apr 20 – Apr 26', sprint: 'S13' },
+        { num: 4, dates: 'Apr 27 – May 2',  sprint: 'S13' },
+        { num: 5, dates: 'May 4 – May 10',  sprint: 'S14' },
+        { num: 6, dates: 'May 11 – May 16', sprint: 'S14' },
+        { num: 7, dates: 'May 18 – May 24', sprint: 'S15' },
+        { num: 8, dates: 'May 25 – May 30', sprint: 'S15' },
+        { num: 9, dates: 'Jun 1 – Jun 7',   sprint: 'S16' },
+        { num: 10,dates: 'Jun 8 – Jun 13',  sprint: 'S16' },
+    ];
+
+    // Determine current week index (0-based) by date
+    const TERM_START = new Date('2026-04-06');
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    const daysSinceStart = Math.floor((today - TERM_START) / 86400000);
+    const currentWeekIdx = Math.min(Math.max(Math.floor(daysSinceStart / 7), 0), 9);
+
+    const STORAGE_KEY = 'hcl_hours_log';
+
+    function load() {
+        try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
+        catch(e) { return {}; }
+    }
+    function save(data) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+
+    function render() {
+        const data = load();
+        const container = document.getElementById('hours-rows');
+        if (!container) return;
+        container.innerHTML = '';
+
+        WEEKS.forEach(function(w, i) {
+            const key = 'w' + w.num;
+            const saved = data[key] || { hours: '', notes: '' };
+            const isCurrent = i === currentWeekIdx;
+
+            const row = document.createElement('div');
+            row.className = 'hours-row' + (isCurrent ? ' current-week' : '');
+
+            row.innerHTML =
+                '<div class="hours-week-label">' +
+                    '<span class="week-num">Week ' + w.num + '</span>' +
+                    (isCurrent ? '<span style="font-size:0.7rem;color:#FFD700;"> ← current</span> ' : '') +
+                    '<span style="display:block;font-size:0.75rem;margin-top:0.1rem;">' + w.dates + '</span>' +
+                '</div>' +
+                '<div class="hours-sprint-badge">' + w.sprint + '</div>' +
+                '<div><input class="hours-input" type="number" min="0" max="80" step="0.5" placeholder="0" value="' + (saved.hours || '') + '" data-week="' + key + '" data-field="hours" /></div>' +
+                '<input class="hours-notes" type="text" maxlength="120" placeholder="What you worked on…" value="' + (saved.notes || '').replace(/"/g, '&quot;') + '" data-week="' + key + '" data-field="notes" />';
+
+            container.appendChild(row);
+        });
+
+        // Attach listeners
+        container.querySelectorAll('[data-week]').forEach(function(el) {
+            el.addEventListener('input', function() {
+                const data2 = load();
+                const week = el.dataset.week;
+                const field = el.dataset.field;
+                if (!data2[week]) data2[week] = { hours: '', notes: '' };
+                data2[week][field] = el.value;
+                save(data2);
+                updateSummary(data2);
+            });
+        });
+
+        updateSummary(data);
+    }
+
+    function updateSummary(data) {
+        var total = 0, weeksLogged = 0;
+        WEEKS.forEach(function(w) {
+            const val = parseFloat((data['w' + w.num] || {}).hours || 0);
+            if (val > 0) { total += val; weeksLogged++; }
+        });
+        const avg = weeksLogged > 0 ? (total / weeksLogged).toFixed(1) : '0';
+        const weeksLeft = Math.max(0, 10 - currentWeekIdx - 1);
+
+        const el = function(id) { return document.getElementById(id); };
+        if (el('hours-total'))        el('hours-total').textContent        = total % 1 === 0 ? total : total.toFixed(1);
+        if (el('hours-avg'))          el('hours-avg').textContent          = avg;
+        if (el('hours-weeks-logged')) el('hours-weeks-logged').textContent = weeksLogged;
+        if (el('hours-weeks-left'))   el('hours-weeks-left').textContent   = weeksLeft;
+    }
+
+    window.initHoursLog = render;
+    render();
+})();
 
 </script>
 </body>
