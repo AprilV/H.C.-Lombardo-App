@@ -1533,6 +1533,7 @@
             transition: border-color 0.2s;
         }
         .retro-textarea:focus { border-color: rgba(255,215,0,0.35); }
+        .retro-text { font-size:0.88rem; color:var(--muted); line-height:1.7; margin:0; }
 
         /* ── GANTT CHART ── */
         .gantt-wrap { min-width: 520px; }
@@ -2262,22 +2263,23 @@
 
             <div class="retro-card retro-good">
                 <div class="retro-label">What went well?</div>
-                <textarea id="retro-s12-well" class="retro-textarea" placeholder="What worked, what you're proud of, what to keep doing next sprint…" rows="4"></textarea>
+                <!-- Claude updates this text at sprint close Apr 18 -->
+                <p class="retro-text">Sprint retrospective not yet completed — filled at sprint close Apr 18, 2026.</p>
             </div>
 
             <div class="retro-card retro-bad">
                 <div class="retro-label">What didn't go well?</div>
-                <textarea id="retro-s12-bad" class="retro-textarea" placeholder="Blockers, mistakes, things that slowed you down…" rows="4"></textarea>
+                <!-- Claude updates this text at sprint close Apr 18 -->
+                <p class="retro-text">Sprint retrospective not yet completed — filled at sprint close Apr 18, 2026.</p>
             </div>
 
             <div class="retro-card retro-improve">
                 <div class="retro-label">What will I do differently next sprint?</div>
-                <textarea id="retro-s12-improve" class="retro-textarea" placeholder="One or two concrete changes for Sprint 13…" rows="3"></textarea>
+                <!-- Claude updates this text at sprint close Apr 18 -->
+                <p class="retro-text">Sprint retrospective not yet completed — filled at sprint close Apr 18, 2026.</p>
             </div>
 
         </div>
-
-        <p style="color:var(--muted); font-size:0.76rem; margin-top:1rem;">Saves automatically to your browser.</p>
 
     </div>
 </div>
@@ -3588,23 +3590,7 @@ function showSprintView(view, btn) {
     if (btn) btn.classList.add('active');
 }
 
-// Retro — hardcoded values, updated by Claude at sprint close
-(function initRetro() {
-    var RETRO_DATA = {
-        'retro-s12-well':    '',  // filled at sprint close Apr 18
-        'retro-s12-bad':     '',  // filled at sprint close Apr 18
-        'retro-s12-improve': '',  // filled at sprint close Apr 18
-    };
-    Object.keys(RETRO_DATA).forEach(function(id) {
-        var el = document.getElementById(id);
-        if (!el) return;
-        if (RETRO_DATA[id]) {
-            el.value = RETRO_DATA[id];
-            el.readOnly = true;
-            el.style.color = '#f1f5f9';
-        }
-    });
-})();
+// Retro text is hardcoded in the HTML — Claude updates it at sprint close. No JS needed.
 
 /* ── RISK REGISTER ── */
 (function buildRiskRegister() {
