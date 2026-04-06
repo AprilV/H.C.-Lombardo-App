@@ -1715,6 +1715,34 @@
         </div>
     </div>
 
+    <!-- ── GANTT ── -->
+    <div class="dash-section-label">Gantt — Spring 2026 Sprint Timeline</div>
+    <div class="chart-card">
+        <div class="chart-card-subtitle" style="margin-bottom:1.25rem;">Full 10-week term at a glance. Each sprint is a dependency on the one before it. The gold line marks today.</div>
+        <div id="gantt-chart" style="overflow-x:auto;"></div>
+    </div>
+
+    <!-- ── OPEN BLOCKERS ── -->
+    <div class="dash-section-label">Open Blockers &amp; Top Issues</div>
+    <div class="blocker-list">
+        <div class="blocker-item sev-p1">
+            <div><div class="blocker-badge p1">P1 · BUG-003/004/005</div><div class="blocker-desc">Hardcoded password 'aprilv120' fallback in 3 backend files — ships to production on every push</div><div class="blocker-file">api_server.py · api_routes_hcl.py · api_routes_live_scores.py</div></div>
+            <div class="blocker-sprint">Fix: S13</div>
+        </div>
+        <div class="blocker-item sev-p2">
+            <div><div class="blocker-badge p2">P2 · BUG-001/002</div><div class="blocker-desc">/game-statistics and /matchup-analyzer route to wrong components — 2 pages completely broken</div><div class="blocker-file">frontend/src/App.js ~line 58–59</div></div>
+            <div class="blocker-sprint">Fix: S13</div>
+        </div>
+        <div class="blocker-item sev-p2">
+            <div><div class="blocker-badge p2">P2 · BUG-007</div><div class="blocker-desc">background_updater.py has a missing import — background service likely crashes on startup</div><div class="blocker-file">background_updater.py</div></div>
+            <div class="blocker-sprint">Fix: S13</div>
+        </div>
+        <div class="blocker-item sev-p2">
+            <div><div class="blocker-badge p2">P2 · BUG-008/009</div><div class="blocker-desc">ML training scripts use wrong schema (hcl_test) and have broken SQL — models cannot be retrained</div><div class="blocker-file">ml/train_xgb_winner.py:255 · ml/train_xgb_spread.py:95-116</div></div>
+            <div class="blocker-sprint">Fix: S14</div>
+        </div>
+    </div>
+
     <!-- ── CHARTS ROW 1: Burnup + Burndown ── -->
     <div class="dash-section-label">Sprint Health</div>
     <div class="chart-grid-2">
@@ -1752,34 +1780,6 @@
             <div class="chart-card-insight"><strong>P1 priority:</strong> 3 hardcoded passwords (BUG-003/004/005) are security blockers. They ship to production on every push. Fix in Sprint 13 — first task, no exceptions.</div>
         </div>
 
-    </div>
-
-    <!-- ── OPEN BLOCKERS ── -->
-    <div class="dash-section-label">Open Blockers &amp; Top Issues</div>
-    <div class="blocker-list">
-        <div class="blocker-item sev-p1">
-            <div><div class="blocker-badge p1">P1 · BUG-003/004/005</div><div class="blocker-desc">Hardcoded password 'aprilv120' fallback in 3 backend files — ships to production on every push</div><div class="blocker-file">api_server.py · api_routes_hcl.py · api_routes_live_scores.py</div></div>
-            <div class="blocker-sprint">Fix: S13</div>
-        </div>
-        <div class="blocker-item sev-p2">
-            <div><div class="blocker-badge p2">P2 · BUG-001/002</div><div class="blocker-desc">/game-statistics and /matchup-analyzer route to wrong components — 2 pages completely broken</div><div class="blocker-file">frontend/src/App.js ~line 58–59</div></div>
-            <div class="blocker-sprint">Fix: S13</div>
-        </div>
-        <div class="blocker-item sev-p2">
-            <div><div class="blocker-badge p2">P2 · BUG-007</div><div class="blocker-desc">background_updater.py has a missing import — background service likely crashes on startup</div><div class="blocker-file">background_updater.py</div></div>
-            <div class="blocker-sprint">Fix: S13</div>
-        </div>
-        <div class="blocker-item sev-p2">
-            <div><div class="blocker-badge p2">P2 · BUG-008/009</div><div class="blocker-desc">ML training scripts use wrong schema (hcl_test) and have broken SQL — models cannot be retrained</div><div class="blocker-file">ml/train_xgb_winner.py:255 · ml/train_xgb_spread.py:95-116</div></div>
-            <div class="blocker-sprint">Fix: S14</div>
-        </div>
-    </div>
-
-    <!-- ── CRITICAL PATH / MILESTONE TIMELINE ── -->
-    <div class="dash-section-label">Gantt — Spring 2026 Sprint Timeline</div>
-    <div class="chart-card" style="margin-bottom:0;">
-        <div class="chart-card-subtitle" style="margin-bottom:1.25rem;">Full 10-week term at a glance. Each sprint is a dependency on the one before it. The gold line marks today.</div>
-        <div id="gantt-chart" style="overflow-x:auto;"></div>
     </div>
 
 </div><!-- /dash-wrap -->
