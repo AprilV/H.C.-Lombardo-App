@@ -1646,6 +1646,8 @@
         <button class="nav-tab" onclick="showTab('backlog', this)">📋 Backlog</button>
         <button class="nav-tab" onclick="showTab('hours', this)">⏱️ Hours Log</button>
         <button class="nav-tab" onclick="showTab('report', this)">📝 Weekly Report</button>
+        <button class="nav-tab" onclick="showTab('risk', this)">⚠️ Risk Register</button>
+        <button class="nav-tab" onclick="showTab('decisions', this)">🧭 Decisions</button>
         <button class="nav-tab" onclick="showTab('about', this)">👤 About</button>
     </div>
 </div>
@@ -2037,7 +2039,16 @@
 <!--  TAB 4: SPRINT 12 BOARD              -->
 <!-- ══════════════════════════════════════ -->
 <div id="tab-sprint12" class="tab-panel">
-<div class="pm-panel">
+
+<!-- Sprint 12 sub-nav -->
+<div style="max-width:1300px; margin:1.25rem auto 0; padding:0 2rem;">
+    <div class="sprint-subnav">
+        <button class="subnav-btn active" onclick="showSprintView('board', this)">Board</button>
+        <button class="subnav-btn" onclick="showSprintView('retro', this)">Retrospective</button>
+    </div>
+</div>
+
+<div id="sprint12-board" class="pm-panel">
 
     <div class="pm-header">
         <div>
@@ -2239,14 +2250,6 @@
     </div><!-- /area-grid -->
 
 </div><!-- /pm-panel -->
-
-<!-- Sprint 12 sub-nav -->
-<div style="max-width:1300px; margin:0 auto; padding:0 2rem 0.5rem;">
-    <div class="sprint-subnav">
-        <button class="subnav-btn active" onclick="showSprintView('board', this)">Board</button>
-        <button class="subnav-btn" onclick="showSprintView('retro', this)">Retrospective</button>
-    </div>
-</div>
 
 <!-- Retrospective panel (hidden by default) -->
 <div id="sprint12-retro" style="display:none;">
@@ -2552,6 +2555,50 @@
 
         <p style="color:var(--muted); font-size:0.76rem; margin-top:0.6rem;">Issues text saves automatically. Click Copy, then paste into Canvas.</p>
     </div>
+</div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!--  TAB: RISK REGISTER                          -->
+<!-- ══════════════════════════════════════════════ -->
+<div id="tab-risk" class="tab-panel">
+<div style="max-width:1100px; margin:2rem auto; padding:0 2rem;">
+
+    <h2 style="font-size:1.4rem; font-weight:700; color:#f1f5f9; margin-bottom:0.25rem;">Risk Register</h2>
+    <p style="color:var(--muted); font-size:0.88rem; margin-bottom:1.5rem;">Identified project risks — likelihood, impact, and mitigation plan. Updated each sprint.</p>
+
+    <div style="overflow-x:auto;">
+    <table style="width:100%; border-collapse:collapse; font-size:0.84rem;">
+        <thead>
+            <tr style="border-bottom:2px solid var(--border);">
+                <th style="text-align:left; padding:0.6rem 0.75rem; color:#FFD700; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.08em; white-space:nowrap;">ID</th>
+                <th style="text-align:left; padding:0.6rem 0.75rem; color:#FFD700; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.08em;">Risk</th>
+                <th style="text-align:center; padding:0.6rem 0.75rem; color:#FFD700; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.08em; white-space:nowrap;">Likelihood</th>
+                <th style="text-align:center; padding:0.6rem 0.75rem; color:#FFD700; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.08em; white-space:nowrap;">Impact</th>
+                <th style="text-align:left; padding:0.6rem 0.75rem; color:#FFD700; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.08em;">Mitigation</th>
+                <th style="text-align:center; padding:0.6rem 0.75rem; color:#FFD700; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.08em; white-space:nowrap;">Sprint</th>
+                <th style="text-align:center; padding:0.6rem 0.75rem; color:#FFD700; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.08em; white-space:nowrap;">Status</th>
+            </tr>
+        </thead>
+        <tbody id="risk-tbody"></tbody>
+    </table>
+    </div>
+
+    <p style="color:var(--muted); font-size:0.76rem; margin-top:1rem;">H = High &nbsp;·&nbsp; M = Medium &nbsp;·&nbsp; L = Low</p>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!--  TAB: DECISION LOG                           -->
+<!-- ══════════════════════════════════════════════ -->
+<div id="tab-decisions" class="tab-panel">
+<div style="max-width:1000px; margin:2rem auto; padding:0 2rem;">
+
+    <h2 style="font-size:1.4rem; font-weight:700; color:#f1f5f9; margin-bottom:0.25rem;">Decision Log</h2>
+    <p style="color:var(--muted); font-size:0.88rem; margin-bottom:1.5rem;">Key architectural and technical decisions — what was chosen, what was considered, and why.</p>
+
+    <div id="decision-list" style="display:flex; flex-direction:column; gap:1rem;"></div>
+
+</div>
 </div>
 
 <!-- FOOTER -->
@@ -3577,7 +3624,7 @@ initBacklog();
 
 /* ── SPRINT RETROSPECTIVE ── */
 function showSprintView(view, btn) {
-    var board = document.querySelector('#tab-sprint12 .pm-panel');
+    var board = document.getElementById('sprint12-board');
     var retro = document.getElementById('sprint12-retro');
     var subnav = document.querySelector('#tab-sprint12 .sprint-subnav');
     if (!board || !retro) return;
@@ -3601,6 +3648,103 @@ function showSprintView(view, btn) {
         el.value = localStorage.getItem('hcl_' + id) || '';
         el.addEventListener('input', function(){ localStorage.setItem('hcl_' + id, el.value); });
     });
+})();
+
+/* ── RISK REGISTER ── */
+(function buildRiskRegister() {
+    var risks = [
+        { id:'R-01', risk:'EC2 instance inaccessible / Flask service down',           like:'H', impact:'H', mitigation:'SSH in immediately; systemctl restart hc-lombardo.service. Health-check endpoint monitors uptime.', sprint:'S12', status:'open' },
+        { id:'R-02', risk:'Hardcoded credentials exposed in GitHub',                   like:'H', impact:'H', mitigation:'Move all passwords to .env; rotate DB password; audit git history. Fix before S13 ends.',             sprint:'S13', status:'open' },
+        { id:'R-03', risk:'2025 NFL data missing or malformed in NFLverse',            like:'M', impact:'H', mitigation:'Validate row counts and spot-check game data after ingest. Fall back to ESPN API if needed.',          sprint:'S13', status:'open' },
+        { id:'R-04', risk:'ML model accuracy drops after retraining on 2025 data',     like:'M', impact:'M', mitigation:'Compare accuracy to prior baseline before deploying. Document both results. Do not deploy if worse.', sprint:'S14', status:'open' },
+        { id:'R-05', risk:'CORS errors blocking frontend from hitting EC2 API',        like:'H', impact:'H', mitigation:'Confirm Amplify domain is whitelisted in Flask CORS config. Test every endpoint after deploy.',       sprint:'S12', status:'open' },
+        { id:'R-06', risk:'AWS Amplify build fails after a push',                      like:'M', impact:'M', mitigation:'Check Amplify build logs; most failures are env var or npm dependency issues. Fix and repush.',        sprint:'S12', status:'open' },
+        { id:'R-07', risk:'Project scope too large to complete by Jun 13',             like:'M', impact:'H', mitigation:'Sprints are fixed and linear. If behind, defer UI polish (S15) before cutting ML work (S14).',        sprint:'All', status:'open' },
+        { id:'R-08', risk:'PostgreSQL data loss or schema corruption',                 like:'L', impact:'H', mitigation:'pg_dump backup before any schema changes. EC2 snapshots via AWS console.',                            sprint:'S13', status:'open' },
+    ];
+
+    var statusStyle = { open: 'background:rgba(251,191,36,0.15);color:#fbbf24;border:1px solid rgba(251,191,36,0.3);', resolved: 'background:rgba(16,185,129,0.15);color:#10b981;border:1px solid rgba(16,185,129,0.3);', accepted: 'background:rgba(148,163,184,0.1);color:#94a3b8;border:1px solid rgba(148,163,184,0.2);' };
+    var likeStyle  = { H: 'color:#f87171;font-weight:700;', M: 'color:#fbbf24;font-weight:700;', L: 'color:#10b981;font-weight:700;' };
+
+    var tbody = document.getElementById('risk-tbody');
+    if (!tbody) return;
+    tbody.innerHTML = risks.map(function(r, i) {
+        var bg = i % 2 === 0 ? 'background:rgba(255,255,255,0.03);' : '';
+        return '<tr style="border-bottom:1px solid var(--border-subtle);' + bg + '">' +
+            '<td style="padding:0.7rem 0.75rem; color:var(--muted); white-space:nowrap;">' + r.id + '</td>' +
+            '<td style="padding:0.7rem 0.75rem; color:#f1f5f9;">' + r.risk + '</td>' +
+            '<td style="padding:0.7rem 0.75rem; text-align:center;' + (likeStyle[r.like]||'') + '">' + r.like + '</td>' +
+            '<td style="padding:0.7rem 0.75rem; text-align:center;' + (likeStyle[r.impact]||'') + '">' + r.impact + '</td>' +
+            '<td style="padding:0.7rem 0.75rem; color:var(--muted);">' + r.mitigation + '</td>' +
+            '<td style="padding:0.7rem 0.75rem; text-align:center; color:var(--muted);">' + r.sprint + '</td>' +
+            '<td style="padding:0.7rem 0.75rem; text-align:center;"><span style="padding:0.15rem 0.6rem; border-radius:9999px; font-size:0.72rem; font-weight:700;' + (statusStyle[r.status]||'') + '">' + r.status + '</span></td>' +
+        '</tr>';
+    }).join('');
+})();
+
+/* ── DECISION LOG ── */
+(function buildDecisionLog() {
+    var decisions = [
+        {
+            id: 'D-01', date: 'Sep 2025', sprint: 'Pre-S1',
+            title: 'PostgreSQL over MongoDB',
+            chosen: 'PostgreSQL 18 (relational)',
+            considered: 'MongoDB (document store)',
+            why: 'NFL game data is highly relational — teams, games, stats, and Elo ratings all join together. SQL aggregations are faster and simpler for analytics queries. MongoDB would require duplicating data or complex pipelines.',
+        },
+        {
+            id: 'D-02', date: 'Oct 2025', sprint: 'S3',
+            title: 'XGBoost over Neural Network for ML predictions',
+            chosen: 'XGBoost (gradient boosted trees)',
+            considered: 'PyTorch neural network, Logistic Regression',
+            why: 'Dataset of ~7,000 games is too small for deep learning without significant overfitting. XGBoost performs well on tabular data, is interpretable, and trains fast. Logistic regression was too simple to capture non-linear interactions.',
+        },
+        {
+            id: 'D-03', date: 'Oct 2025', sprint: 'S4',
+            title: 'AWS EC2 for backend over serverless (Lambda)',
+            chosen: 'AWS EC2 (t2.micro, always-on Flask service)',
+            considered: 'AWS Lambda + API Gateway',
+            why: 'Flask app uses ML models that are large in-memory (~200MB). Lambda cold starts with a 200MB model would be too slow for a real-time UI. EC2 keeps the model loaded and responds in milliseconds.',
+        },
+        {
+            id: 'D-04', date: 'Nov 2025', sprint: 'S6',
+            title: 'AWS Amplify for frontend over S3 + CloudFront',
+            chosen: 'AWS Amplify (auto-deploy from GitHub)',
+            considered: 'S3 static hosting + CloudFront CDN',
+            why: 'Amplify auto-deploys on every GitHub push with zero configuration. S3+CloudFront requires manual deploys or a CI/CD pipeline. For a solo project, Amplify reduces operational overhead significantly.',
+        },
+        {
+            id: 'D-05', date: 'Nov 2025', sprint: 'S7',
+            title: 'NFLverse as primary data source over ESPN API',
+            chosen: 'NFLverse (play-by-play, open source)',
+            considered: 'ESPN public API, Pro Football Reference scraping',
+            why: 'NFLverse provides play-by-play data including EPA (Expected Points Added) which enables advanced analytics. ESPN API only provides scores and standings. PFR scraping risks ToS violations.',
+        },
+        {
+            id: 'D-06', date: 'Jan 2026', sprint: 'S10',
+            title: 'Elo rating system alongside ML model',
+            chosen: 'Custom Elo rating system (538-style)',
+            considered: 'ML-only predictions, ELO as standalone',
+            why: 'Elo provides a transparent, interpretable team strength metric that non-technical users understand. Running both lets the dashboard show ensemble predictions and compare model vs. Elo vs. Vegas.',
+        },
+    ];
+
+    var container = document.getElementById('decision-list');
+    if (!container) return;
+    container.innerHTML = decisions.map(function(d) {
+        return '<div style="background:var(--card); border:1px solid var(--border); border-radius:0.75rem; padding:1.25rem 1.5rem;">' +
+            '<div style="display:flex; align-items:baseline; gap:1rem; flex-wrap:wrap; margin-bottom:0.6rem;">' +
+                '<span style="font-size:0.7rem; color:var(--muted); background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:9999px; padding:0.1rem 0.6rem;">' + d.id + '</span>' +
+                '<h3 style="font-size:1rem; font-weight:700; color:#f1f5f9; margin:0;">' + d.title + '</h3>' +
+                '<span style="margin-left:auto; font-size:0.75rem; color:var(--muted);">' + d.date + ' &nbsp;·&nbsp; ' + d.sprint + '</span>' +
+            '</div>' +
+            '<div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem 1.5rem; margin-bottom:0.75rem;">' +
+                '<div><span style="font-size:0.7rem; text-transform:uppercase; letter-spacing:0.08em; color:#10b981; font-weight:700;">Chosen</span><div style="font-size:0.84rem; color:#f1f5f9; margin-top:0.15rem;">' + d.chosen + '</div></div>' +
+                '<div><span style="font-size:0.7rem; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted); font-weight:700;">Also Considered</span><div style="font-size:0.84rem; color:var(--muted); margin-top:0.15rem;">' + d.considered + '</div></div>' +
+            '</div>' +
+            '<div style="font-size:0.83rem; color:var(--muted); line-height:1.6; padding-top:0.6rem; border-top:1px solid var(--border-subtle);"><strong style="color:#FFD700;">Why:</strong> ' + d.why + '</div>' +
+        '</div>';
+    }).join('');
 })();
 
 /* ── WEEKLY REPORT GENERATOR ── */
