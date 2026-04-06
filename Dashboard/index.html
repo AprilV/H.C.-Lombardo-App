@@ -3027,6 +3027,17 @@ const TASK_AREAS = {
 const AREA_TOTALS = { area1: 14, area2: 11, area3: 22, area4: 20, area5: 12, area6: 4 };
 const TOTAL_TASKS = 83;
 
+// ── HARDCODED COMPLETED TASKS — Claude updates this as tasks are checked off ──
+// Add task IDs here when April confirms they are done. e.g. 't1_1', 't1_2', etc.
+const COMPLETED_TASKS = [
+    // Area 1 — EC2 / Backend (none complete yet — Sprint 12 just started Apr 6)
+    // Area 2 — Database
+    // Area 3 — API Endpoints
+    // Area 4 — Frontend
+    // Area 5 — Known Bugs
+    // Area 6 — CORS
+];
+
 function toggleTask(taskId) {
     const cb = document.getElementById(taskId);
     const wrap = document.getElementById('wrap-' + taskId);
@@ -3035,17 +3046,13 @@ function toggleTask(taskId) {
     } else {
         wrap.classList.remove('done');
     }
-    // Persist
-    const state = getSavedTasks();
-    state[taskId] = cb.checked;
-    localStorage.setItem('s12_tasks', JSON.stringify(state));
     updateProgress();
     updateAreaCount(TASK_AREAS[taskId]);
     syncDashMetrics();
 }
 
 function getSavedTasks() {
-    try { return JSON.parse(localStorage.getItem('s12_tasks') || '{}'); } catch(e) { return {}; }
+    return {}; // no localStorage — state comes from COMPLETED_TASKS
 }
 
 function updateProgress() {
@@ -3081,14 +3088,12 @@ function toggleArea(areaId) {
 }
 
 function initTasks() {
-    const saved = getSavedTasks();
-    Object.entries(saved).forEach(([taskId, checked]) => {
+    // Apply hardcoded completed tasks — no localStorage
+    COMPLETED_TASKS.forEach(function(taskId) {
         const cb = document.getElementById(taskId);
         const wrap = document.getElementById('wrap-' + taskId);
-        if (cb && checked) {
-            cb.checked = true;
-            if (wrap) wrap.classList.add('done');
-        }
+        if (cb) { cb.checked = true; }
+        if (wrap) wrap.classList.add('done');
     });
     updateProgress();
     Object.keys(AREA_TOTALS).forEach(updateAreaCount);
@@ -3137,10 +3142,8 @@ function addIssue() {
         `<td><span class="sprint-tag">${sprint}</span></td>`;
     document.getElementById('backlog-tbody').appendChild(tr);
 
-    // Persist added issues
-    const saved = getSavedIssues();
-    saved.push({ num, desc, sev, area, sprint, file });
-    localStorage.setItem('s12_backlog', JSON.stringify(saved));
+    // Note: new issues added via form are session-only.
+    // To permanently add to the backlog, tell Claude and it will be hardcoded.
 
     // Clear form
     document.getElementById('new-issue-desc').value = '';
@@ -3149,25 +3152,9 @@ function addIssue() {
     updateBacklogStats();
 }
 
-function getSavedIssues() {
-    try { return JSON.parse(localStorage.getItem('s12_backlog') || '[]'); } catch(e) { return []; }
-}
-
 function initBacklog() {
-    const saved = getSavedIssues();
-    const sevClass = { P1:'sev-p1', P2:'sev-p2', P3:'sev-p3', P4:'sev-p4' };
-    saved.forEach(issue => {
-        issueCounter++;
-        const tr = document.createElement('tr');
-        tr.dataset.sev = issue.sev;
-        tr.dataset.status = 'OPEN';
-        tr.innerHTML = `<td>${escHtml(issue.num)}</td><td>${escHtml(issue.desc)}</td>` +
-            `<td>${escHtml(issue.file||issue.area)}</td>` +
-            `<td><span class="${sevClass[issue.sev]||'sev-p4'}">${issue.sev}</span></td>` +
-            `<td><span class="st-open">OPEN</span></td>` +
-            `<td><span class="sprint-tag">${issue.sprint}</span></td>`;
-        document.getElementById('backlog-tbody').appendChild(tr);
-    });
+    // All backlog items are hardcoded in the HTML table.
+    // New issues discovered get added by Claude directly to the backlog-tbody HTML.
     updateBacklogStats();
 }
 
@@ -3212,14 +3199,9 @@ function applyThemeClass(theme) {
     if (theme === 'light') document.body.classList.add('light');
     const sel = document.getElementById('theme-btn');
     if (sel) sel.value = theme;
-    localStorage.setItem('hcl_theme', theme);
 }
+// Default theme on load: NFL mode (no class needed)
 
-// Restore saved theme class on load — charts built once by rebuildCharts() below
-(function() {
-    const saved = localStorage.getItem('hcl_theme');
-    if (saved && saved !== 'nfl') applyThemeClass(saved);
-})();
 
 /* ════════════════════════════════════════════════════════
    CHART.JS — THEME-AWARE CHARTS
