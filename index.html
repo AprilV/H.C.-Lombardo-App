@@ -1477,6 +1477,63 @@
 
         .dash-live-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(213,10,10,0.4); }
 
+        /* ── SPRINT SUB-NAV & RETRO ── */
+        .sprint-subnav {
+            display: inline-flex;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 0.5rem;
+            padding: 0.2rem;
+            gap: 0.15rem;
+            margin-bottom: 0.5rem;
+        }
+        .subnav-btn {
+            padding: 0.35rem 1.1rem;
+            border-radius: 0.35rem;
+            font-size: 0.82rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            background: none;
+            color: rgba(255,255,255,0.5);
+            transition: all 0.15s;
+            letter-spacing: 0.01em;
+        }
+        .subnav-btn:hover { color: #f1f5f9; }
+        .subnav-btn.active { background: rgba(255,255,255,0.1); color: #f1f5f9; }
+        .retro-card {
+            background: var(--card);
+            border-radius: 0.6rem;
+            padding: 1.1rem 1.25rem;
+            border-left: 3px solid transparent;
+        }
+        .retro-good    { border-left-color: #10b981; }
+        .retro-bad     { border-left-color: #f87171; }
+        .retro-improve { border-left-color: #FFD700; }
+        .retro-label {
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--muted);
+            margin-bottom: 0.6rem;
+        }
+        .retro-textarea {
+            width: 100%;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 0.4rem;
+            color: #f1f5f9;
+            font-size: 0.88rem;
+            font-family: inherit;
+            padding: 0.6rem 0.75rem;
+            resize: vertical;
+            outline: none;
+            line-height: 1.6;
+            transition: border-color 0.2s;
+        }
+        .retro-textarea:focus { border-color: rgba(255,215,0,0.35); }
+
         /* ── GANTT CHART ── */
         .gantt-wrap { min-width: 520px; }
         .gantt-header { display: flex; margin-bottom: 0.5rem; padding-left: 130px; }
@@ -2182,6 +2239,47 @@
     </div><!-- /area-grid -->
 
 </div><!-- /pm-panel -->
+
+<!-- Sprint 12 sub-nav -->
+<div style="max-width:1300px; margin:0 auto; padding:0 2rem 0.5rem;">
+    <div class="sprint-subnav">
+        <button class="subnav-btn active" onclick="showSprintView('board', this)">Board</button>
+        <button class="subnav-btn" onclick="showSprintView('retro', this)">Retrospective</button>
+    </div>
+</div>
+
+<!-- Retrospective panel (hidden by default) -->
+<div id="sprint12-retro" style="display:none;">
+<div class="pm-panel" style="padding-top:0;">
+    <div style="max-width:900px;">
+
+        <p style="color:var(--muted); font-size:0.85rem; margin-bottom:1.5rem;">Completed at sprint close — Apr 18, 2026. Three questions. Honest answers.</p>
+
+        <div style="display:flex; flex-direction:column; gap:1.25rem;">
+
+            <div class="retro-card retro-good">
+                <div class="retro-label">What went well?</div>
+                <textarea id="retro-s12-well" class="retro-textarea" placeholder="What worked, what you're proud of, what to keep doing next sprint…" rows="4"></textarea>
+            </div>
+
+            <div class="retro-card retro-bad">
+                <div class="retro-label">What didn't go well?</div>
+                <textarea id="retro-s12-bad" class="retro-textarea" placeholder="Blockers, mistakes, things that slowed you down…" rows="4"></textarea>
+            </div>
+
+            <div class="retro-card retro-improve">
+                <div class="retro-label">What will I do differently next sprint?</div>
+                <textarea id="retro-s12-improve" class="retro-textarea" placeholder="One or two concrete changes for Sprint 13…" rows="3"></textarea>
+            </div>
+
+        </div>
+
+        <p style="color:var(--muted); font-size:0.76rem; margin-top:1rem;">Saves automatically to your browser.</p>
+
+    </div>
+</div>
+</div>
+
 </div><!-- /tab-sprint12 -->
 
 <!-- ══════════════════════════════════════ -->
@@ -3475,6 +3573,34 @@ initBacklog();
         '</div>';
 
     container.innerHTML = '<div class="gantt-wrap">' + headerHTML + todayLineHTML + rowsHTML + '</div>';
+})();
+
+/* ── SPRINT RETROSPECTIVE ── */
+function showSprintView(view, btn) {
+    var board = document.querySelector('#tab-sprint12 .pm-panel');
+    var retro = document.getElementById('sprint12-retro');
+    var subnav = document.querySelector('#tab-sprint12 .sprint-subnav');
+    if (!board || !retro) return;
+    if (view === 'retro') {
+        board.style.display = 'none';
+        retro.style.display = 'block';
+    } else {
+        board.style.display = '';
+        retro.style.display = 'none';
+    }
+    subnav.querySelectorAll('.subnav-btn').forEach(function(b){ b.classList.remove('active'); });
+    if (btn) btn.classList.add('active');
+}
+
+// Retro autosave
+(function initRetro() {
+    var fields = ['retro-s12-well', 'retro-s12-bad', 'retro-s12-improve'];
+    fields.forEach(function(id) {
+        var el = document.getElementById(id);
+        if (!el) return;
+        el.value = localStorage.getItem('hcl_' + id) || '';
+        el.addEventListener('input', function(){ localStorage.setItem('hcl_' + id, el.value); });
+    });
 })();
 
 /* ── WEEKLY REPORT GENERATOR ── */
