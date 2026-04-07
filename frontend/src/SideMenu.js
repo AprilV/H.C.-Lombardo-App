@@ -45,68 +45,73 @@ function SideMenu() {
         </div>
 
         <div className="menu-content">
-          <Link 
-            to="/" 
-            className={`menu-item ${isActive('/')}`}
-            onClick={closeMenu}
-          >
+          <Link to="/" className={`menu-item ${isActive('/')}`} onClick={closeMenu}>
             <span className="menu-icon">🏈</span>
             <span className="menu-text">Dashboard</span>
           </Link>
 
-          <Link 
-            to="/team-comparison" 
-            className={`menu-item ${isActive('/team-comparison')}`}
-            onClick={closeMenu}
-          >
+          <Link to="/live-scores" className={`menu-item ${isActive('/live-scores')}`} onClick={closeMenu}>
+            <span className="menu-icon">📡</span>
+            <span className="menu-text">Live Scores</span>
+          </Link>
+
+          <div className="menu-divider"></div>
+
+          <Link to="/team-stats" className={`menu-item ${isActive('/team-stats')}`} onClick={closeMenu}>
             <span className="menu-icon">📊</span>
+            <span className="menu-text">Team Stats</span>
+          </Link>
+
+          <Link to="/team-comparison" className={`menu-item ${isActive('/team-comparison')}`} onClick={closeMenu}>
+            <span className="menu-icon">⚖️</span>
             <span className="menu-text">Team Comparison</span>
           </Link>
 
-          <Link 
-            to="/analytics" 
-            className={`menu-item ${isActive('/analytics')}`}
-            onClick={closeMenu}
-          >
+          <Link to="/matchup-analyzer" className={`menu-item ${isActive('/matchup-analyzer')}`} onClick={closeMenu}>
+            <span className="menu-icon">🎯</span>
+            <span className="menu-text">Matchup Analyzer</span>
+          </Link>
+
+          <div className="menu-divider"></div>
+
+          <Link to="/analytics" className={`menu-item ${isActive('/analytics')}`} onClick={closeMenu}>
             <span className="menu-icon">📈</span>
             <span className="menu-text">Advanced Analytics</span>
           </Link>
 
-          <Link 
-            to="/ml-predictions" 
-            className={`menu-item ${isActive('/ml-predictions')}`}
-            onClick={closeMenu}
-          >
+          <Link to="/game-statistics" className={`menu-item ${isActive('/game-statistics')}`} onClick={closeMenu}>
+            <span className="menu-icon">🏟️</span>
+            <span className="menu-text">Game Statistics</span>
+          </Link>
+
+          <Link to="/historical-data" className={`menu-item ${isActive('/historical-data')}`} onClick={closeMenu}>
+            <span className="menu-icon">📚</span>
+            <span className="menu-text">Historical Data</span>
+          </Link>
+
+          <div className="menu-divider"></div>
+
+          <Link to="/ml-predictions" className={`menu-item ${isActive('/ml-predictions')}`} onClick={closeMenu}>
             <span className="menu-icon">🧠</span>
             <span className="menu-text">AI Predictions</span>
           </Link>
 
+          <Link to="/model-performance" className={`menu-item ${isActive('/model-performance')}`} onClick={closeMenu}>
+            <span className="menu-icon">📉</span>
+            <span className="menu-text">Model Performance</span>
+          </Link>
+
           <div className="menu-divider"></div>
 
-          <Link 
-            to="/admin" 
-            className={`menu-item ${isActive('/admin')}`}
-            onClick={closeMenu}
-          >
+          <Link to="/admin" className={`menu-item ${isActive('/admin')}`} onClick={closeMenu}>
             <span className="menu-icon">🔧</span>
             <span className="menu-text">Admin</span>
           </Link>
 
-          <div className="menu-divider"></div>
-
-          <Link 
-            to="/settings" 
-            className={`menu-item ${isActive('/settings')}`}
-            onClick={closeMenu}
-          >
+          <Link to="/settings" className={`menu-item ${isActive('/settings')}`} onClick={closeMenu}>
             <span className="menu-icon">⚙️</span>
             <span className="menu-text">Settings</span>
           </Link>
-
-          <div className="menu-item disabled">
-            <span className="menu-icon">ℹ️</span>
-            <span className="menu-text">About</span>
-          </div>
         </div>
 
         <div className="menu-footer">

@@ -3,17 +3,22 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider } from './contexts/ThemeContext';
 import SideMenu from './SideMenu';
 import Homepage from './Homepage';
+import LiveScores from './LiveScores';
+import TeamStats from './TeamStats';
 import TeamComparison from './TeamComparison';
 import TeamDetail from './TeamDetail';
+import MatchupAnalyzer from './MatchupAnalyzer';
 import Analytics from './Analytics';
+import GameStatistics from './GameStatistics';
+import HistoricalData from './HistoricalData';
 import MLPredictions from './MLPredictions';
 import MLPredictionsRedesign from './MLPredictionsRedesign';
+import ModelPerformance from './ModelPerformance';
 import Admin from './Admin';
 import Settings from './Settings';
 import './App.css';
 
 const API_URL = process.env.REACT_APP_API_URL || 'https://api.aprilsykes.dev';
-console.log('🔍 API_URL configured as:', API_URL);
 
 function App() {
   const [serverStatus, setServerStatus] = useState(null);
@@ -54,15 +59,20 @@ function App() {
 
           <Routes>
             <Route path="/" element={<Homepage />} />
+            <Route path="/live-scores" element={<LiveScores />} />
+            <Route path="/team-stats" element={<TeamStats />} />
             <Route path="/team-comparison" element={<TeamComparison />} />
-            <Route path="/game-statistics" element={<TeamComparison />} />
-            <Route path="/matchup-analyzer" element={<TeamComparison />} />
+            <Route path="/team/:teamAbbr" element={<TeamDetail />} />
+            <Route path="/matchup-analyzer" element={<MatchupAnalyzer />} />
             <Route path="/analytics" element={<Analytics />} />
+            <Route path="/game-statistics" element={<GameStatistics />} />
+            <Route path="/historical-data" element={<HistoricalData />} />
             <Route path="/ml-predictions" element={<MLPredictionsRedesign />} />
+            <Route path="/ml-predictions-redesign" element={<MLPredictionsRedesign />} />
             <Route path="/ml-predictions-old" element={<MLPredictions />} />
+            <Route path="/model-performance" element={<ModelPerformance />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/admin" element={<Admin />} />
-            <Route path="/team/:teamAbbr" element={<TeamDetail />} />
           </Routes>
         </main>
 

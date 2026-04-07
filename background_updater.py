@@ -7,7 +7,7 @@ import threading
 import time
 import logging
 from datetime import datetime
-from multi_source_data_fetcher import MultiSourceDataFetcher
+from espn_data_fetcher import ESPNDataFetcher
 
 logger = logging.getLogger(__name__)
 
@@ -48,9 +48,9 @@ class BackgroundUpdater:
                 logger.info(f"🏈 AUTOMATIC DATA UPDATE - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
                 logger.info("=" * 70)
                 
-                # Run the data fetcher
-                fetcher = MultiSourceDataFetcher()
-                fetcher.run_update()
+                # Update team standings from ESPN
+                fetcher = ESPNDataFetcher()
+                fetcher.update_database()
                 
                 logger.info("✅ Automatic update complete")
                 logger.info(f"⏰ Next update in {self.update_interval // 60} minutes")
@@ -67,8 +67,8 @@ class BackgroundUpdater:
         def _run_update():
             try:
                 logger.info("🔄 Manual update triggered")
-                fetcher = MultiSourceDataFetcher()
-                fetcher.run_update()
+                fetcher = ESPNDataFetcher()
+                fetcher.update_database()
                 logger.info("✅ Manual update complete")
             except Exception as e:
                 logger.error(f"❌ Manual update failed: {e}")

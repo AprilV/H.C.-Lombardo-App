@@ -6,7 +6,10 @@ import requests
 from datetime import datetime
 import psycopg2
 import os
+import logging
 from dotenv import load_dotenv
+
+logger = logging.getLogger(__name__)
 
 load_dotenv()
 
@@ -26,7 +29,7 @@ def get_db_connection():
     return psycopg2.connect(
         dbname=db_name,
         user=os.getenv('DB_USER', 'postgres'),
-        password=os.getenv('DB_PASSWORD', 'aprilv120'),
+        password=os.getenv('DB_PASSWORD', ''),
         host=os.getenv('DB_HOST', 'localhost'),
         port=os.getenv('DB_PORT', '5432')
     )
@@ -50,11 +53,9 @@ def get_predictions_for_week(week, season=2025):
         else:
             predictions_list = predictions_data.get('predictions', [])
         
-        print(f"DEBUG: Got {len(predictions_list)} XGBoost predictions for Week {week} Season {season}")
-        
         # Create lookup dictionary by teams for XGBoost predictions
         predictions = {}
-        
+
         for pred in predictions_list:
             home_team = pred.get('home_team')
             away_team = pred.get('away_team')
@@ -65,7 +66,6 @@ def get_predictions_for_week(week, season=2025):
                 'vegas_spread': pred.get('vegas_spread'),
                 'vegas_total': pred.get('total_line')
             }
-            print(f"DEBUG: Added XGBoost prediction {key} -> AI: {pred.get('predicted_winner')}, Vegas: {pred.get('vegas_spread')}")
         
         # Fetch ELO predictions from ml_predictions_elo table
         try:
@@ -79,8 +79,6 @@ def get_predictions_for_week(week, season=2025):
             """
             cur.execute(elo_query, (season, week))
             elo_rows = cur.fetchall()
-            
-            print(f"DEBUG: Got {len(elo_rows)} ELO predictions from database")
             
             for row in elo_rows:
                 home_team, away_team, elo_spread, elo_winner = row
@@ -101,21 +99,16 @@ def get_predictions_for_week(week, season=2025):
                         'vegas_total': None
                     }
                 
-                print(f"DEBUG: Added ELO prediction {key} -> ELO: {elo_winner}, Spread: {elo_spread}")
-            
             cur.close()
             conn.close()
             
         except Exception as elo_err:
-            print(f"Warning: Could not fetch ELO predictions: {elo_err}")
-            # Continue without ELO predictions
-        
-        print(f"DEBUG: Total predictions in dict: {len(predictions)}")
-        
+            logger.warning(f"Could not fetch ELO predictions: {elo_err}")
+
         return predictions
         
     except Exception as e:
-        print(f"Error fetching predictions: {e}")
+        logger.error(f"Error fetching predictions: {e}")
         return {}
 
 @live_scores_api.route('/api/live-scores', methods=['GET'])
@@ -224,7 +217,6 @@ def get_live_scores():
                 away_db = normalize_team_abbr(game_data['away_team'])
                 matchup_key = f"{away_db}@{home_db}"
                 
-                print(f"DEBUG: Looking for {matchup_key} in predictions (ESPN: {game_data['away_team']}@{game_data['home_team']})")
                 
                 if matchup_key in predictions:
                     pred = predictions[matchup_key]
@@ -315,7 +307,7 @@ def get_live_scores():
                 games.append(game_data)
                 
             except Exception as e:
-                print(f"Error parsing game: {e}")
+                logger.error(f"Error parsing game: {e}")
                 continue
         
         # Sort games: live first, then final, then scheduled
