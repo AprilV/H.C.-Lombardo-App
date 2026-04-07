@@ -1892,57 +1892,57 @@
 <!--  TAB 3: SPRINT PLAN                   -->
 <!-- ══════════════════════════════════════ -->
 <div id="tab-sprints" class="tab-panel">
-    <div style="max-width:1300px; margin:2rem auto; padding:0 2rem;">
-
+    <div style="max-width:1300px; margin:2rem auto 0; padding:0 2rem;">
         <h2 style="font-size:1.4rem; font-weight:700; color:#f1f5f9; margin-bottom:0.25rem;">Spring 2026 Sprint Plan</h2>
-        <p style="color:var(--muted); font-size:0.88rem; margin-bottom:1.5rem;">April 6 – June 13, 2026 &nbsp;·&nbsp; 5 sprints &nbsp;·&nbsp; 2 weeks each</p>
+        <p style="color:var(--muted); font-size:0.88rem; margin-bottom:1.25rem;">April 6 – June 13, 2026 &nbsp;·&nbsp; 5 sprints &nbsp;·&nbsp; 2 weeks each</p>
+        <!-- Page-level tabs -->
+        <div class="sprint-subnav sprint-page-tabs">
+            <button class="subnav-btn active" onclick="showSprintPageView('spage-board', this)">Sprint Board</button>
+            <button class="subnav-btn" onclick="showSprintPageView('spage-dod', this)">Definition of Done</button>
+        </div>
+    </div>
 
-        <div class="sprint-grid" style="margin-bottom:1.5rem;">
-            <div class="sprint-card active">
-                <div class="sprint-num">Sprint 12</div>
-                <div class="sprint-theme">Diagnose & Restore</div>
-                <div class="sprint-dates">Apr 6 – Apr 18</div>
-                <span class="sprint-status status-active">Active Now</span>
+    <!-- ── BOARD VIEW ── -->
+    <div id="spage-board">
+        <div style="max-width:1300px; margin:1.5rem auto 0; padding:0 2rem;">
+            <div class="sprint-grid" style="margin-bottom:1.5rem;">
+                <div class="sprint-card upcoming">
+                    <div class="sprint-num">Sprint 13</div>
+                    <div class="sprint-theme">Data &amp; Clean</div>
+                    <div class="sprint-dates">Apr 20 – May 2</div>
+                    <span class="sprint-status status-upcoming">Upcoming</span>
+                </div>
+                <div class="sprint-card upcoming">
+                    <div class="sprint-num">Sprint 14</div>
+                    <div class="sprint-theme">ML Retrain</div>
+                    <div class="sprint-dates">May 4 – May 16</div>
+                    <span class="sprint-status status-upcoming">Upcoming</span>
+                </div>
+                <div class="sprint-card upcoming">
+                    <div class="sprint-num">Sprint 15</div>
+                    <div class="sprint-theme">UI &amp; UX Polish</div>
+                    <div class="sprint-dates">May 18 – May 30</div>
+                    <span class="sprint-status status-upcoming">Upcoming</span>
+                </div>
+                <div class="sprint-card upcoming">
+                    <div class="sprint-num">Sprint 16</div>
+                    <div class="sprint-theme">Hardening &amp; Release</div>
+                    <div class="sprint-dates">Jun 1 – Jun 13</div>
+                    <span class="sprint-status status-upcoming">Upcoming</span>
+                </div>
             </div>
-            <div class="sprint-card upcoming">
-                <div class="sprint-num">Sprint 13</div>
-                <div class="sprint-theme">Data & Clean</div>
-                <div class="sprint-dates">Apr 20 – May 2</div>
-                <span class="sprint-status status-upcoming">Upcoming</span>
-            </div>
-            <div class="sprint-card upcoming">
-                <div class="sprint-num">Sprint 14</div>
-                <div class="sprint-theme">ML Retrain</div>
-                <div class="sprint-dates">May 4 – May 16</div>
-                <span class="sprint-status status-upcoming">Upcoming</span>
-            </div>
-            <div class="sprint-card upcoming">
-                <div class="sprint-num">Sprint 15</div>
-                <div class="sprint-theme">UI & UX Polish</div>
-                <div class="sprint-dates">May 18 – May 30</div>
-                <span class="sprint-status status-upcoming">Upcoming</span>
-            </div>
-            <div class="sprint-card upcoming">
-                <div class="sprint-num">Sprint 16</div>
-                <div class="sprint-theme">Hardening & Release</div>
-                <div class="sprint-dates">Jun 1 – Jun 13</div>
-                <span class="sprint-status status-upcoming">Upcoming</span>
+            <!-- Sprint selector -->
+            <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem;">
+                <span style="font-size:0.85rem; color:var(--muted); white-space:nowrap; font-weight:600;">View Sprint Board:</span>
+                <select id="sprint-selector" onchange="showSprintBoard(this.value)" style="background:rgba(255,255,255,0.08); color:#f1f5f9; border:1px solid var(--border); border-radius:0.5rem; padding:0.45rem 1rem; font-size:0.88rem; cursor:pointer; outline:none; min-width:280px;">
+                    <option value="12" selected>Sprint 12 — Diagnose &amp; Restore (Active)</option>
+                    <option value="13">Sprint 13 — Data &amp; Clean</option>
+                    <option value="14">Sprint 14 — ML Retrain</option>
+                    <option value="15">Sprint 15 — UI &amp; UX Polish</option>
+                    <option value="16">Sprint 16 — Hardening &amp; Release</option>
+                </select>
             </div>
         </div>
-
-        <!-- Sprint selector -->
-        <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem;">
-            <span style="font-size:0.85rem; color:var(--muted); white-space:nowrap; font-weight:600;">View Sprint Board:</span>
-            <select id="sprint-selector" onchange="showSprintBoard(this.value)" style="background:rgba(255,255,255,0.08); color:#f1f5f9; border:1px solid var(--border); border-radius:0.5rem; padding:0.45rem 1rem; font-size:0.88rem; cursor:pointer; outline:none; min-width:280px;">
-                <option value="12" selected>Sprint 12 — Diagnose &amp; Restore (Active)</option>
-                <option value="13">Sprint 13 — Data &amp; Clean</option>
-                <option value="14">Sprint 14 — ML Retrain</option>
-                <option value="15">Sprint 15 — UI &amp; UX Polish</option>
-                <option value="16">Sprint 16 — Hardening &amp; Release</option>
-            </select>
-        </div>
-
-    </div><!-- /header wrapper -->
 
     <!-- Sprint 12 Board -->
     <div id="sprint-board-12">
@@ -2195,7 +2195,10 @@
         </div>
     </div>
 
-    <!-- Definition of Done -->
+    </div><!-- /spage-board -->
+
+    <!-- ── DOD VIEW ── -->
+    <div id="spage-dod" style="display:none;">
     <div style="max-width:1300px; margin:2rem auto; padding:0 2rem;">
         <h3 style="font-size:1.1rem; font-weight:700; color:#FFD700; margin-bottom:0.35rem;">Definition of Done</h3>
         <p style="color:var(--muted); font-size:0.82rem; margin-bottom:1rem;">A sprint is <strong style="color:#10b981;">Done</strong> only when every item below is met for that sprint's deliverables.</p>
@@ -2285,6 +2288,7 @@
             </details>
         </div>
     </div>
+    </div><!-- /spage-dod -->
 
 </div><!-- /tab-sprints -->
 
@@ -2638,6 +2642,17 @@ document.getElementById('live-app-btn').addEventListener('click', function(e) {
 });
 
 /* ── SPRINT BOARD SELECTOR ── */
+function showSprintPageView(viewId, btn) {
+    ['spage-board', 'spage-dod'].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) el.style.display = (id === viewId) ? '' : 'none';
+    });
+    document.querySelectorAll('.sprint-page-tabs .subnav-btn').forEach(function(b) {
+        b.classList.remove('active');
+    });
+    if (btn) btn.classList.add('active');
+}
+
 function showSprintBoard(sprintNum) {
     document.querySelectorAll('[id^="sprint-board-"]').forEach(function(el) { el.style.display = 'none'; });
     var board = document.getElementById('sprint-board-' + sprintNum);
@@ -3753,7 +3768,7 @@ function showBacklogView(view, btn) {
 function showSprintView(view, btn) {
     var board = document.getElementById('sprint12-board');
     var retro = document.getElementById('sprint12-retro');
-    var subnav = document.querySelector('#tab-sprints .sprint-subnav');
+    var subnav = document.querySelector('#sprint-board-12 .sprint-subnav');
     if (!board || !retro) return;
     if (view === 'retro') {
         board.style.display = 'none';
