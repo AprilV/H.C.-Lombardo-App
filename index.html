@@ -2291,11 +2291,97 @@
 <!--  TAB 5: BACKLOG                       -->
 <!-- ══════════════════════════════════════ -->
 <div id="tab-backlog" class="tab-panel">
+
+<!-- Backlog sub-nav -->
+<div style="max-width:1300px; margin:1.25rem auto 0; padding:0 2rem;">
+    <div class="sprint-subnav">
+        <button class="subnav-btn active" onclick="showBacklogView('product', this)">Product Backlog</button>
+        <button class="subnav-btn" onclick="showBacklogView('sprint', this)">Sprint Backlog</button>
+    </div>
+</div>
+
+<!-- ── PRODUCT BACKLOG ── -->
+<div id="backlog-product">
+<div class="pm-panel">
+    <div class="pm-header">
+        <div>
+            <h2>📦 Product Backlog</h2>
+            <p>High-level features and improvements owned by the product owner. Not yet assigned to a sprint. Prioritized by value and effort.</p>
+        </div>
+    </div>
+
+    <div style="overflow-x:auto; margin-top:0.5rem;">
+    <table style="width:100%; border-collapse:collapse; font-size:0.84rem;">
+        <thead>
+            <tr style="border-bottom:2px solid var(--border);">
+                <th style="text-align:left; padding:0.6rem 0.75rem; color:#FFD700; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.08em; white-space:nowrap;">ID</th>
+                <th style="text-align:left; padding:0.6rem 0.75rem; color:#FFD700; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.08em;">Feature / Story</th>
+                <th style="text-align:left; padding:0.6rem 0.75rem; color:#FFD700; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.08em;">Description</th>
+                <th style="text-align:center; padding:0.6rem 0.75rem; color:#FFD700; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.08em; white-space:nowrap;">Priority</th>
+                <th style="text-align:center; padding:0.6rem 0.75rem; color:#FFD700; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.08em; white-space:nowrap;">Effort</th>
+                <th style="text-align:center; padding:0.6rem 0.75rem; color:#FFD700; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.08em; white-space:nowrap;">Target Sprint</th>
+                <th style="text-align:center; padding:0.6rem 0.75rem; color:#FFD700; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.08em; white-space:nowrap;">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr style="border-bottom:1px solid var(--border-subtle);">
+                <td style="padding:0.7rem 0.75rem; color:var(--muted); white-space:nowrap;">PB-001</td>
+                <td style="padding:0.7rem 0.75rem; color:#f1f5f9; font-weight:600;">Move PM Dashboard to Amplify</td>
+                <td style="padding:0.7rem 0.75rem; color:var(--muted);">Migrate the static GitHub Pages dashboard into the React app on AWS Amplify with a password-protected admin panel for live updates — no more manual code deploys for weekly data.</td>
+                <td style="padding:0.7rem 0.75rem; text-align:center;"><span style="background:rgba(251,191,36,0.15); color:#fbbf24; border:1px solid rgba(251,191,36,0.3); border-radius:9999px; padding:0.15rem 0.6rem; font-size:0.72rem; font-weight:700;">High</span></td>
+                <td style="padding:0.7rem 0.75rem; text-align:center; color:var(--muted);">Large</td>
+                <td style="padding:0.7rem 0.75rem; text-align:center; color:var(--muted);">TBD</td>
+                <td style="padding:0.7rem 0.75rem; text-align:center;"><span style="background:rgba(148,163,184,0.1); color:#94a3b8; border:1px solid rgba(148,163,184,0.2); border-radius:9999px; padding:0.15rem 0.6rem; font-size:0.72rem; font-weight:700;">Backlog</span></td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border-subtle); background:rgba(255,255,255,0.02);">
+                <td style="padding:0.7rem 0.75rem; color:var(--muted); white-space:nowrap;">PB-002</td>
+                <td style="padding:0.7rem 0.75rem; color:#f1f5f9; font-weight:600;">User Authentication</td>
+                <td style="padding:0.7rem 0.75rem; color:var(--muted);">Add login system to the React app — public view for all users, admin view for April. Required before dashboard can move to Amplify with live data editing.</td>
+                <td style="padding:0.7rem 0.75rem; text-align:center;"><span style="background:rgba(251,191,36,0.15); color:#fbbf24; border:1px solid rgba(251,191,36,0.3); border-radius:9999px; padding:0.15rem 0.6rem; font-size:0.72rem; font-weight:700;">High</span></td>
+                <td style="padding:0.7rem 0.75rem; text-align:center; color:var(--muted);">Large</td>
+                <td style="padding:0.7rem 0.75rem; text-align:center; color:var(--muted);">TBD</td>
+                <td style="padding:0.7rem 0.75rem; text-align:center;"><span style="background:rgba(148,163,184,0.1); color:#94a3b8; border:1px solid rgba(148,163,184,0.2); border-radius:9999px; padding:0.15rem 0.6rem; font-size:0.72rem; font-weight:700;">Backlog</span></td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border-subtle);">
+                <td style="padding:0.7rem 0.75rem; color:var(--muted); white-space:nowrap;">PB-003</td>
+                <td style="padding:0.7rem 0.75rem; color:#f1f5f9; font-weight:600;">Live App Link on Dashboard</td>
+                <td style="padding:0.7rem 0.75rem; color:var(--muted);">Add working link to the production NFL analytics app once Sprint 12 confirms it is running. Currently blocked on production verification.</td>
+                <td style="padding:0.7rem 0.75rem; text-align:center;"><span style="background:rgba(248,113,113,0.15); color:#f87171; border:1px solid rgba(248,113,113,0.3); border-radius:9999px; padding:0.15rem 0.6rem; font-size:0.72rem; font-weight:700;">Critical</span></td>
+                <td style="padding:0.7rem 0.75rem; text-align:center; color:var(--muted);">Small</td>
+                <td style="padding:0.7rem 0.75rem; text-align:center; color:var(--muted);">S12</td>
+                <td style="padding:0.7rem 0.75rem; text-align:center;"><span style="background:rgba(251,191,36,0.15); color:#fbbf24; border:1px solid rgba(251,191,36,0.3); border-radius:9999px; padding:0.15rem 0.6rem; font-size:0.72rem; font-weight:700;">Blocked</span></td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border-subtle); background:rgba(255,255,255,0.02);">
+                <td style="padding:0.7rem 0.75rem; color:var(--muted); white-space:nowrap;">PB-004</td>
+                <td style="padding:0.7rem 0.75rem; color:#f1f5f9; font-weight:600;">Mobile-Responsive NFL App</td>
+                <td style="padding:0.7rem 0.75rem; color:var(--muted);">Full mobile pass on the React frontend — every page functional at 375px. Currently untested on mobile.</td>
+                <td style="padding:0.7rem 0.75rem; text-align:center;"><span style="background:rgba(251,191,36,0.15); color:#fbbf24; border:1px solid rgba(251,191,36,0.3); border-radius:9999px; padding:0.15rem 0.6rem; font-size:0.72rem; font-weight:700;">High</span></td>
+                <td style="padding:0.7rem 0.75rem; text-align:center; color:var(--muted);">Medium</td>
+                <td style="padding:0.7rem 0.75rem; text-align:center; color:var(--muted);">S15</td>
+                <td style="padding:0.7rem 0.75rem; text-align:center;"><span style="background:rgba(148,163,184,0.1); color:#94a3b8; border:1px solid rgba(148,163,184,0.2); border-radius:9999px; padding:0.15rem 0.6rem; font-size:0.72rem; font-weight:700;">Backlog</span></td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border-subtle);">
+                <td style="padding:0.7rem 0.75rem; color:var(--muted); white-space:nowrap;">PB-005</td>
+                <td style="padding:0.7rem 0.75rem; color:#f1f5f9; font-weight:600;">API Rate Limiting</td>
+                <td style="padding:0.7rem 0.75rem; color:var(--muted);">Add rate limiting to the Flask API to prevent abuse and protect the EC2 instance. Required for public release.</td>
+                <td style="padding:0.7rem 0.75rem; text-align:center;"><span style="background:rgba(251,191,36,0.15); color:#fbbf24; border:1px solid rgba(251,191,36,0.3); border-radius:9999px; padding:0.15rem 0.6rem; font-size:0.72rem; font-weight:700;">High</span></td>
+                <td style="padding:0.7rem 0.75rem; text-align:center; color:var(--muted);">Small</td>
+                <td style="padding:0.7rem 0.75rem; text-align:center; color:var(--muted);">S16</td>
+                <td style="padding:0.7rem 0.75rem; text-align:center;"><span style="background:rgba(148,163,184,0.1); color:#94a3b8; border:1px solid rgba(148,163,184,0.2); border-radius:9999px; padding:0.15rem 0.6rem; font-size:0.72rem; font-weight:700;">Backlog</span></td>
+            </tr>
+        </tbody>
+    </table>
+    </div>
+</div>
+</div>
+
+<!-- ── SPRINT BACKLOG (existing bug tracker) ── -->
+<div id="backlog-sprint" style="display:none;">
 <div class="pm-panel">
 
     <div class="pm-header">
         <div>
-            <h2>📋 Production Issue Backlog</h2>
+            <h2>📋 Sprint Issue Backlog</h2>
             <p>Living register — every issue found during Sprint 12 discovery goes here.</p>
         </div>
         <div class="sprint-meta">
@@ -2392,6 +2478,7 @@
     </div>
 
 </div><!-- /pm-panel -->
+</div><!-- /backlog-sprint -->
 </div><!-- /tab-backlog -->
 
 <!-- ══════════════════════════════════════ -->
@@ -3563,6 +3650,17 @@ initBacklog();
 })();
 
 /* ── SPRINT RETROSPECTIVE ── */
+function showBacklogView(view, btn) {
+    var product = document.getElementById('backlog-product');
+    var sprint  = document.getElementById('backlog-sprint');
+    var subnav  = document.querySelector('#tab-backlog .sprint-subnav');
+    if (!product || !sprint) return;
+    product.style.display = view === 'product' ? '' : 'none';
+    sprint.style.display  = view === 'sprint'  ? '' : 'none';
+    subnav.querySelectorAll('.subnav-btn').forEach(function(b){ b.classList.remove('active'); });
+    if (btn) btn.classList.add('active');
+}
+
 function showSprintView(view, btn) {
     var board = document.getElementById('sprint12-board');
     var retro = document.getElementById('sprint12-retro');
