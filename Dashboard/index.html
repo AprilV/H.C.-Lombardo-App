@@ -512,6 +512,11 @@
             letter-spacing: 0.04em;
             white-space: nowrap;
         }
+        .theme-toggle option {
+            background: #0f172a;
+            color: #ffffff;
+            font-weight: 600;
+        }
         .theme-toggle:hover { background: rgba(255,215,0,0.15); border-color: #FFD700; }
 
         /* ══════════════════════════════════════════
@@ -1824,7 +1829,7 @@
                 </div>
                 <ul>
                     <li>Port 5000 · 26 REST endpoints</li>
-                    <li>api_server.py, api_routes_hcl.py, api_routes_ml.py</li>
+                    <li>api_server.py, api_routes_hcl.py, api_routes_ml.py, api_routes_live_scores.py</li>
                     <li>Systemd service · auto-pulls from GitHub</li>
                     <li>CORS enabled · background updater service</li>
                 </ul>
@@ -1863,6 +1868,19 @@
                     <li>XGBoost spread regressor</li>
                     <li>Elo rating system (elo_tracker.py)</li>
                     <li>Ensemble predictions vs Vegas</li>
+                </ul>
+            </div>
+            <div class="arch-info-card">
+                <div class="arch-node-label">
+                    <div class="node-dot" style="background:#d4a017;"></div>
+                    <h4>NFLverse</h4>
+                </div>
+                <ul>
+                    <li>nfl_data_py Python package</li>
+                    <li>7,263 games play-by-play (1999–2025)</li>
+                    <li>EPA per play · 64 advanced stats/game</li>
+                    <li>Loaded offline → PostgreSQL hcl schema</li>
+                    <li>Basis for all ML model training</li>
                 </ul>
             </div>
         </div>
@@ -2270,244 +2288,7 @@
 
 </div><!-- /tab-sprints -->
 
-<!-- tab-sprint12 removed — content merged into tab-sprints above -->
-
-
-<div id="sprint12-board" class="pm-panel">
-
-    <div class="pm-header">
-        <div>
-            <h2>⚡ Sprint 12 — Diagnose &amp; Restore</h2>
-            <p>Treat this as a new project. Assume everything is broken. Prove otherwise.</p>
-        </div>
-        <div class="sprint-meta">
-            <span class="meta-pill">Apr 6 – Apr 18, 2026</span>
-            <span class="meta-pill">Rule: Log everything · Fix almost nothing</span>
-        </div>
-    </div>
-
-    <!-- Progress Bar -->
-    <div class="sprint-progress">
-        <div class="progress-label">
-            <span>Overall Progress</span>
-            <span id="progress-pct">0%</span>
-        </div>
-        <div class="progress-bar-wrap">
-            <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
-        </div>
-        <div style="font-size:0.75rem; color:var(--muted); margin-top:0.4rem;" id="progress-count">0 of 0 tasks complete</div>
-    </div>
-
-    <div class="area-grid">
-
-        <!-- AREA 1: EC2 / BACKEND -->
-        <div class="area-card">
-            <div class="area-header" onclick="toggleArea('area1')">
-                <div class="area-title">🖥️ Area 1 — EC2 / Backend Server <span class="area-count" id="count-area1">0/14</span></div>
-                <span id="arrow-area1">▾</span>
-            </div>
-            <div class="area-body" id="area1">
-                <div class="area-section-label">SSH Access</div>
-                <label class="task-item" id="wrap-t1_1"><input type="checkbox" id="t1_1" onchange="toggleTask('t1_1')"><span class="task-text">Confirm SSH key is available locally</span></label>
-                <label class="task-item" id="wrap-t1_2"><input type="checkbox" id="t1_2" onchange="toggleTask('t1_2')"><span class="task-text">SSH into EC2 <span class="task-sub">ssh -i &lt;key&gt;.pem ec2-user@34.198.25.249</span></span></label>
-                <label class="task-item" id="wrap-t1_3"><input type="checkbox" id="t1_3" onchange="toggleTask('t1_3')"><span class="task-text">Confirm connection without errors — log result</span></label>
-
-                <div class="area-section-label">Service Status</div>
-                <label class="task-item" id="wrap-t1_4"><input type="checkbox" id="t1_4" onchange="toggleTask('t1_4')"><span class="task-text">Check service status <span class="task-sub">systemctl status hc-lombardo.service</span></span></label>
-                <label class="task-item" id="wrap-t1_5"><input type="checkbox" id="t1_5" onchange="toggleTask('t1_5')"><span class="task-text">Read last 200 log lines <span class="task-sub">journalctl -u hc-lombardo.service -n 200</span></span></label>
-                <label class="task-item" id="wrap-t1_6"><input type="checkbox" id="t1_6" onchange="toggleTask('t1_6')"><span class="task-text">Confirm Flask process running <span class="task-sub">ps aux | grep python</span></span></label>
-                <label class="task-item" id="wrap-t1_7"><input type="checkbox" id="t1_7" onchange="toggleTask('t1_7')"><span class="task-text">Confirm port 5000 listening <span class="task-sub">netstat -tlnp | grep 5000</span></span></label>
-
-                <div class="area-section-label">EC2 Environment</div>
-                <label class="task-item" id="wrap-t1_8"><input type="checkbox" id="t1_8" onchange="toggleTask('t1_8')"><span class="task-text">Check disk space <span class="task-sub">df -h</span></span></label>
-                <label class="task-item" id="wrap-t1_9"><input type="checkbox" id="t1_9" onchange="toggleTask('t1_9')"><span class="task-text">Check memory <span class="task-sub">free -m</span></span></label>
-                <label class="task-item" id="wrap-t1_10"><input type="checkbox" id="t1_10" onchange="toggleTask('t1_10')"><span class="task-text">Confirm Python version <span class="task-sub">python3 --version</span></span></label>
-                <label class="task-item" id="wrap-t1_11"><input type="checkbox" id="t1_11" onchange="toggleTask('t1_11')"><span class="task-text">Confirm packages installed <span class="task-sub">pip3 list | grep -E "flask|xgboost|psycopg2|pandas|sklearn"</span></span></label>
-                <label class="task-item" id="wrap-t1_12"><input type="checkbox" id="t1_12" onchange="toggleTask('t1_12')"><span class="task-text">Check .env file exists on EC2 with correct DB password</span></label>
-
-                <div class="area-section-label">Security / Firewall</div>
-                <label class="task-item" id="wrap-t1_13"><input type="checkbox" id="t1_13" onchange="toggleTask('t1_13')"><span class="task-text">Confirm port 5000 open in AWS Security Group (EC2 console)</span></label>
-                <label class="task-item" id="wrap-t1_14"><input type="checkbox" id="t1_14" onchange="toggleTask('t1_14')"><span class="task-text">Test Flask locally from EC2 <span class="task-sub">curl http://localhost:5000/health</span></span></label>
-            </div>
-        </div>
-
-        <!-- AREA 2: DATABASE -->
-        <div class="area-card">
-            <div class="area-header" onclick="toggleArea('area2')">
-                <div class="area-title">🗄️ Area 2 — Database (PostgreSQL) <span class="area-count" id="count-area2">0/11</span></div>
-                <span id="arrow-area2">▾</span>
-            </div>
-            <div class="area-body" id="area2">
-                <div class="area-section-label">Service Status</div>
-                <label class="task-item" id="wrap-t2_1"><input type="checkbox" id="t2_1" onchange="toggleTask('t2_1')"><span class="task-text">Check PostgreSQL running <span class="task-sub">systemctl status postgresql</span></span></label>
-                <label class="task-item" id="wrap-t2_2"><input type="checkbox" id="t2_2" onchange="toggleTask('t2_2')"><span class="task-text">List databases — confirm nfl_analytics exists <span class="task-sub">psql -U postgres -c "\l"</span></span></label>
-                <label class="task-item" id="wrap-t2_3"><input type="checkbox" id="t2_3" onchange="toggleTask('t2_3')"><span class="task-text">Confirm hcl schema exists <span class="task-sub">psql -U postgres -d nfl_analytics -c "\dn"</span></span></label>
-
-                <div class="area-section-label">Table Integrity</div>
-                <label class="task-item" id="wrap-t2_4"><input type="checkbox" id="t2_4" onchange="toggleTask('t2_4')"><span class="task-text">Count games — expect ~7,263 <span class="task-sub">SELECT COUNT(*) FROM hcl.games;</span></span></label>
-                <label class="task-item" id="wrap-t2_5"><input type="checkbox" id="t2_5" onchange="toggleTask('t2_5')"><span class="task-text">Count team_game_stats — expect ~14,398 <span class="task-sub">SELECT COUNT(*) FROM hcl.team_game_stats;</span></span></label>
-                <label class="task-item" id="wrap-t2_6"><input type="checkbox" id="t2_6" onchange="toggleTask('t2_6')"><span class="task-text">Count ml_predictions and betting_lines</span></label>
-                <label class="task-item" id="wrap-t2_7"><input type="checkbox" id="t2_7" onchange="toggleTask('t2_7')"><span class="task-text">Count teams — expect 32 <span class="task-sub">SELECT COUNT(*) FROM public.teams;</span></span></label>
-                <label class="task-item" id="wrap-t2_8"><input type="checkbox" id="t2_8" onchange="toggleTask('t2_8')"><span class="task-text">Check season coverage <span class="task-sub">SELECT season, COUNT(*) FROM hcl.games GROUP BY season ORDER BY season;</span></span></label>
-                <label class="task-item" id="wrap-t2_9"><input type="checkbox" id="t2_9" onchange="toggleTask('t2_9')"><span class="task-text">Confirm most recent season loaded <span class="task-sub">SELECT MAX(season) FROM hcl.games;</span></span></label>
-
-                <div class="area-section-label">Data Quality &amp; Views</div>
-                <label class="task-item" id="wrap-t2_10"><input type="checkbox" id="t2_10" onchange="toggleTask('t2_10')"><span class="task-text">Check EPA null count <span class="task-sub">SELECT COUNT(*) FROM hcl.team_game_stats WHERE epa_per_play IS NULL;</span></span></label>
-                <label class="task-item" id="wrap-t2_11"><input type="checkbox" id="t2_11" onchange="toggleTask('t2_11')"><span class="task-text">Test views intact <span class="task-sub">SELECT COUNT(*) FROM hcl.v_team_betting_performance;</span></span></label>
-            </div>
-        </div>
-
-        <!-- AREA 3: API ENDPOINTS -->
-        <div class="area-card">
-            <div class="area-header" onclick="toggleArea('area3')">
-                <div class="area-title">🔌 Area 3 — API Endpoints (22 total) <span class="area-count" id="count-area3">0/22</span></div>
-                <span id="arrow-area3">▾</span>
-            </div>
-            <div class="area-body" id="area3">
-                <div class="area-section-label">Health &amp; Core</div>
-                <label class="task-item" id="wrap-t3_1"><input type="checkbox" id="t3_1" onchange="toggleTask('t3_1')"><span class="task-text">GET /health</span></label>
-                <label class="task-item" id="wrap-t3_2"><input type="checkbox" id="t3_2" onchange="toggleTask('t3_2')"><span class="task-text">GET /api/hcl/teams — returns 32 teams?</span></label>
-                <label class="task-item" id="wrap-t3_3"><input type="checkbox" id="t3_3" onchange="toggleTask('t3_3')"><span class="task-text">GET /api/hcl/summary</span></label>
-
-                <div class="area-section-label">Historical Data</div>
-                <label class="task-item" id="wrap-t3_4"><input type="checkbox" id="t3_4" onchange="toggleTask('t3_4')"><span class="task-text">GET /api/hcl/teams/NE</span></label>
-                <label class="task-item" id="wrap-t3_5"><input type="checkbox" id="t3_5" onchange="toggleTask('t3_5')"><span class="task-text">GET /api/hcl/teams/NE/games</span></label>
-                <label class="task-item" id="wrap-t3_6"><input type="checkbox" id="t3_6" onchange="toggleTask('t3_6')"><span class="task-text">GET /api/hcl/games/week/2024/10</span></label>
-                <label class="task-item" id="wrap-t3_7"><input type="checkbox" id="t3_7" onchange="toggleTask('t3_7')"><span class="task-text">GET /api/hcl/analytics/betting</span></label>
-                <label class="task-item" id="wrap-t3_8"><input type="checkbox" id="t3_8" onchange="toggleTask('t3_8')"><span class="task-text">GET /api/hcl/analytics/weather</span></label>
-                <label class="task-item" id="wrap-t3_9"><input type="checkbox" id="t3_9" onchange="toggleTask('t3_9')"><span class="task-text">GET /api/hcl/analytics/rest</span></label>
-                <label class="task-item" id="wrap-t3_10"><input type="checkbox" id="t3_10" onchange="toggleTask('t3_10')"><span class="task-text">GET /api/hcl/analytics/referees</span></label>
-
-                <div class="area-section-label">ML Endpoints</div>
-                <label class="task-item" id="wrap-t3_11"><input type="checkbox" id="t3_11" onchange="toggleTask('t3_11')"><span class="task-text">GET /api/ml/model-info</span></label>
-                <label class="task-item" id="wrap-t3_12"><input type="checkbox" id="t3_12" onchange="toggleTask('t3_12')"><span class="task-text">GET /api/ml/model-performance</span></label>
-                <label class="task-item" id="wrap-t3_13"><input type="checkbox" id="t3_13" onchange="toggleTask('t3_13')"><span class="task-text">GET /api/ml/predict-week/2024/18</span></label>
-                <label class="task-item" id="wrap-t3_14"><input type="checkbox" id="t3_14" onchange="toggleTask('t3_14')"><span class="task-text">GET /api/ml/predict-upcoming</span></label>
-                <label class="task-item" id="wrap-t3_15"><input type="checkbox" id="t3_15" onchange="toggleTask('t3_15')"><span class="task-text">GET /api/ml/available-weeks</span></label>
-                <label class="task-item" id="wrap-t3_16"><input type="checkbox" id="t3_16" onchange="toggleTask('t3_16')"><span class="task-text">GET /api/ml/season-ai-vs-vegas/2024</span></label>
-                <label class="task-item" id="wrap-t3_17"><input type="checkbox" id="t3_17" onchange="toggleTask('t3_17')"><span class="task-text">GET /api/ml/performance-stats</span></label>
-                <label class="task-item" id="wrap-t3_18"><input type="checkbox" id="t3_18" onchange="toggleTask('t3_18')"><span class="task-text">GET /api/elo/ratings/current</span></label>
-                <label class="task-item" id="wrap-t3_19"><input type="checkbox" id="t3_19" onchange="toggleTask('t3_19')"><span class="task-text">GET /api/elo/predict-week/2024/18</span></label>
-                <label class="task-item" id="wrap-t3_20"><input type="checkbox" id="t3_20" onchange="toggleTask('t3_20')"><span class="task-text">GET /api/predictions/current-week</span></label>
-                <label class="task-item" id="wrap-t3_21"><input type="checkbox" id="t3_21" onchange="toggleTask('t3_21')"><span class="task-text">GET /api/predictions/combined/2024/18</span></label>
-
-                <div class="area-section-label">Live Scores</div>
-                <label class="task-item" id="wrap-t3_22"><input type="checkbox" id="t3_22" onchange="toggleTask('t3_22')"><span class="task-text">GET /api/live-scores (offseason = empty, should not error)</span></label>
-            </div>
-        </div>
-
-        <!-- AREA 4: FRONTEND -->
-        <div class="area-card">
-            <div class="area-header" onclick="toggleArea('area4')">
-                <div class="area-title">🌐 Area 4 — Frontend / AWS Amplify <span class="area-count" id="count-area4">0/20</span></div>
-                <span id="arrow-area4">▾</span>
-            </div>
-            <div class="area-body" id="area4">
-                <div class="area-section-label">Amplify Config</div>
-                <label class="task-item" id="wrap-t4_1"><input type="checkbox" id="t4_1" onchange="toggleTask('t4_1')"><span class="task-text">Log into AWS Amplify — confirm app deployed, build not failed</span></label>
-                <label class="task-item" id="wrap-t4_2"><input type="checkbox" id="t4_2" onchange="toggleTask('t4_2')"><span class="task-text">Check REACT_APP_API_URL = http://34.198.25.249:5000</span></label>
-                <label class="task-item" id="wrap-t4_3"><input type="checkbox" id="t4_3" onchange="toggleTask('t4_3')"><span class="task-text">Note production URL + last successful build date</span></label>
-
-                <div class="area-section-label">Page Audit (Loads / Blank / Error / Partial)</div>
-                <label class="task-item" id="wrap-t4_4"><input type="checkbox" id="t4_4" onchange="toggleTask('t4_4')"><span class="task-text">Homepage /</span></label>
-                <label class="task-item" id="wrap-t4_5"><input type="checkbox" id="t4_5" onchange="toggleTask('t4_5')"><span class="task-text">Live Scores /live-scores (offseason = no games, no crash)</span></label>
-                <label class="task-item" id="wrap-t4_6"><input type="checkbox" id="t4_6" onchange="toggleTask('t4_6')"><span class="task-text">Analytics /analytics</span></label>
-                <label class="task-item" id="wrap-t4_7"><input type="checkbox" id="t4_7" onchange="toggleTask('t4_7')"><span class="task-text">ML Predictions /ml-predictions</span></label>
-                <label class="task-item" id="wrap-t4_8"><input type="checkbox" id="t4_8" onchange="toggleTask('t4_8')"><span class="task-text">ML Predictions Redesign /ml-predictions-redesign</span></label>
-                <label class="task-item" id="wrap-t4_9"><input type="checkbox" id="t4_9" onchange="toggleTask('t4_9')"><span class="task-text">Model Performance /model-performance</span></label>
-                <label class="task-item" id="wrap-t4_10"><input type="checkbox" id="t4_10" onchange="toggleTask('t4_10')"><span class="task-text">Team Stats /team-stats</span></label>
-                <label class="task-item" id="wrap-t4_11"><input type="checkbox" id="t4_11" onchange="toggleTask('t4_11')"><span class="task-text">Team Comparison /team-comparison</span></label>
-                <label class="task-item" id="wrap-t4_12"><input type="checkbox" id="t4_12" onchange="toggleTask('t4_12')"><span class="task-text">Team Detail /team-detail</span></label>
-                <label class="task-item" id="wrap-t4_13"><input type="checkbox" id="t4_13" onchange="toggleTask('t4_13')"><span class="task-text">Matchup Analyzer /matchup-analyzer (known routing bug)</span></label>
-                <label class="task-item" id="wrap-t4_14"><input type="checkbox" id="t4_14" onchange="toggleTask('t4_14')"><span class="task-text">Game Statistics /game-statistics (known routing bug)</span></label>
-                <label class="task-item" id="wrap-t4_15"><input type="checkbox" id="t4_15" onchange="toggleTask('t4_15')"><span class="task-text">Historical Data /historical-data</span></label>
-                <label class="task-item" id="wrap-t4_16"><input type="checkbox" id="t4_16" onchange="toggleTask('t4_16')"><span class="task-text">Admin /admin</span></label>
-                <label class="task-item" id="wrap-t4_17"><input type="checkbox" id="t4_17" onchange="toggleTask('t4_17')"><span class="task-text">Settings /settings</span></label>
-
-                <div class="area-section-label">Console &amp; Nav</div>
-                <label class="task-item" id="wrap-t4_18"><input type="checkbox" id="t4_18" onchange="toggleTask('t4_18')"><span class="task-text">Open DevTools Console on each broken page — note errors (404, CORS, undefined)</span></label>
-                <label class="task-item" id="wrap-t4_19"><input type="checkbox" id="t4_19" onchange="toggleTask('t4_19')"><span class="task-text">Check DevTools Network tab for CORS errors from production frontend</span></label>
-                <label class="task-item" id="wrap-t4_20"><input type="checkbox" id="t4_20" onchange="toggleTask('t4_20')"><span class="task-text">Every side menu link — navigates to correct page?</span></label>
-            </div>
-        </div>
-
-        <!-- AREA 5: LOCAL CODE AUDIT -->
-        <div class="area-card">
-            <div class="area-header" onclick="toggleArea('area5')">
-                <div class="area-title">📁 Area 5 — Local Code Audit <span class="area-count" id="count-area5">0/12</span></div>
-                <span id="arrow-area5">▾</span>
-            </div>
-            <div class="area-body" id="area5">
-                <div class="area-section-label">Git Status</div>
-                <label class="task-item" id="wrap-t5_1"><input type="checkbox" id="t5_1" onchange="toggleTask('t5_1')"><span class="task-text">git status — list all modified files</span></label>
-                <label class="task-item" id="wrap-t5_2"><input type="checkbox" id="t5_2" onchange="toggleTask('t5_2')"><span class="task-text">git diff frontend/src/App.js — check known routing bugs</span></label>
-
-                <div class="area-section-label">Known Bug Confirmations</div>
-                <label class="task-item" id="wrap-t5_3"><input type="checkbox" id="t5_3" onchange="toggleTask('t5_3')"><span class="task-text">BUG-001/002: Confirm App.js routing — /game-statistics and /matchup-analyzer wrong components</span></label>
-                <label class="task-item" id="wrap-t5_4"><input type="checkbox" id="t5_4" onchange="toggleTask('t5_4')"><span class="task-text">BUG-003/004/005: Confirm hardcoded password 'aprilv120' in api_server.py, api_routes_hcl.py, api_routes_live_scores.py</span></label>
-                <label class="task-item" id="wrap-t5_5"><input type="checkbox" id="t5_5" onchange="toggleTask('t5_5')"><span class="task-text">BUG-006: Confirm DEBUG print statements in api_routes_live_scores.py</span></label>
-                <label class="task-item" id="wrap-t5_6"><input type="checkbox" id="t5_6" onchange="toggleTask('t5_6')"><span class="task-text">BUG-007: Confirm background_updater.py missing import</span></label>
-                <label class="task-item" id="wrap-t5_7"><input type="checkbox" id="t5_7" onchange="toggleTask('t5_7')"><span class="task-text">BUG-008: Confirm train_xgb_winner.py uses hcl_test schema (line 255)</span></label>
-                <label class="task-item" id="wrap-t5_8"><input type="checkbox" id="t5_8" onchange="toggleTask('t5_8')"><span class="task-text">BUG-009: Confirm broken SQL WINDOW clause in train_xgb_spread.py (lines 95-116)</span></label>
-                <label class="task-item" id="wrap-t5_9"><input type="checkbox" id="t5_9" onchange="toggleTask('t5_9')"><span class="task-text">BUG-011: Confirm predict_ensemble.py TODO at line 338</span></label>
-                <label class="task-item" id="wrap-t5_10"><input type="checkbox" id="t5_10" onchange="toggleTask('t5_10')"><span class="task-text">BUG-012: Confirm default season hardcoded as 2025 throughout backend</span></label>
-
-                <div class="area-section-label">ML Models on EC2</div>
-                <label class="task-item" id="wrap-t5_11"><input type="checkbox" id="t5_11" onchange="toggleTask('t5_11')"><span class="task-text">SSH: confirm xgb_winner.pkl, xgb_spread.pkl, elo_ratings_current.json exist <span class="task-sub">ls -lh ml/models/</span></span></label>
-                <label class="task-item" id="wrap-t5_12"><input type="checkbox" id="t5_12" onchange="toggleTask('t5_12')"><span class="task-text">Check ML model file sizes and dates</span></label>
-            </div>
-        </div>
-
-        <!-- AREA 6: CORS & CONNECTIVITY -->
-        <div class="area-card">
-            <div class="area-header" onclick="toggleArea('area6')">
-                <div class="area-title">🔗 Area 6 — CORS &amp; End-to-End Connectivity <span class="area-count" id="count-area6">0/4</span></div>
-                <span id="arrow-area6">▾</span>
-            </div>
-            <div class="area-body" id="area6">
-                <label class="task-item" id="wrap-t6_1"><input type="checkbox" id="t6_1" onchange="toggleTask('t6_1')"><span class="task-text">From local machine: <span class="task-sub">curl http://34.198.25.249:5000/health</span></span></label>
-                <label class="task-item" id="wrap-t6_2"><input type="checkbox" id="t6_2" onchange="toggleTask('t6_2')"><span class="task-text">From production frontend: DevTools → attempt an API call → watch for CORS errors</span></label>
-                <label class="task-item" id="wrap-t6_3"><input type="checkbox" id="t6_3" onchange="toggleTask('t6_3')"><span class="task-text">Check api_server.py CORS config — does it allow the Amplify domain?</span></label>
-                <label class="task-item" id="wrap-t6_4"><input type="checkbox" id="t6_4" onchange="toggleTask('t6_4')"><span class="task-text">Identify all endpoints returning CORS errors vs working — log each</span></label>
-            </div>
-        </div>
-
-    </div><!-- /area-grid -->
-
-</div><!-- /pm-panel -->
-
-<!-- Retrospective panel (hidden by default) -->
-<div id="sprint12-retro" style="display:none;">
-<div class="pm-panel" style="padding-top:0;">
-    <div style="max-width:900px;">
-
-        <p style="color:var(--muted); font-size:0.85rem; margin-bottom:1.5rem;">Completed at sprint close — Apr 18, 2026. Three questions. Honest answers.</p>
-
-        <div style="display:flex; flex-direction:column; gap:1.25rem;">
-
-            <div class="retro-card retro-good">
-                <div class="retro-label">What went well?</div>
-                <!-- Claude updates this text at sprint close Apr 18 -->
-                <p class="retro-text">Sprint retrospective not yet completed — filled at sprint close Apr 18, 2026.</p>
-            </div>
-
-            <div class="retro-card retro-bad">
-                <div class="retro-label">What didn't go well?</div>
-                <!-- Claude updates this text at sprint close Apr 18 -->
-                <p class="retro-text">Sprint retrospective not yet completed — filled at sprint close Apr 18, 2026.</p>
-            </div>
-
-            <div class="retro-card retro-improve">
-                <div class="retro-label">What will I do differently next sprint?</div>
-                <!-- Claude updates this text at sprint close Apr 18 -->
-                <p class="retro-text">Sprint retrospective not yet completed — filled at sprint close Apr 18, 2026.</p>
-            </div>
-
-        </div>
-
-    </div>
-</div>
-</div>
+<!-- sprint12 content lives in tab-sprints sprint-board-12 above -->
 
 <!-- ══════════════════════════════════════ -->
 <!--  TAB 5: BACKLOG                       -->
