@@ -2632,7 +2632,24 @@ function showTab(name, btn) {
     if (name === 'architecture' && !architectureInitialized) {
         setTimeout(init3DArchitecture, 50);
     }
+    location.hash = name;
 }
+
+// Restore tab from URL hash on load
+(function restoreTabFromHash() {
+    var hash = location.hash.replace('#', '');
+    if (!hash) return;
+    var panel = document.getElementById('tab-' + hash);
+    if (!panel) return;
+    var tabBtns = document.querySelectorAll('.nav-tab');
+    var matchBtn = null;
+    tabBtns.forEach(function(b) {
+        if (b.getAttribute('onclick') && b.getAttribute('onclick').indexOf("'" + hash + "'") !== -1) {
+            matchBtn = b;
+        }
+    });
+    showTab(hash, matchBtn);
+})();
 
 /* ── LIVE APP BUTTON ── */
 document.getElementById('live-app-btn').addEventListener('click', function(e) {
