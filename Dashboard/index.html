@@ -2540,22 +2540,11 @@
             <button onclick="generateReport()" style="background:linear-gradient(135deg,#D50A0A,#A00808); color:white; border:none; border-radius:0.4rem; padding:0.45rem 1.25rem; font-size:0.88rem; font-weight:700; cursor:pointer;">Generate</button>
         </div>
 
-        <!-- Issues input (user fills this in) -->
-        <div style="background:var(--card); border:1px solid var(--border); border-radius:0.6rem; padding:1.25rem; margin-bottom:1.25rem;">
-            <label style="font-size:0.82rem; font-weight:700; color:#FFD700; display:block; margin-bottom:0.5rem;">Issues that arose this week &amp; how they were / will be addressed:</label>
-            <textarea id="report-issues" rows="3" placeholder="e.g. EC2 was unreachable — resolved by restarting the Flask service via SSH." style="width:100%; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.15); border-radius:0.4rem; color:#f1f5f9; font-size:0.85rem; padding:0.6rem 0.75rem; outline:none; resize:vertical; font-family:inherit;"></textarea>
-
-            <label style="font-size:0.82rem; font-weight:700; color:#FFD700; display:block; margin-top:1rem; margin-bottom:0.5rem;">How could one of those issues have been prevented or mitigated?</label>
-            <textarea id="report-prevention" rows="2" placeholder="e.g. Setting up a health-check alert would have caught the outage sooner." style="width:100%; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.15); border-radius:0.4rem; color:#f1f5f9; font-size:0.85rem; padding:0.6rem 0.75rem; outline:none; resize:vertical; font-family:inherit;"></textarea>
-        </div>
-
-        <!-- Output -->
+        <!-- Report output — auto-renders, no user input needed -->
         <div style="position:relative;">
             <button onclick="copyReport()" id="copy-btn" style="position:absolute; top:0.75rem; right:0.75rem; background:rgba(255,215,0,0.15); border:1px solid rgba(255,215,0,0.4); color:#FFD700; border-radius:0.35rem; padding:0.3rem 0.9rem; font-size:0.78rem; font-weight:700; cursor:pointer; z-index:2;">Copy</button>
-            <pre id="report-output" style="background:rgba(0,0,0,0.4); border:1px solid var(--border); border-radius:0.6rem; padding:1.5rem 1.25rem; font-family:'Segoe UI',system-ui,sans-serif; font-size:0.85rem; color:#e2e8f0; white-space:pre-wrap; word-break:break-word; min-height:200px; line-height:1.7;">Click Generate to build your report.</pre>
+            <pre id="report-output" style="background:rgba(0,0,0,0.4); border:1px solid var(--border); border-radius:0.6rem; padding:1.5rem 1.25rem; font-family:'Segoe UI',system-ui,sans-serif; font-size:0.85rem; color:#e2e8f0; white-space:pre-wrap; word-break:break-word; min-height:200px; line-height:1.7;"></pre>
         </div>
-
-        <p style="color:var(--muted); font-size:0.76rem; margin-top:0.6rem;">Issues text saves automatically. Click Copy, then paste into Canvas.</p>
     </div>
 </div>
 
@@ -3778,93 +3767,72 @@ function showSprintView(view, btn) {
         w10: { issues: '', prevention: '' },
     };
 
-    function bindIssuesSave() {
-        // Issues are now hardcoded — pre-fill fields from data, read-only if filled
-        var weekNum = parseInt(document.getElementById('report-week-select').value);
-        var key = 'w' + weekNum;
-        var data = ISSUES_DATA[key] || {};
-        ['report-issues','report-prevention'].forEach(function(id) {
-            var el = document.getElementById(id);
-            if (!el) return;
-            var field = id === 'report-issues' ? 'issues' : 'prevention';
-            el.value = data[field] || '';
-        });
-    }
-
-    window.generateReport = function() {
-        var weekNum = parseInt(document.getElementById('report-week-select').value);
+    function renderReport() {
+        var sel = document.getElementById('report-week-select');
+        if (!sel) return;
+        var weekNum = parseInt(sel.value);
         var meta = WEEK_META[weekNum - 1];
         var hoursData = getHoursData();
         var weekKey = 'w' + weekNum;
         var hoursThisWeek = parseFloat((hoursData[weekKey] || {}).hours || 0) || 0;
         var weekNotes = (hoursData[weekKey] || {}).notes || '';
 
-        // Total hours so far (weeks 1 through selected week)
         var totalHours = 0;
         for (var i = 1; i <= weekNum; i++) {
             totalHours += parseFloat((hoursData['w'+i] || {}).hours || 0) || 0;
         }
 
-        // Tasks — only read Sprint 12 board for now (S12 weeks); generic for others
+        // Tasks from hardcoded COMPLETED_TASKS
         var taskSection = '';
         if (meta.sprint.indexOf('Sprint 12') !== -1) {
             var tasks = getSprint12Tasks();
-            var doneList   = tasks.done.length   ? tasks.done.map(function(t){ return '    ✓ ' + t; }).join('\n') : '    (none checked off yet)';
-            var notDoneList= tasks.notDone.length ? tasks.notDone.slice(0,5).map(function(t){ return '    ○ ' + t; }).join('\n') : '    (all tasks complete)';
-            taskSection =
-                'ACTUAL PROGRESS THIS WEEK\n' +
-                'Completed:\n' + doneList + '\n\n' +
-                'Not yet completed:\n' + notDoneList;
+            var doneList    = tasks.done.length    ? tasks.done.map(function(t){ return '    \u2713 ' + t; }).join('\n') : '    (none completed yet)';
+            var notDoneList = tasks.notDone.length ? tasks.notDone.slice(0,5).map(function(t){ return '    \u25cb ' + t; }).join('\n') : '    (all tasks complete)';
+            taskSection = 'ACTUAL PROGRESS THIS WEEK\nCompleted:\n' + doneList + '\n\nNot yet completed:\n' + notDoneList;
         } else {
-            taskSection =
-                'ACTUAL PROGRESS THIS WEEK\n' +
-                (weekNotes ? weekNotes : '(Add notes in the Hours Log tab for this week)');
+            taskSection = 'ACTUAL PROGRESS THIS WEEK\n' + (weekNotes || '(see Hours Log for details)');
         }
 
-        // Next week goals
         var nextWeekMeta = WEEK_META[Math.min(weekNum, 9)];
         var nextGoals = NEXT_SPRINT_GOALS[nextWeekMeta.sprint] || [];
-        var nextGoalsList = nextGoals.map(function(g){ return '  • ' + g; }).join('\n');
+        var nextGoalsList = nextGoals.map(function(g){ return '  \u2022 ' + g; }).join('\n');
 
-        var issues = (document.getElementById('report-issues').value || '').trim() || '(fill in above)';
-        var prevention = (document.getElementById('report-prevention').value || '').trim() || '(fill in above)';
+        var issuesData = ISSUES_DATA[weekKey] || {};
+        var issues    = issuesData.issues     || '(no issues logged for this week)';
+        var prevention= issuesData.prevention || '(no prevention notes logged for this week)';
+
+        var expectedProgress = meta.sprint.indexOf('Sprint 12') !== -1
+            ? '  Complete EC2/backend diagnosis, database checks, and API endpoint testing.\n  Goal: full production status map documented before fixing anything.'
+            : nextGoals.slice(0,3).map(function(g){ return '  \u2022 ' + g; }).join('\n');
 
         var report =
-'IS 330 — Senior Capstone Weekly Progress Report\n' +
+'IS 330 \u2014 Senior Capstone Weekly Progress Report\n' +
 'Student: April V. Sykes\n' +
 'Week ' + meta.num + ' of 10  |  ' + meta.dates + '\n' +
 'Current Sprint: ' + meta.sprint + ' (' + meta.sprintDates + ')\n' +
-'─────────────────────────────────────────────────────\n\n' +
-
+'\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\n' +
 'HOURS\n' +
-'Hours worked this week: ' + (hoursThisWeek || '—') + '\n' +
-'Total hours this term:  ' + (totalHours || '—') + '\n\n' +
-
-'EXPECTED PROGRESS THIS WEEK\n' +
-(meta.sprint.indexOf('Sprint 12') !== -1
-    ? '  Complete EC2/backend diagnosis, database checks, and API endpoint testing.\n  Goal: full production status map documented before fixing anything.'
-    : nextGoals.slice(0,3).map(function(g){ return '  • ' + g; }).join('\n')) + '\n\n' +
-
+'Hours worked this week: ' + (hoursThisWeek || '\u2014') + '\n' +
+'Total hours this term:  ' + (totalHours    || '\u2014') + '\n\n' +
+'EXPECTED PROGRESS THIS WEEK\n' + expectedProgress + '\n\n' +
 taskSection + '\n\n' +
-
 'ISSUES & HOW ADDRESSED\n' + issues + '\n\n' +
-
 'PREVENTION / MITIGATION\n' + prevention + '\n\n' +
-
 'EXPECTED PROGRESS NEXT WEEK\n' + nextGoalsList + '\n\n' +
-
 'RELATION TO ORIGINAL OBJECTIVES\n' +
 'This work advances the Spring 2026 capstone objective of deploying a fully functional\n' +
 'NFL analytics application to production (AWS Amplify + EC2) by June 13, 2026.\n' +
-'Each sprint builds on the last in a fixed dependency chain — production cannot launch\n' +
-'until all 5 sprints (12–16) complete in sequence.\n';
+'Each sprint builds on the last in a fixed dependency chain \u2014 production cannot launch\n' +
+'until all 5 sprints (12\u201316) complete in sequence.\n';
 
         document.getElementById('report-output').textContent = report;
-    };
+    }
+
+    window.generateReport = renderReport; // keep button working
 
     window.copyReport = function() {
         var text = document.getElementById('report-output').textContent;
-        if (text === 'Click Generate to build your report.') return;
+        if (!text) return;
         navigator.clipboard.writeText(text).then(function() {
             var btn = document.getElementById('copy-btn');
             btn.textContent = 'Copied!';
@@ -3872,17 +3840,14 @@ taskSection + '\n\n' +
         });
     };
 
-    // Set week selector to current week and bind saves on DOM ready
-    document.addEventListener('DOMContentLoaded', function() {
-        var sel = document.getElementById('report-week-select');
-        if (sel) sel.value = getCurrentWeekNum();
-        bindIssuesSave();
-    });
-    // Also run immediately in case DOM is already ready
+    // Auto-render on load and when week changes
     (function() {
         var sel = document.getElementById('report-week-select');
-        if (sel) sel.value = getCurrentWeekNum();
-        bindIssuesSave();
+        if (sel) {
+            sel.value = getCurrentWeekNum();
+            sel.addEventListener('change', renderReport);
+        }
+        renderReport();
     })();
 })();
 
