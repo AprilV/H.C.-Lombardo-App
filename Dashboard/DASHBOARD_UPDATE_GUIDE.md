@@ -1,112 +1,70 @@
 # Dashboard Update Guide
-**Who does what:** April tells Claude what happened. Claude updates the file and deploys to gh-pages. Professor and employers see everything at https://aprilv.github.io/H.C.-Lombardo-App/
+**Who:** April tells Claude what happened. Claude updates the file and deploys to gh-pages.
+**Live site:** https://aprilv.github.io/H.C.-Lombardo-App/
+**Rule:** Zero localStorage. Everything hardcoded. Everything visible to everyone.
 
 ---
 
-## Every Week — April tells Claude:
-1. **Hours worked** that week + brief description of what was worked on
-2. **Sprint tasks completed** (or just say "check off X, Y, Z on the board")
-3. **Any new blockers or bugs** discovered
-4. **Any risks that came up** (for risk register)
-
-Claude then updates everything and deploys in one shot.
-
----
-
-## What Claude Updates Each Week
-
-### Hours Log (hardcoded — replaces localStorage)
-- `Week N hours` — the number April provides
-- `Week N notes` — what was worked on
-- `Total hours` — running sum
-- **Location:** Hours Log tab data array in the JS
-
-### Weekly Report Tab
-- Pre-renders the current week's report from live data
-- Pulls: hours, tasks done, tasks not done, next week goals
-- April fills in: issues + prevention (the only manual part)
-- **Location:** Report JS data / rendered output
-
-### Sprint Board (Overview + Sprint 12 tab)
-- `Sprint Tasks Done` count on Overview metrics strip
-- `Progress %` bar on Sprint 12 board
-- Burndown chart — actual remaining tasks line (one data point per day)
-- Burnup chart — completed work bar for S12
-- **Location:** Chart data arrays in JS (~line 3200)
-
-### Sprint Status (end of each sprint)
-- Sprint card status: active → completed, next sprint → active
-- RAG status message (green/amber/red banner)
-- "Updated" date on RAG banner
-- Sprint tab label (e.g. ⚡ Sprint 12 → ⚡ Sprint 13)
-- Velocity chart — add S12 bar at sprint close
-- **Location:** Sprint Plan tab HTML + nav tab HTML + chart data
-
-### Open Blockers (as bugs are fixed)
-- Remove fixed blockers from the blocker list
-- Update bug status in Backlog tab (OPEN → CLOSED)
-- **Location:** Overview tab blocker-list HTML + Backlog table
-
-### Retrospective (end of each sprint)
-- April dictates the three answers (what went well, what didn't, what changes)
-- Claude hardcodes them into the retro panel — no longer localStorage
-- **Location:** Sprint 12 retro textarea values → hardcoded text
-
-### Risk Register (as risks change)
-- Update status: open → resolved / accepted
-- Add new risks discovered during the sprint
-- **Location:** risks array in JS (~line 3560)
-
-### Gantt Chart
-- Sprint bars auto-calculate from dates — no update needed
-- Today marker is automatic
-- Completion % pulls from sprint board checkboxes — automatic
-
-### KPIs / Metrics Strip (as data becomes available)
-- "Days remaining" — auto-calculates from today's date (automatic)
-- "Sprint Tasks Done" — syncs from sprint board checkboxes (automatic)
-- Live app URL — update once production is confirmed (Sprint 12 PRD-3)
-- **Location:** Overview JS syncDashMetrics()
+## What April tells Claude each week:
+1. Hours worked that week
+2. What was worked on (1-2 sentences for notes)
+3. Which sprint tasks got completed (by name or area)
+4. Any issues that came up and how they were handled
+5. Prevention — how could the issue have been avoided
+6. Any new bugs discovered
+7. Any new risks
 
 ---
 
-## End of Each Sprint — Additional Updates
+## EVERY WEEK — Claude updates these:
 
-| Item | What changes |
-|------|-------------|
-| Sprint card | active → completed (green), next → active (red) |
-| Sprint tab in nav | Update to next sprint number |
-| Sprint board | Replace S12 board content with next sprint tasks |
-| Definition of Done | Mark sprint as complete in accordion |
-| Velocity chart | Add closed issues count for completed sprint |
-| Retrospective | Hardcode April's answers, add retro for next sprint |
-| Burndown | Reset for new sprint |
-
----
-
-## What NEVER needs updating (static/automatic)
-- Gantt bar positions (date-calculated)
-- Today marker on Gantt
-- Days remaining counter
-- Decision Log (set once, stable)
-- Architecture diagram
-- About tab
-- Sprint Plan dates
-- Definition of Done criteria
+| # | What | Where in code |
+|---|------|--------------|
+| 1 | `HOURS_DATA` — hours + notes for the week | JS ~line 3432 |
+| 2 | `ISSUES_DATA` — issues + prevention text | JS ~line 3757 |
+| 3 | `COMPLETED_TASKS` — task IDs checked off | JS ~line 3023 |
+| 4 | Burndown chart — add actual data point | JS chart data ~line 3292 |
+| 5 | RAG status message | HTML line 1680 |
+| 6 | RAG "Updated" date | HTML line 1682 |
 
 ---
 
-## Deploy Command (Claude runs this every time)
+## AT SPRINT CLOSE ONLY — Claude updates these:
+
+| # | What | Where |
+|---|------|-------|
+| 7  | Retrospective — hardcode three answers | Sprint tab retro HTML |
+| 8  | Velocity chart — add closed issues count | JS chart data |
+| 9  | Burnup chart — update completed work bar | JS chart data |
+| 10 | Sprint card — active→completed, next→active | Sprint Plan tab HTML |
+| 11 | Sprint board — replace with next sprint tasks | Sprint tab HTML |
+| 12 | Nav tab label — e.g. ⚡ Sprint 12 → ⚡ Sprint 13 | Nav HTML |
+| 13 | Open blockers — remove fixed, add new | Overview tab HTML |
+| 14 | Backlog — update OPEN → FIXED | Backlog table HTML |
+| 15 | Risk register — update status, add new risks | JS risks array |
+| 16 | Definition of Done — mark sprint complete | Sprint Plan accordion |
+
+---
+
+## AUTOMATIC — never touch:
+- Gantt today marker (date-calculated)
+- Days remaining counter (date-calculated)
+- Sprint task progress % and counts (reads COMPLETED_TASKS)
+- Week selector default on Weekly Report tab (date-calculated)
+
+---
+
+## Deploy command — run every time, no exceptions:
 ```bash
 cd "c:\ReactGitEC2\IS330\H.C Lombardo App"
 git add Dashboard/index.html
-git commit -m "message"
+git commit -m "Weekly update: Week N"
 git checkout gh-pages
 git show master:Dashboard/index.html > index.html
 git add index.html
-git commit -m "Deploy: message"
+git commit -m "Deploy: Weekly update Week N"
 git push origin gh-pages
 git checkout master
 git push origin master
 ```
-**Always deploy to gh-pages — that is the live site. Master alone does nothing.**
+**ALWAYS deploy to gh-pages. Master alone does nothing to the live site.**
