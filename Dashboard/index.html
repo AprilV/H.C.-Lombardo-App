@@ -2677,15 +2677,18 @@ function init3DArchitecture() {
     const canvas = document.getElementById('architecture-canvas');
 
     scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x2b2d42);
+    scene.background = new THREE.Color(0x020510);
+    scene.fog = new THREE.FogExp2(0x020510, 0.003);
 
     camera = new THREE.PerspectiveCamera(65, container.clientWidth / container.clientHeight, 0.1, 1000);
-    camera.position.set(0, 50, 40);
-    camera.lookAt(0, 0, 0);
+    camera.position.set(0, 55, 55);
+    camera.lookAt(0, 0, 5);
 
     renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
     renderer.setSize(container.clientWidth, container.clientHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.2;
 
     labelRenderer = new THREE.CSS2DRenderer();
     labelRenderer.setSize(container.clientWidth, container.clientHeight);
@@ -2699,42 +2702,83 @@ function init3DArchitecture() {
     controls.dampingFactor = 0.05;
     controls.screenSpacePanning = false;
     controls.minDistance = 10;
-    controls.maxDistance = 120;
+    controls.maxDistance = 160;
     controls.target.set(0, 0, 0);
     controls.maxPolarAngle = Math.PI * 0.55;
     controls.minPolarAngle = Math.PI * 0.15;
     controls.update();
 
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    const ambientLight = new THREE.AmbientLight(0x1a2050, 2.0);
     scene.add(ambientLight);
-    const mainLight = new THREE.DirectionalLight(0xffffff, 0.7);
-    mainLight.position.set(0, 40, 20);
+    const mainLight = new THREE.DirectionalLight(0xffffff, 1.2);
+    mainLight.position.set(0, 60, 30);
     scene.add(mainLight);
-    const fillLight1 = new THREE.PointLight(0x4a90e2, 0.4, 100);
-    fillLight1.position.set(20, 15, 20);
-    scene.add(fillLight1);
-    const fillLight2 = new THREE.PointLight(0x50c878, 0.4, 100);
-    fillLight2.position.set(-20, 15, -20);
-    scene.add(fillLight2);
+    const nflRed = new THREE.PointLight(0xd50000, 2.0, 150);
+    nflRed.position.set(50, 35, -25);
+    scene.add(nflRed);
+    const nflGold = new THREE.PointLight(0xffd700, 1.2, 130);
+    nflGold.position.set(-45, 30, 30);
+    scene.add(nflGold);
+    const rimLight = new THREE.DirectionalLight(0x304080, 0.5);
+    rimLight.position.set(-20, -10, -40);
+    scene.add(rimLight);
+    const bottomGlow = new THREE.PointLight(0x0040ff, 0.6, 80);
+    bottomGlow.position.set(0, -5, 0);
+    scene.add(bottomGlow);
 
-    const gridHelper = new THREE.GridHelper(150, 75, 0x3a3d5c, 0x3a3d5c);
-    gridHelper.material.opacity = 0.4;
+    // Starfield
+    const starGeo = new THREE.BufferGeometry();
+    const starVerts = [];
+    for (let i = 0; i < 4000; i++) {
+        starVerts.push((Math.random() - 0.5) * 800, (Math.random() * 400) - 50, (Math.random() - 0.5) * 800);
+    }
+    starGeo.setAttribute('position', new THREE.Float32BufferAttribute(starVerts, 3));
+    const starMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.5, transparent: true, opacity: 0.6, sizeAttenuation: true });
+    scene.add(new THREE.Points(starGeo, starMat));
+
+    const gridHelper = new THREE.GridHelper(250, 50, 0x1a2a6e, 0x0c1033);
+    gridHelper.material.opacity = 0.3;
     gridHelper.material.transparent = true;
     scene.add(gridHelper);
+
+    // Ground glow plane
+    const gPlane = new THREE.Mesh(
+        new THREE.PlaneGeometry(250, 250),
+        new THREE.MeshBasicMaterial({ color: 0x050d28, transparent: true, opacity: 0.85, side: THREE.DoubleSide })
+    );
+    gPlane.rotation.x = -Math.PI / 2;
+    gPlane.position.y = -0.1;
+    scene.add(gPlane);
 
     createArchitecture();
     setupHoverInteractions();
 
     let animationTime = 0;
+    let autoRotate = true;
+    controls.addEventListener('start', () => { autoRotate = false; });
+
     function animate() {
         requestAnimationFrame(animate);
-        animationTime += 0.015;
+        animationTime += 0.012;
+
+        // Pulse node emissive intensity
         scene.traverse((object) => {
             if (object.userData && object.userData.material && object.userData.pulsePhase !== undefined) {
-                const pulse = Math.sin(animationTime + object.userData.pulsePhase) * 0.25 + 0.75;
+                const pulse = Math.sin(animationTime + object.userData.pulsePhase) * 0.3 + 0.7;
                 object.userData.material.emissiveIntensity = pulse;
             }
         });
+
+        // Slow auto-rotate until user interacts
+        if (autoRotate) {
+            const theta = animationTime * 0.08;
+            const radius = 75;
+            camera.position.x = Math.sin(theta) * radius * 0.6;
+            camera.position.z = Math.cos(theta) * radius * 0.6 + 10;
+            camera.position.y = 55 + Math.sin(animationTime * 0.04) * 5;
+            camera.lookAt(0, 2, 5);
+        }
+
         controls.update();
         renderer.render(scene, camera);
         labelRenderer.render(scene, camera);
@@ -2896,11 +2940,51 @@ function createArchitecture() {
     scene.add(mlGroup);
     addLabel('ML Engine<br><small>XGBoost + Elo</small>', mlGroup, 'label-ml');
 
+    // ── NODE 6: NFLverse (historical data source, gold) ──────────
+    const nflverseGroup = new THREE.Group();
+    const nflverseMat = new THREE.MeshPhongMaterial({ color: 0xc8900a, emissive: 0xd4a017, emissiveIntensity: 0.7, shininess: 140, transparent: true, opacity: 0.95 });
+    const nflCylGeo = new THREE.CylinderGeometry(2.0, 2.0, 3.0, 32);
+    nflverseGroup.add(new THREE.Mesh(nflCylGeo, nflverseMat));
+    [-1.2, 0, 1.2].forEach(function(yy) {
+        const disk = new THREE.Mesh(new THREE.CylinderGeometry(2.25, 2.25, 0.12, 32),
+            new THREE.MeshPhongMaterial({ color: 0xf0c030, emissive: 0xf0c030, emissiveIntensity: 0.5 }));
+        disk.position.y = yy;
+        nflverseGroup.add(disk);
+    });
+    const topRing = new THREE.Mesh(new THREE.TorusGeometry(2.1, 0.22, 8, 32),
+        new THREE.MeshPhongMaterial({ color: 0xffd700, emissive: 0xffd700, emissiveIntensity: 1.2 }));
+    topRing.position.y = 1.7;
+    topRing.rotation.x = Math.PI / 2;
+    nflverseGroup.add(topRing);
+    nflverseGroup.add(new THREE.LineSegments(new THREE.EdgesGeometry(nflCylGeo),
+        new THREE.LineBasicMaterial({ color: 0xffd700, linewidth: 2 })));
+    nflverseGroup.userData = {
+        pulsePhase: Math.PI * 5 / 6, material: nflverseMat,
+        name: 'NFLverse',
+        tier: 'External Historical Data Source',
+        port: 'nfl_data_py Python package',
+        technology: 'nfl_data_py · NFLverse · Play-by-play 1999–2025',
+        features: [
+            '7,263 games of play-by-play data (1999–2025)',
+            'EPA (Expected Points Added) per play',
+            '64 advanced stats per game',
+            'Data loaded offline → PostgreSQL hcl schema',
+            'Basis for all ML model training'
+        ],
+        communication: 'Python script loads data → PostgreSQL (offline, not live)',
+        files: 'background_updater.py, data loading scripts'
+    };
+    nflverseGroup.position.set(0, 2, 40);
+    nflverseGroup.name = 'nflverse';
+    scene.add(nflverseGroup);
+    addLabel('NFLverse<br><small>Historical Data</small>', nflverseGroup, 'label-nflverse');
+
     // ── CONNECTIONS ───────────────────────────────────────────
     createConnection(frontend.position, backendGroup.position, 0x4a90e2, 0x5a6c7d);
     createConnection(backendGroup.position, dbGroup.position, 0x5a6c7d, 0x2a9d8f);
     createConnection(backendGroup.position, apiGroup.position, 0x5a6c7d, 0x7fb3d5);
     createConnection(mlGroup.position, backendGroup.position, 0xe63946, 0x5a6c7d);
+    createConnection(nflverseGroup.position, dbGroup.position, 0xd4a017, 0x2a9d8f);
 }
 
 function createConnection(start, end, color1, color2) {
