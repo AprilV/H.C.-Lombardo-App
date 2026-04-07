@@ -1684,7 +1684,7 @@
         <div class="rag-dot amber"></div>
         <div>
             <div class="rag-label amber">AT RISK — AMBER</div>
-            <div class="rag-message">Sprint 12 active · Production environment unverified · 3 security blockers open</div>
+            <div class="rag-message">Sprint 12 active · Production environment unverified · Security bugs fixed, ML training bugs remain</div>
         </div>
         <div class="rag-detail">Updated: Apr 6, 2026 &nbsp;·&nbsp; Next review: Apr 18</div>
     </div>
@@ -1708,13 +1708,13 @@
         </div>
         <div class="pm-metric">
             <div class="pm-metric-label">Open P1 Blockers</div>
-            <div class="pm-metric-value" style="color:#ef4444;">3</div>
-            <div class="pm-metric-sub">Hardcoded credentials in backend</div>
+            <div class="pm-metric-value" style="color:#10b981;">0</div>
+            <div class="pm-metric-sub">Credentials fixed — P2 ML bugs remain</div>
         </div>
         <div class="pm-metric">
             <div class="pm-metric-label">Total Open Issues</div>
-            <div class="pm-metric-value" style="color:#FFA500;">13</div>
-            <div class="pm-metric-sub">Pre-confirmed bugs in backlog</div>
+            <div class="pm-metric-value" style="color:#FFA500;">4</div>
+            <div class="pm-metric-sub">BUG-008/009/011/012 — ML training bugs</div>
         </div>
         <div class="pm-metric">
             <div class="pm-metric-label">Target Release</div>
@@ -3538,7 +3538,7 @@ initBacklog();
     // ── HARDCODED HOURS DATA — Claude updates this each week ──
     // To update: change hours and notes for each week. Leave future weeks at 0/''.
     const HOURS_DATA = [
-        { num:1,  dates:'Apr 6 – Apr 12',  sprint:'S12', hours:7,   notes:'Full PM dashboard build — Gantt, Risk Register, Decision Log, Hours Log, Weekly Report, Retrospective, Definition of Done, Sprint board, burndown/burnup/velocity charts, nav tabs, deploy process.' },
+        { num:1,  dates:'Apr 6 – Apr 12',  sprint:'S12', hours:7,   notes:'Sprint 12 kickoff. PM dashboard built (Gantt, Risk Register, Decision Log, Hours Log, Weekly Report, Retrospective, DoD, Sprint board, burndown/burnup/velocity). Fixed BUG-001–007 + BUG-013: routing, hardcoded credentials, debug prints, broken import, dead file. Dashboard nav restructured (tab persistence, sprint page tabs, DoD/Retro as top tabs).' },
         { num:2,  dates:'Apr 13 – Apr 18', sprint:'S12', hours:0,   notes:'' },
         { num:3,  dates:'Apr 20 – Apr 26', sprint:'S13', hours:0,   notes:'' },
         { num:4,  dates:'Apr 27 – May 2',  sprint:'S13', hours:0,   notes:'' },
