@@ -966,20 +966,22 @@
             align-items: flex-start;
             gap: 0.75rem;
             padding: 0.5rem 1.25rem;
-            transition: background 0.15s;
-            cursor: pointer;
         }
 
-        .task-item:hover { background: rgba(255,255,255,0.04); }
+        .task-item input[type="checkbox"] { display: none; }
 
-        .task-item input[type="checkbox"] {
-            margin-top: 2px;
-            width: 15px;
-            height: 15px;
+        .task-status-badge {
             flex-shrink: 0;
-            accent-color: #D50A0A;
-            cursor: pointer;
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 0.15rem 0.5rem;
+            border-radius: 9999px;
+            margin-top: 2px;
+            white-space: nowrap;
         }
+        .task-status-badge.todo    { background:rgba(255,255,255,0.07); color:rgba(255,255,255,0.4); border:1px solid rgba(255,255,255,0.1); }
+        .task-status-badge.done    { background:rgba(16,185,129,0.15);  color:#10b981; border:1px solid rgba(16,185,129,0.3); }
+        .task-status-badge.blocked { background:rgba(248,113,113,0.15); color:#f87171; border:1px solid rgba(248,113,113,0.3); }
 
         .task-text {
             font-size: 0.83rem;
@@ -2400,36 +2402,7 @@
         </table>
     </div>
 
-    <!-- Add Issue Form -->
-    <div class="add-issue-form">
-        <h4>+ Log New Issue</h4>
-        <div class="form-row">
-            <input type="text" class="form-input" id="new-issue-desc" placeholder="Issue description…">
-            <select class="form-select" id="new-issue-sev">
-                <option value="P1">P1 — Blocker</option>
-                <option value="P2" selected>P2 — Major</option>
-                <option value="P3">P3 — Minor</option>
-                <option value="P4">P4 — Polish</option>
-            </select>
-            <select class="form-select" id="new-issue-area">
-                <option value="EC2">EC2/Backend</option>
-                <option value="DB">Database</option>
-                <option value="API">API</option>
-                <option value="UI">Frontend</option>
-                <option value="DEP">Deployment</option>
-                <option value="ML">ML</option>
-            </select>
-            <select class="form-select" id="new-issue-sprint">
-                <option value="S12">Sprint 12</option>
-                <option value="S13" selected>Sprint 13</option>
-                <option value="S14">Sprint 14</option>
-                <option value="S15">Sprint 15</option>
-                <option value="S16">Sprint 16</option>
-            </select>
-        </div>
-        <input type="text" class="form-input" id="new-issue-file" placeholder="File / location (optional)" style="margin-bottom:0.75rem;">
-        <button class="add-btn" onclick="addIssue()">Add Issue</button>
-    </div>
+    <p style="color:var(--muted); font-size:0.8rem; margin-top:0.5rem;">To log a new issue, tell Claude — it will be added to the backlog permanently.</p>
 
 </div><!-- /pm-panel -->
 </div><!-- /backlog-sprint -->
@@ -3059,33 +3032,23 @@ const TASK_AREAS = {
 const AREA_TOTALS = { area1: 14, area2: 11, area3: 22, area4: 20, area5: 12, area6: 4 };
 const TOTAL_TASKS = 83;
 
-// ── HARDCODED COMPLETED TASKS — Claude updates this as tasks are checked off ──
-// Add task IDs here when April confirms they are done. e.g. 't1_1', 't1_2', etc.
+// ── TASK STATUS — Claude updates these each week ──
+// Move task IDs to COMPLETED_TASKS when done, BLOCKED_TASKS when blocked.
 const COMPLETED_TASKS = [
-    // Area 1 — EC2 / Backend (none complete yet — Sprint 12 just started Apr 6)
+    // Area 1 — EC2 / Backend
     // Area 2 — Database
     // Area 3 — API Endpoints
     // Area 4 — Frontend
     // Area 5 — Known Bugs
     // Area 6 — CORS
 ];
+const BLOCKED_TASKS = [
+    // e.g. 't1_1' — add task IDs here if blocked
+];
 
-function toggleTask(taskId) {
-    const cb = document.getElementById(taskId);
-    const wrap = document.getElementById('wrap-' + taskId);
-    if (cb.checked) {
-        wrap.classList.add('done');
-    } else {
-        wrap.classList.remove('done');
-    }
-    updateProgress();
-    updateAreaCount(TASK_AREAS[taskId]);
-    syncDashMetrics();
-}
+function toggleTask() {} // no-op — tasks are static, updated by Claude
 
-function getSavedTasks() {
-    return {}; // no localStorage — state comes from COMPLETED_TASKS
-}
+function getSavedTasks() { return {}; }
 
 function updateProgress() {
     const allCbs = document.querySelectorAll('#tab-sprint12 input[type="checkbox"]');
@@ -3120,12 +3083,19 @@ function toggleArea(areaId) {
 }
 
 function initTasks() {
-    // Apply hardcoded completed tasks — no localStorage
-    COMPLETED_TASKS.forEach(function(taskId) {
-        const cb = document.getElementById(taskId);
-        const wrap = document.getElementById('wrap-' + taskId);
-        if (cb) { cb.checked = true; }
-        if (wrap) wrap.classList.add('done');
+    // Replace every checkbox with a static status badge
+    document.querySelectorAll('#tab-sprint12 .task-item').forEach(function(item) {
+        var cb = item.querySelector('input[type="checkbox"]');
+        if (!cb) return;
+        var taskId = cb.id;
+        var isDone    = COMPLETED_TASKS.indexOf(taskId) !== -1;
+        var isBlocked = BLOCKED_TASKS.indexOf(taskId) !== -1;
+        var badge = document.createElement('span');
+        badge.className = 'task-status-badge ' + (isDone ? 'done' : isBlocked ? 'blocked' : 'todo');
+        badge.textContent = isDone ? 'Done' : isBlocked ? 'Blocked' : 'To Do';
+        item.insertBefore(badge, cb);
+        cb.style.display = 'none';
+        if (isDone) item.classList.add('done');
     });
     updateProgress();
     Object.keys(AREA_TOTALS).forEach(updateAreaCount);
@@ -3135,8 +3105,6 @@ function initTasks() {
 /* ════════════════════════════════════════════════════════
    AGILE PM — BACKLOG
 ═══════════════════════════════════════════════════════ */
-
-let issueCounter = 13; // start after the 13 pre-loaded bugs
 
 function filterBacklog(filter, btn) {
     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -3154,35 +3122,6 @@ function filterBacklog(filter, btn) {
     });
 }
 
-function addIssue() {
-    const desc = document.getElementById('new-issue-desc').value.trim();
-    if (!desc) { document.getElementById('new-issue-desc').focus(); return; }
-    const sev  = document.getElementById('new-issue-sev').value;
-    const area = document.getElementById('new-issue-area').value;
-    const sprint = document.getElementById('new-issue-sprint').value;
-    const file = document.getElementById('new-issue-file').value.trim();
-    issueCounter++;
-    const num = 'NEW-' + String(issueCounter - 13).padStart(3, '0');
-
-    const sevClass = { P1:'sev-p1', P2:'sev-p2', P3:'sev-p3', P4:'sev-p4' }[sev] || 'sev-p4';
-    const tr = document.createElement('tr');
-    tr.dataset.sev = sev;
-    tr.dataset.status = 'OPEN';
-    tr.innerHTML = `<td>${num}</td><td>${escHtml(desc)}</td><td>${escHtml(file||area)}</td>` +
-        `<td><span class="${sevClass}">${sev}</span></td>` +
-        `<td><span class="st-open">OPEN</span></td>` +
-        `<td><span class="sprint-tag">${sprint}</span></td>`;
-    document.getElementById('backlog-tbody').appendChild(tr);
-
-    // Note: new issues added via form are session-only.
-    // To permanently add to the backlog, tell Claude and it will be hardcoded.
-
-    // Clear form
-    document.getElementById('new-issue-desc').value = '';
-    document.getElementById('new-issue-file').value = '';
-
-    updateBacklogStats();
-}
 
 function initBacklog() {
     // All backlog items are hardcoded in the HTML table.
