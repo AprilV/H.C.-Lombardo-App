@@ -1728,21 +1728,17 @@
     <!-- ── OPEN BLOCKERS ── -->
     <div class="dash-section-label">Open Blockers &amp; Top Issues</div>
     <div class="blocker-list">
-        <div class="blocker-item sev-p1">
-            <div><div class="blocker-badge p1">P1 · BUG-003/004/005</div><div class="blocker-desc">Hardcoded password 'aprilv120' fallback in 3 backend files — ships to production on every push</div><div class="blocker-file">api_server.py · api_routes_hcl.py · api_routes_live_scores.py</div></div>
+        <div class="blocker-item sev-p2">
+            <div><div class="blocker-badge p2">P2 · BUG-008/009</div><div class="blocker-desc">ML training scripts use wrong schema (hcl_test) and have broken SQL — models cannot be retrained until fixed</div><div class="blocker-file">ml/train_xgb_winner.py:255 · ml/train_xgb_spread.py:95-116</div></div>
             <div class="blocker-sprint">Fix: S13</div>
         </div>
         <div class="blocker-item sev-p2">
-            <div><div class="blocker-badge p2">P2 · BUG-001/002</div><div class="blocker-desc">/game-statistics and /matchup-analyzer route to wrong components — 2 pages completely broken</div><div class="blocker-file">frontend/src/App.js ~line 58–59</div></div>
+            <div><div class="blocker-badge p2">P2 · BUG-011</div><div class="blocker-desc">predict_ensemble.py has an incomplete TODO at line 338 — ensemble logic is unfinished</div><div class="blocker-file">ml/predict_ensemble.py:338</div></div>
             <div class="blocker-sprint">Fix: S13</div>
         </div>
         <div class="blocker-item sev-p2">
-            <div><div class="blocker-badge p2">P2 · BUG-007</div><div class="blocker-desc">background_updater.py has a missing import — background service likely crashes on startup</div><div class="blocker-file">background_updater.py</div></div>
+            <div><div class="blocker-badge p2">P2 · BUG-012</div><div class="blocker-desc">Default season hardcoded as 2025 throughout backend — must be updated or made dynamic for 2026</div><div class="blocker-file">api_routes_hcl.py · api_routes_ml.py · various</div></div>
             <div class="blocker-sprint">Fix: S13</div>
-        </div>
-        <div class="blocker-item sev-p2">
-            <div><div class="blocker-badge p2">P2 · BUG-008/009</div><div class="blocker-desc">ML training scripts use wrong schema (hcl_test) and have broken SQL — models cannot be retrained</div><div class="blocker-file">ml/train_xgb_winner.py:255 · ml/train_xgb_spread.py:95-116</div></div>
-            <div class="blocker-sprint">Fix: S14</div>
         </div>
     </div>
 
@@ -1780,7 +1776,7 @@
             <div class="chart-card-title">Backlog by Severity</div>
             <div class="chart-card-subtitle">Current issue distribution across all 13 logged bugs. P1 = production blockers that must be fixed before anything else ships. P4 = polish only.</div>
             <canvas id="severity-chart" height="180"></canvas>
-            <div class="chart-card-insight"><strong>P1 priority:</strong> 3 hardcoded passwords (BUG-003/004/005) are security blockers. They ship to production on every push. Fix in Sprint 13 — first task, no exceptions.</div>
+            <div class="chart-card-insight"><strong>S12 progress:</strong> 8 bugs fixed this sprint — routing (BUG-001/002), hardcoded credentials (BUG-003/004/005), debug output (BUG-006), missing import (BUG-007), dead file (BUG-013). ML training bugs (BUG-008/009/011) are the next priority.</div>
         </div>
 
     </div>
@@ -2385,19 +2381,19 @@
                 </tr>
             </thead>
             <tbody id="backlog-tbody">
-                <tr data-sev="P2" data-status="OPEN"><td>BUG-001</td><td>/game-statistics routes to wrong component</td><td>App.js ~58</td><td><span class="sev-p2">P2</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">S13</span></td></tr>
-                <tr data-sev="P2" data-status="OPEN"><td>BUG-002</td><td>/matchup-analyzer routes to wrong component</td><td>App.js ~59</td><td><span class="sev-p2">P2</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">S13</span></td></tr>
-                <tr data-sev="P1" data-status="OPEN"><td>BUG-003</td><td>Hardcoded password 'aprilv120' fallback</td><td>api_server.py ~77</td><td><span class="sev-p1">P1</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">S13</span></td></tr>
-                <tr data-sev="P1" data-status="OPEN"><td>BUG-004</td><td>Hardcoded password 'aprilv120' fallback</td><td>api_routes_hcl.py ~22</td><td><span class="sev-p1">P1</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">S13</span></td></tr>
-                <tr data-sev="P1" data-status="OPEN"><td>BUG-005</td><td>Hardcoded password 'aprilv120' fallback</td><td>api_routes_live_scores.py ~29</td><td><span class="sev-p1">P1</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">S13</span></td></tr>
-                <tr data-sev="P3" data-status="OPEN"><td>BUG-006</td><td>7+ DEBUG print statements in production</td><td>api_routes_live_scores.py</td><td><span class="sev-p3">P3</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">S13</span></td></tr>
-                <tr data-sev="P2" data-status="OPEN"><td>BUG-007</td><td>background_updater.py missing import</td><td>background_updater.py</td><td><span class="sev-p2">P2</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">S13</span></td></tr>
+                <tr data-sev="P2" data-status="FIXED"><td>BUG-001</td><td>/game-statistics routes to wrong component</td><td>App.js ~58</td><td><span class="sev-p2">P2</span></td><td><span class="st-fixed">FIXED</span></td><td><span class="sprint-tag">S12</span></td></tr>
+                <tr data-sev="P2" data-status="FIXED"><td>BUG-002</td><td>/matchup-analyzer routes to wrong component</td><td>App.js ~59</td><td><span class="sev-p2">P2</span></td><td><span class="st-fixed">FIXED</span></td><td><span class="sprint-tag">S12</span></td></tr>
+                <tr data-sev="P1" data-status="FIXED"><td>BUG-003</td><td>Hardcoded password 'aprilv120' fallback</td><td>api_server.py ~77</td><td><span class="sev-p1">P1</span></td><td><span class="st-fixed">FIXED</span></td><td><span class="sprint-tag">S12</span></td></tr>
+                <tr data-sev="P1" data-status="FIXED"><td>BUG-004</td><td>Hardcoded password 'aprilv120' fallback</td><td>api_routes_hcl.py ~22</td><td><span class="sev-p1">P1</span></td><td><span class="st-fixed">FIXED</span></td><td><span class="sprint-tag">S12</span></td></tr>
+                <tr data-sev="P1" data-status="FIXED"><td>BUG-005</td><td>Hardcoded password 'aprilv120' fallback</td><td>api_routes_live_scores.py ~29</td><td><span class="sev-p1">P1</span></td><td><span class="st-fixed">FIXED</span></td><td><span class="sprint-tag">S12</span></td></tr>
+                <tr data-sev="P3" data-status="FIXED"><td>BUG-006</td><td>7+ DEBUG print statements in production</td><td>api_routes_live_scores.py</td><td><span class="sev-p3">P3</span></td><td><span class="st-fixed">FIXED</span></td><td><span class="sprint-tag">S12</span></td></tr>
+                <tr data-sev="P2" data-status="FIXED"><td>BUG-007</td><td>background_updater.py missing import (MultiSourceDataFetcher)</td><td>background_updater.py</td><td><span class="sev-p2">P2</span></td><td><span class="st-fixed">FIXED</span></td><td><span class="sprint-tag">S12</span></td></tr>
                 <tr data-sev="P2" data-status="OPEN"><td>BUG-008</td><td>train_xgb_winner.py uses hcl_test schema (wrong)</td><td>ml/train_xgb_winner.py:255</td><td><span class="sev-p2">P2</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">S14</span></td></tr>
                 <tr data-sev="P2" data-status="OPEN"><td>BUG-009</td><td>Broken SQL WINDOW clause in spread training</td><td>ml/train_xgb_spread.py:95-116</td><td><span class="sev-p2">P2</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">S14</span></td></tr>
                 <tr data-sev="P3" data-status="OPEN"><td>BUG-010</td><td>EPA features loaded in SQL but not used in model</td><td>ml/train_xgb_spread.py:174-181</td><td><span class="sev-p3">P3</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">S14</span></td></tr>
                 <tr data-sev="P2" data-status="OPEN"><td>BUG-011</td><td>predict_ensemble.py TODO (incomplete) at line 338</td><td>ml/predict_ensemble.py:338</td><td><span class="sev-p2">P2</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">S14</span></td></tr>
                 <tr data-sev="P2" data-status="OPEN"><td>BUG-012</td><td>Default season hardcoded as 2025 throughout backend</td><td>various</td><td><span class="sev-p2">P2</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">S13</span></td></tr>
-                <tr data-sev="P4" data-status="OPEN"><td>BUG-013</td><td>MLPredictionsRedesign.backup.js dead file in src/</td><td>frontend/src/</td><td><span class="sev-p4">P4</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">S13</span></td></tr>
+                <tr data-sev="P4" data-status="FIXED"><td>BUG-013</td><td>MLPredictionsRedesign.backup.js dead file in src/</td><td>frontend/src/</td><td><span class="sev-p4">P4</span></td><td><span class="st-fixed">FIXED</span></td><td><span class="sprint-tag">S12</span></td></tr>
             </tbody>
         </table>
     </div>
@@ -3123,7 +3119,8 @@ const COMPLETED_TASKS = [
     // Area 2 — Database
     // Area 3 — API Endpoints
     // Area 4 — Frontend
-    // Area 5 — Known Bugs
+    // Area 5 — Known Bugs (confirmed + fixed in S12)
+    't5_3', 't5_4', 't5_5', 't5_6',
     // Area 6 — CORS
 ];
 const BLOCKED_TASKS = [
