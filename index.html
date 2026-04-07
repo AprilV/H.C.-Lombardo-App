@@ -1898,6 +1898,7 @@
         <!-- Page-level tabs -->
         <div class="sprint-subnav sprint-page-tabs">
             <button class="subnav-btn active" onclick="showSprintPageView('spage-board', this)">Sprint Board</button>
+            <button class="subnav-btn" onclick="showSprintPageView('spage-retro', this)">Retrospective</button>
             <button class="subnav-btn" onclick="showSprintPageView('spage-dod', this)">Definition of Done</button>
         </div>
     </div>
@@ -1946,12 +1947,6 @@
 
     <!-- Sprint 12 Board -->
     <div id="sprint-board-12">
-        <div style="max-width:1300px; margin:0 auto 0; padding:0 2rem;">
-            <div class="sprint-subnav" style="margin-bottom:0;">
-                <button class="subnav-btn active" onclick="showSprintView('board', this)">Board</button>
-                <button class="subnav-btn" onclick="showSprintView('retro', this)">Retrospective</button>
-            </div>
-        </div>
         <div id="sprint12-board" class="pm-panel">
 
             <div class="pm-header">
@@ -2142,29 +2137,6 @@
         </div><!-- /area-grid -->
         </div><!-- /sprint12-board -->
 
-        <!-- Retrospective (hidden by default) -->
-        <div id="sprint12-retro" style="display:none;">
-        <div class="pm-panel" style="padding-top:0;">
-            <div style="max-width:900px;">
-                <p style="color:var(--muted); font-size:0.85rem; margin-bottom:1.5rem;">Completed at sprint close — Apr 18, 2026. Three questions. Honest answers.</p>
-                <div style="display:flex; flex-direction:column; gap:1.25rem;">
-                    <div class="retro-card retro-good">
-                        <div class="retro-label">What went well?</div>
-                        <p class="retro-text">Sprint retrospective not yet completed — filled at sprint close Apr 18, 2026.</p>
-                    </div>
-                    <div class="retro-card retro-bad">
-                        <div class="retro-label">What didn't go well?</div>
-                        <p class="retro-text">Sprint retrospective not yet completed — filled at sprint close Apr 18, 2026.</p>
-                    </div>
-                    <div class="retro-card retro-improve">
-                        <div class="retro-label">What will I do differently next sprint?</div>
-                        <p class="retro-text">Sprint retrospective not yet completed — filled at sprint close Apr 18, 2026.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        </div><!-- /sprint12-retro -->
-
     </div><!-- /sprint-board-12 -->
 
     <!-- Sprint 13 placeholder -->
@@ -2196,6 +2168,33 @@
     </div>
 
     </div><!-- /spage-board -->
+
+    <!-- ── RETROSPECTIVE VIEW ── -->
+    <div id="spage-retro" style="display:none;">
+    <div class="pm-panel" style="max-width:1300px; margin:2rem auto;">
+        <div class="pm-header">
+            <div>
+                <h2>Sprint 12 — Retrospective</h2>
+                <p>Completed at sprint close — Apr 18, 2026. Three questions. Honest answers.</p>
+            </div>
+            <div class="sprint-meta"><span class="meta-pill">Apr 6 – Apr 18, 2026</span></div>
+        </div>
+        <div style="max-width:900px; display:flex; flex-direction:column; gap:1.25rem;">
+            <div class="retro-card retro-good">
+                <div class="retro-label">What went well?</div>
+                <p class="retro-text">Sprint retrospective not yet completed — filled at sprint close Apr 18, 2026.</p>
+            </div>
+            <div class="retro-card retro-bad">
+                <div class="retro-label">What didn't go well?</div>
+                <p class="retro-text">Sprint retrospective not yet completed — filled at sprint close Apr 18, 2026.</p>
+            </div>
+            <div class="retro-card retro-improve">
+                <div class="retro-label">What will I do differently next sprint?</div>
+                <p class="retro-text">Sprint retrospective not yet completed — filled at sprint close Apr 18, 2026.</p>
+            </div>
+        </div>
+    </div>
+    </div><!-- /spage-retro -->
 
     <!-- ── DOD VIEW ── -->
     <div id="spage-dod" style="display:none;">
@@ -2660,7 +2659,7 @@ document.getElementById('live-app-btn').addEventListener('click', function(e) {
 
 /* ── SPRINT BOARD SELECTOR ── */
 function showSprintPageView(viewId, btn) {
-    ['spage-board', 'spage-dod'].forEach(function(id) {
+    ['spage-board', 'spage-retro', 'spage-dod'].forEach(function(id) {
         var el = document.getElementById(id);
         if (el) el.style.display = (id === viewId) ? '' : 'none';
     });
