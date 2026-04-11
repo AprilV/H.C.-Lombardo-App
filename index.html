@@ -1719,7 +1719,7 @@
         <div class="pm-metric">
             <div class="pm-metric-label">Target Release</div>
             <div class="pm-metric-value" style="color:#FFD700; font-size:1.2rem;">Jun 13</div>
-            <div class="pm-metric-sub">68 days remaining from today</div>
+            <div class="pm-metric-sub" id="release-days-sub">64 days remaining from today</div>
         </div>
     </div>
 
@@ -2712,11 +2712,15 @@ function syncDashMetrics() {
 // Update days remaining dynamically
 (function() {
     const sprintEnd = new Date('2026-04-18');
+    const releaseDate = new Date('2026-06-13');
     const today = new Date();
     today.setHours(0,0,0,0);
-    const diff = Math.max(0, Math.round((sprintEnd - today) / 86400000));
+    const sprintDiff = Math.max(0, Math.round((sprintEnd - today) / 86400000));
+    const releaseDiff = Math.max(0, Math.round((releaseDate - today) / 86400000));
     const el = document.getElementById('days-remaining');
-    if (el) el.textContent = diff;
+    if (el) el.textContent = sprintDiff;
+    const rel = document.getElementById('release-days-sub');
+    if (rel) rel.textContent = releaseDiff + ' days remaining from today';
 })();
 
 /* ════════════════════════════════════════════════════════════
@@ -3178,8 +3182,10 @@ const TOTAL_TASKS = 83;
 // ── TASK STATUS — Claude updates these each week ──
 // Move task IDs to COMPLETED_TASKS when done, BLOCKED_TASKS when blocked.
 const COMPLETED_TASKS = [
-    // Area 1 — EC2 / Backend
-    // Area 2 — Database
+    // Area 1 — EC2 / Backend (completed Apr 10)
+    't1_1', 't1_2', 't1_3', 't1_4', 't1_6', 't1_8', 't1_9',
+    // Area 2 — Database (completed Apr 10)
+    't2_1', 't2_4', 't2_8', 't2_9',
     // Area 3 — API Endpoints
     // Area 4 — Frontend
     // Area 5 — Known Bugs (confirmed + fixed in S12)
@@ -3429,7 +3435,7 @@ function rebuildCharts() {
                 },
                 {
                     label: 'Actual Remaining',
-                    data: [83, null, null, null, null, null, null, null, null, null, null, null, null, null],
+                    data: [83, 83, 79, 79, 68, null, null, null, null, null, null, null, null, null],
                     borderColor: c.actualLine,
                     backgroundColor: c.actualFill,
                     tension: 0.2,
@@ -3499,7 +3505,7 @@ function rebuildCharts() {
             labels: ['S1','S2','S3','S4','S5','S6','S7','S8','S9','S10','S11','S12*'],
             datasets: [{
                 label: 'Issues Closed',
-                data: [8, 5, 6, 6, 5, 7, 9, 8, 7, 7, 7, 0],
+                data: [8, 5, 6, 6, 5, 7, 9, 8, 7, 7, 7, 8],
                 backgroundColor: barColors,
                 borderColor: borderColors,
                 borderWidth: 1,
@@ -3522,7 +3528,7 @@ function rebuildCharts() {
         data: {
             labels: ['P1 — Blocker', 'P2 — Major', 'P3 — Minor', 'P4 — Polish'],
             datasets: [{
-                data: [3, 7, 2, 1],
+                data: [4, 10, 5, 1],
                 backgroundColor: [
                     'rgba(213,10,10,0.75)',
                     'rgba(255,165,0,0.75)',
