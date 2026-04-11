@@ -3835,13 +3835,22 @@ initBacklog();
 
     var tbody = document.getElementById('pb-tbody');
     if (!tbody) return;
+    // Sort: Done/S12 items first, then Backlog items by priority order
+    var sprintOrder = {'S12':0,'TBD':1};
+    var priOrder = {'Critical':0,'High':1,'Medium':2,'Low':3};
+    items.sort(function(a,b){
+        var sa = sprintOrder[a.sprint] !== undefined ? sprintOrder[a.sprint] : 1;
+        var sb = sprintOrder[b.sprint] !== undefined ? sprintOrder[b.sprint] : 1;
+        if (sa !== sb) return sa - sb;
+        return (priOrder[a.pri]||99) - (priOrder[b.pri]||99);
+    });
     var lastSprint = '';
     tbody.innerHTML = items.map(function(item, i) {
         var bg = i % 2 === 0 ? '' : 'background:rgba(255,255,255,0.02);';
         var groupRow = '';
         if (item.sprint !== lastSprint) {
             lastSprint = item.sprint;
-            var label = item.sprint === 'TBD' ? 'Unscheduled' : item.sprint + ' — ' + ({'S12':'Diagnose & Restore','S13':'Data & Clean','S14':'ML Retrain','S15':'UI & UX Polish','S16':'Hardening & Release','TBD':''}[item.sprint] || '');
+            var label = item.sprint === 'TBD' ? 'Backlog — Unscheduled' : item.sprint + ' — ' + ({'S12':'Diagnose & Restore'}[item.sprint] || item.sprint);
             groupRow = '<tr><td colspan="7" style="padding:0.5rem 0.75rem 0.25rem; font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:#FFD700; border-bottom:1px solid var(--border);">' + label + '</td></tr>';
         }
         return groupRow + '<tr style="border-bottom:1px solid var(--border-subtle);' + bg + '">' +
