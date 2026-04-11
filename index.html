@@ -1988,16 +1988,16 @@
 
         <div class="area-grid">
 
-            <!-- AREA 1: EC2 / BACKEND -->
+            <!-- PB-001: SSH Access & EC2 Service Verification -->
             <div class="area-card">
-                <div class="area-header" onclick="toggleArea('area1')">
-                    <div class="area-title">🖥️ Area 1 — EC2 / Backend Server <span style="color:#FFD700;font-size:0.78rem;font-weight:600;margin-left:0.5rem;">PB-001</span> <span class="area-count" id="count-area1">0/14</span></div>
-                    <span id="arrow-area1">▾</span>
+                <div class="area-header" onclick="toggleArea('pb001')">
+                    <div class="area-title">🖥️ PB-001 — SSH Access &amp; EC2 Service Verification <span class="area-count" id="count-pb001">0/14</span></div>
+                    <span id="arrow-pb001">▾</span>
                 </div>
-                <div class="area-body" id="area1">
+                <div class="area-body" id="pb001">
                     <div class="area-section-label">SSH Access</div>
                     <label class="task-item" id="wrap-t1_1"><input type="checkbox" id="t1_1" onchange="toggleTask('t1_1')"><span class="task-text">Confirm SSH key is available locally</span></label>
-                    <label class="task-item" id="wrap-t1_2"><input type="checkbox" id="t1_2" onchange="toggleTask('t1_2')"><span class="task-text">SSH into EC2 <span class="task-sub">ssh -i &lt;key&gt;.pem ec2-user@34.198.25.249</span></span></label>
+                    <label class="task-item" id="wrap-t1_2"><input type="checkbox" id="t1_2" onchange="toggleTask('t1_2')"><span class="task-text">SSH into EC2 <span class="task-sub">ssh -i &lt;key&gt;.pem ubuntu@34.198.25.249</span></span></label>
                     <label class="task-item" id="wrap-t1_3"><input type="checkbox" id="t1_3" onchange="toggleTask('t1_3')"><span class="task-text">Confirm connection without errors — log result</span></label>
                     <div class="area-section-label">Service Status</div>
                     <label class="task-item" id="wrap-t1_4"><input type="checkbox" id="t1_4" onchange="toggleTask('t1_4')"><span class="task-text">Check service status <span class="task-sub">systemctl status hc-lombardo.service</span></span></label>
@@ -2011,18 +2011,18 @@
                     <label class="task-item" id="wrap-t1_11"><input type="checkbox" id="t1_11" onchange="toggleTask('t1_11')"><span class="task-text">Confirm packages installed <span class="task-sub">pip3 list | grep -E "flask|xgboost|psycopg2|pandas|sklearn"</span></span></label>
                     <label class="task-item" id="wrap-t1_12"><input type="checkbox" id="t1_12" onchange="toggleTask('t1_12')"><span class="task-text">Check .env file exists on EC2 with correct DB password</span></label>
                     <div class="area-section-label">Security / Firewall</div>
-                    <label class="task-item" id="wrap-t1_13"><input type="checkbox" id="t1_13" onchange="toggleTask('t1_13')"><span class="task-text">Confirm port 5000 open in AWS Security Group (EC2 console)</span></label>
+                    <label class="task-item" id="wrap-t1_13"><input type="checkbox" id="t1_13" onchange="toggleTask('t1_13')"><span class="task-text">Confirm port 5000 open in AWS Security Group</span></label>
                     <label class="task-item" id="wrap-t1_14"><input type="checkbox" id="t1_14" onchange="toggleTask('t1_14')"><span class="task-text">Test Flask locally from EC2 <span class="task-sub">curl http://localhost:5000/health</span></span></label>
                 </div>
             </div>
 
-            <!-- AREA 2: DATABASE -->
+            <!-- PB-002: PostgreSQL Health Check & Schema Validation -->
             <div class="area-card">
-                <div class="area-header" onclick="toggleArea('area2')">
-                    <div class="area-title">🗄️ Area 2 — Database (PostgreSQL) <span style="color:#FFD700;font-size:0.78rem;font-weight:600;margin-left:0.5rem;">PB-002</span> <span class="area-count" id="count-area2">0/11</span></div>
-                    <span id="arrow-area2">▾</span>
+                <div class="area-header" onclick="toggleArea('pb002')">
+                    <div class="area-title">🗄️ PB-002 — PostgreSQL Health Check &amp; Schema Validation <span class="area-count" id="count-pb002">0/11</span></div>
+                    <span id="arrow-pb002">▾</span>
                 </div>
-                <div class="area-body" id="area2">
+                <div class="area-body" id="pb002">
                     <div class="area-section-label">Service Status</div>
                     <label class="task-item" id="wrap-t2_1"><input type="checkbox" id="t2_1" onchange="toggleTask('t2_1')"><span class="task-text">Check PostgreSQL running <span class="task-sub">systemctl status postgresql</span></span></label>
                     <label class="task-item" id="wrap-t2_2"><input type="checkbox" id="t2_2" onchange="toggleTask('t2_2')"><span class="task-text">List databases — confirm nfl_analytics exists <span class="task-sub">psql -U postgres -c "\l"</span></span></label>
@@ -2040,13 +2040,13 @@
                 </div>
             </div>
 
-            <!-- AREA 3: API ENDPOINTS -->
+            <!-- PB-003: Test All API Endpoints -->
             <div class="area-card">
-                <div class="area-header" onclick="toggleArea('area3')">
-                    <div class="area-title">🔌 Area 3 — API Endpoints (22 total) <span style="color:#FFD700;font-size:0.78rem;font-weight:600;margin-left:0.5rem;">PB-003</span> <span class="area-count" id="count-area3">0/22</span></div>
-                    <span id="arrow-area3">▾</span>
+                <div class="area-header" onclick="toggleArea('pb003')">
+                    <div class="area-title">🔌 PB-003 — Test All 22 API Endpoints <span class="area-count" id="count-pb003">0/22</span></div>
+                    <span id="arrow-pb003">▾</span>
                 </div>
-                <div class="area-body" id="area3">
+                <div class="area-body" id="pb003">
                     <div class="area-section-label">Health &amp; Core</div>
                     <label class="task-item" id="wrap-t3_1"><input type="checkbox" id="t3_1" onchange="toggleTask('t3_1')"><span class="task-text">GET /health</span></label>
                     <label class="task-item" id="wrap-t3_2"><input type="checkbox" id="t3_2" onchange="toggleTask('t3_2')"><span class="task-text">GET /api/hcl/teams — returns 32 teams?</span></label>
@@ -2076,17 +2076,13 @@
                 </div>
             </div>
 
-            <!-- AREA 4: FRONTEND -->
+            <!-- PB-004: Frontend Production Walkthrough -->
             <div class="area-card">
-                <div class="area-header" onclick="toggleArea('area4')">
-                    <div class="area-title">🌐 Area 4 — Frontend / AWS Amplify <span style="color:#FFD700;font-size:0.78rem;font-weight:600;margin-left:0.5rem;">PB-004 · PB-005</span> <span class="area-count" id="count-area4">0/20</span></div>
-                    <span id="arrow-area4">▾</span>
+                <div class="area-header" onclick="toggleArea('pb004')">
+                    <div class="area-title">🌐 PB-004 — Frontend Production Walkthrough <span class="area-count" id="count-pb004">0/17</span></div>
+                    <span id="arrow-pb004">▾</span>
                 </div>
-                <div class="area-body" id="area4">
-                    <div class="area-section-label">Amplify Config</div>
-                    <label class="task-item" id="wrap-t4_1"><input type="checkbox" id="t4_1" onchange="toggleTask('t4_1')"><span class="task-text">Log into AWS Amplify — confirm app deployed, build not failed</span></label>
-                    <label class="task-item" id="wrap-t4_2"><input type="checkbox" id="t4_2" onchange="toggleTask('t4_2')"><span class="task-text">Check REACT_APP_API_URL = http://34.198.25.249:5000</span></label>
-                    <label class="task-item" id="wrap-t4_3"><input type="checkbox" id="t4_3" onchange="toggleTask('t4_3')"><span class="task-text">Note production URL + last successful build date</span></label>
+                <div class="area-body" id="pb004">
                     <div class="area-section-label">Page Audit (Loads / Blank / Error / Partial)</div>
                     <label class="task-item" id="wrap-t4_4"><input type="checkbox" id="t4_4" onchange="toggleTask('t4_4')"><span class="task-text">Homepage /</span></label>
                     <label class="task-item" id="wrap-t4_5"><input type="checkbox" id="t4_5" onchange="toggleTask('t4_5')"><span class="task-text">Live Scores /live-scores (offseason = no games, no crash)</span></label>
@@ -2109,19 +2105,48 @@
                 </div>
             </div>
 
-            <!-- AREA 5: LOCAL CODE AUDIT -->
+            <!-- PB-005: Verify REACT_APP_API_URL in Amplify -->
             <div class="area-card">
-                <div class="area-header" onclick="toggleArea('area5')">
-                    <div class="area-title">📁 Area 5 — Local Code Audit <span style="color:#FFD700;font-size:0.78rem;font-weight:600;margin-left:0.5rem;">PB-007</span> <span class="area-count" id="count-area5">0/12</span></div>
-                    <span id="arrow-area5">▾</span>
+                <div class="area-header" onclick="toggleArea('pb005')">
+                    <div class="area-title">⚙️ PB-005 — Verify REACT_APP_API_URL in Amplify <span class="area-count" id="count-pb005">0/3</span></div>
+                    <span id="arrow-pb005">▾</span>
                 </div>
-                <div class="area-body" id="area5">
+                <div class="area-body" id="pb005">
+                    <div class="area-section-label">Amplify Config</div>
+                    <label class="task-item" id="wrap-t4_1"><input type="checkbox" id="t4_1" onchange="toggleTask('t4_1')"><span class="task-text">Log into AWS Amplify — confirm app deployed, build not failed</span></label>
+                    <label class="task-item" id="wrap-t4_2"><input type="checkbox" id="t4_2" onchange="toggleTask('t4_2')"><span class="task-text">Check REACT_APP_API_URL = http://34.198.25.249:5000</span></label>
+                    <label class="task-item" id="wrap-t4_3"><input type="checkbox" id="t4_3" onchange="toggleTask('t4_3')"><span class="task-text">Note production URL + last successful build date</span></label>
+                </div>
+            </div>
+
+            <!-- PB-006: CORS Configuration Fix -->
+            <div class="area-card">
+                <div class="area-header" onclick="toggleArea('pb006')">
+                    <div class="area-title">🔗 PB-006 — CORS Configuration Fix <span class="area-count" id="count-pb006">0/4</span></div>
+                    <span id="arrow-pb006">▾</span>
+                </div>
+                <div class="area-body" id="pb006">
+                    <div class="area-section-label">End-to-End Connectivity</div>
+                    <label class="task-item" id="wrap-t6_1"><input type="checkbox" id="t6_1" onchange="toggleTask('t6_1')"><span class="task-text">From local machine: <span class="task-sub">curl http://34.198.25.249:5000/health</span></span></label>
+                    <label class="task-item" id="wrap-t6_2"><input type="checkbox" id="t6_2" onchange="toggleTask('t6_2')"><span class="task-text">From production frontend: DevTools → attempt an API call → watch for CORS errors</span></label>
+                    <label class="task-item" id="wrap-t6_3"><input type="checkbox" id="t6_3" onchange="toggleTask('t6_3')"><span class="task-text">Check api_server.py CORS config — does it allow the Amplify domain?</span></label>
+                    <label class="task-item" id="wrap-t6_4"><input type="checkbox" id="t6_4" onchange="toggleTask('t6_4')"><span class="task-text">Identify all endpoints returning CORS errors vs working — log each</span></label>
+                </div>
+            </div>
+
+            <!-- PB-007: Production Issue Log -->
+            <div class="area-card">
+                <div class="area-header" onclick="toggleArea('pb007')">
+                    <div class="area-title">📁 PB-007 — Production Issue Log &amp; Local Code Audit <span class="area-count" id="count-pb007">0/12</span></div>
+                    <span id="arrow-pb007">▾</span>
+                </div>
+                <div class="area-body" id="pb007">
                     <div class="area-section-label">Git Status</div>
                     <label class="task-item" id="wrap-t5_1"><input type="checkbox" id="t5_1" onchange="toggleTask('t5_1')"><span class="task-text">git status — list all modified files</span></label>
                     <label class="task-item" id="wrap-t5_2"><input type="checkbox" id="t5_2" onchange="toggleTask('t5_2')"><span class="task-text">git diff frontend/src/App.js — check known routing bugs</span></label>
                     <div class="area-section-label">Known Bug Confirmations</div>
                     <label class="task-item" id="wrap-t5_3"><input type="checkbox" id="t5_3" onchange="toggleTask('t5_3')"><span class="task-text">BUG-001/002: Confirm App.js routing — /game-statistics and /matchup-analyzer wrong components</span></label>
-                    <label class="task-item" id="wrap-t5_4"><input type="checkbox" id="t5_4" onchange="toggleTask('t5_4')"><span class="task-text">BUG-003/004/005: Confirm hardcoded password 'aprilv120' in api_server.py, api_routes_hcl.py, api_routes_live_scores.py</span></label>
+                    <label class="task-item" id="wrap-t5_4"><input type="checkbox" id="t5_4" onchange="toggleTask('t5_4')"><span class="task-text">BUG-003/004/005: Confirm hardcoded password in api_server.py, api_routes_hcl.py, api_routes_live_scores.py</span></label>
                     <label class="task-item" id="wrap-t5_5"><input type="checkbox" id="t5_5" onchange="toggleTask('t5_5')"><span class="task-text">BUG-006: Confirm DEBUG print statements in api_routes_live_scores.py</span></label>
                     <label class="task-item" id="wrap-t5_6"><input type="checkbox" id="t5_6" onchange="toggleTask('t5_6')"><span class="task-text">BUG-007: Confirm background_updater.py missing import</span></label>
                     <label class="task-item" id="wrap-t5_7"><input type="checkbox" id="t5_7" onchange="toggleTask('t5_7')"><span class="task-text">BUG-008: Confirm train_xgb_winner.py uses hcl_test schema (line 255)</span></label>
@@ -2134,17 +2159,27 @@
                 </div>
             </div>
 
-            <!-- AREA 6: CORS & CONNECTIVITY -->
+            <!-- PB-008: Live App URL Added to Dashboard (BLOCKED) -->
             <div class="area-card">
-                <div class="area-header" onclick="toggleArea('area6')">
-                    <div class="area-title">🔗 Area 6 — CORS &amp; End-to-End Connectivity <span style="color:#FFD700;font-size:0.78rem;font-weight:600;margin-left:0.5rem;">PB-006</span> <span class="area-count" id="count-area6">0/4</span></div>
-                    <span id="arrow-area6">▾</span>
+                <div class="area-header" onclick="toggleArea('pb008')">
+                    <div class="area-title">🔗 PB-008 — Live App URL Added to Dashboard <span style="color:#ff6b6b;font-size:0.72rem;font-weight:600;margin-left:0.5rem;">BLOCKED</span> <span class="area-count" id="count-pb008">0/1</span></div>
+                    <span id="arrow-pb008">▾</span>
                 </div>
-                <div class="area-body" id="area6">
-                    <label class="task-item" id="wrap-t6_1"><input type="checkbox" id="t6_1" onchange="toggleTask('t6_1')"><span class="task-text">From local machine: <span class="task-sub">curl http://34.198.25.249:5000/health</span></span></label>
-                    <label class="task-item" id="wrap-t6_2"><input type="checkbox" id="t6_2" onchange="toggleTask('t6_2')"><span class="task-text">From production frontend: DevTools → attempt an API call → watch for CORS errors</span></label>
-                    <label class="task-item" id="wrap-t6_3"><input type="checkbox" id="t6_3" onchange="toggleTask('t6_3')"><span class="task-text">Check api_server.py CORS config — does it allow the Amplify domain?</span></label>
-                    <label class="task-item" id="wrap-t6_4"><input type="checkbox" id="t6_4" onchange="toggleTask('t6_4')"><span class="task-text">Identify all endpoints returning CORS errors vs working — log each</span></label>
+                <div class="area-body" id="pb008">
+                    <div class="area-section-label">Blocked — Waiting on AWS Console Access</div>
+                    <label class="task-item" id="wrap-t8_1"><input type="checkbox" id="t8_1" onchange="toggleTask('t8_1')"><span class="task-text">Add live Amplify URL to Dashboard overview section <span class="task-sub">Blocked: AWS console locked (root MFA lost) — call 1-800-879-2747</span></span></label>
+                </div>
+            </div>
+
+            <!-- PB-009: CLAUDE.md Updated -->
+            <div class="area-card">
+                <div class="area-header" onclick="toggleArea('pb009')">
+                    <div class="area-title">📝 PB-009 — CLAUDE.md Updated to Reflect Current State <span class="area-count" id="count-pb009">0/1</span></div>
+                    <span id="arrow-pb009">▾</span>
+                </div>
+                <div class="area-body" id="pb009">
+                    <div class="area-section-label">Documentation</div>
+                    <label class="task-item" id="wrap-t9_1"><input type="checkbox" id="t9_1" onchange="toggleTask('t9_1')"><span class="task-text">Update CLAUDE.md with current routes, deployment state, and architecture</span></label>
                 </div>
             </div>
 
@@ -3198,8 +3233,8 @@ const TASK_AREAS = {
     t6_1:'area6',t6_2:'area6',t6_3:'area6',t6_4:'area6'
 };
 
-const AREA_TOTALS = { area1: 14, area2: 11, area3: 22, area4: 20, area5: 12, area6: 4 };
-const TOTAL_TASKS = 83;
+const AREA_TOTALS = { pb001: 14, pb002: 11, pb003: 22, pb004: 17, pb005: 3, pb006: 4, pb007: 12, pb008: 1, pb009: 1 };
+const TOTAL_TASKS = 85;
 
 // ── TASK STATUS — Claude updates these each week ──
 // Move task IDs to COMPLETED_TASKS when done, BLOCKED_TASKS when blocked.
@@ -3217,7 +3252,7 @@ const COMPLETED_TASKS = [
     // Area 6 — CORS
 ];
 const BLOCKED_TASKS = [
-    // e.g. 't1_1' — add task IDs here if blocked
+    't8_1', // PB-008: blocked — AWS console locked, can't retrieve Amplify URL
 ];
 
 function toggleTask() {} // no-op — tasks are static, updated by Claude
