@@ -1955,7 +1955,7 @@
                         <span id="sprint-dropdown-label">Sprint 12 — Diagnose &amp; Restore (Active)</span>
                         <span id="sprint-dropdown-arrow" style="font-size:0.7rem; transition:transform 0.15s;">▼</span>
                     </button>
-                    <div id="sprint-dropdown-list" style="display:none; position:absolute; top:calc(100% + 4px); left:0; right:0; border:1px solid rgba(255,255,255,0.15); border-radius:0.5rem; overflow:hidden; z-index:999; box-shadow:0 8px 24px rgba(0,0,0,0.6);">
+                    <div id="sprint-dropdown-list" style="display:none; position:absolute; top:calc(100% + 4px); left:0; right:0; background:#111c2b; border:1px solid rgba(255,255,255,0.15); border-radius:0.5rem; overflow:hidden; z-index:999; box-shadow:0 8px 24px rgba(0,0,0,0.6);">
                         <div class="sd-opt" data-val="12" onclick="selectSprint(12,'Sprint 12 — Diagnose &amp; Restore (Active)')" style="padding:0.55rem 1rem; cursor:pointer; color:#FFD700; font-size:0.88rem; font-weight:600; background:#1a2e45;">Sprint 12 — Diagnose &amp; Restore (Active)</div>
                         <div class="sd-opt" data-val="13" onclick="selectSprint(13,'Sprint 13 — Data &amp; Clean')" style="padding:0.55rem 1rem; cursor:pointer; color:#f1f5f9; font-size:0.88rem; background:#111c2b;">Sprint 13 — Data &amp; Clean</div>
                         <div class="sd-opt" data-val="14" onclick="selectSprint(14,'Sprint 14 — ML Retrain')" style="padding:0.55rem 1rem; cursor:pointer; color:#f1f5f9; font-size:0.88rem; background:#111c2b;">Sprint 14 — ML Retrain</div>
@@ -2381,7 +2381,6 @@
                 <th style="text-align:left; padding:0.6rem 0.75rem; color:#FFD700; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.08em; white-space:nowrap;">Category</th>
                 <th style="text-align:center; padding:0.6rem 0.75rem; color:#FFD700; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.08em; white-space:nowrap;">Priority</th>
                 <th style="text-align:center; padding:0.6rem 0.75rem; color:#FFD700; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.08em; white-space:nowrap;">Effort</th>
-                <th style="text-align:center; padding:0.6rem 0.75rem; color:#FFD700; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.08em; white-space:nowrap;">Sprint</th>
                 <th style="text-align:center; padding:0.6rem 0.75rem; color:#FFD700; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.08em; white-space:nowrap;">Status</th>
             </tr>
         </thead>
@@ -3872,25 +3871,23 @@ initBacklog();
 
     var tbody = document.getElementById('pb-tbody');
     if (!tbody) return;
-    var lastSprint = '';
-    tbody.innerHTML = items.map(function(item, i) {
+    // S12 items first, then everything else — no sprint labels except S12
+    var s12Items = items.filter(function(i){ return i.sprint === 'S12'; });
+    var backlogItems = items.filter(function(i){ return i.sprint !== 'S12'; });
+    var s12Header = '<tr><td colspan="6" style="padding:0.5rem 0.75rem 0.25rem; font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:#FFD700; border-bottom:1px solid var(--border);">Sprint 12 — Active</td></tr>';
+    var backlogHeader = '<tr><td colspan="6" style="padding:0.5rem 0.75rem 0.25rem; font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:var(--muted); border-bottom:1px solid var(--border);">Backlog</td></tr>';
+    function renderRow(item, i) {
         var bg = i % 2 === 0 ? '' : 'background:rgba(255,255,255,0.02);';
-        var groupRow = '';
-        if (item.sprint !== lastSprint) {
-            lastSprint = item.sprint;
-            var label = item.sprint === 'TBD' ? 'Unscheduled' : item.sprint + ' — ' + ({'S12':'Diagnose & Restore','S13':'Data & Clean','S14':'ML Retrain','S15':'UI & UX Polish','S16':'Hardening & Release','TBD':''}[item.sprint] || '');
-            groupRow = '<tr><td colspan="7" style="padding:0.5rem 0.75rem 0.25rem; font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:#FFD700; border-bottom:1px solid var(--border);">' + label + '</td></tr>';
-        }
-        return groupRow + '<tr style="border-bottom:1px solid var(--border-subtle);' + bg + '">' +
+        return '<tr style="border-bottom:1px solid var(--border-subtle);' + bg + '">' +
             '<td style="padding:0.65rem 0.75rem; color:var(--muted); white-space:nowrap; font-size:0.78rem;">' + item.id + '</td>' +
             '<td style="padding:0.65rem 0.75rem; color:#f1f5f9; font-weight:600;">' + item.feature + '</td>' +
             '<td style="padding:0.65rem 0.75rem; color:var(--muted); white-space:nowrap;">' + item.cat + '</td>' +
             '<td style="padding:0.65rem 0.75rem; text-align:center;"><span style="' + (PS[item.pri]||PS.Low) + 'border-radius:9999px;padding:0.15rem 0.55rem;font-size:0.7rem;font-weight:700;">' + item.pri + '</span></td>' +
             '<td style="padding:0.65rem 0.75rem; text-align:center; color:var(--muted);">' + item.effort + '</td>' +
-            '<td style="padding:0.65rem 0.75rem; text-align:center; color:var(--muted);">' + item.sprint + '</td>' +
             '<td style="padding:0.65rem 0.75rem; text-align:center;"><span style="' + (SS[item.status]||SS.Backlog) + 'border-radius:9999px;padding:0.15rem 0.55rem;font-size:0.7rem;font-weight:700;">' + item.status + '</span></td>' +
         '</tr>';
-    }).join('');
+    }
+    tbody.innerHTML = s12Header + s12Items.map(renderRow).join('') + backlogHeader + backlogItems.map(renderRow).join('');
 })();
 
 function showBacklogView(view, btn) {
