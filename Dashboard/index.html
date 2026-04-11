@@ -518,6 +518,7 @@
             font-weight: 600;
         }
         .theme-toggle:hover { background: rgba(255,215,0,0.15); border-color: #FFD700; }
+        .sd-opt:hover { background: #2d3f54 !important; }
 
         /* ══════════════════════════════════════════
            LIGHT MODE
@@ -1638,7 +1639,7 @@
             <div class="header-divider"></div>
             <select class="theme-toggle" id="theme-btn" onchange="applyThemeClass(this.value); setTimeout(rebuildCharts, 30);" style="cursor:pointer; appearance:auto;">
                 <option value="nfl">🏈 NFL Mode</option>
-                <option value="dark">🌙 Dark Mode</option>
+                <option value="dark" selected>🌙 Dark Mode</option>
                 <option value="light">☀️ Light Mode</option>
             </select>
         </div>
@@ -1946,16 +1947,22 @@
                     <span class="sprint-status status-upcoming">Upcoming</span>
                 </div>
             </div>
-            <!-- Sprint selector -->
+            <!-- Sprint selector (custom dropdown — Edge-safe) -->
             <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem;">
                 <span style="font-size:0.85rem; color:var(--muted); white-space:nowrap; font-weight:600;">View Sprint Board:</span>
-                <select id="sprint-selector" onchange="showSprintBoard(this.value)" style="background:rgba(255,255,255,0.08); color:#f1f5f9; border:1px solid var(--border); border-radius:0.5rem; padding:0.45rem 1rem; font-size:0.88rem; cursor:pointer; outline:none; min-width:280px;">
-                    <option value="12" selected>Sprint 12 — Diagnose &amp; Restore (Active)</option>
-                    <option value="13">Sprint 13 — Data &amp; Clean</option>
-                    <option value="14">Sprint 14 — ML Retrain</option>
-                    <option value="15">Sprint 15 — UI &amp; UX Polish</option>
-                    <option value="16">Sprint 16 — Hardening &amp; Release</option>
-                </select>
+                <div id="sprint-dropdown" style="position:relative; min-width:300px;">
+                    <button id="sprint-dropdown-btn" onclick="toggleSprintDropdown()" style="width:100%; display:flex; align-items:center; justify-content:space-between; gap:0.5rem; background:#1e2a3a; color:#f1f5f9; border:1px solid rgba(255,255,255,0.15); border-radius:0.5rem; padding:0.45rem 1rem; font-size:0.88rem; cursor:pointer; outline:none; text-align:left;">
+                        <span id="sprint-dropdown-label">Sprint 12 — Diagnose &amp; Restore (Active)</span>
+                        <span id="sprint-dropdown-arrow" style="font-size:0.7rem; transition:transform 0.15s;">▼</span>
+                    </button>
+                    <div id="sprint-dropdown-list" style="display:none; position:absolute; top:calc(100% + 4px); left:0; right:0; background:#1e2a3a; border:1px solid rgba(255,255,255,0.15); border-radius:0.5rem; overflow:hidden; z-index:999; box-shadow:0 8px 24px rgba(0,0,0,0.5);">
+                        <div class="sd-opt" data-val="12" onclick="selectSprint(12,'Sprint 12 — Diagnose &amp; Restore (Active)')" style="padding:0.55rem 1rem; cursor:pointer; color:#FFD700; font-size:0.88rem; font-weight:600; background:#243447;">Sprint 12 — Diagnose &amp; Restore (Active)</div>
+                        <div class="sd-opt" data-val="13" onclick="selectSprint(13,'Sprint 13 — Data &amp; Clean')" style="padding:0.55rem 1rem; cursor:pointer; color:#f1f5f9; font-size:0.88rem;">Sprint 13 — Data &amp; Clean</div>
+                        <div class="sd-opt" data-val="14" onclick="selectSprint(14,'Sprint 14 — ML Retrain')" style="padding:0.55rem 1rem; cursor:pointer; color:#f1f5f9; font-size:0.88rem;">Sprint 14 — ML Retrain</div>
+                        <div class="sd-opt" data-val="15" onclick="selectSprint(15,'Sprint 15 — UI &amp; UX Polish')" style="padding:0.55rem 1rem; cursor:pointer; color:#f1f5f9; font-size:0.88rem;">Sprint 15 — UI &amp; UX Polish</div>
+                        <div class="sd-opt" data-val="16" onclick="selectSprint(16,'Sprint 16 — Hardening &amp; Release')" style="padding:0.55rem 1rem; cursor:pointer; color:#f1f5f9; font-size:0.88rem;">Sprint 16 — Hardening &amp; Release</div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -2737,6 +2744,37 @@ function showSprintBoard(sprintNum) {
     }
 }
 
+function toggleSprintDropdown() {
+    var list = document.getElementById('sprint-dropdown-list');
+    var arrow = document.getElementById('sprint-dropdown-arrow');
+    var open = list.style.display !== 'none';
+    list.style.display = open ? 'none' : '';
+    arrow.style.transform = open ? '' : 'rotate(180deg)';
+}
+
+function selectSprint(num, label) {
+    document.getElementById('sprint-dropdown-label').textContent = label;
+    // Highlight active option
+    document.querySelectorAll('.sd-opt').forEach(function(o) {
+        o.style.background = '';
+        o.style.color = '#f1f5f9';
+        o.style.fontWeight = '';
+    });
+    var active = document.querySelector('.sd-opt[data-val="' + num + '"]');
+    if (active) { active.style.background = '#243447'; active.style.color = '#FFD700'; active.style.fontWeight = '600'; }
+    toggleSprintDropdown();
+    showSprintBoard(String(num));
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(e) {
+    var dd = document.getElementById('sprint-dropdown');
+    if (dd && !dd.contains(e.target)) {
+        document.getElementById('sprint-dropdown-list').style.display = 'none';
+        document.getElementById('sprint-dropdown-arrow').style.transform = '';
+    }
+});
+
 /* ── SYNC DASHBOARD METRICS FROM SPRINT 12 TASKS ── */
 function syncDashMetrics() {
     const allCbs = document.querySelectorAll('#sprint12-board input[type="checkbox"]');
@@ -3381,7 +3419,8 @@ function applyThemeClass(theme) {
     const sel = document.getElementById('theme-btn');
     if (sel) sel.value = theme;
 }
-// Default theme on load: NFL mode (no class needed)
+// Default theme on load: Dark mode
+applyThemeClass('dark');
 
 
 /* ════════════════════════════════════════════════════════
@@ -3779,9 +3818,9 @@ initBacklog();
         // ── SPRINT 12 — Diagnose & Restore ──
         { id:'PB-001', feature:'SSH access & EC2 service verification',        cat:'Infrastructure', pri:'Critical', effort:'S', sprint:'S12', status:'In Sprint' },
         { id:'PB-002', feature:'PostgreSQL health check & schema validation',   cat:'Infrastructure', pri:'Critical', effort:'S', sprint:'S12', status:'In Sprint' },
-        { id:'PB-003', feature:'Test all 26 API endpoints',                     cat:'Backend',        pri:'Critical', effort:'M', sprint:'S12', status:'In Sprint' },
+        { id:'PB-003', feature:'Test all 22 API endpoints',                     cat:'Backend',        pri:'Critical', effort:'M', sprint:'S12', status:'In Sprint' },
         { id:'PB-004', feature:'Frontend production walkthrough',                cat:'Frontend',       pri:'Critical', effort:'M', sprint:'S12', status:'In Sprint' },
-        { id:'PB-005', feature:'Verify REACT_APP_API_URL in Amplify',           cat:'Infrastructure', pri:'Critical', effort:'S', sprint:'S12', status:'In Sprint' },
+        { id:'PB-005', feature:'Verify REACT_APP_API_URL in Amplify',           cat:'Infrastructure', pri:'Critical', effort:'S', sprint:'S12', status:'Done'      },
         { id:'PB-006', feature:'CORS configuration fix',                         cat:'Backend',        pri:'Critical', effort:'S', sprint:'S12', status:'In Sprint' },
         { id:'PB-007', feature:'Production Issue Log created',                   cat:'Documentation',  pri:'High',     effort:'S', sprint:'S12', status:'In Sprint' },
         { id:'PB-008', feature:'Live app URL added to dashboard',                cat:'Dashboard',      pri:'High',     effort:'S', sprint:'S12', status:'Blocked'   },
