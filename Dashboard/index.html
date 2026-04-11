@@ -1991,7 +1991,7 @@
             <!-- AREA 1: EC2 / BACKEND -->
             <div class="area-card">
                 <div class="area-header" onclick="toggleArea('area1')">
-                    <div class="area-title">🖥️ Area 1 — EC2 / Backend Server <span class="area-count" id="count-area1">0/14</span></div>
+                    <div class="area-title">🖥️ Area 1 — EC2 / Backend Server <span style="color:#FFD700;font-size:0.78rem;font-weight:600;margin-left:0.5rem;">PB-001</span> <span class="area-count" id="count-area1">0/14</span></div>
                     <span id="arrow-area1">▾</span>
                 </div>
                 <div class="area-body" id="area1">
@@ -2019,7 +2019,7 @@
             <!-- AREA 2: DATABASE -->
             <div class="area-card">
                 <div class="area-header" onclick="toggleArea('area2')">
-                    <div class="area-title">🗄️ Area 2 — Database (PostgreSQL) <span class="area-count" id="count-area2">0/11</span></div>
+                    <div class="area-title">🗄️ Area 2 — Database (PostgreSQL) <span style="color:#FFD700;font-size:0.78rem;font-weight:600;margin-left:0.5rem;">PB-002</span> <span class="area-count" id="count-area2">0/11</span></div>
                     <span id="arrow-area2">▾</span>
                 </div>
                 <div class="area-body" id="area2">
@@ -2043,7 +2043,7 @@
             <!-- AREA 3: API ENDPOINTS -->
             <div class="area-card">
                 <div class="area-header" onclick="toggleArea('area3')">
-                    <div class="area-title">🔌 Area 3 — API Endpoints (22 total) <span class="area-count" id="count-area3">0/22</span></div>
+                    <div class="area-title">🔌 Area 3 — API Endpoints (22 total) <span style="color:#FFD700;font-size:0.78rem;font-weight:600;margin-left:0.5rem;">PB-003</span> <span class="area-count" id="count-area3">0/22</span></div>
                     <span id="arrow-area3">▾</span>
                 </div>
                 <div class="area-body" id="area3">
@@ -2079,7 +2079,7 @@
             <!-- AREA 4: FRONTEND -->
             <div class="area-card">
                 <div class="area-header" onclick="toggleArea('area4')">
-                    <div class="area-title">🌐 Area 4 — Frontend / AWS Amplify <span class="area-count" id="count-area4">0/20</span></div>
+                    <div class="area-title">🌐 Area 4 — Frontend / AWS Amplify <span style="color:#FFD700;font-size:0.78rem;font-weight:600;margin-left:0.5rem;">PB-004 · PB-005</span> <span class="area-count" id="count-area4">0/20</span></div>
                     <span id="arrow-area4">▾</span>
                 </div>
                 <div class="area-body" id="area4">
@@ -2112,7 +2112,7 @@
             <!-- AREA 5: LOCAL CODE AUDIT -->
             <div class="area-card">
                 <div class="area-header" onclick="toggleArea('area5')">
-                    <div class="area-title">📁 Area 5 — Local Code Audit <span class="area-count" id="count-area5">0/12</span></div>
+                    <div class="area-title">📁 Area 5 — Local Code Audit <span style="color:#FFD700;font-size:0.78rem;font-weight:600;margin-left:0.5rem;">PB-007</span> <span class="area-count" id="count-area5">0/12</span></div>
                     <span id="arrow-area5">▾</span>
                 </div>
                 <div class="area-body" id="area5">
@@ -2137,7 +2137,7 @@
             <!-- AREA 6: CORS & CONNECTIVITY -->
             <div class="area-card">
                 <div class="area-header" onclick="toggleArea('area6')">
-                    <div class="area-title">🔗 Area 6 — CORS &amp; End-to-End Connectivity <span class="area-count" id="count-area6">0/4</span></div>
+                    <div class="area-title">🔗 Area 6 — CORS &amp; End-to-End Connectivity <span style="color:#FFD700;font-size:0.78rem;font-weight:600;margin-left:0.5rem;">PB-006</span> <span class="area-count" id="count-area6">0/4</span></div>
                     <span id="arrow-area6">▾</span>
                 </div>
                 <div class="area-body" id="area6">
@@ -3798,6 +3798,10 @@ initBacklog();
         { id:'PB-044', feature:'Email alerts for model prediction results',        cat:'Backend',        pri:'Low',      effort:'M', sprint:'TBD', status:'TBD'       },
         { id:'PB-045', feature:'Dark/light theme persistence across sessions',     cat:'Frontend',       pri:'Low',      effort:'S', sprint:'TBD', status:'TBD'       },
         { id:'PB-046', feature:'Weekly report server-side archive (save & retrieve past reports)', cat:'Dashboard', pri:'Low', effort:'M', sprint:'TBD', status:'TBD' },
+
+        // ── SPRINT 13 (newly added) ──
+        { id:'PB-047', feature:'Sync Sprint board tasks with Product Backlog — add ticket refs to sprint tasks, align statuses', cat:'Dashboard', pri:'High', effort:'M', sprint:'S13', status:'Backlog' },
+        { id:'PB-048', feature:'Move PM dashboard to custom domain + automate update process (reduce manual edits)', cat:'Dashboard', pri:'Medium', effort:'L', sprint:'S13', status:'Backlog' },
     ];
 
     var tbody = document.getElementById('pb-tbody');
