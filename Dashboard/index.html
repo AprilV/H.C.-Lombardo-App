@@ -1841,7 +1841,7 @@
                 </div>
                 <ul>
                     <li>Port 5432 · Schema: hcl</li>
-                    <li>7,263 games · 14,398 team-game records</li>
+                    <li>7,269 games · 14,398 team-game records</li>
                     <li>64 stats/game including EPA</li>
                     <li>Tables: games, team_game_stats, ml_predictions, betting_lines</li>
                 </ul>
@@ -1877,7 +1877,7 @@
                 </div>
                 <ul>
                     <li>nfl_data_py Python package</li>
-                    <li>7,263 games play-by-play (1999–2025)</li>
+                    <li>7,269 games play-by-play (1999–2025)</li>
                     <li>EPA per play · 64 advanced stats/game</li>
                     <li>Loaded offline → PostgreSQL hcl schema</li>
                     <li>Basis for all ML model training</li>
@@ -2014,7 +2014,7 @@
                     <label class="task-item" id="wrap-t2_2"><input type="checkbox" id="t2_2" onchange="toggleTask('t2_2')"><span class="task-text">List databases — confirm nfl_analytics exists <span class="task-sub">psql -U postgres -c "\l"</span></span></label>
                     <label class="task-item" id="wrap-t2_3"><input type="checkbox" id="t2_3" onchange="toggleTask('t2_3')"><span class="task-text">Confirm hcl schema exists <span class="task-sub">psql -U postgres -d nfl_analytics -c "\dn"</span></span></label>
                     <div class="area-section-label">Table Integrity</div>
-                    <label class="task-item" id="wrap-t2_4"><input type="checkbox" id="t2_4" onchange="toggleTask('t2_4')"><span class="task-text">Count games — expect ~7,263 <span class="task-sub">SELECT COUNT(*) FROM hcl.games;</span></span></label>
+                    <label class="task-item" id="wrap-t2_4"><input type="checkbox" id="t2_4" onchange="toggleTask('t2_4')"><span class="task-text">Count games — expect ~7,269 <span class="task-sub">SELECT COUNT(*) FROM hcl.games;</span></span></label>
                     <label class="task-item" id="wrap-t2_5"><input type="checkbox" id="t2_5" onchange="toggleTask('t2_5')"><span class="task-text">Count team_game_stats — expect ~14,398 <span class="task-sub">SELECT COUNT(*) FROM hcl.team_game_stats;</span></span></label>
                     <label class="task-item" id="wrap-t2_6"><input type="checkbox" id="t2_6" onchange="toggleTask('t2_6')"><span class="task-text">Count ml_predictions and betting_lines</span></label>
                     <label class="task-item" id="wrap-t2_7"><input type="checkbox" id="t2_7" onchange="toggleTask('t2_7')"><span class="task-text">Count teams — expect 32 <span class="task-sub">SELECT COUNT(*) FROM public.teams;</span></span></label>
@@ -2354,13 +2354,13 @@
 
     <!-- Backlog Stats -->
     <div class="backlog-stats">
-        <div class="bstat"><div class="bn" id="bstat-total">13</div><div class="bl">Total Issues</div></div>
-        <div class="bstat"><div class="bn" id="bstat-p1" style="color:#ff6b6b;">3</div><div class="bl">P1 Blockers</div></div>
-        <div class="bstat"><div class="bn" id="bstat-p2" style="color:#FFA500;">7</div><div class="bl">P2 Major</div></div>
-        <div class="bstat"><div class="bn" id="bstat-p3" style="color:#FFD700;">2</div><div class="bl">P3 Minor</div></div>
+        <div class="bstat"><div class="bn" id="bstat-total">21</div><div class="bl">Total Issues</div></div>
+        <div class="bstat"><div class="bn" id="bstat-p1" style="color:#ff6b6b;">4</div><div class="bl">P1 Blockers</div></div>
+        <div class="bstat"><div class="bn" id="bstat-p2" style="color:#FFA500;">10</div><div class="bl">P2 Major</div></div>
+        <div class="bstat"><div class="bn" id="bstat-p3" style="color:#FFD700;">5</div><div class="bl">P3 Minor</div></div>
         <div class="bstat"><div class="bn" id="bstat-p4" style="color:var(--muted);">1</div><div class="bl">P4 Polish</div></div>
         <div class="bstat"><div class="bn" id="bstat-open" style="color:#ff6b6b;">13</div><div class="bl">Open</div></div>
-        <div class="bstat"><div class="bn" id="bstat-fixed" style="color:#10b981;">0</div><div class="bl">Fixed</div></div>
+        <div class="bstat"><div class="bn" id="bstat-fixed" style="color:#10b981;">8</div><div class="bl">Fixed</div></div>
     </div>
 
     <!-- Filter Controls -->
@@ -2402,6 +2402,14 @@
                 <tr data-sev="P2" data-status="OPEN"><td>BUG-011</td><td>predict_ensemble.py TODO (incomplete) at line 338</td><td>ml/predict_ensemble.py:338</td><td><span class="sev-p2">P2</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">S14</span></td></tr>
                 <tr data-sev="P2" data-status="OPEN"><td>BUG-012</td><td>Default season hardcoded as 2025 throughout backend</td><td>various</td><td><span class="sev-p2">P2</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">S13</span></td></tr>
                 <tr data-sev="P4" data-status="FIXED"><td>BUG-013</td><td>MLPredictionsRedesign.backup.js dead file in src/</td><td>frontend/src/</td><td><span class="sev-p4">P4</span></td><td><span class="st-fixed">FIXED</span></td><td><span class="sprint-tag">S12</span></td></tr>
+                <tr data-sev="P1" data-status="OPEN"><td>BUG-014</td><td>EC2 disk 88% full — 871MB free, server will crash if full</td><td>EC2 / df -h</td><td><span class="sev-p1">P1</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">S12</span></td></tr>
+                <tr data-sev="P2" data-status="OPEN"><td>BUG-015</td><td>Spread coverage logic inverted — covered/not-covered backwards</td><td>api_routes_live_scores.py:250-257</td><td><span class="sev-p2">P2</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">S13</span></td></tr>
+                <tr data-sev="P2" data-status="OPEN"><td>BUG-016</td><td>Dead code in predict_week.py — feature differentials never computed, always 0</td><td>ml/predict_week.py:171-181</td><td><span class="sev-p2">P2</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">S14</span></td></tr>
+                <tr data-sev="P2" data-status="OPEN"><td>BUG-017</td><td>SQL injection via f-string interpolation in ML routes</td><td>api_routes_ml.py:380-403</td><td><span class="sev-p2">P2</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">S13</span></td></tr>
+                <tr data-sev="P3" data-status="OPEN"><td>BUG-018</td><td>DB connection leaks on error — no context managers</td><td>api_routes_live_scores.py:71-103</td><td><span class="sev-p3">P3</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">S13</span></td></tr>
+                <tr data-sev="P3" data-status="OPEN"><td>BUG-019</td><td>Race conditions in Analytics.js — no AbortController on fetch</td><td>frontend/src/Analytics.js:141-185</td><td><span class="sev-p3">P3</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">S13</span></td></tr>
+                <tr data-sev="P3" data-status="OPEN"><td>BUG-020</td><td>API URL hardcoded in every React component — needs single config.js</td><td>frontend/src/*.js</td><td><span class="sev-p3">P3</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">S13</span></td></tr>
+                <tr data-sev="P1" data-status="OPEN"><td>TASK-001</td><td>Call AWS support to reset root MFA — locked out of console (1-800-879-2747)</td><td>AWS Account ops</td><td><span class="sev-p1">P1</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">S12</span></td></tr>
             </tbody>
         </table>
     </div>
@@ -2476,7 +2484,7 @@
         <div class="section-title" style="margin-bottom:1rem;">Term Objectives</div>
         <div class="objectives-list">
             <div class="objective-item"><span class="check">✓</span><div class="objective-text">Full-stack NFL analytics app deployed to AWS (React + Flask + PostgreSQL)</div></div>
-            <div class="objective-item"><span class="check">✓</span><div class="objective-text">7,263 historical games with 64 stats per game including EPA metrics</div></div>
+            <div class="objective-item"><span class="check">✓</span><div class="objective-text">7,269 historical games with 64 stats per game including EPA metrics</div></div>
             <div class="objective-item"><span class="check">✓</span><div class="objective-text">XGBoost ML models trained on rolling features (no data leakage)</div></div>
             <div class="objective-item"><span class="check">✓</span><div class="objective-text">Elo rating system with live prediction capability</div></div>
             <div class="objective-item"><span class="pending">○</span><div class="objective-text">Production environment restored and fully verified (Sprint 12)</div></div>
@@ -2912,7 +2920,7 @@ function createArchitecture() {
         tier: 'Tier 3: Data Layer',
         port: '5432 · localhost on EC2',
         technology: 'PostgreSQL 18 · Schema: hcl',
-        features: ['7,263 games (1999–2025)', '14,398 team-game records', '64 stats per game including EPA', 'Tables: games, team_game_stats, ml_predictions, betting_lines', 'Views: v_team_betting_performance, v_weather_impact'],
+        features: ['7,269 games (1999–2025)', '14,398 team-game records', '64 stats per game including EPA', 'Tables: games, team_game_stats, ml_predictions, betting_lines', 'Views: v_team_betting_performance, v_weather_impact'],
         communication: 'Responds to SQL queries from Flask API',
         schema: 'hcl.games, hcl.team_game_stats, hcl.ml_predictions, hcl.betting_lines, public.teams'
     };
