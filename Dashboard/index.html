@@ -1639,8 +1639,8 @@
             <div class="header-divider"></div>
             <select class="theme-toggle" id="theme-btn" onchange="applyThemeClass(this.value); setTimeout(rebuildCharts, 30);" style="cursor:pointer; appearance:auto;">
                 <option value="nfl">🏈 NFL Mode</option>
-                <option value="dark" selected>🌙 Dark Mode</option>
-                <option value="light">☀️ Light Mode</option>
+                <option value="dark" selected>💼 Executive Dark</option>
+                <option value="light">☀️ Classic Light</option>
             </select>
         </div>
     </div>
@@ -3876,6 +3876,8 @@ initBacklog();
         // ── SPRINT 13 (newly added) ──
         { id:'PB-047', feature:'Sync Sprint board tasks with Product Backlog — add ticket refs to sprint tasks, align statuses', cat:'Dashboard', pri:'High', effort:'M', sprint:'S13', status:'Backlog' },
         { id:'PB-048', feature:'Move PM dashboard to custom domain + automate update process (reduce manual edits)', cat:'Dashboard', pri:'Medium', effort:'L', sprint:'S13', status:'Backlog' },
+        { id:'PB-049', feature:'Cross-browser compatibility audit — dashboard and app tested in Edge, Chrome, Firefox, Safari', cat:'Frontend', pri:'High', effort:'M', sprint:'S15', status:'Backlog' },
+        { id:'PB-050', feature:'Rework Classic Light theme — full redesign for readability and visual consistency', cat:'Dashboard', pri:'Medium', effort:'M', sprint:'S15', status:'Backlog' },
     ];
 
     var tbody = document.getElementById('pb-tbody');
