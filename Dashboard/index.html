@@ -3623,9 +3623,11 @@ initBacklog();
     var container = document.getElementById('gantt-chart');
     if (!container) return;
 
+    // Parse date strings as LOCAL time (not UTC) to avoid off-by-one day bug
+    function ld(str) { var p = str.split('-'); return new Date(+p[0], +p[1]-1, +p[2]); }
+
     // Term: Apr 6 – Jun 13 = 68 days total
-    var TERM_START = new Date('2026-04-06');
-    var TERM_END   = new Date('2026-06-13');
+    var TERM_START = ld('2026-04-06');
     var TERM_DAYS  = 68;
 
     var sprints = [
@@ -3649,7 +3651,7 @@ initBacklog();
     // Week labels (10 weeks)
     var headerHTML = '<div class="gantt-header">';
     for (var w = 0; w < 10; w++) {
-        var wDate = new Date(TERM_START); wDate.setDate(wDate.getDate() + w * 7);
+        var wDate = ld('2026-04-06'); wDate.setDate(wDate.getDate() + w * 7);
         var mo = wDate.toLocaleString('default', { month: 'short' });
         headerHTML += '<div class="gantt-week-label">W' + (w+1) + '<br><span style="font-size:0.6rem;">' + mo + ' ' + wDate.getDate() + '</span></div>';
     }
@@ -3658,8 +3660,8 @@ initBacklog();
     // Rows
     var rowsHTML = '';
     sprints.forEach(function(s) {
-        var sStart = new Date(s.start); sStart.setHours(0,0,0,0);
-        var sEnd   = new Date(s.end);   sEnd.setHours(0,0,0,0);
+        var sStart = ld(s.start);
+        var sEnd   = ld(s.end);
         var leftPct  = ((sStart - TERM_START) / 86400000) / TERM_DAYS * 100;
         var widthPct = ((sEnd   - sStart)     / 86400000 + 1) / TERM_DAYS * 100;
 
