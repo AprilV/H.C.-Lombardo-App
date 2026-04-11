@@ -3693,11 +3693,14 @@ initBacklog();
 
         var pctLabel = s.status === 'active' ? s12pct + '%' : (s.status === 'done' ? '100%' : '');
 
+        var endDateLabel = s.end.slice(5).replace('-', '/');  // e.g. "04/18"
         rowsHTML +=
             '<div class="gantt-row">' +
                 '<div class="gantt-label">' + s.label + '<span>' + s.sub + '</span></div>' +
                 '<div class="gantt-track">' +
-                    '<div class="gantt-bar ' + s.status + '" style="left:' + leftPct + '%;width:' + widthPct + '%;"></div>' +
+                    '<div class="gantt-bar ' + s.status + '" style="left:' + leftPct.toFixed(2) + '%;width:' + widthPct.toFixed(2) + '%;">' +
+                        '<span style="position:absolute;right:4px;top:50%;transform:translateY(-50%);font-size:0.6rem;color:rgba(255,255,255,0.85);white-space:nowrap;">' + endDateLabel + '</span>' +
+                    '</div>' +
                     fillBar +
                     (pctLabel ? '<div class="gantt-pct">' + pctLabel + '</div>' : '') +
                 '</div>' +
