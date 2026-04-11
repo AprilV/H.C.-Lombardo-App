@@ -13,7 +13,7 @@ export const useTheme = () => {
 export const ThemeProvider = ({ children }) => {
   const [theme, setTheme] = useState(() => {
     // Get saved theme from localStorage or default to 'executive-dark'
-    return localStorage.getItem('hc-lombardo-theme') || 'executive-dark';
+    return localStorage.getItem('hc-lombardo-theme') || 'nfl';
   });
 
   useEffect(() => {

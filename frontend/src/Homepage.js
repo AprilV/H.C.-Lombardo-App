@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Homepage.css';
-import './Homepage-light.css';
 import LiveGamesTicker from './LiveGamesTicker';
 
 const API_URL = process.env.REACT_APP_API_URL || 'https://api.aprilsykes.dev';
@@ -150,11 +149,11 @@ function Homepage() {
         </div>
       </div>
 
-      {/* Executive Header with Proper Hierarchy */}
-      <div className="homepage-header-executive">
-        <h1 className="main-title">NFL Season Standings</h1>
-        <h2 className="season-year">2025</h2>
-        <p className="instructions">Click any team to view detailed statistics and analysis</p>
+      {/* Standings Section Header */}
+      <div className="homepage-header">
+        <h1>NFL Season Standings</h1>
+        <h2>2025</h2>
+        <p className="season-subtitle">Click any team to view detailed statistics and analysis</p>
       </div>
 
       {Object.entries(NFL_STRUCTURE).map(([conference, divisions]) => (

@@ -50,11 +50,6 @@ function SideMenu() {
             <span className="menu-text">Dashboard</span>
           </Link>
 
-          <Link to="/live-scores" className={`menu-item ${isActive('/live-scores')}`} onClick={closeMenu}>
-            <span className="menu-icon">📡</span>
-            <span className="menu-text">Live Scores</span>
-          </Link>
-
           <div className="menu-divider"></div>
 
           <Link to="/team-stats" className={`menu-item ${isActive('/team-stats')}`} onClick={closeMenu}>

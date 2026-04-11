@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider } from './contexts/ThemeContext';
 import SideMenu from './SideMenu';
 import Homepage from './Homepage';
-import LiveScores from './LiveScores';
 import TeamStats from './TeamStats';
 import TeamComparison from './TeamComparison';
 import TeamDetail from './TeamDetail';
@@ -59,7 +58,6 @@ function App() {
 
           <Routes>
             <Route path="/" element={<Homepage />} />
-            <Route path="/live-scores" element={<LiveScores />} />
             <Route path="/team-stats" element={<TeamStats />} />
             <Route path="/team-comparison" element={<TeamComparison />} />
             <Route path="/team/:teamAbbr" element={<TeamDetail />} />
@@ -83,7 +81,7 @@ function App() {
             <a href="https://www.aprilsykes.com" target="_blank" rel="noopener noreferrer">
               April V. Sykes
             </a>
-            <span> • Built with assistance from GitHub Copilot</span>
+            <span> • Built with Claude Code (Sonnet 4.6)</span>
           </div>
           <p className="footer-note">This is for educational purposes only</p>
         </footer>

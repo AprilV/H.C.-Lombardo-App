@@ -13,7 +13,6 @@ import {
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import './TeamDetail.css';
-import './TeamDetail-light.css';
 
 ChartJS.register(
   CategoryScale,

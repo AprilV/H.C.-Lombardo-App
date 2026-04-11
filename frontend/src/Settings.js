@@ -7,22 +7,22 @@ function Settings() {
 
   const themes = [
     {
+      id: 'nfl',
+      name: 'NFL Theme',
+      description: 'Classic NFL blue/red gradient — the default look',
+      icon: '🏈'
+    },
+    {
       id: 'executive-dark',
-      name: 'Executive Dark Mode',
-      description: 'Professional cyan/blue analytics theme with dark background',
+      name: 'Executive Dark',
+      description: 'Dark background with high-contrast analytics styling',
       icon: '💼'
     },
     {
       id: 'classic-light',
-      name: 'Classic Light Mode',
-      description: 'Clean light background with subtle accents',
+      name: 'Classic Light',
+      description: 'Clean white background with dark text',
       icon: '☀️'
-    },
-    {
-      id: 'nfl-mode',
-      name: 'NFL Mode',
-      description: 'Vibrant NFL colors with red/blue gradient background',
-      icon: '🏈'
     }
   ];
 

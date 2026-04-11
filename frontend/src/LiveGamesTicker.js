@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './LiveGamesTicker.css';
-import './LiveGamesTicker-light.css';
 
 const API_URL = process.env.REACT_APP_API_URL || 'https://api.aprilsykes.dev';
 
@@ -20,10 +19,12 @@ function LiveGamesTicker() {
   const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isPaused, setIsPaused] = useState(false);
-  const scrollContainerRef = React.useRef(null);
+  const scrollContainerRef = useRef(null);
+  const isPausedRef = useRef(false);
+  const scrollIntervalRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
-  const [startX, setStartX] = useState(0);
-  const [scrollLeft, setScrollLeft] = useState(0);
+  const [dragStartX, setDragStartX] = useState(0);
+  const [dragScrollLeft, setDragScrollLeft] = useState(0);
 
   useEffect(() => {
     fetchGames();
@@ -31,13 +32,45 @@ function LiveGamesTicker() {
     return () => clearInterval(interval);
   }, []);
 
+  // Keep ref in sync with state so the scroll interval reads the latest value
+  useEffect(() => {
+    isPausedRef.current = isPaused;
+  }, [isPaused]);
+
+  // Start JS-based auto-scroll only when there are enough games to fill the ticker
+  useEffect(() => {
+    if (games.length < 4) return;
+    startAutoScroll();
+    return () => stopAutoScroll();
+  }, [games]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const startAutoScroll = () => {
+    stopAutoScroll();
+    scrollIntervalRef.current = setInterval(() => {
+      if (isPausedRef.current || !scrollContainerRef.current) return;
+      const container = scrollContainerRef.current;
+      container.scrollLeft += 1;
+      // Seamless loop: when we've scrolled through the first set, reset to 0
+      if (container.scrollLeft >= container.scrollWidth / 2) {
+        container.scrollLeft = 0;
+      }
+    }, 16); // ~60fps
+  };
+
+  const stopAutoScroll = () => {
+    if (scrollIntervalRef.current) {
+      clearInterval(scrollIntervalRef.current);
+      scrollIntervalRef.current = null;
+    }
+  };
+
   const handleMouseDown = (e) => {
     e.preventDefault();
     setIsDragging(true);
     setIsPaused(true);
     const container = scrollContainerRef.current;
-    setStartX(e.pageX);
-    setScrollLeft(container.scrollLeft);
+    setDragStartX(e.pageX);
+    setDragScrollLeft(container.scrollLeft);
   };
 
   const handleMouseUp = () => {
@@ -49,26 +82,24 @@ function LiveGamesTicker() {
     if (!isDragging) return;
     e.preventDefault();
     const container = scrollContainerRef.current;
-    const x = e.pageX;
-    const walk = startX - x; // Drag distance
-    container.scrollLeft = scrollLeft + walk;
+    const walk = dragStartX - e.pageX;
+    container.scrollLeft = dragScrollLeft + walk;
   };
 
   const handleTouchStart = (e) => {
     setIsDragging(true);
     setIsPaused(true);
     const container = scrollContainerRef.current;
-    setStartX(e.touches[0].pageX);
-    setScrollLeft(container.scrollLeft);
+    setDragStartX(e.touches[0].pageX);
+    setDragScrollLeft(container.scrollLeft);
   };
 
   const handleTouchMove = (e) => {
     if (!isDragging) return;
     e.preventDefault();
     const container = scrollContainerRef.current;
-    const x = e.touches[0].pageX;
-    const walk = startX - x;
-    container.scrollLeft = scrollLeft + walk;
+    const walk = dragStartX - e.touches[0].pageX;
+    container.scrollLeft = dragScrollLeft + walk;
   };
 
   const handleTouchEnd = () => {
@@ -78,7 +109,8 @@ function LiveGamesTicker() {
 
   const scrollLeftBtn = () => {
     if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollBy({ left: -300, behavior: 'smooth' });
+      const container = scrollContainerRef.current;
+      container.scrollLeft = Math.max(0, container.scrollLeft - 300);
       setIsPaused(true);
       setTimeout(() => setIsPaused(false), 3000);
     }
@@ -86,7 +118,9 @@ function LiveGamesTicker() {
 
   const scrollRightBtn = () => {
     if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollBy({ left: 300, behavior: 'smooth' });
+      const container = scrollContainerRef.current;
+      const halfWidth = container.scrollWidth / 2;
+      container.scrollLeft = Math.min(halfWidth - 1, container.scrollLeft + 300);
       setIsPaused(true);
       setTimeout(() => setIsPaused(false), 3000);
     }
@@ -159,6 +193,16 @@ function LiveGamesTicker() {
 
   if (loading || games.length === 0) return null;
 
+  // Ticker scroll only makes sense with enough games to fill the viewport.
+  // Each card is ~355px wide (340px + 15px gap). Viewport ~1400px = ~4 unique games needed.
+  const cardWidth = 355;
+  const useScroller = games.length >= 4;
+
+  // For the infinite scroll build enough copies to fill 2× the container width.
+  const minCardsPerSet = Math.max(5, Math.ceil(1600 / (cardWidth * games.length)));
+  const setA = Array.from({ length: minCardsPerSet }, () => games).flat();
+  const displayGames = useScroller ? [...setA, ...setA] : games;
+
   return (
     <div className="live-games-ticker">
       <div className="ticker-header-bar">
@@ -178,22 +222,21 @@ function LiveGamesTicker() {
           </button>
         </div>
       </div>
-      <div 
-        className="ticker-scroll" 
+      <div
+        className="ticker-scroll"
         ref={scrollContainerRef}
-        onMouseDown={handleMouseDown}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
-        onMouseMove={handleMouseMove}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-        style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
+        onMouseDown={useScroller ? handleMouseDown : undefined}
+        onMouseUp={useScroller ? handleMouseUp : undefined}
+        onMouseLeave={useScroller ? handleMouseUp : undefined}
+        onMouseMove={useScroller ? handleMouseMove : undefined}
+        onTouchStart={useScroller ? handleTouchStart : undefined}
+        onTouchMove={useScroller ? handleTouchMove : undefined}
+        onTouchEnd={useScroller ? handleTouchEnd : undefined}
+        style={{ cursor: useScroller ? (isDragging ? 'grabbing' : 'grab') : 'default' }}
       >
-        <div className={`ticker-content ${isPaused ? 'paused' : ''}`}>
-          {/* Duplicate for seamless loop */}
-          {[...games, ...games].map((game, index) => (
-            <div key={`${game.game_id}-${index}`} className={`game-ticker-card ${game.status}`}>
+        <div className={`ticker-content ${!useScroller ? 'ticker-static' : ''}`}>
+          {displayGames.map((game, index) => (
+            <div key={index} className={`game-ticker-card ${game.status}`}>
               {/* Status indicator */}
               {game.status === 'in_progress' && (
                 <div className="status-live">LIVE</div>

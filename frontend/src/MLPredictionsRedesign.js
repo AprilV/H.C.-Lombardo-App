@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import './MLPredictionsRedesign.css';
-import './MLPredictionsRedesign-light.css';
 
 const API_URL = process.env.REACT_APP_API_URL || 'https://api.aprilsykes.dev';
 

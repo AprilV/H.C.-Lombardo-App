@@ -14,7 +14,7 @@
 
 .back-btn {
   display: inline-block;
-  background: #F59E0B;
+  background: #667eea;
   color: white;
   padding: 10px 20px;
   border-radius: 5px;
@@ -28,7 +28,7 @@
 }
 
 .back-btn:hover {
-  background: #D97706;
+  background: #5568d3;
 }
 
 .team-header {
@@ -83,7 +83,7 @@
 }
 
 .stat-box {
-  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%) !important;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
   padding: 15px;
   border-radius: 8px;
   text-align: center;
@@ -138,7 +138,7 @@ table {
 }
 
 th {
-  background: #F59E0B;
+  background: #667eea;
   color: white;
   padding: 12px;
   text-align: left;
@@ -191,7 +191,7 @@ tr:hover {
 .loading {
   text-align: center;
   padding: 40px;
-  color: #F59E0B;
+  color: #667eea;
   font-size: 18px;
   font-weight: 500;
 }
