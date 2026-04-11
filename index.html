@@ -3742,23 +3742,23 @@ initBacklog();
 
     var items = [
         // ── SPRINT 12 — Diagnose & Restore ──
-        { id:'PB-001', feature:'SSH access & EC2 service verification',        cat:'Infrastructure', pri:'Critical', effort:'S', sprint:'S12', status:'In Sprint' },
-        { id:'PB-002', feature:'PostgreSQL health check & schema validation',   cat:'Infrastructure', pri:'Critical', effort:'S', sprint:'S12', status:'In Sprint' },
-        { id:'PB-003', feature:'Test all 26 API endpoints',                     cat:'Backend',        pri:'Critical', effort:'M', sprint:'S12', status:'In Sprint' },
-        { id:'PB-004', feature:'Frontend production walkthrough',                cat:'Frontend',       pri:'Critical', effort:'M', sprint:'S12', status:'In Sprint' },
-        { id:'PB-005', feature:'Verify REACT_APP_API_URL in Amplify',           cat:'Infrastructure', pri:'Critical', effort:'S', sprint:'S12', status:'In Sprint' },
-        { id:'PB-006', feature:'CORS configuration fix',                         cat:'Backend',        pri:'Critical', effort:'S', sprint:'S12', status:'In Sprint' },
-        { id:'PB-007', feature:'Production Issue Log created',                   cat:'Documentation',  pri:'High',     effort:'S', sprint:'S12', status:'In Sprint' },
-        { id:'PB-008', feature:'Live app URL added to dashboard',                cat:'Dashboard',      pri:'High',     effort:'S', sprint:'S12', status:'Blocked'   },
-        { id:'PB-009', feature:'CLAUDE.md updated to reflect current state',     cat:'Documentation',  pri:'Medium',   effort:'S', sprint:'S12', status:'In Sprint' },
+        { id:'PB-001', feature:'SSH access & EC2 service verification',        cat:'Infrastructure', pri:'Critical', effort:'S', sprint:'S12', status:'Done' },
+        { id:'PB-002', feature:'PostgreSQL health check & schema validation',   cat:'Infrastructure', pri:'Critical', effort:'S', sprint:'S12', status:'Done' },
+        { id:'PB-003', feature:'Test all 26 API endpoints',                     cat:'Backend',        pri:'Critical', effort:'M', sprint:'S12', status:'Done' },
+        { id:'PB-004', feature:'Frontend production walkthrough',                cat:'Frontend',       pri:'Critical', effort:'M', sprint:'S12', status:'Done' },
+        { id:'PB-005', feature:'Verify REACT_APP_API_URL in Amplify',           cat:'Infrastructure', pri:'Critical', effort:'S', sprint:'S12', status:'Done' },
+        { id:'PB-006', feature:'CORS configuration fix',                         cat:'Backend',        pri:'Critical', effort:'S', sprint:'S12', status:'Done' },
+        { id:'PB-007', feature:'Production Issue Log created',                   cat:'Documentation',  pri:'High',     effort:'S', sprint:'TBD', status:'Backlog' },
+        { id:'PB-008', feature:'Live app URL added to dashboard',                cat:'Dashboard',      pri:'High',     effort:'S', sprint:'S12', status:'Done' },
+        { id:'PB-009', feature:'CLAUDE.md updated to reflect current state',     cat:'Documentation',  pri:'Medium',   effort:'S', sprint:'S12', status:'Done' },
 
         // ── SPRINT 13 — Data & Clean ──
-        { id:'PB-010', feature:'Remove hardcoded credentials (BUG-003/004/005)', cat:'Security',       pri:'Critical', effort:'S', sprint:'TBD', status:'Backlog'   },
-        { id:'PB-011', feature:'Move all passwords to .env files',               cat:'Security',       pri:'Critical', effort:'S', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-010', feature:'Remove hardcoded credentials (BUG-003/004/005)', cat:'Security',       pri:'Critical', effort:'S', sprint:'S12', status:'Done'     },
+        { id:'PB-011', feature:'Move all passwords to .env files',               cat:'Security',       pri:'Critical', effort:'S', sprint:'S12', status:'Done'     },
         { id:'PB-012', feature:'Load 2025 NFL season data into PostgreSQL',      cat:'Data',           pri:'Critical', effort:'L', sprint:'TBD', status:'Backlog'   },
         { id:'PB-013', feature:'Validate data integrity — row counts & spot checks', cat:'Data',       pri:'High',     effort:'M', sprint:'TBD', status:'Backlog'   },
-        { id:'PB-014', feature:'Fix broken frontend routes (BUG-001/002)',        cat:'Frontend',       pri:'High',     effort:'S', sprint:'TBD', status:'Backlog'   },
-        { id:'PB-015', feature:'Fix background_updater.py missing import',        cat:'Backend',        pri:'High',     effort:'S', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-014', feature:'Fix broken frontend routes (BUG-001/002)',        cat:'Frontend',       pri:'High',     effort:'S', sprint:'S12', status:'Done'     },
+        { id:'PB-015', feature:'Fix background_updater.py missing import',        cat:'Backend',        pri:'High',     effort:'S', sprint:'S12', status:'Done'     },
         { id:'PB-016', feature:'Confirm background updater running in production', cat:'Infrastructure', pri:'High',     effort:'S', sprint:'TBD', status:'Backlog'   },
         { id:'PB-017', feature:'Audit git history for exposed secrets',           cat:'Security',       pri:'High',     effort:'M', sprint:'TBD', status:'Backlog'   },
 
@@ -3791,14 +3791,14 @@ initBacklog();
         { id:'PB-039', feature:'Tag v1.0 release on GitHub',                       cat:'Infrastructure', pri:'High',     effort:'S', sprint:'TBD', status:'Backlog'   },
 
         // ── UNSCHEDULED / TBD ──
-        { id:'PB-040', feature:'Move PM Dashboard to Amplify with admin panel',    cat:'Dashboard',      pri:'High',     effort:'L', sprint:'TBD', status:'TBD'       },
-        { id:'PB-041', feature:'User authentication (public vs admin view)',        cat:'Security',       pri:'High',     effort:'L', sprint:'TBD', status:'TBD'       },
-        { id:'PB-042', feature:'2026 NFL season live data integration',            cat:'Data',           pri:'Medium',   effort:'L', sprint:'TBD', status:'TBD'       },
-        { id:'PB-043', feature:'Historical data export (CSV download)',            cat:'Frontend',       pri:'Low',      effort:'S', sprint:'TBD', status:'TBD'       },
-        { id:'PB-044', feature:'Email alerts for model prediction results',        cat:'Backend',        pri:'Low',      effort:'M', sprint:'TBD', status:'TBD'       },
-        { id:'PB-045', feature:'Dark/light theme persistence across sessions',     cat:'Frontend',       pri:'Low',      effort:'S', sprint:'TBD', status:'TBD'       },
-        { id:'PB-046', feature:'Weekly report server-side archive (save & retrieve past reports)', cat:'Dashboard', pri:'Low', effort:'M', sprint:'TBD', status:'TBD' },
-        { id:'PB-047', feature:'Fix custom domain nfl.aprilsykes.dev — SSL cert failed (DNS CNAME verification missing)', cat:'Infrastructure', pri:'High', effort:'S', sprint:'TBD', status:'TBD' },
+        { id:'PB-040', feature:'Move PM Dashboard to Amplify with admin panel',    cat:'Dashboard',      pri:'High',     effort:'L', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-041', feature:'User authentication (public vs admin view)',        cat:'Security',       pri:'High',     effort:'L', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-042', feature:'2026 NFL season live data integration',            cat:'Data',           pri:'Medium',   effort:'L', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-043', feature:'Historical data export (CSV download)',            cat:'Frontend',       pri:'Low',      effort:'S', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-044', feature:'Email alerts for model prediction results',        cat:'Backend',        pri:'Low',      effort:'M', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-045', feature:'Dark/light theme persistence across sessions',     cat:'Frontend',       pri:'Low',      effort:'S', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-046', feature:'Weekly report server-side archive (save & retrieve past reports)', cat:'Dashboard', pri:'Low', effort:'M', sprint:'TBD', status:'Backlog' },
+        { id:'PB-047', feature:'Fix custom domain nfl.aprilsykes.dev — SSL cert failed (DNS CNAME verification missing)', cat:'Infrastructure', pri:'High', effort:'S', sprint:'TBD', status:'Backlog' },
     ];
 
     var tbody = document.getElementById('pb-tbody');
