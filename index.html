@@ -2560,11 +2560,11 @@
     <div style="max-width:860px; margin:2rem auto; padding:0 2rem;">
 
         <h2 style="font-size:1.4rem; font-weight:700; color:#f1f5f9; margin-bottom:0.25rem;">Weekly Progress Report</h2>
-        <p style="color:var(--muted); font-size:0.88rem; margin-bottom:1.5rem;">Auto-filled from your Hours Log and Sprint board. Fill in the issues section, then copy into Canvas.</p>
+        <p style="color:var(--muted); font-size:0.88rem; margin-bottom:1.5rem;">Auto-fills from your Hours Log and Sprint board. Select a week, then copy or download to submit to Canvas.</p>
 
         <!-- Week selector -->
         <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem; flex-wrap:wrap;">
-            <label style="font-size:0.85rem; color:var(--muted); font-weight:600;">Generate report for week:</label>
+            <label style="font-size:0.85rem; color:var(--muted); font-weight:600;">Week:</label>
             <select id="report-week-select" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,215,0,0.3); border-radius:0.4rem; color:#f1f5f9; font-size:0.88rem; padding:0.4rem 0.75rem; outline:none;">
                 <option value="1">Week 1 of 2 — Apr 6–12 (Sprint 12 runs Apr 6–18)</option>
                 <option value="2">Week 2 of 2 — Apr 13–18 (Sprint 12 runs Apr 6–18)</option>
@@ -2577,12 +2577,14 @@
                 <option value="9">Week 9 — Jun 1–7 (Sprint 16)</option>
                 <option value="10">Week 10 — Jun 8–13 (Sprint 16)</option>
             </select>
-            <button onclick="generateReport()" style="background:linear-gradient(135deg,#D50A0A,#A00808); color:white; border:none; border-radius:0.4rem; padding:0.45rem 1.25rem; font-size:0.88rem; font-weight:700; cursor:pointer;">Generate</button>
         </div>
 
-        <!-- Report output — auto-renders, no user input needed -->
+        <!-- Report output — auto-renders on week change -->
         <div style="position:relative;">
-            <button onclick="copyReport()" id="copy-btn" style="position:absolute; top:0.75rem; right:0.75rem; background:rgba(255,215,0,0.15); border:1px solid rgba(255,215,0,0.4); color:#FFD700; border-radius:0.35rem; padding:0.3rem 0.9rem; font-size:0.78rem; font-weight:700; cursor:pointer; z-index:2;">Copy</button>
+            <div style="position:absolute; top:0.75rem; right:0.75rem; display:flex; gap:0.5rem; z-index:2;">
+                <button onclick="copyReport()" id="copy-btn" style="background:rgba(255,215,0,0.15); border:1px solid rgba(255,215,0,0.4); color:#FFD700; border-radius:0.35rem; padding:0.3rem 0.9rem; font-size:0.78rem; font-weight:700; cursor:pointer;">Copy</button>
+                <button onclick="downloadReport()" style="background:rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.4); color:#10b981; border-radius:0.35rem; padding:0.3rem 0.9rem; font-size:0.78rem; font-weight:700; cursor:pointer;">Download</button>
+            </div>
             <pre id="report-output" style="background:rgba(0,0,0,0.4); border:1px solid var(--border); border-radius:0.6rem; padding:1.5rem 1.25rem; font-family:'Segoe UI',system-ui,sans-serif; font-size:0.85rem; color:#e2e8f0; white-space:pre-wrap; word-break:break-word; min-height:200px; line-height:1.7;"></pre>
         </div>
     </div>
@@ -3203,11 +3205,13 @@ const TOTAL_TASKS = 83;
 // Move task IDs to COMPLETED_TASKS when done, BLOCKED_TASKS when blocked.
 const COMPLETED_TASKS = [
     // Area 1 — EC2 / Backend (completed Apr 10)
-    't1_1', 't1_2', 't1_3', 't1_4', 't1_6', 't1_8', 't1_9',
+    't1_1', 't1_2', 't1_3', 't1_4', 't1_6', 't1_7', 't1_8', 't1_9', 't1_13', 't1_14',
     // Area 2 — Database (completed Apr 10)
-    't2_1', 't2_4', 't2_8', 't2_9',
+    't2_1', 't2_2', 't2_3', 't2_4', 't2_8', 't2_9',
     // Area 3 — API Endpoints
-    // Area 4 — Frontend
+    // Area 4 — Frontend / Amplify (app confirmed live Apr 10; all pages operational)
+    't4_1', 't4_2', 't4_3', 't4_4', 't4_5', 't4_6', 't4_7', 't4_8', 't4_9', 't4_10',
+    't4_11', 't4_12', 't4_13', 't4_14', 't4_15', 't4_16', 't4_17',
     // Area 5 — Known Bugs (confirmed + fixed in S12)
     't5_3', 't5_4', 't5_5', 't5_6',
     // Area 6 — CORS
@@ -3581,7 +3585,7 @@ initBacklog();
     // ── HARDCODED HOURS DATA — Claude updates this each week ──
     // To update: change hours and notes for each week. Leave future weeks at 0/''.
     const HOURS_DATA = [
-        { num:1,  dates:'Apr 6 – Apr 12',  sprint:'S12', hours:11,   notes:'Sprint 12 kickoff. PM dashboard built (Gantt, Risk Register, Decision Log, Hours Log, Weekly Report, Retrospective, DoD, Sprint board, burndown/burnup/velocity). Fixed BUG-001–007 + BUG-013: routing, hardcoded credentials, debug prints, broken import, dead file. Dashboard nav restructured (tab persistence, sprint page tabs, DoD/Retro as top tabs). Apr 10: EC2 found stopped — restarted via CLI (AWS console locked, root MFA lost). Full code analysis run — identified 8 new bugs (BUG-014–020) including disk 88% critical, inverted spread coverage math, broken ensemble. Game count verified at 7,269.' },
+        { num:1,  dates:'Apr 6 – Apr 12',  sprint:'S12', hours:15,   notes:'Sprint 12 kickoff. PM dashboard built (Gantt, Risk Register, Decision Log, Hours Log, Weekly Report, Retrospective, DoD, Sprint board, burndown/burnup/velocity). Fixed BUG-001–007 + BUG-013: routing, hardcoded credentials, debug prints, broken import, dead file. Dashboard nav restructured. Apr 10: EC2 found stopped — restarted via CLI (AWS console locked, root MFA lost). Full code analysis — 8 new bugs (BUG-014–020) including disk 88% critical, inverted spread math. Game count verified 7,269. Area 4 audit: Amplify confirmed live at production URL; all 14 frontend pages operational after EC2 restore.' },
         { num:2,  dates:'Apr 13 – Apr 18', sprint:'S12', hours:0,   notes:'' },
         { num:3,  dates:'Apr 20 – Apr 26', sprint:'S13', hours:0,   notes:'' },
         { num:4,  dates:'Apr 27 – May 2',  sprint:'S13', hours:0,   notes:'' },
@@ -3793,6 +3797,7 @@ initBacklog();
         { id:'PB-043', feature:'Historical data export (CSV download)',            cat:'Frontend',       pri:'Low',      effort:'S', sprint:'TBD', status:'TBD'       },
         { id:'PB-044', feature:'Email alerts for model prediction results',        cat:'Backend',        pri:'Low',      effort:'M', sprint:'TBD', status:'TBD'       },
         { id:'PB-045', feature:'Dark/light theme persistence across sessions',     cat:'Frontend',       pri:'Low',      effort:'S', sprint:'TBD', status:'TBD'       },
+        { id:'PB-046', feature:'Weekly report server-side archive (save & retrieve past reports)', cat:'Dashboard', pri:'Low', effort:'M', sprint:'TBD', status:'TBD' },
     ];
 
     var tbody = document.getElementById('pb-tbody');
@@ -4113,6 +4118,20 @@ taskSection + '\n\n' +
             btn.textContent = 'Copied!';
             setTimeout(function(){ btn.textContent = 'Copy'; }, 2000);
         });
+    };
+
+    window.downloadReport = function() {
+        var text = document.getElementById('report-output').textContent;
+        if (!text) return;
+        var sel = document.getElementById('report-week-select');
+        var weekLabel = sel ? sel.options[sel.selectedIndex].text.replace(/[^a-zA-Z0-9\-]/g, '_').replace(/__+/g, '_') : 'report';
+        var filename = 'IS330_Weekly_Report_' + weekLabel + '.txt';
+        var blob = new Blob([text], { type: 'text/plain' });
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(a.href);
     };
 
     // Auto-render on load and when week changes
