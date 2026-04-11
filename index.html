@@ -1666,6 +1666,12 @@
 <div id="tab-overview" class="tab-panel active">
 <div class="dash-wrap">
 
+    <!-- Live clock + last updated bar -->
+    <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:0.5rem; padding:0.4rem 1rem; margin-bottom:1rem; font-size:0.75rem; color:var(--muted); flex-wrap:wrap; gap:0.5rem;">
+        <span>🕐 <span id="live-clock" style="font-family:monospace; color:#f1f5f9;"></span></span>
+        <span>Dashboard last updated: <strong style="color:#f1f5f9;">Apr 10, 2026 — Production confirmed live</strong></span>
+    </div>
+
     <!-- Project identity row -->
     <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:1rem; margin-bottom:1.25rem;">
         <div>
@@ -1684,7 +1690,7 @@
         <div class="rag-dot amber"></div>
         <div>
             <div class="rag-label amber">AT RISK — AMBER</div>
-            <div class="rag-message">Sprint 12 active · EC2 restored via CLI · Disk 88% critical (871MB free) · Code analysis complete · 8 new bugs logged</div>
+            <div class="rag-message">Sprint 12 active · App confirmed live · EC2 restored · Disk 88% critical · 8 new bugs logged from code analysis</div>
         </div>
         <div class="rag-detail">Updated: Apr 10, 2026 &nbsp;·&nbsp; Next review: Apr 18</div>
     </div>
@@ -2707,6 +2713,21 @@ function syncDashMetrics() {
     if (pctEl) pctEl.textContent = pct + '%';
     if (countEl) countEl.textContent = done + ' of ' + total + ' tasks';
 }
+
+// Live clock
+(function() {
+    function tick() {
+        var el = document.getElementById('live-clock');
+        if (!el) return;
+        var now = new Date();
+        var h = now.getHours(), m = now.getMinutes(), s = now.getSeconds();
+        var ampm = h >= 12 ? 'PM' : 'AM';
+        h = h % 12 || 12;
+        el.textContent = (h < 10 ? '0'+h : h) + ':' + (m < 10 ? '0'+m : m) + ':' + (s < 10 ? '0'+s : s) + ' ' + ampm;
+    }
+    tick();
+    setInterval(tick, 1000);
+})();
 
 // Update days remaining dynamically
 (function() {
