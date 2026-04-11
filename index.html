@@ -2410,19 +2410,19 @@
                 <tr data-sev="P1" data-status="FIXED"><td>BUG-005</td><td>Hardcoded password 'aprilv120' fallback</td><td>api_routes_live_scores.py ~29</td><td><span class="sev-p1">P1</span></td><td><span class="st-fixed">FIXED</span></td><td><span class="sprint-tag">S12</span></td></tr>
                 <tr data-sev="P3" data-status="FIXED"><td>BUG-006</td><td>7+ DEBUG print statements in production</td><td>api_routes_live_scores.py</td><td><span class="sev-p3">P3</span></td><td><span class="st-fixed">FIXED</span></td><td><span class="sprint-tag">S12</span></td></tr>
                 <tr data-sev="P2" data-status="FIXED"><td>BUG-007</td><td>background_updater.py missing import (MultiSourceDataFetcher)</td><td>background_updater.py</td><td><span class="sev-p2">P2</span></td><td><span class="st-fixed">FIXED</span></td><td><span class="sprint-tag">S12</span></td></tr>
-                <tr data-sev="P2" data-status="OPEN"><td>BUG-008</td><td>train_xgb_winner.py uses hcl_test schema (wrong)</td><td>ml/train_xgb_winner.py:255</td><td><span class="sev-p2">P2</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">S14</span></td></tr>
-                <tr data-sev="P2" data-status="OPEN"><td>BUG-009</td><td>Broken SQL WINDOW clause in spread training</td><td>ml/train_xgb_spread.py:95-116</td><td><span class="sev-p2">P2</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">S14</span></td></tr>
-                <tr data-sev="P3" data-status="OPEN"><td>BUG-010</td><td>EPA features loaded in SQL but not used in model</td><td>ml/train_xgb_spread.py:174-181</td><td><span class="sev-p3">P3</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">S14</span></td></tr>
-                <tr data-sev="P2" data-status="OPEN"><td>BUG-011</td><td>predict_ensemble.py TODO (incomplete) at line 338</td><td>ml/predict_ensemble.py:338</td><td><span class="sev-p2">P2</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">S14</span></td></tr>
-                <tr data-sev="P2" data-status="OPEN"><td>BUG-012</td><td>Default season hardcoded as 2025 throughout backend</td><td>various</td><td><span class="sev-p2">P2</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">S13</span></td></tr>
+                <tr data-sev="P2" data-status="OPEN"><td>BUG-008</td><td>train_xgb_winner.py uses hcl_test schema (wrong)</td><td>ml/train_xgb_winner.py:255</td><td><span class="sev-p2">P2</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">TBD</span></td></tr>
+                <tr data-sev="P2" data-status="OPEN"><td>BUG-009</td><td>Broken SQL WINDOW clause in spread training</td><td>ml/train_xgb_spread.py:95-116</td><td><span class="sev-p2">P2</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">TBD</span></td></tr>
+                <tr data-sev="P3" data-status="OPEN"><td>BUG-010</td><td>EPA features loaded in SQL but not used in model</td><td>ml/train_xgb_spread.py:174-181</td><td><span class="sev-p3">P3</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">TBD</span></td></tr>
+                <tr data-sev="P2" data-status="OPEN"><td>BUG-011</td><td>predict_ensemble.py TODO (incomplete) at line 338</td><td>ml/predict_ensemble.py:338</td><td><span class="sev-p2">P2</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">TBD</span></td></tr>
+                <tr data-sev="P2" data-status="OPEN"><td>BUG-012</td><td>Default season hardcoded as 2025 throughout backend</td><td>various</td><td><span class="sev-p2">P2</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">TBD</span></td></tr>
                 <tr data-sev="P4" data-status="FIXED"><td>BUG-013</td><td>MLPredictionsRedesign.backup.js dead file in src/</td><td>frontend/src/</td><td><span class="sev-p4">P4</span></td><td><span class="st-fixed">FIXED</span></td><td><span class="sprint-tag">S12</span></td></tr>
                 <tr data-sev="P1" data-status="OPEN"><td>BUG-014</td><td>EC2 disk 88% full — 871MB free, server will crash if full</td><td>EC2 / df -h</td><td><span class="sev-p1">P1</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">S12</span></td></tr>
-                <tr data-sev="P2" data-status="OPEN"><td>BUG-015</td><td>Spread coverage logic inverted — covered/not-covered backwards</td><td>api_routes_live_scores.py:250-257</td><td><span class="sev-p2">P2</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">S13</span></td></tr>
-                <tr data-sev="P2" data-status="OPEN"><td>BUG-016</td><td>Dead code in predict_week.py — feature differentials never computed, always 0</td><td>ml/predict_week.py:171-181</td><td><span class="sev-p2">P2</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">S14</span></td></tr>
-                <tr data-sev="P2" data-status="OPEN"><td>BUG-017</td><td>SQL injection via f-string interpolation in ML routes</td><td>api_routes_ml.py:380-403</td><td><span class="sev-p2">P2</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">S13</span></td></tr>
-                <tr data-sev="P3" data-status="OPEN"><td>BUG-018</td><td>DB connection leaks on error — no context managers</td><td>api_routes_live_scores.py:71-103</td><td><span class="sev-p3">P3</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">S13</span></td></tr>
-                <tr data-sev="P3" data-status="OPEN"><td>BUG-019</td><td>Race conditions in Analytics.js — no AbortController on fetch</td><td>frontend/src/Analytics.js:141-185</td><td><span class="sev-p3">P3</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">S13</span></td></tr>
-                <tr data-sev="P3" data-status="OPEN"><td>BUG-020</td><td>API URL hardcoded in every React component — needs single config.js</td><td>frontend/src/*.js</td><td><span class="sev-p3">P3</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">S13</span></td></tr>
+                <tr data-sev="P2" data-status="OPEN"><td>BUG-015</td><td>Spread coverage logic inverted — covered/not-covered backwards</td><td>api_routes_live_scores.py:250-257</td><td><span class="sev-p2">P2</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">TBD</span></td></tr>
+                <tr data-sev="P2" data-status="OPEN"><td>BUG-016</td><td>Dead code in predict_week.py — feature differentials never computed, always 0</td><td>ml/predict_week.py:171-181</td><td><span class="sev-p2">P2</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">TBD</span></td></tr>
+                <tr data-sev="P2" data-status="OPEN"><td>BUG-017</td><td>SQL injection via f-string interpolation in ML routes</td><td>api_routes_ml.py:380-403</td><td><span class="sev-p2">P2</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">TBD</span></td></tr>
+                <tr data-sev="P3" data-status="OPEN"><td>BUG-018</td><td>DB connection leaks on error — no context managers</td><td>api_routes_live_scores.py:71-103</td><td><span class="sev-p3">P3</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">TBD</span></td></tr>
+                <tr data-sev="P3" data-status="OPEN"><td>BUG-019</td><td>Race conditions in Analytics.js — no AbortController on fetch</td><td>frontend/src/Analytics.js:141-185</td><td><span class="sev-p3">P3</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">TBD</span></td></tr>
+                <tr data-sev="P3" data-status="OPEN"><td>BUG-020</td><td>API URL hardcoded in every React component — needs single config.js</td><td>frontend/src/*.js</td><td><span class="sev-p3">P3</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">TBD</span></td></tr>
                 <tr data-sev="P1" data-status="OPEN"><td>TASK-001</td><td>Call AWS support to reset root MFA — locked out of console (1-800-879-2747)</td><td>AWS Account ops</td><td><span class="sev-p1">P1</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">S12</span></td></tr>
             </tbody>
         </table>
@@ -3753,42 +3753,42 @@ initBacklog();
         { id:'PB-009', feature:'CLAUDE.md updated to reflect current state',     cat:'Documentation',  pri:'Medium',   effort:'S', sprint:'S12', status:'In Sprint' },
 
         // ── SPRINT 13 — Data & Clean ──
-        { id:'PB-010', feature:'Remove hardcoded credentials (BUG-003/004/005)', cat:'Security',       pri:'Critical', effort:'S', sprint:'S13', status:'Backlog'   },
-        { id:'PB-011', feature:'Move all passwords to .env files',               cat:'Security',       pri:'Critical', effort:'S', sprint:'S13', status:'Backlog'   },
-        { id:'PB-012', feature:'Load 2025 NFL season data into PostgreSQL',      cat:'Data',           pri:'Critical', effort:'L', sprint:'S13', status:'Backlog'   },
-        { id:'PB-013', feature:'Validate data integrity — row counts & spot checks', cat:'Data',       pri:'High',     effort:'M', sprint:'S13', status:'Backlog'   },
-        { id:'PB-014', feature:'Fix broken frontend routes (BUG-001/002)',        cat:'Frontend',       pri:'High',     effort:'S', sprint:'S13', status:'Backlog'   },
-        { id:'PB-015', feature:'Fix background_updater.py missing import',        cat:'Backend',        pri:'High',     effort:'S', sprint:'S13', status:'Backlog'   },
-        { id:'PB-016', feature:'Confirm background updater running in production', cat:'Infrastructure', pri:'High',     effort:'S', sprint:'S13', status:'Backlog'   },
-        { id:'PB-017', feature:'Audit git history for exposed secrets',           cat:'Security',       pri:'High',     effort:'M', sprint:'S13', status:'Backlog'   },
+        { id:'PB-010', feature:'Remove hardcoded credentials (BUG-003/004/005)', cat:'Security',       pri:'Critical', effort:'S', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-011', feature:'Move all passwords to .env files',               cat:'Security',       pri:'Critical', effort:'S', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-012', feature:'Load 2025 NFL season data into PostgreSQL',      cat:'Data',           pri:'Critical', effort:'L', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-013', feature:'Validate data integrity — row counts & spot checks', cat:'Data',       pri:'High',     effort:'M', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-014', feature:'Fix broken frontend routes (BUG-001/002)',        cat:'Frontend',       pri:'High',     effort:'S', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-015', feature:'Fix background_updater.py missing import',        cat:'Backend',        pri:'High',     effort:'S', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-016', feature:'Confirm background updater running in production', cat:'Infrastructure', pri:'High',     effort:'S', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-017', feature:'Audit git history for exposed secrets',           cat:'Security',       pri:'High',     effort:'M', sprint:'TBD', status:'Backlog'   },
 
         // ── SPRINT 14 — ML Retrain ──
-        { id:'PB-018', feature:'Retrain XGBoost winner classifier on 2025 data', cat:'ML',             pri:'Critical', effort:'L', sprint:'S14', status:'Backlog'   },
-        { id:'PB-019', feature:'Retrain spread regressor — document MAE',         cat:'ML',             pri:'Critical', effort:'L', sprint:'S14', status:'Backlog'   },
-        { id:'PB-020', feature:'Recalculate Elo ratings through 2025 season',     cat:'ML',             pri:'High',     effort:'M', sprint:'S14', status:'Backlog'   },
-        { id:'PB-021', feature:'Fix ML training schema (hcl_test → hcl)',         cat:'ML',             pri:'Critical', effort:'S', sprint:'S14', status:'Backlog'   },
-        { id:'PB-022', feature:'Fix broken SQL in train_xgb_spread.py',           cat:'ML',             pri:'High',     effort:'S', sprint:'S14', status:'Backlog'   },
-        { id:'PB-023', feature:'Verify no data leakage in feature pipeline',      cat:'ML',             pri:'High',     effort:'M', sprint:'S14', status:'Backlog'   },
-        { id:'PB-024', feature:'ML Predictions page showing live results in prod', cat:'Frontend',       pri:'High',     effort:'M', sprint:'S14', status:'Backlog'   },
-        { id:'PB-025', feature:'Record model accuracy metrics in ModelPerformance', cat:'ML',            pri:'Medium',   effort:'S', sprint:'S14', status:'Backlog'   },
+        { id:'PB-018', feature:'Retrain XGBoost winner classifier on 2025 data', cat:'ML',             pri:'Critical', effort:'L', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-019', feature:'Retrain spread regressor — document MAE',         cat:'ML',             pri:'Critical', effort:'L', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-020', feature:'Recalculate Elo ratings through 2025 season',     cat:'ML',             pri:'High',     effort:'M', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-021', feature:'Fix ML training schema (hcl_test → hcl)',         cat:'ML',             pri:'Critical', effort:'S', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-022', feature:'Fix broken SQL in train_xgb_spread.py',           cat:'ML',             pri:'High',     effort:'S', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-023', feature:'Verify no data leakage in feature pipeline',      cat:'ML',             pri:'High',     effort:'M', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-024', feature:'ML Predictions page showing live results in prod', cat:'Frontend',       pri:'High',     effort:'M', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-025', feature:'Record model accuracy metrics in ModelPerformance', cat:'ML',            pri:'Medium',   effort:'S', sprint:'TBD', status:'Backlog'   },
 
         // ── SPRINT 15 — UI & UX Polish ──
-        { id:'PB-026', feature:'Mobile-responsive pass — all pages at 375px',     cat:'Frontend',       pri:'High',     effort:'L', sprint:'S15', status:'Backlog'   },
-        { id:'PB-027', feature:'Fix all broken layouts and overflow issues',       cat:'Frontend',       pri:'High',     effort:'M', sprint:'S15', status:'Backlog'   },
-        { id:'PB-028', feature:'Loading states and error states on all pages',     cat:'Frontend',       pri:'Medium',   effort:'M', sprint:'S15', status:'Backlog'   },
-        { id:'PB-029', feature:'Zero console errors in production',                cat:'Frontend',       pri:'High',     effort:'M', sprint:'S15', status:'Backlog'   },
-        { id:'PB-030', feature:'Full production walkthrough — advisor demo-ready', cat:'QA',             pri:'Critical', effort:'M', sprint:'S15', status:'Backlog'   },
-        { id:'PB-031', feature:'Fix /game-statistics and /matchup-analyzer routes', cat:'Frontend',      pri:'High',     effort:'S', sprint:'S15', status:'Backlog'   },
+        { id:'PB-026', feature:'Mobile-responsive pass — all pages at 375px',     cat:'Frontend',       pri:'High',     effort:'L', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-027', feature:'Fix all broken layouts and overflow issues',       cat:'Frontend',       pri:'High',     effort:'M', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-028', feature:'Loading states and error states on all pages',     cat:'Frontend',       pri:'Medium',   effort:'M', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-029', feature:'Zero console errors in production',                cat:'Frontend',       pri:'High',     effort:'M', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-030', feature:'Full production walkthrough — advisor demo-ready', cat:'QA',             pri:'Critical', effort:'M', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-031', feature:'Fix /game-statistics and /matchup-analyzer routes', cat:'Frontend',      pri:'High',     effort:'S', sprint:'TBD', status:'Backlog'   },
 
         // ── SPRINT 16 — Hardening & Release ──
-        { id:'PB-032', feature:'Rate limiting on Flask API',                       cat:'Security',       pri:'High',     effort:'S', sprint:'S16', status:'Backlog'   },
-        { id:'PB-033', feature:'HTTPS confirmed — all traffic encrypted',          cat:'Security',       pri:'Critical', effort:'S', sprint:'S16', status:'Backlog'   },
-        { id:'PB-034', feature:'Final security audit — no exposed credentials',    cat:'Security',       pri:'Critical', effort:'M', sprint:'S16', status:'Backlog'   },
-        { id:'PB-035', feature:'README updated for public audience',               cat:'Documentation',  pri:'Medium',   effort:'S', sprint:'S16', status:'Backlog'   },
-        { id:'PB-036', feature:'Final performance report written & submitted',     cat:'Documentation',  pri:'Critical', effort:'M', sprint:'S16', status:'Backlog'   },
-        { id:'PB-037', feature:'App stable for 48+ hours before submission',       cat:'QA',             pri:'Critical', effort:'M', sprint:'S16', status:'Backlog'   },
-        { id:'PB-038', feature:'Capstone advisor sign-off received',               cat:'Milestone',      pri:'Critical', effort:'S', sprint:'S16', status:'Backlog'   },
-        { id:'PB-039', feature:'Tag v1.0 release on GitHub',                       cat:'Infrastructure', pri:'High',     effort:'S', sprint:'S16', status:'Backlog'   },
+        { id:'PB-032', feature:'Rate limiting on Flask API',                       cat:'Security',       pri:'High',     effort:'S', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-033', feature:'HTTPS confirmed — all traffic encrypted',          cat:'Security',       pri:'Critical', effort:'S', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-034', feature:'Final security audit — no exposed credentials',    cat:'Security',       pri:'Critical', effort:'M', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-035', feature:'README updated for public audience',               cat:'Documentation',  pri:'Medium',   effort:'S', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-036', feature:'Final performance report written & submitted',     cat:'Documentation',  pri:'Critical', effort:'M', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-037', feature:'App stable for 48+ hours before submission',       cat:'QA',             pri:'Critical', effort:'M', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-038', feature:'Capstone advisor sign-off received',               cat:'Milestone',      pri:'Critical', effort:'S', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-039', feature:'Tag v1.0 release on GitHub',                       cat:'Infrastructure', pri:'High',     effort:'S', sprint:'TBD', status:'Backlog'   },
 
         // ── UNSCHEDULED / TBD ──
         { id:'PB-040', feature:'Move PM Dashboard to Amplify with admin panel',    cat:'Dashboard',      pri:'High',     effort:'L', sprint:'TBD', status:'TBD'       },
