@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTheme } from './contexts/ThemeContext';
 import './Homepage.css';
 import LiveGamesTicker from './LiveGamesTicker';
 
@@ -38,6 +39,7 @@ function Homepage() {
   const [predictions, setPredictions] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { theme, changeTheme } = useTheme();
 
   useEffect(() => {
     fetchTeams();
@@ -124,6 +126,21 @@ function Homepage() {
 
   return (
     <div className="homepage">
+
+      {/* Theme Selector */}
+      <div className="theme-selector-bar">
+        <span className="theme-selector-label">🎨 Theme:</span>
+        <select
+          className="theme-dropdown"
+          value={theme}
+          onChange={(e) => changeTheme(e.target.value)}
+        >
+          <option value="nfl">🏈 NFL</option>
+          <option value="executive-dark">💼 Executive Dark</option>
+          <option value="classic-light">☀️ Classic Light</option>
+        </select>
+      </div>
+
       {/* Live Games Ticker */}
       <LiveGamesTicker />
 

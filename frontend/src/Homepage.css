@@ -7,6 +7,67 @@
   margin: 0 auto;
 }
 
+/* Theme Selector Bar */
+.theme-selector-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-bottom: 1rem;
+}
+
+.theme-selector-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+  letter-spacing: 0.5px;
+}
+
+.theme-dropdown {
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.theme-dropdown:hover {
+  border-color: rgba(255, 255, 255, 0.6);
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.theme-dropdown option {
+  background: #1E293B;
+  color: #fff;
+}
+
+/* Executive dark override for theme bar */
+[data-theme="executive-dark"] .theme-selector-label {
+  color: #94A3B8;
+}
+[data-theme="executive-dark"] .theme-dropdown {
+  background: #0F172A;
+  border-color: #334155;
+  color: #F1F5F9;
+}
+[data-theme="executive-dark"] .theme-dropdown:hover {
+  border-color: #F59E0B;
+}
+
+/* Classic light override */
+[data-theme="classic-light"] .theme-selector-label {
+  color: #4B5563;
+}
+[data-theme="classic-light"] .theme-dropdown {
+  background: #fff;
+  border-color: #D1D5DB;
+  color: #1a1a2e;
+}
+
 /* AI Prediction Methodology Section */
 .prediction-methodology {
   background: rgba(255, 255, 255, 0.12);
