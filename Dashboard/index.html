@@ -3244,6 +3244,7 @@ function initTasks() {
         badge.className = 'task-status-badge ' + (isDone ? 'done' : isBlocked ? 'blocked' : 'todo');
         badge.textContent = isDone ? 'Done' : isBlocked ? 'Blocked' : 'To Do';
         item.insertBefore(badge, cb);
+        cb.checked = isDone;
         cb.style.display = 'none';
         if (isDone) item.classList.add('done');
     });
