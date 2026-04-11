@@ -2668,9 +2668,8 @@ function showTab(name, btn) {
 
 /* ── LIVE APP BUTTON ── */
 document.getElementById('live-app-btn').addEventListener('click', function(e) {
-    // TODO: Replace href with actual Amplify URL once Sprint 12 confirms it's running (task PRD-3)
-    alert('Live app URL — update once production is confirmed running (Sprint 12 task PRD-3).');
     e.preventDefault();
+    window.open('https://master.d2tamnlcbzo0d5.amplifyapp.com/', '_blank');
 });
 
 /* ── SPRINT BOARD SELECTOR ── */
