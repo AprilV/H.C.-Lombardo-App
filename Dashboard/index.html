@@ -1684,9 +1684,9 @@
         <div class="rag-dot amber"></div>
         <div>
             <div class="rag-label amber">AT RISK — AMBER</div>
-            <div class="rag-message">Sprint 12 active · Production environment unverified · Security bugs fixed, ML training bugs remain</div>
+            <div class="rag-message">Sprint 12 active · EC2 restored via CLI · Disk 88% critical (871MB free) · Code analysis complete · 8 new bugs logged</div>
         </div>
-        <div class="rag-detail">Updated: Apr 6, 2026 &nbsp;·&nbsp; Next review: Apr 18</div>
+        <div class="rag-detail">Updated: Apr 10, 2026 &nbsp;·&nbsp; Next review: Apr 18</div>
     </div>
 
     <!-- ── PM METRICS STRIP ── -->
@@ -1698,7 +1698,7 @@
         </div>
         <div class="pm-metric">
             <div class="pm-metric-label">Days Remaining</div>
-            <div class="pm-metric-value" style="color:#FFD700;" id="days-remaining">12</div>
+            <div class="pm-metric-value" style="color:#FFD700;" id="days-remaining">8</div>
             <div class="pm-metric-sub">Sprint ends Apr 18, 2026</div>
         </div>
         <div class="pm-metric">
@@ -1708,13 +1708,13 @@
         </div>
         <div class="pm-metric">
             <div class="pm-metric-label">Open P1 Blockers</div>
-            <div class="pm-metric-value" style="color:#10b981;">0</div>
-            <div class="pm-metric-sub">Credentials fixed — P2 ML bugs remain</div>
+            <div class="pm-metric-value" style="color:#ff6b6b;">2</div>
+            <div class="pm-metric-sub">BUG-014 disk critical · TASK-001 AWS MFA locked</div>
         </div>
         <div class="pm-metric">
             <div class="pm-metric-label">Total Open Issues</div>
-            <div class="pm-metric-value" style="color:#FFA500;">4</div>
-            <div class="pm-metric-sub">BUG-008/009/011/012 — ML training bugs</div>
+            <div class="pm-metric-value" style="color:#FFA500;">13</div>
+            <div class="pm-metric-sub">BUG-014 disk · BUG-015–020 from code analysis · TASK-001 AWS</div>
         </div>
         <div class="pm-metric">
             <div class="pm-metric-label">Target Release</div>
@@ -1733,13 +1733,21 @@
     <!-- ── OPEN BLOCKERS ── -->
     <div class="dash-section-label">Open Blockers &amp; Top Issues</div>
     <div class="blocker-list">
+        <div class="blocker-item sev-p1">
+            <div><div class="blocker-badge p1">P1 · BUG-014</div><div class="blocker-desc">EC2 disk 88% full — 871MB free. Server will crash or fail writes if full. Clean up logs/tmp immediately.</div><div class="blocker-file">EC2: df -h → /dev/root 5.9G/6.8G used</div></div>
+            <div class="blocker-sprint">Fix: S12</div>
+        </div>
+        <div class="blocker-item sev-p1">
+            <div><div class="blocker-badge p1">P1 · TASK-001</div><div class="blocker-desc">AWS root MFA locked — lost MFA device. Cannot access console. Call AWS support to reset: 1-800-879-2747</div><div class="blocker-file">AWS Account ops · EC2 managed via CLI workaround</div></div>
+            <div class="blocker-sprint">Fix: S12</div>
+        </div>
         <div class="blocker-item sev-p2">
             <div><div class="blocker-badge p2">P2 · BUG-008/009</div><div class="blocker-desc">ML training scripts use wrong schema (hcl_test) and have broken SQL — models cannot be retrained until fixed</div><div class="blocker-file">ml/train_xgb_winner.py:255 · ml/train_xgb_spread.py:95-116</div></div>
             <div class="blocker-sprint">Fix: S13</div>
         </div>
         <div class="blocker-item sev-p2">
-            <div><div class="blocker-badge p2">P2 · BUG-011</div><div class="blocker-desc">predict_ensemble.py has an incomplete TODO at line 338 — ensemble logic is unfinished</div><div class="blocker-file">ml/predict_ensemble.py:338</div></div>
-            <div class="blocker-sprint">Fix: S13</div>
+            <div><div class="blocker-badge p2">P2 · BUG-011</div><div class="blocker-desc">predict_ensemble.py XGBoost predictions are hardcoded placeholders — ensemble never actually calls the model</div><div class="blocker-file">ml/predict_ensemble.py:145-148</div></div>
+            <div class="blocker-sprint">Fix: S14</div>
         </div>
         <div class="blocker-item sev-p2">
             <div><div class="blocker-badge p2">P2 · BUG-012</div><div class="blocker-desc">Default season hardcoded as 2025 throughout backend — must be updated or made dynamic for 2026</div><div class="blocker-file">api_routes_hcl.py · api_routes_ml.py · various</div></div>
@@ -3546,7 +3554,7 @@ initBacklog();
     // ── HARDCODED HOURS DATA — Claude updates this each week ──
     // To update: change hours and notes for each week. Leave future weeks at 0/''.
     const HOURS_DATA = [
-        { num:1,  dates:'Apr 6 – Apr 12',  sprint:'S12', hours:7,   notes:'Sprint 12 kickoff. PM dashboard built (Gantt, Risk Register, Decision Log, Hours Log, Weekly Report, Retrospective, DoD, Sprint board, burndown/burnup/velocity). Fixed BUG-001–007 + BUG-013: routing, hardcoded credentials, debug prints, broken import, dead file. Dashboard nav restructured (tab persistence, sprint page tabs, DoD/Retro as top tabs).' },
+        { num:1,  dates:'Apr 6 – Apr 12',  sprint:'S12', hours:7,   notes:'Sprint 12 kickoff. PM dashboard built (Gantt, Risk Register, Decision Log, Hours Log, Weekly Report, Retrospective, DoD, Sprint board, burndown/burnup/velocity). Fixed BUG-001–007 + BUG-013: routing, hardcoded credentials, debug prints, broken import, dead file. Dashboard nav restructured (tab persistence, sprint page tabs, DoD/Retro as top tabs). Apr 10: EC2 found stopped — restarted via CLI (AWS console locked, root MFA lost). Full code analysis run — identified 8 new bugs (BUG-014–020) including disk 88% critical, inverted spread coverage math, broken ensemble. Game count verified at 7,269.' },
         { num:2,  dates:'Apr 13 – Apr 18', sprint:'S12', hours:0,   notes:'' },
         { num:3,  dates:'Apr 20 – Apr 26', sprint:'S13', hours:0,   notes:'' },
         { num:4,  dates:'Apr 27 – May 2',  sprint:'S13', hours:0,   notes:'' },
@@ -3811,13 +3819,15 @@ function showSprintView(view, btn) {
 (function buildRiskRegister() {
     var risks = [
         { id:'R-01', risk:'EC2 instance inaccessible / Flask service down',           like:'H', impact:'H', mitigation:'SSH in immediately; systemctl restart hc-lombardo.service. Health-check endpoint monitors uptime.', sprint:'S12', status:'open' },
-        { id:'R-02', risk:'Hardcoded credentials exposed in GitHub',                   like:'H', impact:'H', mitigation:'Move all passwords to .env; rotate DB password; audit git history. Fix before S13 ends.',             sprint:'S13', status:'open' },
+        { id:'R-02', risk:'Hardcoded credentials exposed in GitHub',                   like:'L', impact:'H', mitigation:'Fixed S12 — BUG-003/004/005 removed all hardcoded passwords. Moved to environment variables.',          sprint:'S12', status:'resolved' },
         { id:'R-03', risk:'2025 NFL data missing or malformed in NFLverse',            like:'M', impact:'H', mitigation:'Validate row counts and spot-check game data after ingest. Fall back to ESPN API if needed.',          sprint:'S13', status:'open' },
         { id:'R-04', risk:'ML model accuracy drops after retraining on 2025 data',     like:'M', impact:'M', mitigation:'Compare accuracy to prior baseline before deploying. Document both results. Do not deploy if worse.', sprint:'S14', status:'open' },
         { id:'R-05', risk:'CORS errors blocking frontend from hitting EC2 API',        like:'H', impact:'H', mitigation:'Confirm Amplify domain is whitelisted in Flask CORS config. Test every endpoint after deploy.',       sprint:'S12', status:'open' },
         { id:'R-06', risk:'AWS Amplify build fails after a push',                      like:'M', impact:'M', mitigation:'Check Amplify build logs; most failures are env var or npm dependency issues. Fix and repush.',        sprint:'S12', status:'open' },
         { id:'R-07', risk:'Project scope too large to complete by Jun 13',             like:'M', impact:'H', mitigation:'Sprints are fixed and linear. If behind, defer UI polish (S15) before cutting ML work (S14).',        sprint:'All', status:'open' },
         { id:'R-08', risk:'PostgreSQL data loss or schema corruption',                 like:'L', impact:'H', mitigation:'pg_dump backup before any schema changes. EC2 snapshots via AWS console.',                            sprint:'S13', status:'open' },
+        { id:'R-09', risk:'EC2 disk full — server crash or failed writes',            like:'H', impact:'H', mitigation:'Clean up logs, tmp files, old backups. df -h to monitor. Disk at 88% as of Apr 10 — immediate action needed.', sprint:'S12', status:'open' },
+        { id:'R-10', risk:'AWS console inaccessible — root MFA device lost',          like:'H', impact:'M', mitigation:'EC2 managed via CLI workaround. Call AWS support 1-800-879-2747 to reset root MFA. Do not create new resources until resolved.', sprint:'S12', status:'open' },
     ];
 
     var statusStyle = { open: 'background:rgba(251,191,36,0.15);color:#fbbf24;border:1px solid rgba(251,191,36,0.3);', resolved: 'background:rgba(16,185,129,0.15);color:#10b981;border:1px solid rgba(16,185,129,0.3);', accepted: 'background:rgba(148,163,184,0.1);color:#94a3b8;border:1px solid rgba(148,163,184,0.2);' };
@@ -3883,6 +3893,13 @@ function showSprintView(view, btn) {
             chosen: 'Custom Elo rating system (538-style)',
             considered: 'ML-only predictions, ELO as standalone',
             why: 'Elo provides a transparent, interpretable team strength metric that non-technical users understand. Running both lets the dashboard show ensemble predictions and compare model vs. Elo vs. Vegas.',
+        },
+        {
+            id: 'D-07', date: 'Apr 2026', sprint: 'S12',
+            title: 'Confirmed XGBoost over PyTorch / TensorFlow',
+            chosen: 'XGBoost (gradient boosted trees) — no change',
+            considered: 'PyTorch, TensorFlow (deep learning frameworks)',
+            why: 'Raised in class by instructor. With 7,269 rows of tabular NFL game data, deep learning frameworks offer no accuracy advantage and add significant complexity. XGBoost consistently outperforms neural nets on small structured datasets. PyTorch/TensorFlow would be appropriate if modeling play-by-play sequences (100k+ rows) or using image/video data.',
         },
     ];
 
