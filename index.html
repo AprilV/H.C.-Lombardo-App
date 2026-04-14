@@ -1716,12 +1716,12 @@
         <div class="pm-metric">
             <div class="pm-metric-label">Open P1 Blockers</div>
             <div class="pm-metric-value" style="color:#ff6b6b;">2</div>
-            <div class="pm-metric-sub">BUG-014 disk critical · TASK-001 AWS MFA locked</div>
+            <div class="pm-metric-sub">Disk critical (R-09) · AWS MFA locked (R-10)</div>
         </div>
         <div class="pm-metric">
             <div class="pm-metric-label">Total Open Issues</div>
             <div class="pm-metric-value" style="color:#FFA500;">13</div>
-            <div class="pm-metric-sub">BUG-014 disk · BUG-015–020 from code analysis · TASK-001 AWS</div>
+            <div class="pm-metric-sub">Disk critical · 6 from code analysis · AWS MFA locked</div>
         </div>
         <div class="pm-metric">
             <div class="pm-metric-label">Target Release</div>
@@ -1741,23 +1741,23 @@
     <div class="dash-section-label">Open Blockers &amp; Top Issues</div>
     <div class="blocker-list">
         <div class="blocker-item sev-p1">
-            <div><div class="blocker-badge p1">P1 · BUG-014</div><div class="blocker-desc">EC2 disk 88% full — 871MB free. Server will crash or fail writes if full. Clean up logs/tmp immediately.</div><div class="blocker-file">EC2: df -h → /dev/root 5.9G/6.8G used</div></div>
+            <div><div class="blocker-badge p1">P1</div><div class="blocker-desc">EC2 disk 88% full — 871MB free. Server will crash or fail writes if full. Clean up logs/tmp immediately.</div><div class="blocker-file">EC2: df -h → /dev/root 5.9G/6.8G used</div></div>
             <div class="blocker-sprint">Fix: S12</div>
         </div>
         <div class="blocker-item sev-p1">
-            <div><div class="blocker-badge p1">P1 · TASK-001</div><div class="blocker-desc">AWS root MFA locked — lost MFA device. Cannot access console. Call AWS support to reset: 1-800-879-2747</div><div class="blocker-file">AWS Account ops · EC2 managed via CLI workaround</div></div>
+            <div><div class="blocker-badge p1">P1</div><div class="blocker-desc">AWS root MFA locked — lost MFA device. Cannot access console. Call AWS support to reset: 1-800-879-2747</div><div class="blocker-file">AWS Account ops · EC2 managed via CLI workaround</div></div>
             <div class="blocker-sprint">Fix: S12</div>
         </div>
         <div class="blocker-item sev-p2">
-            <div><div class="blocker-badge p2">P2 · BUG-008/009</div><div class="blocker-desc">ML training scripts use wrong schema (hcl_test) and have broken SQL — models cannot be retrained until fixed</div><div class="blocker-file">ml/train_xgb_winner.py:255 · ml/train_xgb_spread.py:95-116</div></div>
+            <div><div class="blocker-badge p2">P2</div><div class="blocker-desc">ML training scripts use wrong schema (hcl_test) and have broken SQL — models cannot be retrained until fixed</div><div class="blocker-file">ml/train_xgb_winner.py:255 · ml/train_xgb_spread.py:95-116</div></div>
             <div class="blocker-sprint">Fix: S13</div>
         </div>
         <div class="blocker-item sev-p2">
-            <div><div class="blocker-badge p2">P2 · BUG-011</div><div class="blocker-desc">predict_ensemble.py XGBoost predictions are hardcoded placeholders — ensemble never actually calls the model</div><div class="blocker-file">ml/predict_ensemble.py:145-148</div></div>
+            <div><div class="blocker-badge p2">P2</div><div class="blocker-desc">predict_ensemble.py XGBoost predictions are hardcoded placeholders — ensemble never actually calls the model</div><div class="blocker-file">ml/predict_ensemble.py:145-148</div></div>
             <div class="blocker-sprint">Fix: S14</div>
         </div>
         <div class="blocker-item sev-p2">
-            <div><div class="blocker-badge p2">P2 · BUG-012</div><div class="blocker-desc">Default season hardcoded as 2025 throughout backend — must be updated or made dynamic for 2026</div><div class="blocker-file">api_routes_hcl.py · api_routes_ml.py · various</div></div>
+            <div><div class="blocker-badge p2">P2</div><div class="blocker-desc">Default season hardcoded as 2025 throughout backend — must be updated or made dynamic for 2026</div><div class="blocker-file">api_routes_hcl.py · api_routes_ml.py · various</div></div>
             <div class="blocker-sprint">Fix: S13</div>
         </div>
     </div>
@@ -1796,7 +1796,7 @@
             <div class="chart-card-title">Backlog by Severity</div>
             <div class="chart-card-subtitle">Current issue distribution across all 13 logged bugs. P1 = production blockers that must be fixed before anything else ships. P4 = polish only.</div>
             <canvas id="severity-chart" height="180"></canvas>
-            <div class="chart-card-insight"><strong>S12 progress:</strong> 8 bugs fixed this sprint — routing (BUG-001/002), hardcoded credentials (BUG-003/004/005), debug output (BUG-006), missing import (BUG-007), dead file (BUG-013). ML training bugs (BUG-008/009/011) are the next priority.</div>
+            <div class="chart-card-insight"><strong>S12 progress:</strong> 8 issues resolved this sprint — routing, hardcoded credentials, debug output, missing import, dead file. ML training schema and broken SQL are the next priority.</div>
         </div>
 
     </div>
@@ -1995,13 +1995,13 @@
 
         <div class="area-grid">
 
-            <!-- PB-001: SSH Access & EC2 Service Verification -->
+            <!-- TA-001: SSH Access & EC2 Service Verification -->
             <div class="area-card">
-                <div class="area-header" onclick="toggleArea('pb001')">
-                    <div class="area-title">🖥️ PB-001 — SSH Access &amp; EC2 Service Verification <span class="area-count" id="count-pb001">0/14</span></div>
-                    <span id="arrow-pb001">▾</span>
+                <div class="area-header" onclick="toggleArea('ta001')">
+                    <div class="area-title">🖥️ TA-001 — SSH Access &amp; EC2 Service Verification <span class="area-count" id="count-ta001">0/14</span></div>
+                    <span id="arrow-ta001">▾</span>
                 </div>
-                <div class="area-body" id="pb001">
+                <div class="area-body" id="ta001">
                     <div class="area-section-label">SSH Access</div>
                     <label class="task-item" id="wrap-t1_1"><input type="checkbox" id="t1_1" onchange="toggleTask('t1_1')"><span class="task-text">Confirm SSH key is available locally</span></label>
                     <label class="task-item" id="wrap-t1_2"><input type="checkbox" id="t1_2" onchange="toggleTask('t1_2')"><span class="task-text">SSH into EC2 <span class="task-sub">ssh -i &lt;key&gt;.pem ubuntu@34.198.25.249</span></span></label>
@@ -2023,13 +2023,13 @@
                 </div>
             </div>
 
-            <!-- PB-002: PostgreSQL Health Check & Schema Validation -->
+            <!-- TA-002: PostgreSQL Health Check & Schema Validation -->
             <div class="area-card">
-                <div class="area-header" onclick="toggleArea('pb002')">
-                    <div class="area-title">🗄️ PB-002 — PostgreSQL Health Check &amp; Schema Validation <span class="area-count" id="count-pb002">0/11</span></div>
-                    <span id="arrow-pb002">▾</span>
+                <div class="area-header" onclick="toggleArea('ta002')">
+                    <div class="area-title">🗄️ TA-002 — PostgreSQL Health Check &amp; Schema Validation <span class="area-count" id="count-ta002">0/11</span></div>
+                    <span id="arrow-ta002">▾</span>
                 </div>
-                <div class="area-body" id="pb002">
+                <div class="area-body" id="ta002">
                     <div class="area-section-label">Service Status</div>
                     <label class="task-item" id="wrap-t2_1"><input type="checkbox" id="t2_1" onchange="toggleTask('t2_1')"><span class="task-text">Check PostgreSQL running <span class="task-sub">systemctl status postgresql</span></span></label>
                     <label class="task-item" id="wrap-t2_2"><input type="checkbox" id="t2_2" onchange="toggleTask('t2_2')"><span class="task-text">List databases — confirm nfl_analytics exists <span class="task-sub">psql -U postgres -c "\l"</span></span></label>
@@ -2047,13 +2047,13 @@
                 </div>
             </div>
 
-            <!-- PB-003: Test All API Endpoints -->
+            <!-- TA-003: Test All API Endpoints -->
             <div class="area-card">
-                <div class="area-header" onclick="toggleArea('pb003')">
-                    <div class="area-title">🔌 PB-003 — Test All 22 API Endpoints <span class="area-count" id="count-pb003">0/22</span></div>
-                    <span id="arrow-pb003">▾</span>
+                <div class="area-header" onclick="toggleArea('ta003')">
+                    <div class="area-title">🔌 TA-003 — Test All 22 API Endpoints <span class="area-count" id="count-ta003">0/22</span></div>
+                    <span id="arrow-ta003">▾</span>
                 </div>
-                <div class="area-body" id="pb003">
+                <div class="area-body" id="ta003">
                     <div class="area-section-label">Health &amp; Core</div>
                     <label class="task-item" id="wrap-t3_1"><input type="checkbox" id="t3_1" onchange="toggleTask('t3_1')"><span class="task-text">GET /health</span></label>
                     <label class="task-item" id="wrap-t3_2"><input type="checkbox" id="t3_2" onchange="toggleTask('t3_2')"><span class="task-text">GET /api/hcl/teams — returns 32 teams?</span></label>
@@ -2083,13 +2083,13 @@
                 </div>
             </div>
 
-            <!-- PB-004: Frontend Production Walkthrough -->
+            <!-- TA-004: Frontend Production Walkthrough -->
             <div class="area-card">
-                <div class="area-header" onclick="toggleArea('pb004')">
-                    <div class="area-title">🌐 PB-004 — Frontend Production Walkthrough <span class="area-count" id="count-pb004">0/17</span></div>
-                    <span id="arrow-pb004">▾</span>
+                <div class="area-header" onclick="toggleArea('ta004')">
+                    <div class="area-title">🌐 TA-004 — Frontend Production Walkthrough <span class="area-count" id="count-ta004">0/17</span></div>
+                    <span id="arrow-ta004">▾</span>
                 </div>
-                <div class="area-body" id="pb004">
+                <div class="area-body" id="ta004">
                     <div class="area-section-label">Page Audit (Loads / Blank / Error / Partial)</div>
                     <label class="task-item" id="wrap-t4_4"><input type="checkbox" id="t4_4" onchange="toggleTask('t4_4')"><span class="task-text">Homepage /</span></label>
                     <label class="task-item" id="wrap-t4_5"><input type="checkbox" id="t4_5" onchange="toggleTask('t4_5')"><span class="task-text">Live Scores /live-scores (offseason = no games, no crash)</span></label>
@@ -2112,13 +2112,13 @@
                 </div>
             </div>
 
-            <!-- PB-005: Verify REACT_APP_API_URL in Amplify -->
+            <!-- TA-005: Verify REACT_APP_API_URL in Amplify -->
             <div class="area-card">
-                <div class="area-header" onclick="toggleArea('pb005')">
-                    <div class="area-title">⚙️ PB-005 — Verify REACT_APP_API_URL in Amplify <span class="area-count" id="count-pb005">0/3</span></div>
-                    <span id="arrow-pb005">▾</span>
+                <div class="area-header" onclick="toggleArea('ta005')">
+                    <div class="area-title">⚙️ TA-005 — Verify REACT_APP_API_URL in Amplify <span class="area-count" id="count-ta005">0/3</span></div>
+                    <span id="arrow-ta005">▾</span>
                 </div>
-                <div class="area-body" id="pb005">
+                <div class="area-body" id="ta005">
                     <div class="area-section-label">Amplify Config</div>
                     <label class="task-item" id="wrap-t4_1"><input type="checkbox" id="t4_1" onchange="toggleTask('t4_1')"><span class="task-text">Log into AWS Amplify — confirm app deployed, build not failed</span></label>
                     <label class="task-item" id="wrap-t4_2"><input type="checkbox" id="t4_2" onchange="toggleTask('t4_2')"><span class="task-text">Check REACT_APP_API_URL = http://34.198.25.249:5000</span></label>
@@ -2126,13 +2126,13 @@
                 </div>
             </div>
 
-            <!-- PB-006: CORS Configuration Fix -->
+            <!-- TA-006: CORS Configuration Fix -->
             <div class="area-card">
-                <div class="area-header" onclick="toggleArea('pb006')">
-                    <div class="area-title">🔗 PB-006 — CORS Configuration Fix <span class="area-count" id="count-pb006">0/4</span></div>
-                    <span id="arrow-pb006">▾</span>
+                <div class="area-header" onclick="toggleArea('ta006')">
+                    <div class="area-title">🔗 TA-006 — CORS Configuration Fix <span class="area-count" id="count-ta006">0/4</span></div>
+                    <span id="arrow-ta006">▾</span>
                 </div>
-                <div class="area-body" id="pb006">
+                <div class="area-body" id="ta006">
                     <div class="area-section-label">End-to-End Connectivity</div>
                     <label class="task-item" id="wrap-t6_1"><input type="checkbox" id="t6_1" onchange="toggleTask('t6_1')"><span class="task-text">From local machine: <span class="task-sub">curl http://34.198.25.249:5000/health</span></span></label>
                     <label class="task-item" id="wrap-t6_2"><input type="checkbox" id="t6_2" onchange="toggleTask('t6_2')"><span class="task-text">From production frontend: DevTools → attempt an API call → watch for CORS errors</span></label>
@@ -2141,50 +2141,50 @@
                 </div>
             </div>
 
-            <!-- PB-007: Production Issue Log -->
+            <!-- TA-007: Production Issue Log -->
             <div class="area-card">
-                <div class="area-header" onclick="toggleArea('pb007')">
-                    <div class="area-title">📁 PB-007 — Production Issue Log &amp; Local Code Audit <span class="area-count" id="count-pb007">0/12</span></div>
-                    <span id="arrow-pb007">▾</span>
+                <div class="area-header" onclick="toggleArea('ta007')">
+                    <div class="area-title">📁 TA-007 — Production Issue Log &amp; Local Code Audit <span class="area-count" id="count-ta007">0/12</span></div>
+                    <span id="arrow-ta007">▾</span>
                 </div>
-                <div class="area-body" id="pb007">
+                <div class="area-body" id="ta007">
                     <div class="area-section-label">Git Status</div>
                     <label class="task-item" id="wrap-t5_1"><input type="checkbox" id="t5_1" onchange="toggleTask('t5_1')"><span class="task-text">git status — list all modified files</span></label>
                     <label class="task-item" id="wrap-t5_2"><input type="checkbox" id="t5_2" onchange="toggleTask('t5_2')"><span class="task-text">git diff frontend/src/App.js — check known routing bugs</span></label>
-                    <div class="area-section-label">Known Bug Confirmations</div>
-                    <label class="task-item" id="wrap-t5_3"><input type="checkbox" id="t5_3" onchange="toggleTask('t5_3')"><span class="task-text">BUG-001/002: Confirm App.js routing — /game-statistics and /matchup-analyzer wrong components</span></label>
-                    <label class="task-item" id="wrap-t5_4"><input type="checkbox" id="t5_4" onchange="toggleTask('t5_4')"><span class="task-text">BUG-003/004/005: Confirm hardcoded password in api_server.py, api_routes_hcl.py, api_routes_live_scores.py</span></label>
-                    <label class="task-item" id="wrap-t5_5"><input type="checkbox" id="t5_5" onchange="toggleTask('t5_5')"><span class="task-text">BUG-006: Confirm DEBUG print statements in api_routes_live_scores.py</span></label>
-                    <label class="task-item" id="wrap-t5_6"><input type="checkbox" id="t5_6" onchange="toggleTask('t5_6')"><span class="task-text">BUG-007: Confirm background_updater.py missing import</span></label>
-                    <label class="task-item" id="wrap-t5_7"><input type="checkbox" id="t5_7" onchange="toggleTask('t5_7')"><span class="task-text">BUG-008: Confirm train_xgb_winner.py uses hcl_test schema (line 255)</span></label>
-                    <label class="task-item" id="wrap-t5_8"><input type="checkbox" id="t5_8" onchange="toggleTask('t5_8')"><span class="task-text">BUG-009: Confirm broken SQL WINDOW clause in train_xgb_spread.py (lines 95-116)</span></label>
-                    <label class="task-item" id="wrap-t5_9"><input type="checkbox" id="t5_9" onchange="toggleTask('t5_9')"><span class="task-text">BUG-011: Confirm predict_ensemble.py TODO at line 338</span></label>
-                    <label class="task-item" id="wrap-t5_10"><input type="checkbox" id="t5_10" onchange="toggleTask('t5_10')"><span class="task-text">BUG-012: Confirm default season hardcoded as 2025 throughout backend</span></label>
+                    <div class="area-section-label">Known Issue Confirmations</div>
+                    <label class="task-item" id="wrap-t5_3"><input type="checkbox" id="t5_3" onchange="toggleTask('t5_3')"><span class="task-text">Confirm App.js routing — /game-statistics and /matchup-analyzer wrong components</span></label>
+                    <label class="task-item" id="wrap-t5_4"><input type="checkbox" id="t5_4" onchange="toggleTask('t5_4')"><span class="task-text">Confirm hardcoded password in api_server.py, api_routes_hcl.py, api_routes_live_scores.py</span></label>
+                    <label class="task-item" id="wrap-t5_5"><input type="checkbox" id="t5_5" onchange="toggleTask('t5_5')"><span class="task-text">Confirm DEBUG print statements in api_routes_live_scores.py</span></label>
+                    <label class="task-item" id="wrap-t5_6"><input type="checkbox" id="t5_6" onchange="toggleTask('t5_6')"><span class="task-text">Confirm background_updater.py missing import</span></label>
+                    <label class="task-item" id="wrap-t5_7"><input type="checkbox" id="t5_7" onchange="toggleTask('t5_7')"><span class="task-text">Confirm train_xgb_winner.py uses hcl_test schema (line 255)</span></label>
+                    <label class="task-item" id="wrap-t5_8"><input type="checkbox" id="t5_8" onchange="toggleTask('t5_8')"><span class="task-text">Confirm broken SQL WINDOW clause in train_xgb_spread.py (lines 95-116)</span></label>
+                    <label class="task-item" id="wrap-t5_9"><input type="checkbox" id="t5_9" onchange="toggleTask('t5_9')"><span class="task-text">Confirm predict_ensemble.py XGBoost predictions are hardcoded (line 338)</span></label>
+                    <label class="task-item" id="wrap-t5_10"><input type="checkbox" id="t5_10" onchange="toggleTask('t5_10')"><span class="task-text">Confirm default season hardcoded as 2025 throughout backend</span></label>
                     <div class="area-section-label">ML Models on EC2</div>
                     <label class="task-item" id="wrap-t5_11"><input type="checkbox" id="t5_11" onchange="toggleTask('t5_11')"><span class="task-text">SSH: confirm xgb_winner.pkl, xgb_spread.pkl, elo_ratings_current.json exist <span class="task-sub">ls -lh ml/models/</span></span></label>
                     <label class="task-item" id="wrap-t5_12"><input type="checkbox" id="t5_12" onchange="toggleTask('t5_12')"><span class="task-text">Check ML model file sizes and dates</span></label>
                 </div>
             </div>
 
-            <!-- PB-008: Live App URL Added to Dashboard (BLOCKED) -->
+            <!-- TA-008: Live App URL Added to Dashboard (BLOCKED) -->
             <div class="area-card">
-                <div class="area-header" onclick="toggleArea('pb008')">
-                    <div class="area-title">🔗 PB-008 — Live App URL Added to Dashboard <span style="color:#ff6b6b;font-size:0.72rem;font-weight:600;margin-left:0.5rem;">BLOCKED</span> <span class="area-count" id="count-pb008">0/1</span></div>
-                    <span id="arrow-pb008">▾</span>
+                <div class="area-header" onclick="toggleArea('ta008')">
+                    <div class="area-title">🔗 TA-008 — Live App URL Added to Dashboard <span style="color:#ff6b6b;font-size:0.72rem;font-weight:600;margin-left:0.5rem;">BLOCKED</span> <span class="area-count" id="count-ta008">0/1</span></div>
+                    <span id="arrow-ta008">▾</span>
                 </div>
-                <div class="area-body" id="pb008">
+                <div class="area-body" id="ta008">
                     <div class="area-section-label">Blocked — Waiting on AWS Console Access</div>
                     <label class="task-item" id="wrap-t8_1"><input type="checkbox" id="t8_1" onchange="toggleTask('t8_1')"><span class="task-text">Add live Amplify URL to Dashboard overview section <span class="task-sub">Blocked: AWS console locked (root MFA lost) — call 1-800-879-2747</span></span></label>
                 </div>
             </div>
 
-            <!-- PB-009: CLAUDE.md Updated -->
+            <!-- TA-009: CLAUDE.md Updated -->
             <div class="area-card">
-                <div class="area-header" onclick="toggleArea('pb009')">
-                    <div class="area-title">📝 PB-009 — CLAUDE.md Updated to Reflect Current State <span class="area-count" id="count-pb009">0/1</span></div>
-                    <span id="arrow-pb009">▾</span>
+                <div class="area-header" onclick="toggleArea('ta009')">
+                    <div class="area-title">📝 TA-009 — CLAUDE.md Updated to Reflect Current State <span class="area-count" id="count-ta009">0/1</span></div>
+                    <span id="arrow-ta009">▾</span>
                 </div>
-                <div class="area-body" id="pb009">
+                <div class="area-body" id="ta009">
                     <div class="area-section-label">Documentation</div>
                     <label class="task-item" id="wrap-t9_1"><input type="checkbox" id="t9_1" onchange="toggleTask('t9_1')"><span class="task-text">Update CLAUDE.md with current routes, deployment state, and architecture</span></label>
                 </div>
@@ -2283,7 +2283,7 @@
                 </summary>
                 <div style="padding:0 1.25rem 1rem; display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:0.4rem; margin-top:0.25rem;">
                     <div class="dod-item">2025 NFL season data loaded into PostgreSQL</div>
-                    <div class="dod-item">All 3 hardcoded passwords removed (BUG-003/004/005)</div>
+                    <div class="dod-item">All hardcoded passwords removed from api_server.py, api_routes_hcl.py, api_routes_live_scores.py</div>
                     <div class="dod-item">Credentials moved to environment variables</div>
                     <div class="dod-item">Data validated — row counts and spot-checks pass</div>
                     <div class="dod-item">Background updater confirmed working in production</div>
@@ -3255,7 +3255,7 @@ const TASK_AREAS = {
     t6_1:'area6',t6_2:'area6',t6_3:'area6',t6_4:'area6'
 };
 
-const AREA_TOTALS = { pb001: 14, pb002: 11, pb003: 22, pb004: 17, pb005: 3, pb006: 4, pb007: 12, pb008: 1, pb009: 1 };
+const AREA_TOTALS = { ta001: 14, ta002: 11, ta003: 22, ta004: 17, ta005: 3, ta006: 4, ta007: 12, ta008: 1, ta009: 1 };
 const TOTAL_TASKS = 85;
 
 // ── TASK STATUS — Claude updates these each week ──
@@ -3274,7 +3274,7 @@ const COMPLETED_TASKS = [
     // Area 6 — CORS
 ];
 const BLOCKED_TASKS = [
-    't8_1', // PB-008: blocked — AWS console locked, can't retrieve Amplify URL
+    't8_1', // TA-008: blocked — AWS console locked, can't retrieve Amplify URL
 ];
 
 function toggleTask() {} // no-op — tasks are static, updated by Claude
@@ -3597,7 +3597,7 @@ initTasks();
     // ── HARDCODED HOURS DATA — Claude updates this each week ──
     // To update: change hours and notes for each week. Leave future weeks at 0/''.
     const HOURS_DATA = [
-        { num:1,  dates:'Apr 6 – Apr 12',  sprint:'S12', hours:15,   notes:'Sprint 12 kickoff. PM dashboard built (Gantt, Risk Register, Decision Log, Hours Log, Weekly Report, Retrospective, DoD, Sprint board, burndown/burnup/velocity). Fixed BUG-001–007 + BUG-013: routing, hardcoded credentials, debug prints, broken import, dead file. Dashboard nav restructured. Apr 10: EC2 found stopped — restarted via CLI (AWS console locked, root MFA lost). Full code analysis — 8 new bugs (BUG-014–020) including disk 88% critical, inverted spread math. Game count verified 7,269. Area 4 audit: Amplify confirmed live at production URL; all 14 frontend pages operational after EC2 restore.' },
+        { num:1,  dates:'Apr 6 – Apr 12',  sprint:'S12', hours:15,   notes:'Sprint 12 kickoff. PM dashboard built (Gantt, Risk Register, Decision Log, Hours Log, Weekly Report, Retrospective, DoD, Sprint board, burndown/burnup/velocity). Resolved 8 issues: routing, hardcoded credentials, debug prints, broken import, dead file. Dashboard nav restructured. Apr 10: EC2 found stopped — restarted via CLI (AWS console locked, root MFA lost). Full code analysis — discovered disk 88% critical, inverted spread math, and 6 additional issues. Game count verified 7,269. Area 4 audit: Amplify confirmed live at production URL; all 14 frontend pages operational after EC2 restore.' },
         { num:2,  dates:'Apr 13 – Apr 18', sprint:'S12', hours:0,   notes:'' },
         { num:3,  dates:'Apr 20 – Apr 26', sprint:'S13', hours:0,   notes:'' },
         { num:4,  dates:'Apr 27 – May 2',  sprint:'S13', hours:0,   notes:'' },
@@ -3754,59 +3754,59 @@ initTasks();
 
     var items = [
         // ── SPRINT 12 — Diagnose & Restore ──
-        { id:'PB-001', feature:'SSH access & EC2 service verification',        cat:'Infrastructure', pri:'Critical', effort:'S', sprint:'S12', status:'In Sprint' },
-        { id:'PB-002', feature:'PostgreSQL health check & schema validation',   cat:'Infrastructure', pri:'Critical', effort:'S', sprint:'S12', status:'In Sprint' },
-        { id:'PB-003', feature:'Test all 22 API endpoints',                     cat:'Backend',        pri:'Critical', effort:'M', sprint:'S12', status:'In Sprint' },
-        { id:'PB-004', feature:'Frontend production walkthrough',                cat:'Frontend',       pri:'Critical', effort:'M', sprint:'S12', status:'In Sprint' },
-        { id:'PB-005', feature:'Verify REACT_APP_API_URL in Amplify',           cat:'Infrastructure', pri:'Critical', effort:'S', sprint:'S12', status:'Done'      },
-        { id:'PB-006', feature:'CORS configuration fix',                         cat:'Backend',        pri:'Critical', effort:'S', sprint:'S12', status:'In Sprint' },
-        { id:'PB-007', feature:'Production Issue Log created',                   cat:'Documentation',  pri:'High',     effort:'S', sprint:'S12', status:'In Sprint' },
-        { id:'PB-008', feature:'Live app URL added to dashboard',                cat:'Dashboard',      pri:'High',     effort:'S', sprint:'S12', status:'Blocked'   },
-        { id:'PB-009', feature:'CLAUDE.md updated to reflect current state',     cat:'Documentation',  pri:'Medium',   effort:'S', sprint:'S12', status:'In Sprint' },
+        { id:'TA-001', feature:'SSH access & EC2 service verification',        cat:'Infrastructure', pri:'Critical', effort:'S', sprint:'S12', status:'In Sprint' },
+        { id:'TA-002', feature:'PostgreSQL health check & schema validation',   cat:'Infrastructure', pri:'Critical', effort:'S', sprint:'S12', status:'In Sprint' },
+        { id:'TA-003', feature:'Test all 22 API endpoints',                     cat:'Backend',        pri:'Critical', effort:'M', sprint:'S12', status:'In Sprint' },
+        { id:'TA-004', feature:'Frontend production walkthrough',                cat:'Frontend',       pri:'Critical', effort:'M', sprint:'S12', status:'In Sprint' },
+        { id:'TA-005', feature:'Verify REACT_APP_API_URL in Amplify',           cat:'Infrastructure', pri:'Critical', effort:'S', sprint:'S12', status:'Done'      },
+        { id:'TA-006', feature:'CORS configuration fix',                         cat:'Backend',        pri:'Critical', effort:'S', sprint:'S12', status:'In Sprint' },
+        { id:'TA-007', feature:'Production Issue Log created',                   cat:'Documentation',  pri:'High',     effort:'S', sprint:'S12', status:'In Sprint' },
+        { id:'TA-008', feature:'Live app URL added to dashboard',                cat:'Dashboard',      pri:'High',     effort:'S', sprint:'S12', status:'Blocked'   },
+        { id:'TA-009', feature:'CLAUDE.md updated to reflect current state',     cat:'Documentation',  pri:'Medium',   effort:'S', sprint:'S12', status:'In Sprint' },
 
         // ── UNASSIGNED BACKLOG (sprint assigned at planning) ──
-        { id:'PB-010', feature:'Remove hardcoded credentials (BUG-003/004/005)', cat:'Security',       pri:'Critical', effort:'S', sprint:'TBD', status:'Backlog'   },
-        { id:'PB-011', feature:'Move all passwords to .env files',               cat:'Security',       pri:'Critical', effort:'S', sprint:'TBD', status:'Backlog'   },
-        { id:'PB-012', feature:'Load 2025 NFL season data into PostgreSQL',      cat:'Data',           pri:'Critical', effort:'L', sprint:'TBD', status:'Backlog'   },
-        { id:'PB-013', feature:'Validate data integrity — row counts & spot checks', cat:'Data',       pri:'High',     effort:'M', sprint:'TBD', status:'Backlog'   },
-        { id:'PB-014', feature:'Fix broken frontend routes (BUG-001/002)',        cat:'Frontend',       pri:'High',     effort:'S', sprint:'TBD', status:'Backlog'   },
-        { id:'PB-015', feature:'Fix background_updater.py missing import',        cat:'Backend',        pri:'High',     effort:'S', sprint:'TBD', status:'Backlog'   },
-        { id:'PB-016', feature:'Confirm background updater running in production', cat:'Infrastructure', pri:'High',     effort:'S', sprint:'TBD', status:'Backlog'   },
-        { id:'PB-017', feature:'Audit git history for exposed secrets',           cat:'Security',       pri:'High',     effort:'M', sprint:'TBD', status:'Backlog'   },
-        { id:'PB-018', feature:'Retrain XGBoost winner classifier on 2025 data', cat:'ML',             pri:'Critical', effort:'L', sprint:'TBD', status:'Backlog'   },
-        { id:'PB-019', feature:'Retrain spread regressor — document MAE',         cat:'ML',             pri:'Critical', effort:'L', sprint:'TBD', status:'Backlog'   },
-        { id:'PB-020', feature:'Recalculate Elo ratings through 2025 season',     cat:'ML',             pri:'High',     effort:'M', sprint:'TBD', status:'Backlog'   },
-        { id:'PB-021', feature:'Fix ML training schema (hcl_test → hcl)',         cat:'ML',             pri:'Critical', effort:'S', sprint:'TBD', status:'Backlog'   },
-        { id:'PB-022', feature:'Fix broken SQL in train_xgb_spread.py',           cat:'ML',             pri:'High',     effort:'S', sprint:'TBD', status:'Backlog'   },
-        { id:'PB-023', feature:'Verify no data leakage in feature pipeline',      cat:'ML',             pri:'High',     effort:'M', sprint:'TBD', status:'Backlog'   },
-        { id:'PB-024', feature:'ML Predictions page showing live results in prod', cat:'Frontend',       pri:'High',     effort:'M', sprint:'TBD', status:'Backlog'   },
-        { id:'PB-025', feature:'Record model accuracy metrics in ModelPerformance', cat:'ML',            pri:'Medium',   effort:'S', sprint:'TBD', status:'Backlog'   },
-        { id:'PB-026', feature:'Mobile-responsive pass — all pages at 375px',     cat:'Frontend',       pri:'High',     effort:'L', sprint:'TBD', status:'Backlog'   },
-        { id:'PB-027', feature:'Fix all broken layouts and overflow issues',       cat:'Frontend',       pri:'High',     effort:'M', sprint:'TBD', status:'Backlog'   },
-        { id:'PB-028', feature:'Loading states and error states on all pages',     cat:'Frontend',       pri:'Medium',   effort:'M', sprint:'TBD', status:'Backlog'   },
-        { id:'PB-029', feature:'Zero console errors in production',                cat:'Frontend',       pri:'High',     effort:'M', sprint:'TBD', status:'Backlog'   },
-        { id:'PB-030', feature:'Full production walkthrough — advisor demo-ready', cat:'QA',             pri:'Critical', effort:'M', sprint:'TBD', status:'Backlog'   },
-        { id:'PB-031', feature:'Fix /game-statistics and /matchup-analyzer routes', cat:'Frontend',      pri:'High',     effort:'S', sprint:'TBD', status:'Backlog'   },
-        { id:'PB-032', feature:'Rate limiting on Flask API',                       cat:'Security',       pri:'High',     effort:'S', sprint:'TBD', status:'Backlog'   },
-        { id:'PB-033', feature:'HTTPS confirmed — all traffic encrypted',          cat:'Security',       pri:'Critical', effort:'S', sprint:'TBD', status:'Backlog'   },
-        { id:'PB-034', feature:'Final security audit — no exposed credentials',    cat:'Security',       pri:'Critical', effort:'M', sprint:'TBD', status:'Backlog'   },
-        { id:'PB-035', feature:'README updated for public audience',               cat:'Documentation',  pri:'Medium',   effort:'S', sprint:'TBD', status:'Backlog'   },
-        { id:'PB-036', feature:'Final performance report written & submitted',     cat:'Documentation',  pri:'Critical', effort:'M', sprint:'TBD', status:'Backlog'   },
-        { id:'PB-037', feature:'App stable for 48+ hours before submission',       cat:'QA',             pri:'Critical', effort:'M', sprint:'TBD', status:'Backlog'   },
-        { id:'PB-038', feature:'Capstone advisor sign-off received',               cat:'Milestone',      pri:'Critical', effort:'S', sprint:'TBD', status:'Backlog'   },
-        { id:'PB-039', feature:'Tag v1.0 release on GitHub',                       cat:'Infrastructure', pri:'High',     effort:'S', sprint:'TBD', status:'Backlog'   },
-        { id:'PB-040', feature:'Move PM Dashboard to Amplify with admin panel',    cat:'Dashboard',      pri:'High',     effort:'L', sprint:'TBD', status:'Backlog'   },
-        { id:'PB-041', feature:'User authentication (public vs admin view)',        cat:'Security',       pri:'High',     effort:'L', sprint:'TBD', status:'Backlog'   },
-        { id:'PB-042', feature:'2026 NFL season live data integration',            cat:'Data',           pri:'Medium',   effort:'L', sprint:'TBD', status:'Backlog'   },
-        { id:'PB-043', feature:'Historical data export (CSV download)',            cat:'Frontend',       pri:'Low',      effort:'S', sprint:'TBD', status:'Backlog'   },
-        { id:'PB-044', feature:'Email alerts for model prediction results',        cat:'Backend',        pri:'Low',      effort:'M', sprint:'TBD', status:'Backlog'   },
-        { id:'PB-045', feature:'Dark/light theme persistence across sessions',     cat:'Frontend',       pri:'Low',      effort:'S', sprint:'TBD', status:'Backlog'   },
-        { id:'PB-046', feature:'Weekly report server-side archive (save & retrieve past reports)', cat:'Dashboard', pri:'Low', effort:'M', sprint:'TBD', status:'Backlog' },
-        { id:'PB-047', feature:'Sync Sprint board tasks with Product Backlog — add ticket refs to sprint tasks, align statuses', cat:'Dashboard', pri:'High', effort:'M', sprint:'TBD', status:'Backlog' },
-        { id:'PB-048', feature:'Move PM dashboard to custom domain + automate update process (reduce manual edits)', cat:'Dashboard', pri:'Medium', effort:'L', sprint:'TBD', status:'Backlog' },
-        { id:'PB-049', feature:'Cross-browser compatibility audit — dashboard and app tested in Edge, Chrome, Firefox, Safari', cat:'Frontend', pri:'High', effort:'M', sprint:'TBD', status:'Backlog' },
-        { id:'PB-050', feature:'Rework Classic Light theme — full redesign for readability and visual consistency', cat:'Dashboard', pri:'Medium', effort:'M', sprint:'TBD', status:'Backlog' },
-        { id:'PB-051', feature:'Rotate GitHub webhook secret — GitHub disclosed Sep–Dec 2025 bug exposed secrets in X-Github-Encoded-Secret header; rotate Amplify webhook secret as precaution', cat:'Security', pri:'Low', effort:'XS', sprint:'TBD', status:'Backlog' },
+        { id:'TA-010', feature:'Remove hardcoded credentials from api_server.py, api_routes_hcl.py, api_routes_live_scores.py', cat:'Security', pri:'Critical', effort:'S', sprint:'TBD', status:'Backlog' },
+        { id:'TA-011', feature:'Move all passwords to .env files',               cat:'Security',       pri:'Critical', effort:'S', sprint:'TBD', status:'Backlog'   },
+        { id:'TA-012', feature:'Load 2025 NFL season data into PostgreSQL',      cat:'Data',           pri:'Critical', effort:'L', sprint:'TBD', status:'Backlog'   },
+        { id:'TA-013', feature:'Validate data integrity — row counts & spot checks', cat:'Data',       pri:'High',     effort:'M', sprint:'TBD', status:'Backlog'   },
+        { id:'TA-014', feature:'Fix broken frontend routes — /game-statistics and /matchup-analyzer wrong components', cat:'Frontend', pri:'High', effort:'S', sprint:'TBD', status:'Backlog' },
+        { id:'TA-015', feature:'Fix background_updater.py missing import',        cat:'Backend',        pri:'High',     effort:'S', sprint:'TBD', status:'Backlog'   },
+        { id:'TA-016', feature:'Confirm background updater running in production', cat:'Infrastructure', pri:'High',     effort:'S', sprint:'TBD', status:'Backlog'   },
+        { id:'TA-017', feature:'Audit git history for exposed secrets',           cat:'Security',       pri:'High',     effort:'M', sprint:'TBD', status:'Backlog'   },
+        { id:'TA-018', feature:'Retrain XGBoost winner classifier on 2025 data', cat:'ML',             pri:'Critical', effort:'L', sprint:'TBD', status:'Backlog'   },
+        { id:'TA-019', feature:'Retrain spread regressor — document MAE',         cat:'ML',             pri:'Critical', effort:'L', sprint:'TBD', status:'Backlog'   },
+        { id:'TA-020', feature:'Recalculate Elo ratings through 2025 season',     cat:'ML',             pri:'High',     effort:'M', sprint:'TBD', status:'Backlog'   },
+        { id:'TA-021', feature:'Fix ML training schema (hcl_test → hcl)',         cat:'ML',             pri:'Critical', effort:'S', sprint:'TBD', status:'Backlog'   },
+        { id:'TA-022', feature:'Fix broken SQL in train_xgb_spread.py',           cat:'ML',             pri:'High',     effort:'S', sprint:'TBD', status:'Backlog'   },
+        { id:'TA-023', feature:'Verify no data leakage in feature pipeline',      cat:'ML',             pri:'High',     effort:'M', sprint:'TBD', status:'Backlog'   },
+        { id:'TA-024', feature:'ML Predictions page showing live results in prod', cat:'Frontend',       pri:'High',     effort:'M', sprint:'TBD', status:'Backlog'   },
+        { id:'TA-025', feature:'Record model accuracy metrics in ModelPerformance', cat:'ML',            pri:'Medium',   effort:'S', sprint:'TBD', status:'Backlog'   },
+        { id:'TA-026', feature:'Mobile-responsive pass — all pages at 375px',     cat:'Frontend',       pri:'High',     effort:'L', sprint:'TBD', status:'Backlog'   },
+        { id:'TA-027', feature:'Fix all broken layouts and overflow issues',       cat:'Frontend',       pri:'High',     effort:'M', sprint:'TBD', status:'Backlog'   },
+        { id:'TA-028', feature:'Loading states and error states on all pages',     cat:'Frontend',       pri:'Medium',   effort:'M', sprint:'TBD', status:'Backlog'   },
+        { id:'TA-029', feature:'Zero console errors in production',                cat:'Frontend',       pri:'High',     effort:'M', sprint:'TBD', status:'Backlog'   },
+        { id:'TA-030', feature:'Full production walkthrough — advisor demo-ready', cat:'QA',             pri:'Critical', effort:'M', sprint:'TBD', status:'Backlog'   },
+        { id:'TA-031', feature:'Fix /game-statistics and /matchup-analyzer routes', cat:'Frontend',      pri:'High',     effort:'S', sprint:'TBD', status:'Backlog'   },
+        { id:'TA-032', feature:'Rate limiting on Flask API',                       cat:'Security',       pri:'High',     effort:'S', sprint:'TBD', status:'Backlog'   },
+        { id:'TA-033', feature:'HTTPS confirmed — all traffic encrypted',          cat:'Security',       pri:'Critical', effort:'S', sprint:'TBD', status:'Backlog'   },
+        { id:'TA-034', feature:'Final security audit — no exposed credentials',    cat:'Security',       pri:'Critical', effort:'M', sprint:'TBD', status:'Backlog'   },
+        { id:'TA-035', feature:'README updated for public audience',               cat:'Documentation',  pri:'Medium',   effort:'S', sprint:'TBD', status:'Backlog'   },
+        { id:'TA-036', feature:'Final performance report written & submitted',     cat:'Documentation',  pri:'Critical', effort:'M', sprint:'TBD', status:'Backlog'   },
+        { id:'TA-037', feature:'App stable for 48+ hours before submission',       cat:'QA',             pri:'Critical', effort:'M', sprint:'TBD', status:'Backlog'   },
+        { id:'TA-038', feature:'Capstone advisor sign-off received',               cat:'Milestone',      pri:'Critical', effort:'S', sprint:'TBD', status:'Backlog'   },
+        { id:'TA-039', feature:'Tag v1.0 release on GitHub',                       cat:'Infrastructure', pri:'High',     effort:'S', sprint:'TBD', status:'Backlog'   },
+        { id:'TA-040', feature:'Move PM Dashboard to Amplify with admin panel',    cat:'Dashboard',      pri:'High',     effort:'L', sprint:'TBD', status:'Backlog'   },
+        { id:'TA-041', feature:'User authentication (public vs admin view)',        cat:'Security',       pri:'High',     effort:'L', sprint:'TBD', status:'Backlog'   },
+        { id:'TA-042', feature:'2026 NFL season live data integration',            cat:'Data',           pri:'Medium',   effort:'L', sprint:'TBD', status:'Backlog'   },
+        { id:'TA-043', feature:'Historical data export (CSV download)',            cat:'Frontend',       pri:'Low',      effort:'S', sprint:'TBD', status:'Backlog'   },
+        { id:'TA-044', feature:'Email alerts for model prediction results',        cat:'Backend',        pri:'Low',      effort:'M', sprint:'TBD', status:'Backlog'   },
+        { id:'TA-045', feature:'Dark/light theme persistence across sessions',     cat:'Frontend',       pri:'Low',      effort:'S', sprint:'TBD', status:'Backlog'   },
+        { id:'TA-046', feature:'Weekly report server-side archive (save & retrieve past reports)', cat:'Dashboard', pri:'Low', effort:'M', sprint:'TBD', status:'Backlog' },
+        { id:'TA-047', feature:'Sync Sprint board tasks with Product Backlog — add ticket refs to sprint tasks, align statuses', cat:'Dashboard', pri:'High', effort:'M', sprint:'TBD', status:'Backlog' },
+        { id:'TA-048', feature:'Move PM dashboard to custom domain + automate update process (reduce manual edits)', cat:'Dashboard', pri:'Medium', effort:'L', sprint:'TBD', status:'Backlog' },
+        { id:'TA-049', feature:'Cross-browser compatibility audit — dashboard and app tested in Edge, Chrome, Firefox, Safari', cat:'Frontend', pri:'High', effort:'M', sprint:'TBD', status:'Backlog' },
+        { id:'TA-050', feature:'Rework Classic Light theme — full redesign for readability and visual consistency', cat:'Dashboard', pri:'Medium', effort:'M', sprint:'TBD', status:'Backlog' },
+        { id:'TA-051', feature:'Rotate GitHub webhook secret — GitHub disclosed Sep–Dec 2025 bug exposed secrets in X-Github-Encoded-Secret header; rotate Amplify webhook secret as precaution', cat:'Security', pri:'Low', effort:'XS', sprint:'TBD', status:'Backlog' },
     ];
 
     window.PB_ITEMS = items;
@@ -3855,7 +3855,7 @@ function showSprintView(view, btn) {
 (function buildRiskRegister() {
     var risks = [
         { id:'R-01', risk:'EC2 instance inaccessible / Flask service down',           like:'H', impact:'H', mitigation:'SSH in immediately; systemctl restart hc-lombardo.service. Health-check endpoint monitors uptime.', sprint:'S12', status:'open' },
-        { id:'R-02', risk:'Hardcoded credentials exposed in GitHub',                   like:'L', impact:'H', mitigation:'Fixed S12 — BUG-003/004/005 removed all hardcoded passwords. Moved to environment variables.',          sprint:'S12', status:'resolved' },
+        { id:'R-02', risk:'Hardcoded credentials exposed in GitHub',                   like:'L', impact:'H', mitigation:'Fixed S12 — all hardcoded passwords removed from api_server.py, api_routes_hcl.py, api_routes_live_scores.py. Moved to environment variables.',          sprint:'S12', status:'resolved' },
         { id:'R-03', risk:'2025 NFL data missing or malformed in NFLverse',            like:'M', impact:'H', mitigation:'Validate row counts and spot-check game data after ingest. Fall back to ESPN API if needed.',          sprint:'S13', status:'open' },
         { id:'R-04', risk:'ML model accuracy drops after retraining on 2025 data',     like:'M', impact:'M', mitigation:'Compare accuracy to prior baseline before deploying. Document both results. Do not deploy if worse.', sprint:'S14', status:'open' },
         { id:'R-05', risk:'CORS errors blocking frontend from hitting EC2 API',        like:'H', impact:'H', mitigation:'Confirm Amplify domain is whitelisted in Flask CORS config. Test every endpoint after deploy.',       sprint:'S12', status:'open' },
@@ -3981,7 +3981,7 @@ function showSprintView(view, btn) {
         ],
         'Sprint 13 — Data & Clean': [
             'Load 2025 NFL season data into PostgreSQL',
-            'Remove all hardcoded credentials (BUG-003/004/005)',
+            'Remove all hardcoded credentials from api_server.py, api_routes_hcl.py, api_routes_live_scores.py',
             'Validate data integrity — row counts and spot checks',
         ],
         'Sprint 14 — ML Retrain': [
