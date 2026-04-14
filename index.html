@@ -2510,12 +2510,12 @@
         <h2 style="font-size:1.4rem; font-weight:700; color:#f1f5f9; margin-bottom:0.25rem;">Weekly Progress Report</h2>
         <p style="color:var(--muted); font-size:0.88rem; margin-bottom:1.5rem;">Auto-fills from your Hours Log and Sprint board. Select a week, then copy or download to submit to Canvas.</p>
 
-        <!-- Week selector -->
-        <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem; flex-wrap:wrap;">
+        <!-- Week selector + action buttons in one row -->
+        <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1.25rem; flex-wrap:wrap;">
             <label style="font-size:0.85rem; color:var(--muted); font-weight:600;">Week:</label>
             <select id="report-week-select" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,215,0,0.3); border-radius:0.4rem; color:#f1f5f9; font-size:0.88rem; padding:0.4rem 0.75rem; outline:none;">
-                <option value="1">Week 1 of 2 — Apr 6–12 (Sprint 12 runs Apr 6–18)</option>
-                <option value="2">Week 2 of 2 — Apr 13–18 (Sprint 12 runs Apr 6–18)</option>
+                <option value="1">Week 1 — Apr 6–12 (Sprint 12)</option>
+                <option value="2">Week 2 — Apr 13–18 (Sprint 12)</option>
                 <option value="3">Week 3 — Apr 20–26 (Sprint 13)</option>
                 <option value="4">Week 4 — Apr 27–May 2 (Sprint 13)</option>
                 <option value="5">Week 5 — May 4–10 (Sprint 14)</option>
@@ -2525,16 +2525,14 @@
                 <option value="9">Week 9 — Jun 1–7 (Sprint 16)</option>
                 <option value="10">Week 10 — Jun 8–13 (Sprint 16)</option>
             </select>
+            <div style="margin-left:auto; display:flex; gap:0.5rem;">
+                <button onclick="copyReport()" id="copy-btn" style="background:rgba(255,215,0,0.15); border:1px solid rgba(255,215,0,0.4); color:#FFD700; border-radius:0.35rem; padding:0.35rem 1rem; font-size:0.78rem; font-weight:700; cursor:pointer;">Copy</button>
+                <button onclick="downloadReport()" style="background:rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.4); color:#10b981; border-radius:0.35rem; padding:0.35rem 1rem; font-size:0.78rem; font-weight:700; cursor:pointer;">Download</button>
+            </div>
         </div>
 
-        <!-- Report output — auto-renders on week change -->
-        <div style="position:relative;">
-            <div style="position:absolute; top:0.75rem; right:0.75rem; display:flex; gap:0.5rem; z-index:2;">
-                <button onclick="copyReport()" id="copy-btn" style="background:rgba(255,215,0,0.15); border:1px solid rgba(255,215,0,0.4); color:#FFD700; border-radius:0.35rem; padding:0.3rem 0.9rem; font-size:0.78rem; font-weight:700; cursor:pointer;">Copy</button>
-                <button onclick="downloadReport()" style="background:rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.4); color:#10b981; border-radius:0.35rem; padding:0.3rem 0.9rem; font-size:0.78rem; font-weight:700; cursor:pointer;">Download</button>
-            </div>
-            <div id="report-output" style="background:rgba(0,0,0,0.4); border:1px solid var(--border); border-radius:0.6rem; min-height:200px;"></div>
-        </div>
+        <!-- Report output -->
+        <div id="report-output" style="border-radius:0.5rem; overflow:hidden; min-height:200px;"></div>
     </div>
 </div>
 
