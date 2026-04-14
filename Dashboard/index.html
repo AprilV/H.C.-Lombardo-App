@@ -2533,7 +2533,7 @@
                 <button onclick="copyReport()" id="copy-btn" style="background:rgba(255,215,0,0.15); border:1px solid rgba(255,215,0,0.4); color:#FFD700; border-radius:0.35rem; padding:0.3rem 0.9rem; font-size:0.78rem; font-weight:700; cursor:pointer;">Copy</button>
                 <button onclick="downloadReport()" style="background:rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.4); color:#10b981; border-radius:0.35rem; padding:0.3rem 0.9rem; font-size:0.78rem; font-weight:700; cursor:pointer;">Download</button>
             </div>
-            <pre id="report-output" style="background:rgba(0,0,0,0.4); border:1px solid var(--border); border-radius:0.6rem; padding:1.5rem 1.25rem; font-family:'Segoe UI',system-ui,sans-serif; font-size:0.85rem; color:#e2e8f0; white-space:pre-wrap; word-break:break-word; min-height:200px; line-height:1.7;"></pre>
+            <div id="report-output" style="background:rgba(0,0,0,0.4); border:1px solid var(--border); border-radius:0.6rem; min-height:200px;"></div>
         </div>
     </div>
 </div>
@@ -3976,85 +3976,178 @@ function showSprintView(view, btn) {
         w10: { issues: '', prevention: '' },
     };
 
+    // Per-week expected progress text (hardcoded where specific; falls back to sprint goals)
+    var EXPECTED_THIS_WEEK = {
+        1: 'Assess full EC2/backend state: SSH access, PostgreSQL health, Flask service status. Confirm disk space, environment, and security group. Log everything — fix nothing yet.',
+        2: 'Complete remaining Sprint 12 tasks: API endpoint testing (TA-003), frontend walkthrough (TA-004), CORS fix (TA-006), Production Issue Log (TA-007), CLAUDE.md update (TA-009).',
+    };
+
+    function buildReportData(weekNum) {
+        var meta      = WEEK_META[weekNum - 1];
+        var hoursData = getHoursData();
+        var weekKey   = 'w' + weekNum;
+        var hoursThisWeek = parseFloat((hoursData[weekKey] || {}).hours || 0) || 0;
+        var weekNotes = (hoursData[weekKey] || {}).notes || '';
+        var totalHours = 0;
+        for (var i = 1; i <= weekNum; i++) totalHours += parseFloat((hoursData['w'+i] || {}).hours || 0) || 0;
+
+        // Completed tasks (Sprint 12 reads live checkboxes; future sprints use hours notes)
+        var completedTasks = [];
+        if (meta.sprint.indexOf('Sprint 12') !== -1) {
+            completedTasks = getSprint12Tasks().done;
+        }
+
+        // Expected this week
+        var currentGoals   = NEXT_SPRINT_GOALS[meta.sprint] || [];
+        var currentIsTBD   = currentGoals.length === 1 && currentGoals[0].indexOf('TBD') !== -1;
+        var expectedThisWk = EXPECTED_THIS_WEEK[weekNum]
+            || (currentIsTBD ? 'Sprint goals will be defined at planning session after the previous sprint closes.'
+                : currentGoals.slice(0, 3).join('; '));
+
+        // Next week goals
+        var nextMeta  = WEEK_META[Math.min(weekNum, 9)];
+        var nextGoals = NEXT_SPRINT_GOALS[nextMeta.sprint] || [];
+        var nextIsTBD = nextGoals.length === 1 && nextGoals[0].indexOf('TBD') !== -1;
+
+        // Issues
+        var issuesData = ISSUES_DATA[weekKey] || {};
+        var issues     = issuesData.issues     || '';
+        var prevention = issuesData.prevention || '';
+
+        // Notes / narrative (for non-S12 actual progress)
+        var narrative = weekNotes || '';
+
+        return {
+            meta: meta, weekNum: weekNum,
+            hoursThisWeek: hoursThisWeek, totalHours: totalHours,
+            completedTasks: completedTasks, narrative: narrative,
+            expectedThisWk: expectedThisWk,
+            nextGoals: nextGoals, nextIsTBD: nextIsTBD,
+            issues: issues, prevention: prevention,
+        };
+    }
+
     function renderReport() {
         var sel = document.getElementById('report-week-select');
         if (!sel) return;
-        var weekNum = parseInt(sel.value);
-        var meta = WEEK_META[weekNum - 1];
-        var hoursData = getHoursData();
-        var weekKey = 'w' + weekNum;
-        var hoursThisWeek = parseFloat((hoursData[weekKey] || {}).hours || 0) || 0;
-        var weekNotes = (hoursData[weekKey] || {}).notes || '';
+        var d = buildReportData(parseInt(sel.value));
+        var el = document.getElementById('report-output');
+        if (!el) return;
 
-        var totalHours = 0;
-        for (var i = 1; i <= weekNum; i++) {
-            totalHours += parseFloat((hoursData['w'+i] || {}).hours || 0) || 0;
-        }
-
-        // Current sprint expected progress — per-week where needed
-        var EXPECTED_THIS_WEEK = {
-            1:  '  Assess full EC2/backend state: SSH access, PostgreSQL health, Flask service status.\n  Confirm disk space, environment, and security group. Log everything — fix nothing yet.',
-            2:  '  Complete remaining Sprint 12 tasks: API endpoint testing (TA-003), frontend walkthrough (TA-004), CORS fix (TA-006), Production Issue Log (TA-007), CLAUDE.md update (TA-009).',
-        };
-
-        // Actual progress section
-        var taskSection = '';
-        if (meta.sprint.indexOf('Sprint 12') !== -1) {
-            var tasks = getSprint12Tasks();
-            var doneList    = tasks.done.length    ? tasks.done.map(function(t){ return '    \u2713 ' + t; }).join('\n') : '    (none completed yet)';
-            var notDoneList = tasks.notDone.length ? tasks.notDone.slice(0,5).map(function(t){ return '    \u25cb ' + t; }).join('\n') : '    (all tasks complete)';
-            taskSection = 'ACTUAL PROGRESS THIS WEEK\nCompleted:\n' + doneList + '\n\nRemaining:\n' + notDoneList;
+        // ── HTML render ──
+        var completedHTML = '';
+        if (d.completedTasks.length) {
+            completedHTML = d.completedTasks.map(function(t) {
+                return '<div style="display:flex;gap:0.6rem;align-items:flex-start;padding:0.3rem 0;border-bottom:1px solid rgba(255,255,255,0.05);">'
+                    + '<span style="color:#10b981;font-weight:700;flex-shrink:0;">✓</span>'
+                    + '<span style="color:#f1f5f9;font-size:0.85rem;">' + t + '</span></div>';
+            }).join('');
+        } else if (d.meta.sprint.indexOf('Sprint 12') !== -1) {
+            completedHTML = '<div style="color:var(--muted);font-size:0.84rem;">(no tasks checked off on the sprint board yet)</div>';
         } else {
-            taskSection = 'ACTUAL PROGRESS THIS WEEK\n' + (weekNotes || '(hours and notes will be entered at end of week — see Hours Log)');
+            completedHTML = '<div style="color:var(--muted);font-size:0.84rem;">' + (d.narrative || 'See hours log for details.') + '</div>';
         }
 
-        // Next week sprint goals
-        var nextWeekMeta = WEEK_META[Math.min(weekNum, 9)];
-        var nextGoals = NEXT_SPRINT_GOALS[nextWeekMeta.sprint] || [];
-        var isTBD = nextGoals.length === 1 && nextGoals[0].indexOf('TBD') !== -1;
-        var nextGoalsList = isTBD
-            ? '  ' + nextGoals[0]
-            : nextGoals.map(function(g){ return '  \u2022 ' + g; }).join('\n');
+        var nextGoalsHTML = d.nextIsTBD
+            ? '<div style="color:var(--muted);font-size:0.84rem;">' + d.nextGoals[0] + '</div>'
+            : d.nextGoals.map(function(g) {
+                return '<div style="display:flex;gap:0.6rem;align-items:flex-start;padding:0.25rem 0;">'
+                    + '<span style="color:#FFD700;flex-shrink:0;">•</span>'
+                    + '<span style="color:#f1f5f9;font-size:0.84rem;">' + g + '</span></div>';
+              }).join('');
 
-        var issuesData = ISSUES_DATA[weekKey] || {};
-        var issues    = issuesData.issues     || '(no issues logged for this week)';
-        var prevention= issuesData.prevention || '(no prevention notes logged for this week)';
+        function section(label, color, content) {
+            return '<div style="margin-bottom:1.25rem;">'
+                + '<div style="font-size:0.68rem;font-weight:800;text-transform:uppercase;letter-spacing:0.12em;color:' + color + ';margin-bottom:0.5rem;padding-bottom:0.3rem;border-bottom:1px solid rgba(255,255,255,0.08);">' + label + '</div>'
+                + content
+                + '</div>';
+        }
 
-        // Expected progress this week
-        var currentGoals = NEXT_SPRINT_GOALS[meta.sprint] || [];
-        var currentIsTBD = currentGoals.length === 1 && currentGoals[0].indexOf('TBD') !== -1;
-        var expectedProgress = EXPECTED_THIS_WEEK[weekNum]
-            || (currentIsTBD
-                ? '  Sprint goals will be set at planning session after the previous sprint closes.'
-                : currentGoals.slice(0,3).map(function(g){ return '  \u2022 ' + g; }).join('\n'));
+        var html =
+        '<div style="padding:1.75rem 1.5rem;font-family:\'Segoe UI\',system-ui,sans-serif;">'
 
-        var report =
-'IS 330 \u2014 Senior Capstone Weekly Progress Report\n' +
-'Student: April V. Sykes\n' +
-'Week ' + meta.num + ' of 10  |  ' + meta.dates + '\n' +
-'Current Sprint: ' + meta.sprint + ' (' + meta.sprintDates + ')\n' +
-'\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\n' +
-'HOURS\n' +
-'Hours worked this week: ' + (hoursThisWeek || '\u2014') + '\n' +
-'Total hours this term:  ' + (totalHours    || '\u2014') + '\n\n' +
-'EXPECTED PROGRESS THIS WEEK\n' + expectedProgress + '\n\n' +
-taskSection + '\n\n' +
-'ISSUES & HOW ADDRESSED\n' + issues + '\n\n' +
-'PREVENTION / MITIGATION\n' + prevention + '\n\n' +
-'EXPECTED PROGRESS NEXT WEEK\n' + nextGoalsList + '\n\n' +
-'RELATION TO ORIGINAL OBJECTIVES\n' +
-'This work advances the Spring 2026 capstone objective of deploying a fully functional\n' +
-'NFL analytics application to production (AWS Amplify + EC2) by June 13, 2026.\n' +
-'Each sprint builds on the last in a fixed dependency chain \u2014 production cannot launch\n' +
-'until all 5 sprints (12\u201316) complete in sequence.\n';
+        // Header
+        + '<div style="margin-bottom:1.5rem;">'
+        +   '<div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:0.25rem;">IS 471 — Senior Capstone Weekly Progress Report</div>'
+        +   '<div style="font-size:1.3rem;font-weight:800;color:#f1f5f9;margin-bottom:0.35rem;">Week ' + d.meta.num + ' of 10 &nbsp;·&nbsp; ' + d.meta.dates + '</div>'
+        +   '<div style="display:flex;flex-wrap:wrap;gap:0.5rem;align-items:center;">'
+        +     '<span style="font-size:0.78rem;color:#f1f5f9;">April V. Sykes</span>'
+        +     '<span style="color:var(--muted);">·</span>'
+        +     '<span style="background:rgba(213,10,10,0.2);color:#f87171;border:1px solid rgba(213,10,10,0.35);border-radius:9999px;padding:0.1rem 0.65rem;font-size:0.72rem;font-weight:700;">' + d.meta.sprint + '</span>'
+        +     '<span style="color:var(--muted);font-size:0.78rem;">' + d.meta.sprintDates + '</span>'
+        +   '</div>'
+        + '</div>'
 
-        document.getElementById('report-output').textContent = report;
+        // Hours
+        + section('Hours', '#FFD700',
+            '<div style="display:flex;gap:2rem;flex-wrap:wrap;">'
+            + '<div><div style="font-size:2rem;font-weight:800;color:#FFD700;line-height:1;">' + (d.hoursThisWeek || '—') + '</div><div style="font-size:0.72rem;color:var(--muted);margin-top:0.2rem;">This week</div></div>'
+            + '<div><div style="font-size:2rem;font-weight:800;color:#93c5fd;line-height:1;">' + (d.totalHours || '—') + '</div><div style="font-size:0.72rem;color:var(--muted);margin-top:0.2rem;">Total this term</div></div>'
+            + '</div>'
+          )
+
+        // Expected this week
+        + section('Expected Progress This Week', '#a78bfa',
+            '<div style="color:#e2e8f0;font-size:0.84rem;line-height:1.65;">' + d.expectedThisWk + '</div>'
+          )
+
+        // Actual progress
+        + section('Actual Progress This Week', '#10b981', completedHTML)
+
+        // Issues
+        + section('Issues &amp; How Addressed', '#fb923c',
+            '<div style="color:#e2e8f0;font-size:0.84rem;line-height:1.65;">' + (d.issues || '<span style="color:var(--muted);">(none logged)</span>') + '</div>'
+          )
+
+        // Prevention
+        + section('Prevention / Mitigation', '#fb923c',
+            '<div style="color:#e2e8f0;font-size:0.84rem;line-height:1.65;">' + (d.prevention || '<span style="color:var(--muted);">(none logged)</span>') + '</div>'
+          )
+
+        // Next week
+        + section('Expected Progress Next Week', '#60a5fa', nextGoalsHTML)
+
+        // Objectives
+        + section('Relation to Original Objectives', 'var(--muted)',
+            '<div style="color:#e2e8f0;font-size:0.84rem;line-height:1.65;">This work advances the IS 471 capstone objective of deploying a fully functional NFL analytics application to production (AWS Amplify + EC2) by June 13, 2026. Each sprint builds on the last in a fixed dependency chain — production cannot launch until all sprints complete in sequence.</div>'
+          )
+
+        + '</div>';
+
+        el.innerHTML = html;
+
+        // ── Plain text for copy/download ──
+        var plain =
+'IS 471 — Senior Capstone Weekly Progress Report\n'
++ 'Student: April V. Sykes\n'
++ 'Week ' + d.meta.num + ' of 10  |  ' + d.meta.dates + '\n'
++ 'Current Sprint: ' + d.meta.sprint + ' (' + d.meta.sprintDates + ')\n'
++ '─'.repeat(50) + '\n\n'
++ 'HOURS\n'
++ 'Hours worked this week: ' + (d.hoursThisWeek || '—') + '\n'
++ 'Total hours this term:  ' + (d.totalHours    || '—') + '\n\n'
++ 'EXPECTED PROGRESS THIS WEEK\n' + d.expectedThisWk + '\n\n'
++ 'ACTUAL PROGRESS THIS WEEK\n'
++ (d.completedTasks.length
+    ? d.completedTasks.map(function(t){ return '  ✓ ' + t; }).join('\n')
+    : (d.narrative || '(see hours log for details)')) + '\n\n'
++ 'ISSUES & HOW ADDRESSED\n' + (d.issues || '(none logged)') + '\n\n'
++ 'PREVENTION / MITIGATION\n' + (d.prevention || '(none logged)') + '\n\n'
++ 'EXPECTED PROGRESS NEXT WEEK\n'
++ (d.nextIsTBD ? d.nextGoals[0] : d.nextGoals.map(function(g){ return '  • ' + g; }).join('\n')) + '\n\n'
++ 'RELATION TO ORIGINAL OBJECTIVES\n'
++ 'This work advances the IS 471 capstone objective of deploying a fully functional\n'
++ 'NFL analytics application to production (AWS Amplify + EC2) by June 13, 2026.\n'
++ 'Each sprint builds on the last in a fixed dependency chain — production cannot\n'
++ 'launch until all sprints complete in sequence.\n';
+
+        window._reportPlainText = plain;
     }
 
-    window.generateReport = renderReport; // keep button working
+    window.generateReport = renderReport;
 
     window.copyReport = function() {
-        var text = document.getElementById('report-output').textContent;
+        var text = window._reportPlainText || '';
         if (!text) return;
         navigator.clipboard.writeText(text).then(function() {
             var btn = document.getElementById('copy-btn');
@@ -4064,11 +4157,11 @@ taskSection + '\n\n' +
     };
 
     window.downloadReport = function() {
-        var text = document.getElementById('report-output').textContent;
+        var text = window._reportPlainText || '';
         if (!text) return;
         var sel = document.getElementById('report-week-select');
         var weekLabel = sel ? sel.options[sel.selectedIndex].text.replace(/[^a-zA-Z0-9\-]/g, '_').replace(/__+/g, '_') : 'report';
-        var filename = 'IS330_Weekly_Report_' + weekLabel + '.txt';
+        var filename = 'IS471_Weekly_Report_' + weekLabel + '.txt';
         var blob = new Blob([text], { type: 'text/plain' });
         var a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
