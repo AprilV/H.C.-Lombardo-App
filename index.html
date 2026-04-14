@@ -1913,7 +1913,6 @@
         <!-- Page-level tabs -->
         <div class="sprint-subnav sprint-page-tabs">
             <button class="subnav-btn active" onclick="showSprintPageView('spage-board', this)">Sprint Board</button>
-            <button class="subnav-btn" onclick="showSprintPageView('spage-backlog', this)">Bug Tracker</button>
             <button class="subnav-btn" onclick="showSprintPageView('spage-retro', this)">Retrospective</button>
             <button class="subnav-btn" onclick="showSprintPageView('spage-dod', this)">Definition of Done</button>
         </div>
@@ -2346,77 +2345,6 @@
     </div>
     </div><!-- /spage-dod -->
 
-    <!-- ── SPRINT BACKLOG VIEW ── -->
-    <div id="spage-backlog" style="display:none;">
-    <div class="pm-panel" style="max-width:1300px; margin:1.5rem auto 0; padding:0 2rem;">
-
-        <div class="pm-header">
-            <div>
-                <h2>🐛 Bug Tracker</h2>
-                <p>All issues discovered during Sprint 12. Filter by severity or status.</p>
-            </div>
-            <div class="sprint-meta">
-                <span class="meta-pill">P1 = Blocker</span>
-                <span class="meta-pill">P2 = Major</span>
-                <span class="meta-pill">P3 = Minor</span>
-                <span class="meta-pill">P4 = Polish</span>
-            </div>
-        </div>
-
-        <!-- Sprint Stats -->
-        <div class="backlog-stats">
-            <div class="bstat"><div class="bn" id="bstat-total">9</div><div class="bl">Total Items</div></div>
-            <div class="bstat"><div class="bn" id="bstat-p1" style="color:#ff6b6b;">6</div><div class="bl">Critical</div></div>
-            <div class="bstat"><div class="bn" id="bstat-p2" style="color:#FFA500;">2</div><div class="bl">High</div></div>
-            <div class="bstat"><div class="bn" id="bstat-p3" style="color:#FFD700;">1</div><div class="bl">Medium</div></div>
-            <div class="bstat"><div class="bn" id="bstat-open" style="color:#ff6b6b;">7</div><div class="bl">In Progress</div></div>
-            <div class="bstat"><div class="bn" id="bstat-blocked" style="color:#fbbf24;">1</div><div class="bl">Blocked</div></div>
-            <div class="bstat"><div class="bn" id="bstat-fixed" style="color:#10b981;">1</div><div class="bl">Done</div></div>
-        </div>
-
-        <!-- Filter Controls -->
-        <div class="backlog-controls">
-            <span style="font-size:0.8rem; color:var(--muted); margin-right:0.25rem;">Filter:</span>
-            <button class="filter-btn active" onclick="filterBacklog('all', this)">All</button>
-            <button class="filter-btn" onclick="filterBacklog('P1', this)">Critical</button>
-            <button class="filter-btn" onclick="filterBacklog('P2', this)">High</button>
-            <button class="filter-btn" onclick="filterBacklog('P3', this)">Medium</button>
-            <button class="filter-btn" onclick="filterBacklog('OPEN', this)">In Progress</button>
-            <button class="filter-btn" onclick="filterBacklog('BLOCKED', this)">Blocked</button>
-            <button class="filter-btn" onclick="filterBacklog('FIXED', this)">Done</button>
-        </div>
-
-        <!-- Sprint Items Table -->
-        <div style="background:var(--card); border:1px solid var(--border); border-radius:0.75rem; overflow:hidden; backdrop-filter:blur(8px);">
-            <table class="issue-table" id="backlog-table">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Task</th>
-                        <th>Category</th>
-                        <th>Priority</th>
-                        <th>Status</th>
-                        <th>Sprint</th>
-                    </tr>
-                </thead>
-                <tbody id="backlog-tbody">
-                    <tr data-sev="P1" data-status="OPEN"><td>PB-001</td><td>SSH access &amp; EC2 service verification</td><td>Infrastructure</td><td><span class="sev-p1">Critical</span></td><td><span class="st-open">IN PROGRESS</span></td><td><span class="sprint-tag">S12</span></td></tr>
-                    <tr data-sev="P1" data-status="OPEN"><td>PB-002</td><td>PostgreSQL health check &amp; schema validation</td><td>Infrastructure</td><td><span class="sev-p1">Critical</span></td><td><span class="st-open">IN PROGRESS</span></td><td><span class="sprint-tag">S12</span></td></tr>
-                    <tr data-sev="P1" data-status="OPEN"><td>PB-003</td><td>Test all 22 API endpoints</td><td>Backend</td><td><span class="sev-p1">Critical</span></td><td><span class="st-open">IN PROGRESS</span></td><td><span class="sprint-tag">S12</span></td></tr>
-                    <tr data-sev="P1" data-status="OPEN"><td>PB-004</td><td>Frontend production walkthrough</td><td>Frontend</td><td><span class="sev-p1">Critical</span></td><td><span class="st-open">IN PROGRESS</span></td><td><span class="sprint-tag">S12</span></td></tr>
-                    <tr data-sev="P1" data-status="FIXED"><td>PB-005</td><td>Verify REACT_APP_API_URL in Amplify</td><td>Infrastructure</td><td><span class="sev-p1">Critical</span></td><td><span class="st-fixed">DONE</span></td><td><span class="sprint-tag">S12</span></td></tr>
-                    <tr data-sev="P1" data-status="OPEN"><td>PB-006</td><td>CORS configuration fix</td><td>Backend</td><td><span class="sev-p1">Critical</span></td><td><span class="st-open">IN PROGRESS</span></td><td><span class="sprint-tag">S12</span></td></tr>
-                    <tr data-sev="P2" data-status="OPEN"><td>PB-007</td><td>Production Issue Log created</td><td>Documentation</td><td><span class="sev-p2">High</span></td><td><span class="st-open">IN PROGRESS</span></td><td><span class="sprint-tag">S12</span></td></tr>
-                    <tr data-sev="P2" data-status="BLOCKED"><td>PB-008</td><td>Live app URL added to dashboard</td><td>Dashboard</td><td><span class="sev-p2">High</span></td><td><span class="st-open">BLOCKED</span></td><td><span class="sprint-tag">S12</span></td></tr>
-                    <tr data-sev="P3" data-status="OPEN"><td>PB-009</td><td>CLAUDE.md updated to reflect current state</td><td>Documentation</td><td><span class="sev-p3">Medium</span></td><td><span class="st-open">IN PROGRESS</span></td><td><span class="sprint-tag">S12</span></td></tr>
-                </tbody>
-            </table>
-        </div>
-
-        <p style="color:var(--muted); font-size:0.8rem; margin-top:0.5rem;">Sprint 12 items only. New discoveries go in the Product Backlog.</p>
-
-    </div>
-    </div><!-- /spage-backlog -->
 
 </div><!-- /tab-sprints -->
 
@@ -2426,6 +2354,14 @@
 <!--  TAB 5: BACKLOG                       -->
 <!-- ══════════════════════════════════════ -->
 <div id="tab-backlog" class="tab-panel">
+
+<!-- Backlog sub-nav -->
+<div style="max-width:1300px; margin:1.25rem auto 0; padding:0 2rem;">
+    <div class="sprint-subnav">
+        <button class="subnav-btn active" onclick="showBacklogView('backlog-product', this)">Product Backlog</button>
+        <button class="subnav-btn" onclick="showBacklogView('backlog-bugs', this)">Bug Tracker</button>
+    </div>
+</div>
 
 <!-- ── PRODUCT BACKLOG ── -->
 <div id="backlog-product">
@@ -2454,6 +2390,88 @@
     </div>
 </div>
 </div>
+
+<!-- ── BUG TRACKER ── -->
+<div id="backlog-bugs" style="display:none;">
+<div class="pm-panel">
+    <div class="pm-header">
+        <div>
+            <h2>🐛 Bug Tracker</h2>
+            <p>All issues identified during Sprint 12 discovery. New issues go in the Product Backlog as PB items.</p>
+        </div>
+        <div class="sprint-meta">
+            <span class="meta-pill">P1 = Blocker</span>
+            <span class="meta-pill">P2 = Major</span>
+            <span class="meta-pill">P3 = Minor</span>
+            <span class="meta-pill">P4 = Polish</span>
+        </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="backlog-stats">
+        <div class="bstat"><div class="bn" id="bstat-total">21</div><div class="bl">Total Issues</div></div>
+        <div class="bstat"><div class="bn" id="bstat-p1" style="color:#ff6b6b;">4</div><div class="bl">P1 Blockers</div></div>
+        <div class="bstat"><div class="bn" id="bstat-p2" style="color:#FFA500;">10</div><div class="bl">P2 Major</div></div>
+        <div class="bstat"><div class="bn" id="bstat-p3" style="color:#FFD700;">5</div><div class="bl">P3 Minor</div></div>
+        <div class="bstat"><div class="bn" id="bstat-p4" style="color:var(--muted);">1</div><div class="bl">P4 Polish</div></div>
+        <div class="bstat"><div class="bn" id="bstat-open" style="color:#ff6b6b;">13</div><div class="bl">Open</div></div>
+        <div class="bstat"><div class="bn" id="bstat-fixed" style="color:#10b981;">8</div><div class="bl">Fixed</div></div>
+    </div>
+
+    <!-- Filters -->
+    <div class="backlog-controls">
+        <span style="font-size:0.8rem; color:var(--muted); margin-right:0.25rem;">Filter:</span>
+        <button class="filter-btn active" onclick="filterBacklog('all', this)">All</button>
+        <button class="filter-btn" onclick="filterBacklog('P1', this)">P1</button>
+        <button class="filter-btn" onclick="filterBacklog('P2', this)">P2</button>
+        <button class="filter-btn" onclick="filterBacklog('P3', this)">P3</button>
+        <button class="filter-btn" onclick="filterBacklog('P4', this)">P4</button>
+        <button class="filter-btn" onclick="filterBacklog('OPEN', this)">Open</button>
+        <button class="filter-btn" onclick="filterBacklog('FIXED', this)">Fixed</button>
+    </div>
+
+    <!-- Bug Table -->
+    <div style="background:var(--card); border:1px solid var(--border); border-radius:0.75rem; overflow:hidden; backdrop-filter:blur(8px);">
+        <table class="issue-table" id="backlog-table">
+            <thead>
+                <tr>
+                    <th onclick="sortBugTable(0)" style="cursor:pointer;"># ↕</th>
+                    <th>Issue</th>
+                    <th>File</th>
+                    <th onclick="sortBugTable(3)" style="cursor:pointer; white-space:nowrap;">Sev ↕</th>
+                    <th onclick="sortBugTable(4)" style="cursor:pointer;">Status ↕</th>
+                    <th>Sprint</th>
+                </tr>
+            </thead>
+            <tbody id="backlog-tbody">
+                <tr data-sev="P2" data-status="FIXED"><td>BUG-001</td><td>/game-statistics routes to wrong component</td><td>App.js ~58</td><td><span class="sev-p2">P2</span></td><td><span class="st-fixed">FIXED</span></td><td><span class="sprint-tag">S12</span></td></tr>
+                <tr data-sev="P2" data-status="FIXED"><td>BUG-002</td><td>/matchup-analyzer routes to wrong component</td><td>App.js ~59</td><td><span class="sev-p2">P2</span></td><td><span class="st-fixed">FIXED</span></td><td><span class="sprint-tag">S12</span></td></tr>
+                <tr data-sev="P1" data-status="FIXED"><td>BUG-003</td><td>Hardcoded password 'aprilv120' fallback</td><td>api_server.py ~77</td><td><span class="sev-p1">P1</span></td><td><span class="st-fixed">FIXED</span></td><td><span class="sprint-tag">S12</span></td></tr>
+                <tr data-sev="P1" data-status="FIXED"><td>BUG-004</td><td>Hardcoded password 'aprilv120' fallback</td><td>api_routes_hcl.py ~22</td><td><span class="sev-p1">P1</span></td><td><span class="st-fixed">FIXED</span></td><td><span class="sprint-tag">S12</span></td></tr>
+                <tr data-sev="P1" data-status="FIXED"><td>BUG-005</td><td>Hardcoded password 'aprilv120' fallback</td><td>api_routes_live_scores.py ~29</td><td><span class="sev-p1">P1</span></td><td><span class="st-fixed">FIXED</span></td><td><span class="sprint-tag">S12</span></td></tr>
+                <tr data-sev="P3" data-status="FIXED"><td>BUG-006</td><td>7+ DEBUG print statements in production</td><td>api_routes_live_scores.py</td><td><span class="sev-p3">P3</span></td><td><span class="st-fixed">FIXED</span></td><td><span class="sprint-tag">S12</span></td></tr>
+                <tr data-sev="P2" data-status="FIXED"><td>BUG-007</td><td>background_updater.py missing import (MultiSourceDataFetcher)</td><td>background_updater.py</td><td><span class="sev-p2">P2</span></td><td><span class="st-fixed">FIXED</span></td><td><span class="sprint-tag">S12</span></td></tr>
+                <tr data-sev="P2" data-status="OPEN"><td>BUG-008</td><td>train_xgb_winner.py uses hcl_test schema (wrong)</td><td>ml/train_xgb_winner.py:255</td><td><span class="sev-p2">P2</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">TBD</span></td></tr>
+                <tr data-sev="P2" data-status="OPEN"><td>BUG-009</td><td>Broken SQL WINDOW clause in spread training</td><td>ml/train_xgb_spread.py:95-116</td><td><span class="sev-p2">P2</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">TBD</span></td></tr>
+                <tr data-sev="P3" data-status="OPEN"><td>BUG-010</td><td>EPA features loaded in SQL but not used in model</td><td>ml/train_xgb_spread.py:174-181</td><td><span class="sev-p3">P3</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">TBD</span></td></tr>
+                <tr data-sev="P2" data-status="OPEN"><td>BUG-011</td><td>predict_ensemble.py TODO (incomplete) at line 338</td><td>ml/predict_ensemble.py:338</td><td><span class="sev-p2">P2</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">TBD</span></td></tr>
+                <tr data-sev="P2" data-status="OPEN"><td>BUG-012</td><td>Default season hardcoded as 2025 throughout backend</td><td>various</td><td><span class="sev-p2">P2</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">TBD</span></td></tr>
+                <tr data-sev="P4" data-status="FIXED"><td>BUG-013</td><td>MLPredictionsRedesign.backup.js dead file in src/</td><td>frontend/src/</td><td><span class="sev-p4">P4</span></td><td><span class="st-fixed">FIXED</span></td><td><span class="sprint-tag">S12</span></td></tr>
+                <tr data-sev="P1" data-status="OPEN"><td>BUG-014</td><td>EC2 disk 88% full — 871MB free, server will crash if full</td><td>EC2 / df -h</td><td><span class="sev-p1">P1</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">S12</span></td></tr>
+                <tr data-sev="P2" data-status="OPEN"><td>BUG-015</td><td>Spread coverage logic inverted — covered/not-covered backwards</td><td>api_routes_live_scores.py:250-257</td><td><span class="sev-p2">P2</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">TBD</span></td></tr>
+                <tr data-sev="P2" data-status="OPEN"><td>BUG-016</td><td>Dead code in predict_week.py — feature differentials never computed, always 0</td><td>ml/predict_week.py:171-181</td><td><span class="sev-p2">P2</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">TBD</span></td></tr>
+                <tr data-sev="P2" data-status="OPEN"><td>BUG-017</td><td>SQL injection via f-string interpolation in ML routes</td><td>api_routes_ml.py:380-403</td><td><span class="sev-p2">P2</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">TBD</span></td></tr>
+                <tr data-sev="P3" data-status="OPEN"><td>BUG-018</td><td>DB connection leaks on error — no context managers</td><td>api_routes_live_scores.py:71-103</td><td><span class="sev-p3">P3</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">TBD</span></td></tr>
+                <tr data-sev="P3" data-status="OPEN"><td>BUG-019</td><td>Race conditions in Analytics.js — no AbortController on fetch</td><td>frontend/src/Analytics.js:141-185</td><td><span class="sev-p3">P3</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">TBD</span></td></tr>
+                <tr data-sev="P3" data-status="OPEN"><td>BUG-020</td><td>API URL hardcoded in every React component — needs single config.js</td><td>frontend/src/*.js</td><td><span class="sev-p3">P3</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">TBD</span></td></tr>
+                <tr data-sev="P1" data-status="OPEN"><td>TASK-001</td><td>Call AWS support to reset root MFA — locked out of console (1-800-879-2747)</td><td>AWS Account ops</td><td><span class="sev-p1">P1</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">S12</span></td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <p style="color:var(--muted); font-size:0.8rem; margin-top:0.5rem;">To log a new issue, tell Claude — it will be added to the Product Backlog as a PB item.</p>
+</div>
+</div><!-- /backlog-bugs -->
 
 </div><!-- /tab-backlog -->
 
@@ -2704,8 +2722,34 @@ document.getElementById('live-app-btn').addEventListener('click', function(e) {
 });
 
 /* ── SPRINT BOARD SELECTOR ── */
+function showBacklogView(viewId, btn) {
+    ['backlog-product', 'backlog-bugs'].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) el.style.display = (id === viewId) ? '' : 'none';
+    });
+    document.querySelectorAll('#tab-backlog .sprint-subnav .subnav-btn').forEach(function(b) {
+        b.classList.remove('active');
+    });
+    if (btn) btn.classList.add('active');
+}
+
+function sortBugTable(colIndex) {
+    var tbody = document.getElementById('backlog-tbody');
+    if (!tbody) return;
+    var rows = Array.from(tbody.querySelectorAll('tr'));
+    var asc = tbody.dataset.sortCol == colIndex && tbody.dataset.sortDir === 'asc' ? false : true;
+    tbody.dataset.sortCol = colIndex;
+    tbody.dataset.sortDir = asc ? 'asc' : 'desc';
+    rows.sort(function(a, b) {
+        var av = (a.cells[colIndex] ? a.cells[colIndex].textContent.trim() : '');
+        var bv = (b.cells[colIndex] ? b.cells[colIndex].textContent.trim() : '');
+        return asc ? av.localeCompare(bv) : bv.localeCompare(av);
+    });
+    rows.forEach(function(r) { tbody.appendChild(r); });
+}
+
 function showSprintPageView(viewId, btn) {
-    ['spage-board', 'spage-backlog', 'spage-retro', 'spage-dod'].forEach(function(id) {
+    ['spage-board', 'spage-retro', 'spage-dod'].forEach(function(id) {
         var el = document.getElementById(id);
         if (el) el.style.display = (id === viewId) ? '' : 'none';
     });
