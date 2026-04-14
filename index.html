@@ -1750,15 +1750,15 @@
         </div>
         <div class="blocker-item sev-p2">
             <div><div class="blocker-badge p2">P2</div><div class="blocker-desc">ML training scripts use wrong schema (hcl_test) and have broken SQL — models cannot be retrained until fixed</div><div class="blocker-file">ml/train_xgb_winner.py:255 · ml/train_xgb_spread.py:95-116</div></div>
-            <div class="blocker-sprint">Fix: S13</div>
+            <div class="blocker-sprint">Unassigned</div>
         </div>
         <div class="blocker-item sev-p2">
             <div><div class="blocker-badge p2">P2</div><div class="blocker-desc">predict_ensemble.py XGBoost predictions are hardcoded placeholders — ensemble never actually calls the model</div><div class="blocker-file">ml/predict_ensemble.py:145-148</div></div>
-            <div class="blocker-sprint">Fix: S14</div>
+            <div class="blocker-sprint">Unassigned</div>
         </div>
         <div class="blocker-item sev-p2">
             <div><div class="blocker-badge p2">P2</div><div class="blocker-desc">Default season hardcoded as 2025 throughout backend — must be updated or made dynamic for 2026</div><div class="blocker-file">api_routes_hcl.py · api_routes_ml.py · various</div></div>
-            <div class="blocker-sprint">Fix: S13</div>
+            <div class="blocker-sprint">Unassigned</div>
         </div>
     </div>
 
@@ -2273,72 +2273,6 @@
                     <div class="dod-item">Production Issue Log created and committed</div>
                     <div class="dod-item">CLAUDE.md updated to reflect current state</div>
                     <div class="dod-item">Code committed and pushed to GitHub</div>
-                </div>
-            </details>
-            <details style="background:var(--card); border:1px solid var(--border); border-radius:0.6rem; overflow:hidden;">
-                <summary style="padding:0.9rem 1.25rem; cursor:pointer; display:flex; align-items:center; gap:0.75rem; font-weight:700; font-size:0.9rem; color:#f1f5f9; list-style:none; user-select:none;">
-                    <span style="background:rgba(255,255,255,0.07); color:var(--muted); border:1px solid rgba(255,255,255,0.15); border-radius:9999px; padding:0.1rem 0.65rem; font-size:0.72rem; font-weight:700;">Upcoming</span>
-                    Sprint 13 — Data &amp; Clean
-                    <span style="margin-left:auto; color:var(--muted); font-size:0.8rem;">Apr 20 – May 2</span>
-                </summary>
-                <div style="padding:0 1.25rem 1rem; display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:0.4rem; margin-top:0.25rem;">
-                    <div class="dod-item">2025 NFL season data loaded into PostgreSQL</div>
-                    <div class="dod-item">All hardcoded passwords removed from api_server.py, api_routes_hcl.py, api_routes_live_scores.py</div>
-                    <div class="dod-item">Credentials moved to environment variables</div>
-                    <div class="dod-item">Data validated — row counts and spot-checks pass</div>
-                    <div class="dod-item">Background updater confirmed working in production</div>
-                    <div class="dod-item">No secrets in git history or committed files</div>
-                    <div class="dod-item">Code committed and pushed to GitHub</div>
-                </div>
-            </details>
-            <details style="background:var(--card); border:1px solid var(--border); border-radius:0.6rem; overflow:hidden;">
-                <summary style="padding:0.9rem 1.25rem; cursor:pointer; display:flex; align-items:center; gap:0.75rem; font-weight:700; font-size:0.9rem; color:#f1f5f9; list-style:none; user-select:none;">
-                    <span style="background:rgba(255,255,255,0.07); color:var(--muted); border:1px solid rgba(255,255,255,0.15); border-radius:9999px; padding:0.1rem 0.65rem; font-size:0.72rem; font-weight:700;">Upcoming</span>
-                    Sprint 14 — ML Retrain
-                    <span style="margin-left:auto; color:var(--muted); font-size:0.8rem;">May 4 – May 16</span>
-                </summary>
-                <div style="padding:0 1.25rem 1rem; display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:0.4rem; margin-top:0.25rem;">
-                    <div class="dod-item">XGBoost winner classifier retrained on 2025 data</div>
-                    <div class="dod-item">Spread regressor retrained, MAE documented</div>
-                    <div class="dod-item">Elo ratings recalculated through 2025 season</div>
-                    <div class="dod-item">Model accuracy ≥ baseline (prior season performance)</div>
-                    <div class="dod-item">No data leakage confirmed in feature pipeline</div>
-                    <div class="dod-item">ML Predictions page shows live results in production</div>
-                    <div class="dod-item">Model performance metrics recorded in ModelPerformance tab</div>
-                    <div class="dod-item">Code committed and pushed to GitHub</div>
-                </div>
-            </details>
-            <details style="background:var(--card); border:1px solid var(--border); border-radius:0.6rem; overflow:hidden;">
-                <summary style="padding:0.9rem 1.25rem; cursor:pointer; display:flex; align-items:center; gap:0.75rem; font-weight:700; font-size:0.9rem; color:#f1f5f9; list-style:none; user-select:none;">
-                    <span style="background:rgba(255,255,255,0.07); color:var(--muted); border:1px solid rgba(255,255,255,0.15); border-radius:9999px; padding:0.1rem 0.65rem; font-size:0.72rem; font-weight:700;">Upcoming</span>
-                    Sprint 15 — UI &amp; UX Polish
-                    <span style="margin-left:auto; color:var(--muted); font-size:0.8rem;">May 18 – May 30</span>
-                </summary>
-                <div style="padding:0 1.25rem 1rem; display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:0.4rem; margin-top:0.25rem;">
-                    <div class="dod-item">Every page tested on mobile (375px width)</div>
-                    <div class="dod-item">No broken layouts or overflow issues on any screen size</div>
-                    <div class="dod-item">Live Scores, Analytics, ML Predictions fully functional</div>
-                    <div class="dod-item">No 404 errors on any navigation path</div>
-                    <div class="dod-item">Loading states / error states shown where applicable</div>
-                    <div class="dod-item">Advisor (Becker) demo-ready — clean first impression</div>
-                    <div class="dod-item">Code committed and pushed to GitHub</div>
-                </div>
-            </details>
-            <details style="background:var(--card); border:1px solid var(--border); border-radius:0.6rem; overflow:hidden;">
-                <summary style="padding:0.9rem 1.25rem; cursor:pointer; display:flex; align-items:center; gap:0.75rem; font-weight:700; font-size:0.9rem; color:#f1f5f9; list-style:none; user-select:none;">
-                    <span style="background:rgba(255,255,255,0.07); color:var(--muted); border:1px solid rgba(255,255,255,0.15); border-radius:9999px; padding:0.1rem 0.65rem; font-size:0.72rem; font-weight:700;">Upcoming</span>
-                    Sprint 16 — Hardening &amp; Release
-                    <span style="margin-left:auto; color:var(--muted); font-size:0.8rem;">Jun 1 – Jun 13</span>
-                </summary>
-                <div style="padding:0 1.25rem 1rem; display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:0.4rem; margin-top:0.25rem;">
-                    <div class="dod-item">Rate limiting enabled on Flask API</div>
-                    <div class="dod-item">No credentials, passwords, or keys in any file</div>
-                    <div class="dod-item">HTTPS confirmed — all traffic encrypted</div>
-                    <div class="dod-item">Final performance report written and submitted</div>
-                    <div class="dod-item">README updated for public audience</div>
-                    <div class="dod-item">App publicly accessible and stable for 48+ hours</div>
-                    <div class="dod-item">Capstone advisor sign-off received</div>
-                    <div class="dod-item">Code committed, tagged v1.0, pushed to GitHub</div>
                 </div>
             </details>
         </div>
@@ -3980,24 +3914,16 @@ function showSprintView(view, btn) {
             'Update CLAUDE.md with current system state',
         ],
         'Sprint 13 — Data & Clean': [
-            'Load 2025 NFL season data into PostgreSQL',
-            'Remove all hardcoded credentials from api_server.py, api_routes_hcl.py, api_routes_live_scores.py',
-            'Validate data integrity — row counts and spot checks',
+            'Goals TBD — assigned at sprint planning after Sprint 12 closes',
         ],
         'Sprint 14 — ML Retrain': [
-            'Retrain XGBoost classifier and spread regressor on 2025 data',
-            'Recalculate Elo ratings through 2025 season',
-            'Verify no data leakage in feature pipeline',
+            'Goals TBD — assigned at sprint planning after Sprint 13 closes',
         ],
         'Sprint 15 — UI & UX Polish': [
-            'Test every page on mobile (375px)',
-            'Fix any broken layouts or missing loading states',
-            'Full production walkthrough — zero console errors',
+            'Goals TBD — assigned at sprint planning after Sprint 14 closes',
         ],
         'Sprint 16 — Hardening & Release': [
-            'Enable rate limiting on Flask API',
-            'Final security audit — no exposed credentials',
-            'Write and submit final performance report',
+            'Goals TBD — assigned at sprint planning after Sprint 15 closes',
         ],
     };
 
