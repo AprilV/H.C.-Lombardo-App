@@ -3959,9 +3959,12 @@ function showSprintView(view, btn) {
         return Math.min(Math.max(Math.floor(days / 7) + 1, 1), 10);
     }
 
-    // ── HARDCODED ISSUES DATA — Claude updates this each week ──
+    // ── HARDCODED ISSUES DATA — Claude updates this each week with April's input ──
     var ISSUES_DATA = {
-        w1:  { issues: '', prevention: '' },
+        w1:  {
+            issues:     'EC2 instance found completely stopped on Apr 10 — no prior warning. Disk at 88% (5.9G/6.8G), 871MB free; server will crash if full. AWS console inaccessible because root MFA device was lost, blocking all console-based management.',
+            prevention: 'EC2 restarted via CLI workaround (aws ec2 start-instances). CLI credentials confirmed working with root access keys in ~/.aws/credentials. AWS support number documented (1-800-879-2747) to reset root MFA. Disk cleanup added as P1 blocker for Sprint 12.'
+        },
         w2:  { issues: '', prevention: '' },
         w3:  { issues: '', prevention: '' },
         w4:  { issues: '', prevention: '' },
@@ -3988,28 +3991,42 @@ function showSprintView(view, btn) {
             totalHours += parseFloat((hoursData['w'+i] || {}).hours || 0) || 0;
         }
 
-        // Tasks from hardcoded COMPLETED_TASKS
+        // Current sprint expected progress — per-week where needed
+        var EXPECTED_THIS_WEEK = {
+            1:  '  Assess full EC2/backend state: SSH access, PostgreSQL health, Flask service status.\n  Confirm disk space, environment, and security group. Log everything — fix nothing yet.',
+            2:  '  Complete remaining Sprint 12 tasks: API endpoint testing (TA-003), frontend walkthrough (TA-004), CORS fix (TA-006), Production Issue Log (TA-007), CLAUDE.md update (TA-009).',
+        };
+
+        // Actual progress section
         var taskSection = '';
         if (meta.sprint.indexOf('Sprint 12') !== -1) {
             var tasks = getSprint12Tasks();
             var doneList    = tasks.done.length    ? tasks.done.map(function(t){ return '    \u2713 ' + t; }).join('\n') : '    (none completed yet)';
             var notDoneList = tasks.notDone.length ? tasks.notDone.slice(0,5).map(function(t){ return '    \u25cb ' + t; }).join('\n') : '    (all tasks complete)';
-            taskSection = 'ACTUAL PROGRESS THIS WEEK\nCompleted:\n' + doneList + '\n\nNot yet completed:\n' + notDoneList;
+            taskSection = 'ACTUAL PROGRESS THIS WEEK\nCompleted:\n' + doneList + '\n\nRemaining:\n' + notDoneList;
         } else {
-            taskSection = 'ACTUAL PROGRESS THIS WEEK\n' + (weekNotes || '(see Hours Log for details)');
+            taskSection = 'ACTUAL PROGRESS THIS WEEK\n' + (weekNotes || '(hours and notes will be entered at end of week — see Hours Log)');
         }
 
+        // Next week sprint goals
         var nextWeekMeta = WEEK_META[Math.min(weekNum, 9)];
         var nextGoals = NEXT_SPRINT_GOALS[nextWeekMeta.sprint] || [];
-        var nextGoalsList = nextGoals.map(function(g){ return '  \u2022 ' + g; }).join('\n');
+        var isTBD = nextGoals.length === 1 && nextGoals[0].indexOf('TBD') !== -1;
+        var nextGoalsList = isTBD
+            ? '  ' + nextGoals[0]
+            : nextGoals.map(function(g){ return '  \u2022 ' + g; }).join('\n');
 
         var issuesData = ISSUES_DATA[weekKey] || {};
         var issues    = issuesData.issues     || '(no issues logged for this week)';
         var prevention= issuesData.prevention || '(no prevention notes logged for this week)';
 
-        var expectedProgress = meta.sprint.indexOf('Sprint 12') !== -1
-            ? '  Complete EC2/backend diagnosis, database checks, and API endpoint testing.\n  Goal: full production status map documented before fixing anything.'
-            : nextGoals.slice(0,3).map(function(g){ return '  \u2022 ' + g; }).join('\n');
+        // Expected progress this week
+        var currentGoals = NEXT_SPRINT_GOALS[meta.sprint] || [];
+        var currentIsTBD = currentGoals.length === 1 && currentGoals[0].indexOf('TBD') !== -1;
+        var expectedProgress = EXPECTED_THIS_WEEK[weekNum]
+            || (currentIsTBD
+                ? '  Sprint goals will be set at planning session after the previous sprint closes.'
+                : currentGoals.slice(0,3).map(function(g){ return '  \u2022 ' + g; }).join('\n'));
 
         var report =
 'IS 330 \u2014 Senior Capstone Weekly Progress Report\n' +
