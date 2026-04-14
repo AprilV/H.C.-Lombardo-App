@@ -518,6 +518,7 @@
             font-weight: 600;
         }
         .theme-toggle:hover { background: rgba(255,215,0,0.15); border-color: #FFD700; }
+        .sd-opt:hover { background: #2d3f54 !important; }
 
         /* ══════════════════════════════════════════
            LIGHT MODE
@@ -1622,7 +1623,7 @@
         .hours-notes:focus { border-color: rgba(255,215,0,0.3); color: #f1f5f9; }
     </style>
 </head>
-<body>
+<body class="dark">
 
 <!-- HEADER -->
 <header>
@@ -1638,8 +1639,8 @@
             <div class="header-divider"></div>
             <select class="theme-toggle" id="theme-btn" onchange="applyThemeClass(this.value); setTimeout(rebuildCharts, 30);" style="cursor:pointer; appearance:auto;">
                 <option value="nfl">🏈 NFL Mode</option>
-                <option value="dark">🌙 Dark Mode</option>
-                <option value="light">☀️ Light Mode</option>
+                <option value="dark" selected>💼 Executive Dark</option>
+                <option value="light">☀️ Classic Light</option>
             </select>
         </div>
     </div>
@@ -1946,16 +1947,22 @@
                     <span class="sprint-status status-upcoming">Upcoming</span>
                 </div>
             </div>
-            <!-- Sprint selector -->
+            <!-- Sprint selector (custom dropdown — Edge-safe) -->
             <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem;">
                 <span style="font-size:0.85rem; color:var(--muted); white-space:nowrap; font-weight:600;">View Sprint Board:</span>
-                <select id="sprint-selector" onchange="showSprintBoard(this.value)" style="background:rgba(255,255,255,0.08); color:#f1f5f9; border:1px solid var(--border); border-radius:0.5rem; padding:0.45rem 1rem; font-size:0.88rem; cursor:pointer; outline:none; min-width:280px;">
-                    <option value="12" selected>Sprint 12 — Diagnose &amp; Restore (Active)</option>
-                    <option value="13">Sprint 13 — Data &amp; Clean</option>
-                    <option value="14">Sprint 14 — ML Retrain</option>
-                    <option value="15">Sprint 15 — UI &amp; UX Polish</option>
-                    <option value="16">Sprint 16 — Hardening &amp; Release</option>
-                </select>
+                <div id="sprint-dropdown" style="position:relative; min-width:300px;">
+                    <button id="sprint-dropdown-btn" onclick="toggleSprintDropdown()" style="width:100%; display:flex; align-items:center; justify-content:space-between; gap:0.5rem; background:#1e2a3a; color:#f1f5f9; border:1px solid rgba(255,255,255,0.15); border-radius:0.5rem; padding:0.45rem 1rem; font-size:0.88rem; cursor:pointer; outline:none; text-align:left;">
+                        <span id="sprint-dropdown-label">Sprint 12 — Diagnose &amp; Restore (Active)</span>
+                        <span id="sprint-dropdown-arrow" style="font-size:0.7rem; transition:transform 0.15s;">▼</span>
+                    </button>
+                    <div id="sprint-dropdown-list" style="display:none; position:absolute; top:calc(100% + 4px); left:0; right:0; background:#111c2b; border:1px solid rgba(255,255,255,0.15); border-radius:0.5rem; overflow:hidden; z-index:999; box-shadow:0 8px 24px rgba(0,0,0,0.6);">
+                        <div class="sd-opt" data-val="12" onclick="selectSprint(12,'Sprint 12 — Diagnose &amp; Restore (Active)')" style="padding:0.55rem 1rem; cursor:pointer; color:#FFD700; font-size:0.88rem; font-weight:600; background:#1a2e45;">Sprint 12 — Diagnose &amp; Restore (Active)</div>
+                        <div class="sd-opt" data-val="13" onclick="selectSprint(13,'Sprint 13 — Data &amp; Clean')" style="padding:0.55rem 1rem; cursor:pointer; color:#f1f5f9; font-size:0.88rem; background:#111c2b;">Sprint 13 — Data &amp; Clean</div>
+                        <div class="sd-opt" data-val="14" onclick="selectSprint(14,'Sprint 14 — ML Retrain')" style="padding:0.55rem 1rem; cursor:pointer; color:#f1f5f9; font-size:0.88rem; background:#111c2b;">Sprint 14 — ML Retrain</div>
+                        <div class="sd-opt" data-val="15" onclick="selectSprint(15,'Sprint 15 — UI &amp; UX Polish')" style="padding:0.55rem 1rem; cursor:pointer; color:#f1f5f9; font-size:0.88rem; background:#111c2b;">Sprint 15 — UI &amp; UX Polish</div>
+                        <div class="sd-opt" data-val="16" onclick="selectSprint(16,'Sprint 16 — Hardening &amp; Release')" style="padding:0.55rem 1rem; cursor:pointer; color:#f1f5f9; font-size:0.88rem; background:#111c2b;">Sprint 16 — Hardening &amp; Release</div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -2374,7 +2381,6 @@
                 <th style="text-align:left; padding:0.6rem 0.75rem; color:#FFD700; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.08em; white-space:nowrap;">Category</th>
                 <th style="text-align:center; padding:0.6rem 0.75rem; color:#FFD700; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.08em; white-space:nowrap;">Priority</th>
                 <th style="text-align:center; padding:0.6rem 0.75rem; color:#FFD700; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.08em; white-space:nowrap;">Effort</th>
-                <th style="text-align:center; padding:0.6rem 0.75rem; color:#FFD700; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.08em; white-space:nowrap;">Sprint</th>
                 <th style="text-align:center; padding:0.6rem 0.75rem; color:#FFD700; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.08em; white-space:nowrap;">Status</th>
             </tr>
         </thead>
@@ -2736,6 +2742,37 @@ function showSprintBoard(sprintNum) {
         showSprintView('board', document.querySelector('#tab-sprints .subnav-btn'));
     }
 }
+
+function toggleSprintDropdown() {
+    var list = document.getElementById('sprint-dropdown-list');
+    var arrow = document.getElementById('sprint-dropdown-arrow');
+    var open = list.style.display !== 'none';
+    list.style.display = open ? 'none' : '';
+    arrow.style.transform = open ? '' : 'rotate(180deg)';
+}
+
+function selectSprint(num, label) {
+    document.getElementById('sprint-dropdown-label').textContent = label;
+    // Highlight active option
+    document.querySelectorAll('.sd-opt').forEach(function(o) {
+        o.style.background = '';
+        o.style.color = '#f1f5f9';
+        o.style.fontWeight = '';
+    });
+    var active = document.querySelector('.sd-opt[data-val="' + num + '"]');
+    if (active) { active.style.background = '#243447'; active.style.color = '#FFD700'; active.style.fontWeight = '600'; }
+    toggleSprintDropdown();
+    showSprintBoard(String(num));
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(e) {
+    var dd = document.getElementById('sprint-dropdown');
+    if (dd && !dd.contains(e.target)) {
+        document.getElementById('sprint-dropdown-list').style.display = 'none';
+        document.getElementById('sprint-dropdown-arrow').style.transform = '';
+    }
+});
 
 /* ── SYNC DASHBOARD METRICS FROM SPRINT 12 TASKS ── */
 function syncDashMetrics() {
@@ -3381,7 +3418,8 @@ function applyThemeClass(theme) {
     const sel = document.getElementById('theme-btn');
     if (sel) sel.value = theme;
 }
-// Default theme on load: NFL mode (no class needed)
+// Default theme on load: Dark mode
+applyThemeClass('dark');
 
 
 /* ════════════════════════════════════════════════════════
@@ -3779,87 +3817,78 @@ initBacklog();
         // ── SPRINT 12 — Diagnose & Restore ──
         { id:'PB-001', feature:'SSH access & EC2 service verification',        cat:'Infrastructure', pri:'Critical', effort:'S', sprint:'S12', status:'In Sprint' },
         { id:'PB-002', feature:'PostgreSQL health check & schema validation',   cat:'Infrastructure', pri:'Critical', effort:'S', sprint:'S12', status:'In Sprint' },
-        { id:'PB-003', feature:'Test all 26 API endpoints',                     cat:'Backend',        pri:'Critical', effort:'M', sprint:'S12', status:'In Sprint' },
+        { id:'PB-003', feature:'Test all 22 API endpoints',                     cat:'Backend',        pri:'Critical', effort:'M', sprint:'S12', status:'In Sprint' },
         { id:'PB-004', feature:'Frontend production walkthrough',                cat:'Frontend',       pri:'Critical', effort:'M', sprint:'S12', status:'In Sprint' },
-        { id:'PB-005', feature:'Verify REACT_APP_API_URL in Amplify',           cat:'Infrastructure', pri:'Critical', effort:'S', sprint:'S12', status:'In Sprint' },
+        { id:'PB-005', feature:'Verify REACT_APP_API_URL in Amplify',           cat:'Infrastructure', pri:'Critical', effort:'S', sprint:'S12', status:'Done'      },
         { id:'PB-006', feature:'CORS configuration fix',                         cat:'Backend',        pri:'Critical', effort:'S', sprint:'S12', status:'In Sprint' },
         { id:'PB-007', feature:'Production Issue Log created',                   cat:'Documentation',  pri:'High',     effort:'S', sprint:'S12', status:'In Sprint' },
         { id:'PB-008', feature:'Live app URL added to dashboard',                cat:'Dashboard',      pri:'High',     effort:'S', sprint:'S12', status:'Blocked'   },
         { id:'PB-009', feature:'CLAUDE.md updated to reflect current state',     cat:'Documentation',  pri:'Medium',   effort:'S', sprint:'S12', status:'In Sprint' },
 
-        // ── SPRINT 13 — Data & Clean ──
-        { id:'PB-010', feature:'Remove hardcoded credentials (BUG-003/004/005)', cat:'Security',       pri:'Critical', effort:'S', sprint:'S13', status:'Backlog'   },
-        { id:'PB-011', feature:'Move all passwords to .env files',               cat:'Security',       pri:'Critical', effort:'S', sprint:'S13', status:'Backlog'   },
-        { id:'PB-012', feature:'Load 2025 NFL season data into PostgreSQL',      cat:'Data',           pri:'Critical', effort:'L', sprint:'S13', status:'Backlog'   },
-        { id:'PB-013', feature:'Validate data integrity — row counts & spot checks', cat:'Data',       pri:'High',     effort:'M', sprint:'S13', status:'Backlog'   },
-        { id:'PB-014', feature:'Fix broken frontend routes (BUG-001/002)',        cat:'Frontend',       pri:'High',     effort:'S', sprint:'S13', status:'Backlog'   },
-        { id:'PB-015', feature:'Fix background_updater.py missing import',        cat:'Backend',        pri:'High',     effort:'S', sprint:'S13', status:'Backlog'   },
-        { id:'PB-016', feature:'Confirm background updater running in production', cat:'Infrastructure', pri:'High',     effort:'S', sprint:'S13', status:'Backlog'   },
-        { id:'PB-017', feature:'Audit git history for exposed secrets',           cat:'Security',       pri:'High',     effort:'M', sprint:'S13', status:'Backlog'   },
-
-        // ── SPRINT 14 — ML Retrain ──
-        { id:'PB-018', feature:'Retrain XGBoost winner classifier on 2025 data', cat:'ML',             pri:'Critical', effort:'L', sprint:'S14', status:'Backlog'   },
-        { id:'PB-019', feature:'Retrain spread regressor — document MAE',         cat:'ML',             pri:'Critical', effort:'L', sprint:'S14', status:'Backlog'   },
-        { id:'PB-020', feature:'Recalculate Elo ratings through 2025 season',     cat:'ML',             pri:'High',     effort:'M', sprint:'S14', status:'Backlog'   },
-        { id:'PB-021', feature:'Fix ML training schema (hcl_test → hcl)',         cat:'ML',             pri:'Critical', effort:'S', sprint:'S14', status:'Backlog'   },
-        { id:'PB-022', feature:'Fix broken SQL in train_xgb_spread.py',           cat:'ML',             pri:'High',     effort:'S', sprint:'S14', status:'Backlog'   },
-        { id:'PB-023', feature:'Verify no data leakage in feature pipeline',      cat:'ML',             pri:'High',     effort:'M', sprint:'S14', status:'Backlog'   },
-        { id:'PB-024', feature:'ML Predictions page showing live results in prod', cat:'Frontend',       pri:'High',     effort:'M', sprint:'S14', status:'Backlog'   },
-        { id:'PB-025', feature:'Record model accuracy metrics in ModelPerformance', cat:'ML',            pri:'Medium',   effort:'S', sprint:'S14', status:'Backlog'   },
-
-        // ── SPRINT 15 — UI & UX Polish ──
-        { id:'PB-026', feature:'Mobile-responsive pass — all pages at 375px',     cat:'Frontend',       pri:'High',     effort:'L', sprint:'S15', status:'Backlog'   },
-        { id:'PB-027', feature:'Fix all broken layouts and overflow issues',       cat:'Frontend',       pri:'High',     effort:'M', sprint:'S15', status:'Backlog'   },
-        { id:'PB-028', feature:'Loading states and error states on all pages',     cat:'Frontend',       pri:'Medium',   effort:'M', sprint:'S15', status:'Backlog'   },
-        { id:'PB-029', feature:'Zero console errors in production',                cat:'Frontend',       pri:'High',     effort:'M', sprint:'S15', status:'Backlog'   },
-        { id:'PB-030', feature:'Full production walkthrough — advisor demo-ready', cat:'QA',             pri:'Critical', effort:'M', sprint:'S15', status:'Backlog'   },
-        { id:'PB-031', feature:'Fix /game-statistics and /matchup-analyzer routes', cat:'Frontend',      pri:'High',     effort:'S', sprint:'S15', status:'Backlog'   },
-
-        // ── SPRINT 16 — Hardening & Release ──
-        { id:'PB-032', feature:'Rate limiting on Flask API',                       cat:'Security',       pri:'High',     effort:'S', sprint:'S16', status:'Backlog'   },
-        { id:'PB-033', feature:'HTTPS confirmed — all traffic encrypted',          cat:'Security',       pri:'Critical', effort:'S', sprint:'S16', status:'Backlog'   },
-        { id:'PB-034', feature:'Final security audit — no exposed credentials',    cat:'Security',       pri:'Critical', effort:'M', sprint:'S16', status:'Backlog'   },
-        { id:'PB-035', feature:'README updated for public audience',               cat:'Documentation',  pri:'Medium',   effort:'S', sprint:'S16', status:'Backlog'   },
-        { id:'PB-036', feature:'Final performance report written & submitted',     cat:'Documentation',  pri:'Critical', effort:'M', sprint:'S16', status:'Backlog'   },
-        { id:'PB-037', feature:'App stable for 48+ hours before submission',       cat:'QA',             pri:'Critical', effort:'M', sprint:'S16', status:'Backlog'   },
-        { id:'PB-038', feature:'Capstone advisor sign-off received',               cat:'Milestone',      pri:'Critical', effort:'S', sprint:'S16', status:'Backlog'   },
-        { id:'PB-039', feature:'Tag v1.0 release on GitHub',                       cat:'Infrastructure', pri:'High',     effort:'S', sprint:'S16', status:'Backlog'   },
-
-        // ── UNSCHEDULED / TBD ──
-        { id:'PB-040', feature:'Move PM Dashboard to Amplify with admin panel',    cat:'Dashboard',      pri:'High',     effort:'L', sprint:'TBD', status:'TBD'       },
-        { id:'PB-041', feature:'User authentication (public vs admin view)',        cat:'Security',       pri:'High',     effort:'L', sprint:'TBD', status:'TBD'       },
-        { id:'PB-042', feature:'2026 NFL season live data integration',            cat:'Data',           pri:'Medium',   effort:'L', sprint:'TBD', status:'TBD'       },
-        { id:'PB-043', feature:'Historical data export (CSV download)',            cat:'Frontend',       pri:'Low',      effort:'S', sprint:'TBD', status:'TBD'       },
-        { id:'PB-044', feature:'Email alerts for model prediction results',        cat:'Backend',        pri:'Low',      effort:'M', sprint:'TBD', status:'TBD'       },
-        { id:'PB-045', feature:'Dark/light theme persistence across sessions',     cat:'Frontend',       pri:'Low',      effort:'S', sprint:'TBD', status:'TBD'       },
-        { id:'PB-046', feature:'Weekly report server-side archive (save & retrieve past reports)', cat:'Dashboard', pri:'Low', effort:'M', sprint:'TBD', status:'TBD' },
-
-        // ── SPRINT 13 (newly added) ──
-        { id:'PB-047', feature:'Sync Sprint board tasks with Product Backlog — add ticket refs to sprint tasks, align statuses', cat:'Dashboard', pri:'High', effort:'M', sprint:'S13', status:'Backlog' },
-        { id:'PB-048', feature:'Move PM dashboard to custom domain + automate update process (reduce manual edits)', cat:'Dashboard', pri:'Medium', effort:'L', sprint:'S13', status:'Backlog' },
+        // ── UNASSIGNED BACKLOG (sprint assigned at planning) ──
+        { id:'PB-010', feature:'Remove hardcoded credentials (BUG-003/004/005)', cat:'Security',       pri:'Critical', effort:'S', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-011', feature:'Move all passwords to .env files',               cat:'Security',       pri:'Critical', effort:'S', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-012', feature:'Load 2025 NFL season data into PostgreSQL',      cat:'Data',           pri:'Critical', effort:'L', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-013', feature:'Validate data integrity — row counts & spot checks', cat:'Data',       pri:'High',     effort:'M', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-014', feature:'Fix broken frontend routes (BUG-001/002)',        cat:'Frontend',       pri:'High',     effort:'S', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-015', feature:'Fix background_updater.py missing import',        cat:'Backend',        pri:'High',     effort:'S', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-016', feature:'Confirm background updater running in production', cat:'Infrastructure', pri:'High',     effort:'S', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-017', feature:'Audit git history for exposed secrets',           cat:'Security',       pri:'High',     effort:'M', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-018', feature:'Retrain XGBoost winner classifier on 2025 data', cat:'ML',             pri:'Critical', effort:'L', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-019', feature:'Retrain spread regressor — document MAE',         cat:'ML',             pri:'Critical', effort:'L', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-020', feature:'Recalculate Elo ratings through 2025 season',     cat:'ML',             pri:'High',     effort:'M', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-021', feature:'Fix ML training schema (hcl_test → hcl)',         cat:'ML',             pri:'Critical', effort:'S', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-022', feature:'Fix broken SQL in train_xgb_spread.py',           cat:'ML',             pri:'High',     effort:'S', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-023', feature:'Verify no data leakage in feature pipeline',      cat:'ML',             pri:'High',     effort:'M', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-024', feature:'ML Predictions page showing live results in prod', cat:'Frontend',       pri:'High',     effort:'M', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-025', feature:'Record model accuracy metrics in ModelPerformance', cat:'ML',            pri:'Medium',   effort:'S', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-026', feature:'Mobile-responsive pass — all pages at 375px',     cat:'Frontend',       pri:'High',     effort:'L', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-027', feature:'Fix all broken layouts and overflow issues',       cat:'Frontend',       pri:'High',     effort:'M', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-028', feature:'Loading states and error states on all pages',     cat:'Frontend',       pri:'Medium',   effort:'M', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-029', feature:'Zero console errors in production',                cat:'Frontend',       pri:'High',     effort:'M', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-030', feature:'Full production walkthrough — advisor demo-ready', cat:'QA',             pri:'Critical', effort:'M', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-031', feature:'Fix /game-statistics and /matchup-analyzer routes', cat:'Frontend',      pri:'High',     effort:'S', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-032', feature:'Rate limiting on Flask API',                       cat:'Security',       pri:'High',     effort:'S', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-033', feature:'HTTPS confirmed — all traffic encrypted',          cat:'Security',       pri:'Critical', effort:'S', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-034', feature:'Final security audit — no exposed credentials',    cat:'Security',       pri:'Critical', effort:'M', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-035', feature:'README updated for public audience',               cat:'Documentation',  pri:'Medium',   effort:'S', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-036', feature:'Final performance report written & submitted',     cat:'Documentation',  pri:'Critical', effort:'M', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-037', feature:'App stable for 48+ hours before submission',       cat:'QA',             pri:'Critical', effort:'M', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-038', feature:'Capstone advisor sign-off received',               cat:'Milestone',      pri:'Critical', effort:'S', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-039', feature:'Tag v1.0 release on GitHub',                       cat:'Infrastructure', pri:'High',     effort:'S', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-040', feature:'Move PM Dashboard to Amplify with admin panel',    cat:'Dashboard',      pri:'High',     effort:'L', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-041', feature:'User authentication (public vs admin view)',        cat:'Security',       pri:'High',     effort:'L', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-042', feature:'2026 NFL season live data integration',            cat:'Data',           pri:'Medium',   effort:'L', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-043', feature:'Historical data export (CSV download)',            cat:'Frontend',       pri:'Low',      effort:'S', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-044', feature:'Email alerts for model prediction results',        cat:'Backend',        pri:'Low',      effort:'M', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-045', feature:'Dark/light theme persistence across sessions',     cat:'Frontend',       pri:'Low',      effort:'S', sprint:'TBD', status:'Backlog'   },
+        { id:'PB-046', feature:'Weekly report server-side archive (save & retrieve past reports)', cat:'Dashboard', pri:'Low', effort:'M', sprint:'TBD', status:'Backlog' },
+        { id:'PB-047', feature:'Sync Sprint board tasks with Product Backlog — add ticket refs to sprint tasks, align statuses', cat:'Dashboard', pri:'High', effort:'M', sprint:'TBD', status:'Backlog' },
+        { id:'PB-048', feature:'Move PM dashboard to custom domain + automate update process (reduce manual edits)', cat:'Dashboard', pri:'Medium', effort:'L', sprint:'TBD', status:'Backlog' },
+        { id:'PB-049', feature:'Cross-browser compatibility audit — dashboard and app tested in Edge, Chrome, Firefox, Safari', cat:'Frontend', pri:'High', effort:'M', sprint:'TBD', status:'Backlog' },
+        { id:'PB-050', feature:'Rework Classic Light theme — full redesign for readability and visual consistency', cat:'Dashboard', pri:'Medium', effort:'M', sprint:'TBD', status:'Backlog' },
+        { id:'PB-051', feature:'Rotate GitHub webhook secret — GitHub disclosed Sep–Dec 2025 bug exposed secrets in X-Github-Encoded-Secret header; rotate Amplify webhook secret as precaution', cat:'Security', pri:'Low', effort:'XS', sprint:'TBD', status:'Backlog' },
     ];
 
     var tbody = document.getElementById('pb-tbody');
     if (!tbody) return;
-    var lastSprint = '';
-    tbody.innerHTML = items.map(function(item, i) {
+    // S12 items first, then everything else — no sprint labels except S12
+    var s12Items = items.filter(function(i){ return i.sprint === 'S12'; });
+    var backlogItems = items.filter(function(i){ return i.sprint !== 'S12'; });
+    var s12Header = '<tr><td colspan="6" style="padding:0.5rem 0.75rem 0.25rem; font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:#FFD700; border-bottom:1px solid var(--border);">Sprint 12 — Active</td></tr>';
+    var backlogHeader = '<tr><td colspan="6" style="padding:0.5rem 0.75rem 0.25rem; font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:var(--muted); border-bottom:1px solid var(--border);">Backlog</td></tr>';
+    function renderRow(item, i) {
         var bg = i % 2 === 0 ? '' : 'background:rgba(255,255,255,0.02);';
-        var groupRow = '';
-        if (item.sprint !== lastSprint) {
-            lastSprint = item.sprint;
-            var label = item.sprint === 'TBD' ? 'Unscheduled' : item.sprint + ' — ' + ({'S12':'Diagnose & Restore','S13':'Data & Clean','S14':'ML Retrain','S15':'UI & UX Polish','S16':'Hardening & Release','TBD':''}[item.sprint] || '');
-            groupRow = '<tr><td colspan="7" style="padding:0.5rem 0.75rem 0.25rem; font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:#FFD700; border-bottom:1px solid var(--border);">' + label + '</td></tr>';
-        }
-        return groupRow + '<tr style="border-bottom:1px solid var(--border-subtle);' + bg + '">' +
+        return '<tr style="border-bottom:1px solid var(--border-subtle);' + bg + '">' +
             '<td style="padding:0.65rem 0.75rem; color:var(--muted); white-space:nowrap; font-size:0.78rem;">' + item.id + '</td>' +
             '<td style="padding:0.65rem 0.75rem; color:#f1f5f9; font-weight:600;">' + item.feature + '</td>' +
             '<td style="padding:0.65rem 0.75rem; color:var(--muted); white-space:nowrap;">' + item.cat + '</td>' +
             '<td style="padding:0.65rem 0.75rem; text-align:center;"><span style="' + (PS[item.pri]||PS.Low) + 'border-radius:9999px;padding:0.15rem 0.55rem;font-size:0.7rem;font-weight:700;">' + item.pri + '</span></td>' +
             '<td style="padding:0.65rem 0.75rem; text-align:center; color:var(--muted);">' + item.effort + '</td>' +
-            '<td style="padding:0.65rem 0.75rem; text-align:center; color:var(--muted);">' + item.sprint + '</td>' +
             '<td style="padding:0.65rem 0.75rem; text-align:center;"><span style="' + (SS[item.status]||SS.Backlog) + 'border-radius:9999px;padding:0.15rem 0.55rem;font-size:0.7rem;font-weight:700;">' + item.status + '</span></td>' +
         '</tr>';
-    }).join('');
+    }
+    tbody.innerHTML = s12Header + s12Items.map(renderRow).join('') + backlogHeader + backlogItems.map(renderRow).join('');
 })();
 
 function showBacklogView(view, btn) {
