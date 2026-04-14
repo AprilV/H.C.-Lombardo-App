@@ -4034,83 +4034,97 @@ function showSprintView(view, btn) {
         var el = document.getElementById('report-output');
         if (!el) return;
 
-        // ── HTML render ──
-        var completedHTML = '';
+        // ── Completed tasks as prose list (no checkmarks) ──
+        var completedBody = '';
         if (d.completedTasks.length) {
-            completedHTML = d.completedTasks.map(function(t) {
-                return '<div style="display:flex;gap:0.6rem;align-items:flex-start;padding:0.3rem 0;border-bottom:1px solid rgba(255,255,255,0.05);">'
-                    + '<span style="color:#10b981;font-weight:700;flex-shrink:0;">✓</span>'
-                    + '<span style="color:#f1f5f9;font-size:0.85rem;">' + t + '</span></div>';
-            }).join('');
+            completedBody = '<ul style="margin:0;padding-left:1.4rem;color:#1e293b;line-height:1.9;">'
+                + d.completedTasks.map(function(t){ return '<li style="margin-bottom:0.15rem;">' + t + '</li>'; }).join('')
+                + '</ul>';
         } else if (d.meta.sprint.indexOf('Sprint 12') !== -1) {
-            completedHTML = '<div style="color:var(--muted);font-size:0.84rem;">(no tasks checked off on the sprint board yet)</div>';
+            completedBody = '<p style="color:#64748b;margin:0;">No sprint board tasks marked complete for this reporting period.</p>';
         } else {
-            completedHTML = '<div style="color:var(--muted);font-size:0.84rem;">' + (d.narrative || 'See hours log for details.') + '</div>';
+            completedBody = '<p style="color:#1e293b;margin:0;">' + (d.narrative || 'See hours log for details.') + '</p>';
         }
 
-        var nextGoalsHTML = d.nextIsTBD
-            ? '<div style="color:var(--muted);font-size:0.84rem;">' + d.nextGoals[0] + '</div>'
-            : d.nextGoals.map(function(g) {
-                return '<div style="display:flex;gap:0.6rem;align-items:flex-start;padding:0.25rem 0;">'
-                    + '<span style="color:#FFD700;flex-shrink:0;">•</span>'
-                    + '<span style="color:#f1f5f9;font-size:0.84rem;">' + g + '</span></div>';
-              }).join('');
+        // ── Next week goals ──
+        var nextBody = d.nextIsTBD
+            ? '<p style="color:#64748b;margin:0;">' + d.nextGoals[0] + '</p>'
+            : '<ul style="margin:0;padding-left:1.4rem;color:#1e293b;line-height:1.9;">'
+              + d.nextGoals.map(function(g){ return '<li style="margin-bottom:0.15rem;">' + g + '</li>'; }).join('')
+              + '</ul>';
 
-        function section(label, color, content) {
-            return '<div style="margin-bottom:1.25rem;">'
-                + '<div style="font-size:0.68rem;font-weight:800;text-transform:uppercase;letter-spacing:0.12em;color:' + color + ';margin-bottom:0.5rem;padding-bottom:0.3rem;border-bottom:1px solid rgba(255,255,255,0.08);">' + label + '</div>'
-                + content
+        // ── Section builder ──
+        var snum = 0;
+        function sec(title, body) {
+            snum++;
+            return '<div style="margin-bottom:1.6rem;">'
+                + '<div style="display:flex;align-items:baseline;gap:0.6rem;margin-bottom:0.55rem;padding-bottom:0.4rem;border-bottom:2px solid #e2e8f0;">'
+                +   '<span style="font-size:0.72rem;font-weight:800;color:#94a3b8;min-width:1.1rem;">' + snum + '.</span>'
+                +   '<span style="font-size:0.78rem;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:#334155;">' + title + '</span>'
+                + '</div>'
+                + body
                 + '</div>';
         }
 
-        var html =
-        '<div style="padding:1.75rem 1.5rem;font-family:\'Segoe UI\',system-ui,sans-serif;">'
+        // ── Hours summary row ──
+        var hoursBody =
+            '<div style="display:flex;gap:2.5rem;flex-wrap:wrap;padding:0.75rem 1rem;background:#f8fafc;border-radius:0.4rem;border:1px solid #e2e8f0;">'
+            + '<div><div style="font-size:1.6rem;font-weight:800;color:#0f172a;line-height:1;">' + (d.hoursThisWeek || '0') + '</div><div style="font-size:0.7rem;color:#64748b;margin-top:0.15rem;text-transform:uppercase;letter-spacing:0.06em;">Hours this week</div></div>'
+            + '<div style="width:1px;background:#e2e8f0;"></div>'
+            + '<div><div style="font-size:1.6rem;font-weight:800;color:#0f172a;line-height:1;">' + (d.totalHours || '0') + '</div><div style="font-size:0.7rem;color:#64748b;margin-top:0.15rem;text-transform:uppercase;letter-spacing:0.06em;">Total hours this term</div></div>'
+            + '</div>';
 
-        // Header
-        + '<div style="margin-bottom:1.5rem;">'
-        +   '<div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:0.25rem;">IS 471 — Senior Capstone Weekly Progress Report</div>'
-        +   '<div style="font-size:1.3rem;font-weight:800;color:#f1f5f9;margin-bottom:0.35rem;">Week ' + d.meta.num + ' of 10 &nbsp;·&nbsp; ' + d.meta.dates + '</div>'
-        +   '<div style="display:flex;flex-wrap:wrap;gap:0.5rem;align-items:center;">'
-        +     '<span style="font-size:0.78rem;color:#f1f5f9;">April V. Sykes</span>'
-        +     '<span style="color:var(--muted);">·</span>'
-        +     '<span style="background:rgba(213,10,10,0.2);color:#f87171;border:1px solid rgba(213,10,10,0.35);border-radius:9999px;padding:0.1rem 0.65rem;font-size:0.72rem;font-weight:700;">' + d.meta.sprint + '</span>'
-        +     '<span style="color:var(--muted);font-size:0.78rem;">' + d.meta.sprintDates + '</span>'
+        var html =
+        // Document wrapper — white paper on dark background
+        '<div style="background:#fff;color:#1e293b;border-radius:0.5rem;font-family:Georgia,\'Times New Roman\',serif;font-size:0.9rem;line-height:1.7;overflow:hidden;">'
+
+        // Letterhead bar
+        + '<div style="background:#0f172a;padding:1.25rem 1.75rem;display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:0.75rem;">'
+        +   '<div>'
+        +     '<div style="font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.14em;color:#94a3b8;font-family:\'Segoe UI\',system-ui,sans-serif;margin-bottom:0.2rem;">Olympic College &nbsp;·&nbsp; IS 471 Senior Capstone</div>'
+        +     '<div style="font-size:1.15rem;font-weight:700;color:#f8fafc;font-family:\'Segoe UI\',system-ui,sans-serif;">Weekly Progress Report</div>'
+        +   '</div>'
+        +   '<div style="text-align:right;">'
+        +     '<div style="font-size:0.78rem;font-weight:600;color:#f8fafc;font-family:\'Segoe UI\',system-ui,sans-serif;">Week ' + d.meta.num + ' of 10</div>'
+        +     '<div style="font-size:0.72rem;color:#94a3b8;font-family:\'Segoe UI\',system-ui,sans-serif;">' + d.meta.dates + '</div>'
         +   '</div>'
         + '</div>'
 
-        // Hours
-        + section('Hours', '#FFD700',
-            '<div style="display:flex;gap:2rem;flex-wrap:wrap;">'
-            + '<div><div style="font-size:2rem;font-weight:800;color:#FFD700;line-height:1;">' + (d.hoursThisWeek || '—') + '</div><div style="font-size:0.72rem;color:var(--muted);margin-top:0.2rem;">This week</div></div>'
-            + '<div><div style="font-size:2rem;font-weight:800;color:#93c5fd;line-height:1;">' + (d.totalHours || '—') + '</div><div style="font-size:0.72rem;color:var(--muted);margin-top:0.2rem;">Total this term</div></div>'
-            + '</div>'
-          )
+        // Meta row
+        + '<div style="background:#f8fafc;border-bottom:1px solid #e2e8f0;padding:0.65rem 1.75rem;display:flex;flex-wrap:wrap;gap:1.5rem;font-family:\'Segoe UI\',system-ui,sans-serif;font-size:0.78rem;color:#475569;">'
+        +   '<div><span style="font-weight:700;color:#334155;">Student:</span> April V. Sykes</div>'
+        +   '<div><span style="font-weight:700;color:#334155;">Advisor:</span> Richard Becker</div>'
+        +   '<div><span style="font-weight:700;color:#334155;">Sprint:</span> ' + d.meta.sprint + ' &nbsp;(' + d.meta.sprintDates + ')</div>'
+        + '</div>'
 
-        // Expected this week
-        + section('Expected Progress This Week', '#a78bfa',
-            '<div style="color:#e2e8f0;font-size:0.84rem;line-height:1.65;">' + d.expectedThisWk + '</div>'
-          )
+        // Body
+        + '<div style="padding:1.75rem 1.75rem 1.25rem;">'
 
-        // Actual progress
-        + section('Actual Progress This Week', '#10b981', completedHTML)
+        + sec('Hours Logged', hoursBody)
 
-        // Issues
-        + section('Issues &amp; How Addressed', '#fb923c',
-            '<div style="color:#e2e8f0;font-size:0.84rem;line-height:1.65;">' + (d.issues || '<span style="color:var(--muted);">(none logged)</span>') + '</div>'
-          )
+        + sec('Expected Progress This Week',
+            '<p style="margin:0;color:#1e293b;line-height:1.75;">' + d.expectedThisWk + '</p>')
 
-        // Prevention
-        + section('Prevention / Mitigation', '#fb923c',
-            '<div style="color:#e2e8f0;font-size:0.84rem;line-height:1.65;">' + (d.prevention || '<span style="color:var(--muted);">(none logged)</span>') + '</div>'
-          )
+        + sec('Actual Progress This Week', completedBody)
 
-        // Next week
-        + section('Expected Progress Next Week', '#60a5fa', nextGoalsHTML)
+        + sec('Issues &amp; How Addressed',
+            '<p style="margin:0;color:' + (d.issues ? '#1e293b' : '#64748b') + ';line-height:1.75;">' + (d.issues || 'No issues logged for this reporting period.') + '</p>')
 
-        // Objectives
-        + section('Relation to Original Objectives', 'var(--muted)',
-            '<div style="color:#e2e8f0;font-size:0.84rem;line-height:1.65;">This work advances the IS 471 capstone objective of deploying a fully functional NFL analytics application to production (AWS Amplify + EC2) by June 13, 2026. Each sprint builds on the last in a fixed dependency chain — production cannot launch until all sprints complete in sequence.</div>'
-          )
+        + sec('Prevention / Mitigation',
+            '<p style="margin:0;color:' + (d.prevention ? '#1e293b' : '#64748b') + ';line-height:1.75;">' + (d.prevention || 'No prevention notes logged for this reporting period.') + '</p>')
+
+        + sec('Expected Progress Next Week', nextBody)
+
+        + sec('Relation to Original Objectives',
+            '<p style="margin:0;color:#1e293b;line-height:1.75;">This work advances the IS 471 capstone objective of deploying a fully functional NFL analytics web application to production (AWS Amplify + EC2) by June 13, 2026. Each sprint builds on the previous in a fixed dependency chain — the system cannot go live until infrastructure, data, machine learning, and UI work complete in sequence.</p>')
+
+        + '</div>'
+
+        // Footer
+        + '<div style="border-top:1px solid #e2e8f0;padding:0.6rem 1.75rem;background:#f8fafc;display:flex;justify-content:space-between;font-family:\'Segoe UI\',system-ui,sans-serif;font-size:0.7rem;color:#94a3b8;">'
+        +   '<span>H.C. Lombardo NFL Analytics App</span>'
+        +   '<span>IS 471 &nbsp;·&nbsp; Spring 2026 &nbsp;·&nbsp; Olympic College</span>'
+        + '</div>'
 
         + '</div>';
 
