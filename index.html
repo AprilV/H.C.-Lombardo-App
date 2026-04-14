@@ -2391,85 +2391,58 @@
 </div>
 </div>
 
-<!-- ── BUG TRACKER ── -->
+<!-- ── TASK TRACKER ── -->
 <div id="backlog-bugs" style="display:none;">
 <div class="pm-panel">
     <div class="pm-header">
         <div>
             <h2>📋 Task Tracker</h2>
-            <p>All issues identified during Sprint 12 discovery. New issues go in the Product Backlog as PB items.</p>
-        </div>
-        <div class="sprint-meta">
-            <span class="meta-pill">P1 = Blocker</span>
-            <span class="meta-pill">P2 = Major</span>
-            <span class="meta-pill">P3 = Minor</span>
-            <span class="meta-pill">P4 = Polish</span>
+            <p>All PB items — searchable, filterable, sortable. Same data as the Product Backlog.</p>
         </div>
     </div>
 
-    <!-- Stats -->
-    <div class="backlog-stats">
-        <div class="bstat"><div class="bn" id="bstat-total">21</div><div class="bl">Total Issues</div></div>
-        <div class="bstat"><div class="bn" id="bstat-p1" style="color:#ff6b6b;">4</div><div class="bl">P1 Blockers</div></div>
-        <div class="bstat"><div class="bn" id="bstat-p2" style="color:#FFA500;">10</div><div class="bl">P2 Major</div></div>
-        <div class="bstat"><div class="bn" id="bstat-p3" style="color:#FFD700;">5</div><div class="bl">P3 Minor</div></div>
-        <div class="bstat"><div class="bn" id="bstat-p4" style="color:var(--muted);">1</div><div class="bl">P4 Polish</div></div>
-        <div class="bstat"><div class="bn" id="bstat-open" style="color:#ff6b6b;">13</div><div class="bl">Open</div></div>
-        <div class="bstat"><div class="bn" id="bstat-fixed" style="color:#10b981;">8</div><div class="bl">Fixed</div></div>
+    <!-- Search + Filters -->
+    <div style="display:flex; flex-wrap:wrap; gap:0.75rem; align-items:center; margin-bottom:1rem;">
+        <input id="tt-search" type="text" placeholder="Search tasks..." oninput="renderTaskTracker()"
+            style="background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.15); border-radius:0.4rem; color:#f1f5f9; font-size:0.85rem; padding:0.4rem 0.85rem; outline:none; min-width:220px; flex:1;">
+        <div class="backlog-controls" style="margin:0;">
+            <span style="font-size:0.8rem; color:var(--muted); margin-right:0.25rem;">Priority:</span>
+            <button class="filter-btn active" onclick="setTTFilter('pri','all',this)">All</button>
+            <button class="filter-btn" onclick="setTTFilter('pri','Critical',this)">Critical</button>
+            <button class="filter-btn" onclick="setTTFilter('pri','High',this)">High</button>
+            <button class="filter-btn" onclick="setTTFilter('pri','Medium',this)">Medium</button>
+            <button class="filter-btn" onclick="setTTFilter('pri','Low',this)">Low</button>
+        </div>
+        <div class="backlog-controls" style="margin:0;">
+            <span style="font-size:0.8rem; color:var(--muted); margin-right:0.25rem;">Status:</span>
+            <button class="filter-btn active" onclick="setTTFilter('status','all',this)">All</button>
+            <button class="filter-btn" onclick="setTTFilter('status','In Sprint',this)">In Sprint</button>
+            <button class="filter-btn" onclick="setTTFilter('status','Done',this)">Done</button>
+            <button class="filter-btn" onclick="setTTFilter('status','Blocked',this)">Blocked</button>
+            <button class="filter-btn" onclick="setTTFilter('status','Backlog',this)">Backlog</button>
+        </div>
     </div>
 
-    <!-- Filters -->
-    <div class="backlog-controls">
-        <span style="font-size:0.8rem; color:var(--muted); margin-right:0.25rem;">Filter:</span>
-        <button class="filter-btn active" onclick="filterBacklog('all', this)">All</button>
-        <button class="filter-btn" onclick="filterBacklog('P1', this)">P1</button>
-        <button class="filter-btn" onclick="filterBacklog('P2', this)">P2</button>
-        <button class="filter-btn" onclick="filterBacklog('P3', this)">P3</button>
-        <button class="filter-btn" onclick="filterBacklog('P4', this)">P4</button>
-        <button class="filter-btn" onclick="filterBacklog('OPEN', this)">Open</button>
-        <button class="filter-btn" onclick="filterBacklog('FIXED', this)">Fixed</button>
-    </div>
+    <!-- Stats bar -->
+    <div id="tt-stats" style="font-size:0.8rem; color:var(--muted); margin-bottom:0.75rem;"></div>
 
-    <!-- Bug Table -->
-    <div style="background:var(--card); border:1px solid var(--border); border-radius:0.75rem; overflow:hidden; backdrop-filter:blur(8px);">
-        <table class="issue-table" id="backlog-table">
+    <!-- Table -->
+    <div style="background:var(--card); border:1px solid var(--border); border-radius:0.75rem; overflow:hidden; backdrop-filter:blur(8px); overflow-x:auto;">
+        <table class="issue-table" id="tt-table" style="width:100%;">
             <thead>
                 <tr>
-                    <th onclick="sortBugTable(0)" style="cursor:pointer;"># ↕</th>
-                    <th>Issue</th>
-                    <th>File</th>
-                    <th onclick="sortBugTable(3)" style="cursor:pointer; white-space:nowrap;">Sev ↕</th>
-                    <th onclick="sortBugTable(4)" style="cursor:pointer;">Status ↕</th>
-                    <th>Sprint</th>
+                    <th onclick="sortTT(0)" style="cursor:pointer; white-space:nowrap;">ID ↕</th>
+                    <th onclick="sortTT(1)" style="cursor:pointer;">Feature / Task ↕</th>
+                    <th onclick="sortTT(2)" style="cursor:pointer;">Category ↕</th>
+                    <th onclick="sortTT(3)" style="cursor:pointer; white-space:nowrap;">Priority ↕</th>
+                    <th onclick="sortTT(4)" style="cursor:pointer; white-space:nowrap;">Effort ↕</th>
+                    <th onclick="sortTT(5)" style="cursor:pointer; white-space:nowrap;">Sprint ↕</th>
+                    <th onclick="sortTT(6)" style="cursor:pointer;">Status ↕</th>
                 </tr>
             </thead>
-            <tbody id="backlog-tbody">
-                <tr data-sev="P2" data-status="FIXED"><td>BUG-001</td><td>/game-statistics routes to wrong component</td><td>App.js ~58</td><td><span class="sev-p2">P2</span></td><td><span class="st-fixed">FIXED</span></td><td><span class="sprint-tag">S12</span></td></tr>
-                <tr data-sev="P2" data-status="FIXED"><td>BUG-002</td><td>/matchup-analyzer routes to wrong component</td><td>App.js ~59</td><td><span class="sev-p2">P2</span></td><td><span class="st-fixed">FIXED</span></td><td><span class="sprint-tag">S12</span></td></tr>
-                <tr data-sev="P1" data-status="FIXED"><td>BUG-003</td><td>Hardcoded password 'aprilv120' fallback</td><td>api_server.py ~77</td><td><span class="sev-p1">P1</span></td><td><span class="st-fixed">FIXED</span></td><td><span class="sprint-tag">S12</span></td></tr>
-                <tr data-sev="P1" data-status="FIXED"><td>BUG-004</td><td>Hardcoded password 'aprilv120' fallback</td><td>api_routes_hcl.py ~22</td><td><span class="sev-p1">P1</span></td><td><span class="st-fixed">FIXED</span></td><td><span class="sprint-tag">S12</span></td></tr>
-                <tr data-sev="P1" data-status="FIXED"><td>BUG-005</td><td>Hardcoded password 'aprilv120' fallback</td><td>api_routes_live_scores.py ~29</td><td><span class="sev-p1">P1</span></td><td><span class="st-fixed">FIXED</span></td><td><span class="sprint-tag">S12</span></td></tr>
-                <tr data-sev="P3" data-status="FIXED"><td>BUG-006</td><td>7+ DEBUG print statements in production</td><td>api_routes_live_scores.py</td><td><span class="sev-p3">P3</span></td><td><span class="st-fixed">FIXED</span></td><td><span class="sprint-tag">S12</span></td></tr>
-                <tr data-sev="P2" data-status="FIXED"><td>BUG-007</td><td>background_updater.py missing import (MultiSourceDataFetcher)</td><td>background_updater.py</td><td><span class="sev-p2">P2</span></td><td><span class="st-fixed">FIXED</span></td><td><span class="sprint-tag">S12</span></td></tr>
-                <tr data-sev="P2" data-status="OPEN"><td>BUG-008</td><td>train_xgb_winner.py uses hcl_test schema (wrong)</td><td>ml/train_xgb_winner.py:255</td><td><span class="sev-p2">P2</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">TBD</span></td></tr>
-                <tr data-sev="P2" data-status="OPEN"><td>BUG-009</td><td>Broken SQL WINDOW clause in spread training</td><td>ml/train_xgb_spread.py:95-116</td><td><span class="sev-p2">P2</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">TBD</span></td></tr>
-                <tr data-sev="P3" data-status="OPEN"><td>BUG-010</td><td>EPA features loaded in SQL but not used in model</td><td>ml/train_xgb_spread.py:174-181</td><td><span class="sev-p3">P3</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">TBD</span></td></tr>
-                <tr data-sev="P2" data-status="OPEN"><td>BUG-011</td><td>predict_ensemble.py TODO (incomplete) at line 338</td><td>ml/predict_ensemble.py:338</td><td><span class="sev-p2">P2</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">TBD</span></td></tr>
-                <tr data-sev="P2" data-status="OPEN"><td>BUG-012</td><td>Default season hardcoded as 2025 throughout backend</td><td>various</td><td><span class="sev-p2">P2</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">TBD</span></td></tr>
-                <tr data-sev="P4" data-status="FIXED"><td>BUG-013</td><td>MLPredictionsRedesign.backup.js dead file in src/</td><td>frontend/src/</td><td><span class="sev-p4">P4</span></td><td><span class="st-fixed">FIXED</span></td><td><span class="sprint-tag">S12</span></td></tr>
-                <tr data-sev="P1" data-status="OPEN"><td>BUG-014</td><td>EC2 disk 88% full — 871MB free, server will crash if full</td><td>EC2 / df -h</td><td><span class="sev-p1">P1</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">S12</span></td></tr>
-                <tr data-sev="P2" data-status="OPEN"><td>BUG-015</td><td>Spread coverage logic inverted — covered/not-covered backwards</td><td>api_routes_live_scores.py:250-257</td><td><span class="sev-p2">P2</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">TBD</span></td></tr>
-                <tr data-sev="P2" data-status="OPEN"><td>BUG-016</td><td>Dead code in predict_week.py — feature differentials never computed, always 0</td><td>ml/predict_week.py:171-181</td><td><span class="sev-p2">P2</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">TBD</span></td></tr>
-                <tr data-sev="P2" data-status="OPEN"><td>BUG-017</td><td>SQL injection via f-string interpolation in ML routes</td><td>api_routes_ml.py:380-403</td><td><span class="sev-p2">P2</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">TBD</span></td></tr>
-                <tr data-sev="P3" data-status="OPEN"><td>BUG-018</td><td>DB connection leaks on error — no context managers</td><td>api_routes_live_scores.py:71-103</td><td><span class="sev-p3">P3</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">TBD</span></td></tr>
-                <tr data-sev="P3" data-status="OPEN"><td>BUG-019</td><td>Race conditions in Analytics.js — no AbortController on fetch</td><td>frontend/src/Analytics.js:141-185</td><td><span class="sev-p3">P3</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">TBD</span></td></tr>
-                <tr data-sev="P3" data-status="OPEN"><td>BUG-020</td><td>API URL hardcoded in every React component — needs single config.js</td><td>frontend/src/*.js</td><td><span class="sev-p3">P3</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">TBD</span></td></tr>
-                <tr data-sev="P1" data-status="OPEN"><td>TASK-001</td><td>Call AWS support to reset root MFA — locked out of console (1-800-879-2747)</td><td>AWS Account ops</td><td><span class="sev-p1">P1</span></td><td><span class="st-open">OPEN</span></td><td><span class="sprint-tag">S12</span></td></tr>
-            </tbody>
+            <tbody id="tt-tbody"></tbody>
         </table>
     </div>
-
-    <p style="color:var(--muted); font-size:0.8rem; margin-top:0.5rem;">To log a new issue, tell Claude — it will be added to the Product Backlog as a PB item.</p>
 </div>
 </div><!-- /backlog-bugs -->
 
@@ -2733,20 +2706,6 @@ function showBacklogView(viewId, btn) {
     if (btn) btn.classList.add('active');
 }
 
-function sortBugTable(colIndex) {
-    var tbody = document.getElementById('backlog-tbody');
-    if (!tbody) return;
-    var rows = Array.from(tbody.querySelectorAll('tr'));
-    var asc = tbody.dataset.sortCol == colIndex && tbody.dataset.sortDir === 'asc' ? false : true;
-    tbody.dataset.sortCol = colIndex;
-    tbody.dataset.sortDir = asc ? 'asc' : 'desc';
-    rows.sort(function(a, b) {
-        var av = (a.cells[colIndex] ? a.cells[colIndex].textContent.trim() : '');
-        var bv = (b.cells[colIndex] ? b.cells[colIndex].textContent.trim() : '');
-        return asc ? av.localeCompare(bv) : bv.localeCompare(av);
-    });
-    rows.forEach(function(r) { tbody.appendChild(r); });
-}
 
 function showSprintPageView(viewId, btn) {
     ['spage-board', 'spage-retro', 'spage-dod'].forEach(function(id) {
@@ -3375,52 +3334,6 @@ function initTasks() {
     syncDashMetrics();
 }
 
-/* ════════════════════════════════════════════════════════
-   AGILE PM — BACKLOG
-═══════════════════════════════════════════════════════ */
-
-function filterBacklog(filter, btn) {
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    if (btn) btn.classList.add('active');
-    const rows = document.querySelectorAll('#backlog-tbody tr');
-    rows.forEach(row => {
-        const sev = (row.dataset.sev || '').toUpperCase();
-        const status = (row.dataset.status || '').toUpperCase();
-        let show = false;
-        if (filter === 'all') show = true;
-        else if (filter === 'OPEN') show = status === 'OPEN';
-        else if (filter === 'FIXED') show = status === 'FIXED';
-        else if (filter === 'BLOCKED') show = status === 'BLOCKED';
-        else show = sev === filter.toUpperCase();
-        row.style.display = show ? '' : 'none';
-    });
-}
-
-
-function initBacklog() {
-    // All backlog items are hardcoded in the HTML table.
-    // New issues discovered get added by Claude directly to the backlog-tbody HTML.
-    updateBacklogStats();
-}
-
-function updateBacklogStats() {
-    const rows = document.querySelectorAll('#backlog-tbody tr');
-    let total = 0, p1 = 0, p2 = 0, p3 = 0, p4 = 0, open = 0, fixed = 0;
-    rows.forEach(r => {
-        total++;
-        const sev = r.dataset.sev;
-        const status = r.dataset.status;
-        if (sev === 'P1') p1++;
-        else if (sev === 'P2') p2++;
-        else if (sev === 'P3') p3++;
-        else if (sev === 'P4') p4++;
-        if (status === 'OPEN') open++;
-        else if (status === 'FIXED') fixed++;
-    });
-    const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
-    set('bstat-total', total); set('bstat-p1', p1); set('bstat-p2', p2);
-    set('bstat-p3', p3); set('bstat-p4', p4); set('bstat-open', open); set('bstat-fixed', fixed);
-}
 
 function escHtml(str) {
     return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -3678,7 +3591,6 @@ rebuildCharts();
 
 // Initialize on load
 initTasks();
-initBacklog();
 
 /* ── HOURS LOG ── */
 (function initHoursLog() {
@@ -3896,6 +3808,8 @@ initBacklog();
         { id:'PB-050', feature:'Rework Classic Light theme — full redesign for readability and visual consistency', cat:'Dashboard', pri:'Medium', effort:'M', sprint:'TBD', status:'Backlog' },
         { id:'PB-051', feature:'Rotate GitHub webhook secret — GitHub disclosed Sep–Dec 2025 bug exposed secrets in X-Github-Encoded-Secret header; rotate Amplify webhook secret as precaution', cat:'Security', pri:'Low', effort:'XS', sprint:'TBD', status:'Backlog' },
     ];
+
+    window.PB_ITEMS = items;
 
     var tbody = document.getElementById('pb-tbody');
     if (!tbody) return;
@@ -4231,6 +4145,136 @@ taskSection + '\n\n' +
     })();
 })();
 
+
+/* ── TASK TRACKER ── */
+(function initTaskTracker() {
+    var ttFilters = { pri: 'all', status: 'all' };
+    var ttSortCol = -1;
+    var ttSortAsc = true;
+
+    var PS = {
+        'Critical': 'background:rgba(248,113,113,0.15);color:#f87171;border:1px solid rgba(248,113,113,0.3);',
+        'High':     'background:rgba(251,191,36,0.15);color:#fbbf24;border:1px solid rgba(251,191,36,0.3);',
+        'Medium':   'background:rgba(147,197,253,0.15);color:#93c5fd;border:1px solid rgba(147,197,253,0.3);',
+        'Low':      'background:rgba(148,163,184,0.1);color:#94a3b8;border:1px solid rgba(148,163,184,0.2);',
+    };
+    var SS = {
+        'Done':      'background:rgba(16,185,129,0.15);color:#10b981;border:1px solid rgba(16,185,129,0.3);',
+        'In Sprint': 'background:rgba(213,10,10,0.15);color:#f87171;border:1px solid rgba(213,10,10,0.3);',
+        'Blocked':   'background:rgba(251,191,36,0.15);color:#fbbf24;border:1px solid rgba(251,191,36,0.3);',
+        'Backlog':   'background:rgba(148,163,184,0.1);color:#94a3b8;border:1px solid rgba(148,163,184,0.2);',
+        'TBD':       'background:rgba(148,163,184,0.07);color:#64748b;border:1px solid rgba(148,163,184,0.15);',
+    };
+
+    function getCellText(item, col) {
+        switch (col) {
+            case 0: return item.id;
+            case 1: return item.feature;
+            case 2: return item.cat;
+            case 3: return item.pri;
+            case 4: return item.effort;
+            case 5: return item.sprint;
+            case 6: return item.status;
+            default: return '';
+        }
+    }
+
+    window.renderTaskTracker = function() {
+        var items = window.PB_ITEMS;
+        if (!items) return;
+        var search = (document.getElementById('tt-search') || {}).value || '';
+        search = search.toLowerCase();
+
+        var filtered = items.filter(function(item) {
+            if (ttFilters.pri !== 'all' && item.pri !== ttFilters.pri) return false;
+            if (ttFilters.status !== 'all' && item.status !== ttFilters.status) return false;
+            if (search) {
+                var haystack = (item.id + ' ' + item.feature + ' ' + item.cat + ' ' + item.pri + ' ' + item.status + ' ' + item.sprint).toLowerCase();
+                if (haystack.indexOf(search) === -1) return false;
+            }
+            return true;
+        });
+
+        if (ttSortCol >= 0) {
+            filtered.sort(function(a, b) {
+                var av = getCellText(a, ttSortCol).toLowerCase();
+                var bv = getCellText(b, ttSortCol).toLowerCase();
+                if (av < bv) return ttSortAsc ? -1 : 1;
+                if (av > bv) return ttSortAsc ? 1 : -1;
+                return 0;
+            });
+        }
+
+        var tbody = document.getElementById('tt-tbody');
+        var stats = document.getElementById('tt-stats');
+        if (!tbody) return;
+
+        if (filtered.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" style="padding:1.5rem; text-align:center; color:var(--muted);">No tasks match the current filters.</td></tr>';
+        } else {
+            tbody.innerHTML = filtered.map(function(item, i) {
+                var bg = i % 2 === 0 ? '' : 'background:rgba(255,255,255,0.02);';
+                return '<tr style="border-bottom:1px solid var(--border-subtle);' + bg + '">' +
+                    '<td style="padding:0.65rem 0.75rem; color:var(--muted); white-space:nowrap; font-size:0.78rem;">' + item.id + '</td>' +
+                    '<td style="padding:0.65rem 0.75rem; color:#f1f5f9; font-weight:600;">' + item.feature + '</td>' +
+                    '<td style="padding:0.65rem 0.75rem; color:var(--muted); white-space:nowrap;">' + item.cat + '</td>' +
+                    '<td style="padding:0.65rem 0.75rem; text-align:center;"><span style="' + (PS[item.pri]||PS.Low) + 'border-radius:9999px;padding:0.15rem 0.55rem;font-size:0.7rem;font-weight:700;">' + item.pri + '</span></td>' +
+                    '<td style="padding:0.65rem 0.75rem; text-align:center; color:var(--muted);">' + item.effort + '</td>' +
+                    '<td style="padding:0.65rem 0.75rem; text-align:center; color:var(--muted);">' + item.sprint + '</td>' +
+                    '<td style="padding:0.65rem 0.75rem; text-align:center;"><span style="' + (SS[item.status]||SS.Backlog) + 'border-radius:9999px;padding:0.15rem 0.55rem;font-size:0.7rem;font-weight:700;">' + item.status + '</span></td>' +
+                '</tr>';
+            }).join('');
+        }
+
+        if (stats) {
+            var total = items.length;
+            var shown = filtered.length;
+            stats.textContent = shown === total
+                ? 'Showing all ' + total + ' tasks'
+                : 'Showing ' + shown + ' of ' + total + ' tasks';
+        }
+    };
+
+    window.setTTFilter = function(type, value, btn) {
+        ttFilters[type] = value;
+        if (btn) {
+            var parent = btn.parentElement;
+            parent.querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('active'); });
+            btn.classList.add('active');
+        }
+        window.renderTaskTracker();
+    };
+
+    window.sortTT = function(col) {
+        if (ttSortCol === col) {
+            ttSortAsc = !ttSortAsc;
+        } else {
+            ttSortCol = col;
+            ttSortAsc = true;
+        }
+        // Update header arrows
+        var ths = document.querySelectorAll('#tt-table thead th');
+        ths.forEach(function(th, i) {
+            var base = th.textContent.replace(/ [↑↓↕]$/, '');
+            if (i === ttSortCol) {
+                th.textContent = base + ' ' + (ttSortAsc ? '↑' : '↓');
+            } else {
+                th.textContent = base + ' ↕';
+            }
+        });
+        window.renderTaskTracker();
+    };
+
+    // Initial render happens when the Task Tracker tab is shown
+    // Hook into showBacklogView to trigger render on first open
+    var _origShowBacklogView = window.showBacklogView;
+    window.showBacklogView = function(view, btn) {
+        if (_origShowBacklogView) _origShowBacklogView(view, btn);
+        if (view === 'backlog-bugs') {
+            window.renderTaskTracker();
+        }
+    };
+})();
 </script>
 </body>
 </html>
