@@ -3906,6 +3906,7 @@ function showSprintView(view, btn) {
         { id:'R-08', risk:'PostgreSQL data loss or schema corruption',                 like:'L', impact:'H', mitigation:'pg_dump backup before any schema changes. EC2 snapshots via AWS console.',                            sprint:'S13', status:'open' },
         { id:'R-09', risk:'EC2 disk full — server crash or failed writes',            like:'H', impact:'H', mitigation:'Clean up logs, tmp files, old backups. df -h to monitor. Disk at 88% as of Apr 10 — immediate action needed.', sprint:'S12', status:'open' },
         { id:'R-10', risk:'AWS console inaccessible — root MFA device lost',          like:'H', impact:'M', mitigation:'EC2 managed via CLI workaround. Call AWS support 1-800-879-2747 to reset root MFA. Do not create new resources until resolved.', sprint:'S12', status:'open' },
+        { id:'R-11', risk:'AI assistant (Claude) makes incorrect, unauthorized, or scope-exceeding changes to codebase or dashboard', like:'H', impact:'H', mitigation:'Read AI_EXECUTION_CONTRACT.md before every session. Review all AI changes before deploy. AI must ask before acting on ambiguous instructions. New chat per task.', sprint:'All', status:'open' },
     ];
 
     var statusStyle = { open: 'background:rgba(251,191,36,0.15);color:#fbbf24;border:1px solid rgba(251,191,36,0.3);', resolved: 'background:rgba(16,185,129,0.15);color:#10b981;border:1px solid rgba(16,185,129,0.3);', accepted: 'background:rgba(148,163,184,0.1);color:#94a3b8;border:1px solid rgba(148,163,184,0.2);' };
