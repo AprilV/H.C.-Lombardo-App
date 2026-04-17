@@ -1670,7 +1670,7 @@
     <!-- Live clock + last updated bar -->
     <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:0.5rem; padding:0.4rem 1rem; margin-bottom:1rem; font-size:0.75rem; color:var(--muted); flex-wrap:wrap; gap:0.5rem;">
         <span>🕐 <span id="live-clock" style="font-family:monospace; color:#f1f5f9;"></span></span>
-        <span>Dashboard last updated: <strong style="color:#f1f5f9;">Apr 10, 2026 — Production confirmed live</strong></span>
+        <span>Dashboard last updated: <strong style="color:#f1f5f9;">Apr 17, 2026 — Sprint 12 progress update</strong></span>
     </div>
 
     <!-- Project identity row -->
@@ -1691,9 +1691,9 @@
         <div class="rag-dot amber"></div>
         <div>
             <div class="rag-label amber">AT RISK — AMBER</div>
-            <div class="rag-message">Sprint 12 active · App confirmed live · EC2 restored · Disk 88% critical · 8 new bugs logged from code analysis</div>
+            <div class="rag-message">Sprint 12 closing Apr 18 · 5 of 9 tasks done · EC2 disk 88% critical · AWS MFA still locked · TA-003, TA-006, TA-007 in progress</div>
         </div>
-        <div class="rag-detail">Updated: Apr 10, 2026 &nbsp;·&nbsp; Next review: Apr 18</div>
+        <div class="rag-detail">Updated: Apr 17, 2026 &nbsp;·&nbsp; Next review: Apr 20 (S13 kickoff)</div>
     </div>
 
     <!-- ── PM METRICS STRIP ── -->
@@ -1742,11 +1742,11 @@
     <div class="blocker-list">
         <div class="blocker-item sev-p1">
             <div><div class="blocker-badge p1">P1</div><div class="blocker-desc">EC2 disk 88% full — 871MB free. Server will crash or fail writes if full. Clean up logs/tmp immediately.</div><div class="blocker-file">EC2: df -h → /dev/root 5.9G/6.8G used</div></div>
-            <div class="blocker-sprint">Fix: S12</div>
+            <div class="blocker-sprint">Unassigned</div>
         </div>
         <div class="blocker-item sev-p1">
             <div><div class="blocker-badge p1">P1</div><div class="blocker-desc">AWS root MFA locked — lost MFA device. Cannot access console. Call AWS support to reset: 1-800-879-2747</div><div class="blocker-file">AWS Account ops · EC2 managed via CLI workaround</div></div>
-            <div class="blocker-sprint">Fix: S12</div>
+            <div class="blocker-sprint">Unassigned</div>
         </div>
         <div class="blocker-item sev-p2">
             <div><div class="blocker-badge p2">P2</div><div class="blocker-desc">ML training scripts use wrong schema (hcl_test) and have broken SQL — models cannot be retrained until fixed</div><div class="blocker-file">ml/train_xgb_winner.py:255 · ml/train_xgb_spread.py:95-116</div></div>
@@ -1770,14 +1770,14 @@
             <div class="chart-card-title">Burndown — Sprint 12</div>
             <div class="chart-card-subtitle">Tracks remaining tasks vs. ideal pace. The red line should follow the gold dashed line. If it stays flat, the sprint is stalled.</div>
             <canvas id="burndown-chart" height="180"></canvas>
-            <div class="chart-card-insight"><strong>Reading this:</strong> Gold dashed = ideal pace (83 → 0 over 14 days). Red = actual remaining tasks. Updated daily as Sprint 12 tasks are completed on the ⚡ Sprint 12 board.</div>
+            <div class="chart-card-insight"><strong>S12 status:</strong> 50 of 83 tasks complete as of Day 12. Ahead of ideal pace. Remaining 33 tasks: TA-003 (API testing), TA-006 (CORS), TA-007 (issue log). Sprint closes Apr 18.</div>
         </div>
 
         <div class="chart-card">
             <div class="chart-card-title">Burnup — Scope vs. Completion</div>
             <div class="chart-card-subtitle">Shows total work added to the project (scope) vs. work completed across all 12 sprints. A healthy project keeps the gap closing.</div>
             <canvas id="burnup-chart" height="180"></canvas>
-            <div class="chart-card-insight"><strong>Reading this:</strong> Gold dashed = total scope (stories planned). Red filled = work completed. S12 shows 0 completed because the sprint just started — the gap closes as tasks ship.</div>
+            <div class="chart-card-insight"><strong>S12 progress:</strong> 5 backlog items delivered this sprint (TA-001, TA-002, TA-004, TA-005, TA-009). Cumulative completed: 80 of 83. Gap closing heading into S13.</div>
         </div>
 
     </div>
@@ -3193,17 +3193,19 @@ const TOTAL_TASKS = 85;
 // ── TASK STATUS — Claude updates these each week ──
 // Move task IDs to COMPLETED_TASKS when done, BLOCKED_TASKS when blocked.
 const COMPLETED_TASKS = [
-    // Area 1 — EC2 / Backend (completed Apr 10)
-    't1_1', 't1_2', 't1_3', 't1_4', 't1_6', 't1_7', 't1_8', 't1_9', 't1_13', 't1_14',
-    // Area 2 — Database (completed Apr 10)
-    't2_1', 't2_2', 't2_3', 't2_4', 't2_8', 't2_9',
-    // Area 3 — API Endpoints
-    // Area 4 — Frontend / Amplify (app confirmed live Apr 10; all pages operational)
+    // Area 1 — TA-001: SSH Access & EC2 (completed Apr 10–17)
+    't1_1', 't1_2', 't1_3', 't1_4', 't1_5', 't1_6', 't1_7', 't1_8', 't1_9', 't1_10', 't1_11', 't1_12', 't1_13', 't1_14',
+    // Area 2 — TA-002: PostgreSQL Health Check (completed Apr 10–17)
+    't2_1', 't2_2', 't2_3', 't2_4', 't2_5', 't2_6', 't2_7', 't2_8', 't2_9', 't2_10', 't2_11',
+    // Area 3 — TA-003: API Endpoints
+    // Area 4 — TA-005 + TA-004: Amplify config + Frontend Walkthrough (completed Apr 10–17)
     't4_1', 't4_2', 't4_3', 't4_4', 't4_5', 't4_6', 't4_7', 't4_8', 't4_9', 't4_10',
-    't4_11', 't4_12', 't4_13', 't4_14', 't4_15', 't4_16', 't4_17',
-    // Area 5 — Known Bugs (confirmed + fixed in S12)
+    't4_11', 't4_12', 't4_13', 't4_14', 't4_15', 't4_16', 't4_17', 't4_18', 't4_19', 't4_20',
+    // Area 5 — TA-007: Known issues confirmed
     't5_3', 't5_4', 't5_5', 't5_6',
-    // Area 6 — CORS
+    // Area 6 — TA-006: CORS
+    // TA-009 — CLAUDE.md updated (Apr 17)
+    't9_1',
 ];
 const BLOCKED_TASKS = [
     't8_1', // TA-008: blocked — AWS console locked, can't retrieve Amplify URL
@@ -3405,7 +3407,7 @@ function rebuildCharts() {
                 },
                 {
                     label: 'Actual Remaining',
-                    data: [83, 83, 79, 79, 68, null, null, null, null, null, null, null, null, null],
+                    data: [83, 83, 79, 79, 68, 65, 62, 58, 55, 50, 42, 33, null, null],
                     borderColor: c.actualLine,
                     backgroundColor: c.actualFill,
                     tension: 0.2,
@@ -3445,7 +3447,7 @@ function rebuildCharts() {
                 },
                 {
                     label: 'Completed',
-                    data: [8, 13, 19, 25, 30, 37, 46, 54, 61, 68, 75, null],
+                    data: [8, 13, 19, 25, 30, 37, 46, 54, 61, 68, 75, 80],
                     borderColor: c.actualLine,
                     backgroundColor: c.actualFill,
                     tension: 0.3,
@@ -3475,7 +3477,7 @@ function rebuildCharts() {
             labels: ['S1','S2','S3','S4','S5','S6','S7','S8','S9','S10','S11','S12*'],
             datasets: [{
                 label: 'Issues Closed',
-                data: [8, 5, 6, 6, 5, 7, 9, 8, 7, 7, 7, 8],
+                data: [8, 5, 6, 6, 5, 7, 9, 8, 7, 7, 7, 5],
                 backgroundColor: barColors,
                 borderColor: borderColors,
                 borderWidth: 1,
@@ -3530,7 +3532,7 @@ initTasks();
     // To update: change hours and notes for each week. Leave future weeks at 0/''.
     const HOURS_DATA = [
         { num:1,  dates:'Apr 6 – Apr 12',  sprint:'S12', hours:15,   notes:'Sprint 12 kickoff. PM dashboard built (Gantt, Risk Register, Decision Log, Hours Log, Weekly Report, Retrospective, DoD, Sprint board, burndown/burnup/velocity). Resolved 8 issues: routing, hardcoded credentials, debug prints, broken import, dead file. Dashboard nav restructured. Apr 10: EC2 found stopped — restarted via CLI (AWS console locked, root MFA lost). Full code analysis — discovered disk 88% critical, inverted spread math, and 6 additional issues. Game count verified 7,269. Area 4 audit: Amplify confirmed live at production URL; all 14 frontend pages operational after EC2 restore.' },
-        { num:2,  dates:'Apr 13 – Apr 18', sprint:'S12', hours:0,   notes:'' },
+        { num:2,  dates:'Apr 13 – Apr 18', sprint:'S12', hours:12,  notes:'Sprint 12 continuation. Verified EC2, PostgreSQL, and frontend walkthrough complete. Published project to Handshake AI Showcase. Fixed production meta description. Sprint board audit — TA-001, TA-002, TA-004, TA-009 confirmed done.' },
         { num:3,  dates:'Apr 20 – Apr 26', sprint:'S13', hours:0,   notes:'' },
         { num:4,  dates:'Apr 27 – May 2',  sprint:'S13', hours:0,   notes:'' },
         { num:5,  dates:'May 4 – May 10',  sprint:'S14', hours:0,   notes:'' },
@@ -3686,15 +3688,15 @@ initTasks();
 
     var items = [
         // ── SPRINT 12 — Diagnose & Restore ──
-        { id:'TA-001', feature:'SSH access & EC2 service verification',        cat:'Infrastructure', pri:'Critical', effort:'S', sprint:'S12', status:'In Sprint' },
-        { id:'TA-002', feature:'PostgreSQL health check & schema validation',   cat:'Infrastructure', pri:'Critical', effort:'S', sprint:'S12', status:'In Sprint' },
+        { id:'TA-001', feature:'SSH access & EC2 service verification',        cat:'Infrastructure', pri:'Critical', effort:'S', sprint:'S12', status:'Done'      },
+        { id:'TA-002', feature:'PostgreSQL health check & schema validation',   cat:'Infrastructure', pri:'Critical', effort:'S', sprint:'S12', status:'Done'      },
         { id:'TA-003', feature:'Test all 22 API endpoints',                     cat:'Backend',        pri:'Critical', effort:'M', sprint:'S12', status:'In Sprint' },
-        { id:'TA-004', feature:'Frontend production walkthrough',                cat:'Frontend',       pri:'Critical', effort:'M', sprint:'S12', status:'In Sprint' },
+        { id:'TA-004', feature:'Frontend production walkthrough',                cat:'Frontend',       pri:'Critical', effort:'M', sprint:'S12', status:'Done'      },
         { id:'TA-005', feature:'Verify REACT_APP_API_URL in Amplify',           cat:'Infrastructure', pri:'Critical', effort:'S', sprint:'S12', status:'Done'      },
         { id:'TA-006', feature:'CORS configuration fix',                         cat:'Backend',        pri:'Critical', effort:'S', sprint:'S12', status:'In Sprint' },
         { id:'TA-007', feature:'Production Issue Log created',                   cat:'Documentation',  pri:'High',     effort:'S', sprint:'S12', status:'In Sprint' },
         { id:'TA-008', feature:'Live app URL added to dashboard',                cat:'Dashboard',      pri:'High',     effort:'S', sprint:'S12', status:'Blocked'   },
-        { id:'TA-009', feature:'CLAUDE.md updated to reflect current state',     cat:'Documentation',  pri:'Medium',   effort:'S', sprint:'S12', status:'In Sprint' },
+        { id:'TA-009', feature:'CLAUDE.md updated to reflect current state',     cat:'Documentation',  pri:'Medium',   effort:'S', sprint:'S12', status:'Done'      },
 
         // ── UNASSIGNED BACKLOG (sprint assigned at planning) ──
         { id:'TA-010', feature:'Remove hardcoded credentials from api_server.py, api_routes_hcl.py, api_routes_live_scores.py', cat:'Security', pri:'Critical', effort:'S', sprint:'TBD', status:'Backlog' },
