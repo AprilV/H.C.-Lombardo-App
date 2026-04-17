@@ -15,9 +15,18 @@ Execute whatever the task requires — curl an endpoint, SSH the server, open th
 If a problem is discovered, add it to the Product Backlog immediately as a new TA item (next available TA-xxx ID) in `BACKLOG_DATA` inside `Dashboard/index.html`. Do NOT fix it during this sprint. Fixing goes in a future sprint.
 
 **Step 3: Mark the subtasks done**
-Add the completed task IDs to `COMPLETED_TASKS` in `Dashboard/index.html` right now — not at the end.
+Add the completed task IDs to `COMPLETED_TASKS` and resolutions to `TASK_DETAILS` in `Dashboard/index.html` right now — not at the end.
 
-**Step 4: Commit and deploy**
+**Step 4: Update ALL charts and metrics — every time, no exceptions**
+- Count total tasks now in COMPLETED_TASKS. Remaining = 83 minus that count.
+- Burndown `Actual Remaining` array — update current day's value to new remaining count
+- Burndown insight text — update done/total and remaining list
+- Burnup S12 value — update only when a full TA ticket flips to Done
+- Velocity S12 — update only when a full TA ticket flips to Done
+- BACKLOG_DATA status — flip ticket to Done when all its subtasks are complete
+- "Dashboard last updated" line — update date/message
+
+**Step 5: Commit and deploy**
 ```
 git add Dashboard/index.html
 git commit -m "TA-00X [section name] done"
