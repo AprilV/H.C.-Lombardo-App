@@ -2344,15 +2344,56 @@
         <div style="max-width:900px; display:flex; flex-direction:column; gap:1.25rem;">
             <div class="retro-card retro-good">
                 <div class="retro-label">What went well?</div>
-                <p class="retro-text">Sprint retrospective not yet completed — filled at sprint close Apr 18, 2026.</p>
+                <div class="retro-text">
+                    <p style="margin:0 0 0.6rem;">Sprint 12 was completed on time — slightly ahead of schedule. 8 of 9 tasks delivered. The one incomplete task (TA-008) was blocked by an external dependency outside the team's control.</p>
+                    <ul style="margin:0; padding-left:1.25rem; line-height:1.9;">
+                        <li>Dashboard built, deployed, and live — professional quality suitable for employer and professor review</li>
+                        <li>Product backlog, sprint backlog, and agile structure fully established with correct terminology (task/subtask — no "issue")</li>
+                        <li>All 22 API endpoints tested — EC2, PostgreSQL, Amplify, and CORS all verified operational</li>
+                        <li>Real problems discovered during audit and logged to backlog (TA-052 through TA-056) — not ignored, not fixed out of scope</li>
+                        <li>Sprint execution process documented — section-by-section workflow with deploy after every section</li>
+                        <li>Task resolution modal built — click any task to see what was done, when, and what was logged as a result</li>
+                        <li>Project published to Handshake AI Showcase — professional visibility achieved</li>
+                        <li>Production meta description corrected — accurate representation of the project</li>
+                        <li>Communication style refined — screenshot-by-screenshot review, one task per session, quality over quantity established as the standard</li>
+                        <li>Persistent memory improved — operating procedures, terminology rules, and sprint process all documented and saved</li>
+                    </ul>
+                </div>
             </div>
             <div class="retro-card retro-bad">
                 <div class="retro-label">What didn't go well?</div>
-                <p class="retro-text">Sprint retrospective not yet completed — filled at sprint close Apr 18, 2026.</p>
+                <div class="retro-text">
+                    <p style="margin:0 0 0.6rem;">Several recurring friction points slowed progress and required correction. Most stemmed from the AI moving too fast and not consistently following documented process.</p>
+                    <ul style="margin:0; padding-left:1.25rem; line-height:1.9;">
+                        <li>AI made unauthorized changes (Open Graph tags added without being asked — required a git revert)</li>
+                        <li>Wrong terminology used repeatedly — "issue" instead of "task" — had to be corrected multiple times across the same session</li>
+                        <li>Chart updates were batched or skipped — burndown, velocity, burnup, and severity donut had to be caught and corrected by PM</li>
+                        <li>AI read process documents at session start but drifted mid-session — same rules had to be re-explained multiple times</li>
+                        <li>Changes pushed directly to GitHub (production) without local testing or PM approval — no verification step in place</li>
+                        <li>AI asked questions that could have been answered by reading the code rather than asking the PM</li>
+                        <li>Some sessions lost alignment — AI got confused or pushed forward when PM needed to pause and verify</li>
+                        <li>Future sprint slots were pre-assigned items that had to be removed — violates agile process</li>
+                        <li>Risk register and some dashboard sections not kept current — PM had to catch omissions</li>
+                    </ul>
+                </div>
             </div>
             <div class="retro-card retro-improve">
-                <div class="retro-label">What will I do differently next sprint?</div>
-                <p class="retro-text">Sprint retrospective not yet completed — filled at sprint close Apr 18, 2026.</p>
+                <div class="retro-label">What will we do differently next sprint?</div>
+                <div class="retro-text">
+                    <p style="margin:0 0 0.6rem;">Improvements are centered on discipline, process adherence, and treating GitHub as production — because it is.</p>
+                    <ul style="margin:0; padding-left:1.25rem; line-height:1.9;">
+                        <li><strong>Quality over quantity</strong> — slow down, verify each step before moving forward, never rush to the next section</li>
+                        <li><strong>PM approval before any push</strong> — no change goes to GitHub without April's sign-off; master and gh-pages are production</li>
+                        <li><strong>Local verification before every push</strong> — test the change locally, confirm it works, then ask for push approval</li>
+                        <li><strong>AI reviews process docs before each section</strong> — not just at session start; refer back to SPRINT_EXECUTION_PROCESS.md and memory throughout</li>
+                        <li><strong>Ask permission, not forgiveness</strong> — if something wasn't explicitly requested, ask before doing it</li>
+                        <li><strong>One task per session</strong> — maintain the discipline established in S12; no scope creep within a session</li>
+                        <li><strong>Continue testing AI persistent memory</strong> — April will verify that process rules are being followed without re-explanation</li>
+                        <li><strong>Identify additional risks</strong> — risk register review at sprint start to capture anything discovered in S12 that wasn't logged</li>
+                        <li><strong>Terminology holds</strong> — task, subtask, blocker; no deviation; if AI uses "issue" incorrectly, correct immediately</li>
+                        <li><strong>Sprint process is documented</strong> — AI has no excuse for not following it; the documentation exists and is saved to memory</li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
