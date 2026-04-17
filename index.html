@@ -1866,14 +1866,14 @@
             <div class="chart-card-title">Burndown — Sprint 12</div>
             <div class="chart-card-subtitle">Tracks remaining tasks vs. ideal pace. The red line should follow the gold dashed line. If it stays flat, the sprint is stalled.</div>
             <canvas id="burndown-chart" height="180"></canvas>
-            <div class="chart-card-insight"><strong>S12 status:</strong> 76 of 83 tasks complete as of Day 12. Ahead of ideal pace. Remaining 7 tasks: TA-007 (task log). Sprint closes Apr 18.</div>
+            <div class="chart-card-insight"><strong>S12 status:</strong> 84 of 85 tasks complete. 1 task blocked (TA-008 — awaiting AWS console access). Sprint closes Apr 18.</div>
         </div>
 
         <div class="chart-card">
             <div class="chart-card-title">Burnup — Scope vs. Completion</div>
             <div class="chart-card-subtitle">Shows total work added to the project (scope) vs. work completed across all 12 sprints. A healthy project keeps the gap closing.</div>
             <canvas id="burnup-chart" height="180"></canvas>
-            <div class="chart-card-insight"><strong>S12 progress:</strong> 7 backlog items delivered this sprint (TA-001, TA-002, TA-003, TA-004, TA-005, TA-006, TA-009). Cumulative completed: 82 of 83. Gap closing heading into S13.</div>
+            <div class="chart-card-insight"><strong>S12 progress:</strong> 8 backlog items delivered this sprint (TA-001, TA-002, TA-003, TA-004, TA-005, TA-006, TA-007, TA-009). Cumulative completed: 83 of 83. TA-008 blocked — carries to S13.</div>
         </div>
 
     </div>
@@ -1885,7 +1885,7 @@
             <div class="chart-card-title">Velocity — TA Items Delivered Per Sprint</div>
             <div class="chart-card-subtitle">How many backlog tasks (TA items) were completed each sprint. Consistent bars = predictable team. Drops = scope creep or blockers. Average velocity informs sprint planning.</div>
             <canvas id="velocity-chart" height="180"></canvas>
-            <div class="chart-card-insight"><strong>Avg velocity:</strong> ~6.8 TA items/sprint across S1–S11. S12 delivered 7 TA items (TA-001, TA-002, TA-003, TA-004, TA-005, TA-006, TA-009). Remaining TA-007 carries into S13.</div>
+            <div class="chart-card-insight"><strong>Avg velocity:</strong> ~6.8 TA items/sprint across S1–S11. S12 delivered 8 TA items (TA-001, TA-002, TA-003, TA-004, TA-005, TA-006, TA-007, TA-009). TA-008 blocked, carries to S13.</div>
         </div>
 
         <div class="chart-card">
@@ -3304,8 +3304,8 @@ const COMPLETED_TASKS = [
     // Area 4 — TA-005 + TA-004: Amplify config + Frontend Walkthrough (completed Apr 10–17)
     't4_1', 't4_2', 't4_3', 't4_4', 't4_5', 't4_6', 't4_7', 't4_8', 't4_9', 't4_10',
     't4_11', 't4_12', 't4_13', 't4_14', 't4_15', 't4_16', 't4_17', 't4_18', 't4_19', 't4_20',
-    // Area 5 — TA-007: Known issues confirmed
-    't5_3', 't5_4', 't5_5', 't5_6',
+    // Area 5 — TA-007: Production Task Log (completed Apr 17)
+    't5_1', 't5_2', 't5_3', 't5_4', 't5_5', 't5_6', 't5_7', 't5_8', 't5_9', 't5_10', 't5_11', 't5_12',
     // Area 6 — TA-006: CORS (completed Apr 17)
     't6_1', 't6_2', 't6_3', 't6_4',
     // TA-009 — CLAUDE.md updated (Apr 17)
@@ -3413,6 +3413,15 @@ const TASK_DETAILS = {
     t4_18: { resolution:'DevTools Console checked on each page. CORS and 404 errors noted and logged to backlog.', date:'Apr 17, 2026' },
     t4_19: { resolution:'Network tab reviewed — CORS errors identified from production frontend to EC2 API.', date:'Apr 17, 2026' },
     t4_20: { resolution:'All side menu navigation links confirmed working — each navigates to the correct page.', date:'Apr 17, 2026' },
+    // TA-007 — Production Task Log (remaining, completed Apr 17)
+    t5_1:  { resolution:'git status — no modified tracked files. Only untracked files present: test scripts, .claude, PDF. Working tree clean.', date:'Apr 17, 2026' },
+    t5_2:  { resolution:'git diff frontend/src/App.js — no uncommitted changes. App.js is clean on master.', date:'Apr 17, 2026' },
+    t5_7:  { resolution:'Confirmed — train_xgb_winner.py line 255: load_data(schema=\'hcl_test\'). Uses hcl_test schema, not production hcl. Logged for S13 fix.', date:'Apr 17, 2026' },
+    t5_8:  { resolution:'Confirmed — train_xgb_spread.py lines 95-116: broken WINDOW clause, missing closing paren on line 95 causes duplicate OVER definitions. SQL will fail on execution.', date:'Apr 17, 2026' },
+    t5_9:  { resolution:'Confirmed — predict_ensemble.py line 338: TODO comment, upcoming week detection not implemented. --upcoming flag prints error and exits.', date:'Apr 17, 2026' },
+    t5_10: { resolution:'Confirmed — default season 2025 hardcoded in api_routes_hcl.py (7 endpoints), api_routes_ml.py (3 locations), api_routes_live_scores.py. Will need update for 2026 season.', date:'Apr 17, 2026' },
+    t5_11: { resolution:'SSH confirmed — xgb_winner.pkl, xgb_spread.pkl, elo_ratings_current.json all present in /home/ubuntu/H.C.-Lombardo-App/ml/models/.', date:'Apr 17, 2026' },
+    t5_12: { resolution:'ML model sizes confirmed — xgb_winner.pkl 352K, xgb_spread.pkl 543K, elo_ratings_current.json 1.2K. All dated Dec 19, 2025.', date:'Apr 17, 2026' },
     // TA-006 — CORS Configuration Fix
     t6_1:  { resolution:'curl http://34.198.25.249:5000/health → {"cors":"enabled","database":"connected","status":"healthy"}. EC2 reachable from local machine.', date:'Apr 17, 2026' },
     t6_2:  { resolution:'CORS preflight to Amplify origin confirmed 200 OK. Access-Control-Allow-Origin correctly returns Amplify domain. Production frontend connectivity verified.', date:'Apr 17, 2026' },
@@ -3694,7 +3703,7 @@ function rebuildCharts() {
                 },
                 {
                     label: 'Actual Remaining',
-                    data: [83, 83, 79, 79, 68, 65, 62, 58, 55, 50, 42, 7, null, null],
+                    data: [83, 83, 79, 79, 68, 65, 62, 58, 55, 50, 42, 1, null, null],
                     borderColor: c.actualLine,
                     backgroundColor: c.actualFill,
                     tension: 0.2,
@@ -3734,7 +3743,7 @@ function rebuildCharts() {
                 },
                 {
                     label: 'Completed',
-                    data: [8, 13, 19, 25, 30, 37, 46, 54, 61, 68, 75, 82],
+                    data: [8, 13, 19, 25, 30, 37, 46, 54, 61, 68, 75, 83],
                     borderColor: c.actualLine,
                     backgroundColor: c.actualFill,
                     tension: 0.3,
@@ -3764,7 +3773,7 @@ function rebuildCharts() {
             labels: ['S1','S2','S3','S4','S5','S6','S7','S8','S9','S10','S11','S12*'],
             datasets: [{
                 label: 'Tasks Delivered',
-                data: [8, 5, 6, 6, 5, 7, 9, 8, 7, 7, 7, 7],
+                data: [8, 5, 6, 6, 5, 7, 9, 8, 7, 7, 7, 8],
                 backgroundColor: barColors,
                 borderColor: borderColors,
                 borderWidth: 1,
@@ -3981,7 +3990,7 @@ initTasks();
         { id:'TA-004', feature:'Frontend production walkthrough',                cat:'Frontend',       pri:'Critical', effort:'M', sprint:'S12', status:'Done'      },
         { id:'TA-005', feature:'Verify REACT_APP_API_URL in Amplify',           cat:'Infrastructure', pri:'Critical', effort:'S', sprint:'S12', status:'Done'      },
         { id:'TA-006', feature:'CORS configuration fix',                         cat:'Backend',        pri:'Critical', effort:'S', sprint:'S12', status:'Done' },
-        { id:'TA-007', feature:'Production Task Log created',                   cat:'Documentation',  pri:'High',     effort:'S', sprint:'S12', status:'In Sprint' },
+        { id:'TA-007', feature:'Production Task Log created',                   cat:'Documentation',  pri:'High',     effort:'S', sprint:'S12', status:'Done' },
         { id:'TA-008', feature:'Live app URL added to dashboard',                cat:'Dashboard',      pri:'High',     effort:'S', sprint:'S12', status:'Blocked'   },
         { id:'TA-009', feature:'CLAUDE.md updated to reflect current state',     cat:'Documentation',  pri:'Medium',   effort:'S', sprint:'S12', status:'Done'      },
 
