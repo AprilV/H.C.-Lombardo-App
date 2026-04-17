@@ -1811,12 +1811,12 @@
         </div>
         <div class="pm-metric">
             <div class="pm-metric-label">Open P1 Blockers</div>
-            <div class="pm-metric-value" style="color:#ff6b6b;">2</div>
-            <div class="pm-metric-sub">Disk critical (R-09) · AWS MFA locked (R-10)</div>
+            <div class="pm-metric-value" style="color:#ff6b6b;">3</div>
+            <div class="pm-metric-sub">Disk critical (R-09) · AWS MFA locked (R-10) · Live URL blocked (TA-008)</div>
         </div>
         <div class="pm-metric">
             <div class="pm-metric-label">Total Open Tasks</div>
-            <div class="pm-metric-value" style="color:#FFA500;">16</div>
+            <div class="pm-metric-value" style="color:#FFA500;">17</div>
             <div class="pm-metric-sub">Disk critical · 6 from code analysis · AWS MFA locked</div>
         </div>
         <div class="pm-metric">
@@ -1890,7 +1890,7 @@
 
         <div class="chart-card">
             <div class="chart-card-title">Backlog by Severity</div>
-            <div class="chart-card-subtitle">Current task distribution across all 16 backlog tasks by severity. P1 = production blockers that must be fixed before anything else ships. P4 = polish only.</div>
+            <div class="chart-card-subtitle">Current task distribution across all 17 backlog tasks by severity. P1 = production blockers that must be fixed before anything else ships. P4 = polish only.</div>
             <canvas id="severity-chart" height="180"></canvas>
             <div class="chart-card-insight"><strong>S12 progress:</strong> 8 tasks resolved this sprint (routing, hardcoded credentials, debug output, missing import). 2 P1 blockers remain open (EC2 disk, AWS MFA). ML schema and broken SQL queued for S13.</div>
         </div>
@@ -3796,7 +3796,7 @@ function rebuildCharts() {
         data: {
             labels: ['P1 — Blocker', 'P2 — Major', 'P3 — Minor', 'P4 — Polish'],
             datasets: [{
-                data: [4, 12, 6, 1],
+                data: [5, 12, 6, 1],
                 backgroundColor: [
                     'rgba(213,10,10,0.75)',
                     'rgba(255,165,0,0.75)',
@@ -3991,7 +3991,7 @@ initTasks();
         { id:'TA-005', feature:'Verify REACT_APP_API_URL in Amplify',           cat:'Infrastructure', pri:'Critical', effort:'S', sprint:'S12', status:'Done'      },
         { id:'TA-006', feature:'CORS configuration fix',                         cat:'Backend',        pri:'Critical', effort:'S', sprint:'S12', status:'Done' },
         { id:'TA-007', feature:'Production Task Log created',                   cat:'Documentation',  pri:'High',     effort:'S', sprint:'S12', status:'Done' },
-        { id:'TA-008', feature:'Live app URL added to dashboard',                cat:'Dashboard',      pri:'High',     effort:'S', sprint:'S12', status:'Blocked'   },
+        { id:'TA-008', feature:'Live app URL added to dashboard',                cat:'Dashboard',      pri:'Critical', effort:'S', sprint:'TBD', status:'Backlog'   },
         { id:'TA-009', feature:'CLAUDE.md updated to reflect current state',     cat:'Documentation',  pri:'Medium',   effort:'S', sprint:'S12', status:'Done'      },
 
         // ── UNASSIGNED BACKLOG (sprint assigned at planning) ──
