@@ -758,6 +758,7 @@
 
         /* RAG banner */
         body.light .rag-banner.amber { background: rgba(255,165,0,0.07); border-color: rgba(255,140,0,0.35); }
+        body.light .rag-banner.green { background: rgba(16,185,129,0.07); border-color: rgba(16,185,129,0.35); }
         body.light .rag-message { color: #0a1628; }
 
         /* Blockers */
@@ -1284,6 +1285,11 @@
             background: rgba(255,165,0,0.12);
             border-color: rgba(255,165,0,0.4);
         }
+        .rag-banner.green {
+            background: rgba(16,185,129,0.10);
+            border-color: rgba(16,185,129,0.4);
+        }
+        .rag-label.green { color: #10b981; }
 
         .rag-dot {
             width: 18px;
@@ -1766,7 +1772,7 @@
     <!-- Live clock + last updated bar -->
     <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:0.5rem; padding:0.4rem 1rem; margin-bottom:1rem; font-size:0.75rem; color:var(--muted); flex-wrap:wrap; gap:0.5rem;">
         <span>🕐 <span id="live-clock" style="font-family:monospace; color:#f1f5f9;"></span></span>
-        <span>Dashboard last updated: <strong style="color:#f1f5f9;">Apr 17, 2026 — Sprint 12 progress update</strong></span>
+        <span>Dashboard last updated: <strong style="color:#f1f5f9;">Apr 18, 2026 — Sprint 12 closed · Sprint 13 starts Apr 20</strong></span>
     </div>
 
     <!-- Project identity row -->
@@ -1783,13 +1789,13 @@
     </div>
 
     <!-- ── RAG STATUS ── -->
-    <div class="rag-banner amber">
-        <div class="rag-dot amber"></div>
+    <div class="rag-banner green">
+        <div class="rag-dot green"></div>
         <div>
-            <div class="rag-label amber">AT RISK — AMBER</div>
-            <div class="rag-message">Sprint 12 closing Apr 18 · 5 of 9 tasks done · EC2 disk 88% critical · AWS MFA still locked · TA-003, TA-006, TA-007 in progress</div>
+            <div class="rag-label green">ON TRACK — GREEN</div>
+            <div class="rag-message">Sprint 12 closed Apr 18 · 8 of 9 tasks delivered · TA-008 blocked (AWS MFA) · Sprint 13 starts Apr 20</div>
         </div>
-        <div class="rag-detail">Updated: Apr 17, 2026 &nbsp;·&nbsp; Next review: Apr 20 (S13 kickoff)</div>
+        <div class="rag-detail">Updated: Apr 18, 2026 &nbsp;·&nbsp; Next review: Apr 20 (S13 kickoff)</div>
     </div>
 
     <!-- ── PM METRICS STRIP ── -->
@@ -2018,11 +2024,11 @@
     <div id="spage-board">
         <div style="max-width:1300px; margin:1.5rem auto 0; padding:0 2rem;">
             <div class="sprint-grid" style="margin-bottom:1.5rem;">
-                <div class="sprint-card upcoming">
+                <div class="sprint-card active">
                     <div class="sprint-num">Sprint 13</div>
                     <div class="sprint-theme">Data &amp; Clean</div>
                     <div class="sprint-dates">Apr 20 – May 2</div>
-                    <span class="sprint-status status-upcoming">Upcoming</span>
+                    <span class="sprint-status status-active">Active</span>
                 </div>
                 <div class="sprint-card upcoming">
                     <div class="sprint-num">Sprint 14</div>
@@ -2048,11 +2054,11 @@
                 <span style="font-size:0.85rem; color:var(--muted); white-space:nowrap; font-weight:600;">View Sprint Board:</span>
                 <div id="sprint-dropdown" style="position:relative; min-width:300px;">
                     <button id="sprint-dropdown-btn" onclick="toggleSprintDropdown()" style="width:100%; display:flex; align-items:center; justify-content:space-between; gap:0.5rem; background:#1e2a3a; color:#f1f5f9; border:1px solid rgba(255,255,255,0.15); border-radius:0.5rem; padding:0.45rem 1rem; font-size:0.88rem; cursor:pointer; outline:none; text-align:left;">
-                        <span id="sprint-dropdown-label">Sprint 12 — Diagnose &amp; Restore (Active)</span>
+                        <span id="sprint-dropdown-label">Sprint 12 — Diagnose &amp; Restore (Completed)</span>
                         <span id="sprint-dropdown-arrow" style="font-size:0.7rem; transition:transform 0.15s;">▼</span>
                     </button>
                     <div id="sprint-dropdown-list" style="display:none; position:absolute; top:calc(100% + 4px); left:0; right:0; background:#111c2b; border:1px solid rgba(255,255,255,0.15); border-radius:0.5rem; overflow:hidden; z-index:999; box-shadow:0 8px 24px rgba(0,0,0,0.6);">
-                        <div class="sd-opt" data-val="12" onclick="selectSprint(12,'Sprint 12 — Diagnose &amp; Restore (Active)')" style="padding:0.55rem 1rem; cursor:pointer; color:#FFD700; font-size:0.88rem; font-weight:600; background:#1a2e45;">Sprint 12 — Diagnose &amp; Restore (Active)</div>
+                        <div class="sd-opt" data-val="12" onclick="selectSprint(12,'Sprint 12 — Diagnose &amp; Restore (Completed)')" style="padding:0.55rem 1rem; cursor:pointer; color:#10b981; font-size:0.88rem; font-weight:600; background:#1a2e45;">Sprint 12 — Diagnose &amp; Restore (Completed)</div>
                         <div class="sd-opt" data-val="13" onclick="selectSprint(13,'Sprint 13 — Data &amp; Clean')" style="padding:0.55rem 1rem; cursor:pointer; color:#f1f5f9; font-size:0.88rem; background:#111c2b;">Sprint 13 — Data &amp; Clean</div>
                         <div class="sd-opt" data-val="14" onclick="selectSprint(14,'Sprint 14 — ML Retrain')" style="padding:0.55rem 1rem; cursor:pointer; color:#f1f5f9; font-size:0.88rem; background:#111c2b;">Sprint 14 — ML Retrain</div>
                         <div class="sd-opt" data-val="15" onclick="selectSprint(15,'Sprint 15 — UI &amp; UX Polish')" style="padding:0.55rem 1rem; cursor:pointer; color:#f1f5f9; font-size:0.88rem; background:#111c2b;">Sprint 15 — UI &amp; UX Polish</div>
@@ -2073,7 +2079,7 @@
                 </div>
                 <div class="sprint-meta">
                     <span class="meta-pill">Apr 6 – Apr 18, 2026</span>
-                    <span class="meta-pill">Rule: Log everything · Fix almost nothing</span>
+                    <span class="meta-pill" style="color:#10b981; border-color:#10b981;">✓ Completed Apr 18, 2026</span>
                 </div>
             </div>
 
