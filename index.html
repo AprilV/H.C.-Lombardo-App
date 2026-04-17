@@ -1003,14 +1003,20 @@
 
         .task-text.clickable {
             cursor: pointer;
+            text-decoration: underline dotted rgba(255,255,255,0.2);
+            text-underline-offset: 3px;
         }
         .task-text.clickable:hover {
             color: #FFD700;
-            text-decoration-color: rgba(255,215,0,0.4);
+            text-decoration-color: rgba(255,215,0,0.6);
+        }
+        .task-item.done .task-text.clickable {
+            text-decoration: line-through underline dotted rgba(255,255,255,0.15);
+            text-underline-offset: 3px;
         }
         .task-item.done .task-text.clickable:hover {
             color: #10b981;
-            text-decoration-color: rgba(16,185,129,0.4);
+            text-decoration-color: rgba(16,185,129,0.5);
         }
 
         /* ── TASK RESOLUTION MODAL ── */
