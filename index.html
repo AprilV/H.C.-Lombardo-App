@@ -3197,7 +3197,8 @@ const COMPLETED_TASKS = [
     't1_1', 't1_2', 't1_3', 't1_4', 't1_5', 't1_6', 't1_7', 't1_8', 't1_9', 't1_10', 't1_11', 't1_12', 't1_13', 't1_14',
     // Area 2 — TA-002: PostgreSQL Health Check (completed Apr 10–17)
     't2_1', 't2_2', 't2_3', 't2_4', 't2_5', 't2_6', 't2_7', 't2_8', 't2_9', 't2_10', 't2_11',
-    // Area 3 — TA-003: API Endpoints
+    // Area 3 — TA-003: API Endpoints (tested Apr 17)
+    't3_1', 't3_2', 't3_3',
     // Area 4 — TA-005 + TA-004: Amplify config + Frontend Walkthrough (completed Apr 10–17)
     't4_1', 't4_2', 't4_3', 't4_4', 't4_5', 't4_6', 't4_7', 't4_8', 't4_9', 't4_10',
     't4_11', 't4_12', 't4_13', 't4_14', 't4_15', 't4_16', 't4_17', 't4_18', 't4_19', 't4_20',
@@ -3741,6 +3742,8 @@ initTasks();
         { id:'TA-049', feature:'Cross-browser compatibility audit — dashboard and app tested in Edge, Chrome, Firefox, Safari', cat:'Frontend', pri:'High', effort:'M', sprint:'TBD', status:'Backlog' },
         { id:'TA-050', feature:'Rework Classic Light theme — full redesign for readability and visual consistency', cat:'Dashboard', pri:'Medium', effort:'M', sprint:'TBD', status:'Backlog' },
         { id:'TA-051', feature:'Rotate GitHub webhook secret — GitHub disclosed Sep–Dec 2025 bug exposed secrets in X-Github-Encoded-Secret header; rotate Amplify webhook secret as precaution', cat:'Security', pri:'Low', effort:'XS', sprint:'TBD', status:'Backlog' },
+        { id:'TA-052', feature:'Fix /api/hcl/teams returning 4 teams instead of 32 — discovered during TA-003 API audit Apr 17', cat:'Backend', pri:'High', effort:'S', sprint:'TBD', status:'Backlog' },
+        { id:'TA-053', feature:'Add missing /api/hcl/summary endpoint — route not found during TA-003 API audit Apr 17', cat:'Backend', pri:'Medium', effort:'S', sprint:'TBD', status:'Backlog' },
     ];
 
     window.PB_ITEMS = items;
