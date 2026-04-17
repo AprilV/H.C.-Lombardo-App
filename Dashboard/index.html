@@ -3299,6 +3299,7 @@ const COMPLETED_TASKS = [
     't2_1', 't2_2', 't2_3', 't2_4', 't2_5', 't2_6', 't2_7', 't2_8', 't2_9', 't2_10', 't2_11',
     // Area 3 — TA-003: API Endpoints (tested Apr 17)
     't3_1', 't3_2', 't3_3',
+    't3_4', 't3_5', 't3_6', 't3_7', 't3_8', 't3_9', 't3_10',
     // Area 4 — TA-005 + TA-004: Amplify config + Frontend Walkthrough (completed Apr 10–17)
     't4_1', 't4_2', 't4_3', 't4_4', 't4_5', 't4_6', 't4_7', 't4_8', 't4_9', 't4_10',
     't4_11', 't4_12', 't4_13', 't4_14', 't4_15', 't4_16', 't4_17', 't4_18', 't4_19', 't4_20',
@@ -3369,6 +3370,13 @@ const TASK_DETAILS = {
     t3_1:  { resolution:'GET /health → {"status":"healthy","database":"connected","cors":"enabled"} — all systems operational.', date:'Apr 17, 2026' },
     t3_2:  { resolution:'GET /api/hcl/teams → returned 4 teams instead of expected 32. Issue logged as TA-052.', date:'Apr 17, 2026', issues:['TA-052'] },
     t3_3:  { resolution:'GET /api/hcl/summary → 404 Route not found. Missing endpoint. Issue logged as TA-053.', date:'Apr 17, 2026', issues:['TA-053'] },
+    t3_4:  { resolution:'GET /api/hcl/teams/NE → success. Team data returned with expected structure.', date:'Apr 17, 2026' },
+    t3_5:  { resolution:'GET /api/hcl/teams/NE/games → success. Returns count, games array, and season.', date:'Apr 17, 2026' },
+    t3_6:  { resolution:'GET /api/hcl/games/week/2024/10 → success. Returns count, games, and season for Week 10 2024.', date:'Apr 17, 2026' },
+    t3_7:  { resolution:'GET /api/hcl/analytics/betting → success. Returns count, season, and betting data.', date:'Apr 17, 2026' },
+    t3_8:  { resolution:'GET /api/hcl/analytics/weather → success. Returns conditions, count, and success flag.', date:'Apr 17, 2026' },
+    t3_9:  { resolution:'GET /api/hcl/analytics/rest → success. Returns count, rest_categories, and season.', date:'Apr 17, 2026' },
+    t3_10: { resolution:'GET /api/hcl/analytics/referees → success. Returns count, referees, and season.', date:'Apr 17, 2026' },
     // TA-005 — Amplify Config
     t4_1:  { resolution:'AWS Amplify confirmed deployed. Build status: successful. App live at production URL.', date:'Apr 10, 2026' },
     t4_2:  { resolution:'REACT_APP_API_URL confirmed = http://34.198.25.249:5000 in Amplify environment variables.', date:'Apr 10, 2026' },
