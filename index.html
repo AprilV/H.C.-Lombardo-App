@@ -1866,14 +1866,14 @@
             <div class="chart-card-title">Burndown — Sprint 12</div>
             <div class="chart-card-subtitle">Tracks remaining tasks vs. ideal pace. The red line should follow the gold dashed line. If it stays flat, the sprint is stalled.</div>
             <canvas id="burndown-chart" height="180"></canvas>
-            <div class="chart-card-insight"><strong>S12 status:</strong> 75 of 83 tasks complete as of Day 12. Ahead of ideal pace. Remaining 8 tasks: TA-003 (live scores), TA-007 (task log). Sprint closes Apr 18.</div>
+            <div class="chart-card-insight"><strong>S12 status:</strong> 76 of 83 tasks complete as of Day 12. Ahead of ideal pace. Remaining 7 tasks: TA-007 (task log). Sprint closes Apr 18.</div>
         </div>
 
         <div class="chart-card">
             <div class="chart-card-title">Burnup — Scope vs. Completion</div>
             <div class="chart-card-subtitle">Shows total work added to the project (scope) vs. work completed across all 12 sprints. A healthy project keeps the gap closing.</div>
             <canvas id="burnup-chart" height="180"></canvas>
-            <div class="chart-card-insight"><strong>S12 progress:</strong> 6 backlog items delivered this sprint (TA-001, TA-002, TA-004, TA-005, TA-006, TA-009). Cumulative completed: 81 of 83. Gap closing heading into S13.</div>
+            <div class="chart-card-insight"><strong>S12 progress:</strong> 7 backlog items delivered this sprint (TA-001, TA-002, TA-003, TA-004, TA-005, TA-006, TA-009). Cumulative completed: 82 of 83. Gap closing heading into S13.</div>
         </div>
 
     </div>
@@ -1885,7 +1885,7 @@
             <div class="chart-card-title">Velocity — TA Items Delivered Per Sprint</div>
             <div class="chart-card-subtitle">How many backlog tasks (TA items) were completed each sprint. Consistent bars = predictable team. Drops = scope creep or blockers. Average velocity informs sprint planning.</div>
             <canvas id="velocity-chart" height="180"></canvas>
-            <div class="chart-card-insight"><strong>Avg velocity:</strong> ~6.8 TA items/sprint across S1–S11. S12 delivered 6 TA items (TA-001, TA-002, TA-004, TA-005, TA-006, TA-009). Remaining TA-003, TA-007 carry into S13.</div>
+            <div class="chart-card-insight"><strong>Avg velocity:</strong> ~6.8 TA items/sprint across S1–S11. S12 delivered 7 TA items (TA-001, TA-002, TA-003, TA-004, TA-005, TA-006, TA-009). Remaining TA-007 carries into S13.</div>
         </div>
 
         <div class="chart-card">
@@ -3300,7 +3300,7 @@ const COMPLETED_TASKS = [
     // Area 3 — TA-003: API Endpoints (tested Apr 17)
     't3_1', 't3_2', 't3_3',
     't3_4', 't3_5', 't3_6', 't3_7', 't3_8', 't3_9', 't3_10',
-    't3_11', 't3_12', 't3_13', 't3_14', 't3_15', 't3_16', 't3_17', 't3_18', 't3_19', 't3_20', 't3_21',
+    't3_11', 't3_12', 't3_13', 't3_14', 't3_15', 't3_16', 't3_17', 't3_18', 't3_19', 't3_20', 't3_21', 't3_22',
     // Area 4 — TA-005 + TA-004: Amplify config + Frontend Walkthrough (completed Apr 10–17)
     't4_1', 't4_2', 't4_3', 't4_4', 't4_5', 't4_6', 't4_7', 't4_8', 't4_9', 't4_10',
     't4_11', 't4_12', 't4_13', 't4_14', 't4_15', 't4_16', 't4_17', 't4_18', 't4_19', 't4_20',
@@ -3390,6 +3390,7 @@ const TASK_DETAILS = {
     t3_19: { resolution:'GET /api/elo/predict-week/2024/18 → failure. Returns "No games found for 2024 Week 18." ELO data gap. Task logged as TA-055.', date:'Apr 17, 2026', issues:['TA-055'] },
     t3_20: { resolution:'GET /api/predictions/current-week → success. Returns empty predictions — expected, offseason.', date:'Apr 17, 2026' },
     t3_21: { resolution:'GET /api/predictions/combined/2024/18 → success. Returns combined XGBoost predictions for Week 18 2024 games.', date:'Apr 17, 2026' },
+    t3_22: { resolution:'GET /api/live-scores → success. Returns Super Bowl result (SEA 29, NE 13), status final. Offseason — empty game list expected, endpoint returns valid response with no errors.', date:'Apr 17, 2026' },
     // TA-005 — Amplify Config
     t4_1:  { resolution:'AWS Amplify confirmed deployed. Build status: successful. App live at production URL.', date:'Apr 10, 2026' },
     t4_2:  { resolution:'REACT_APP_API_URL confirmed = http://34.198.25.249:5000 in Amplify environment variables.', date:'Apr 10, 2026' },
@@ -3693,7 +3694,7 @@ function rebuildCharts() {
                 },
                 {
                     label: 'Actual Remaining',
-                    data: [83, 83, 79, 79, 68, 65, 62, 58, 55, 50, 42, 8, null, null],
+                    data: [83, 83, 79, 79, 68, 65, 62, 58, 55, 50, 42, 7, null, null],
                     borderColor: c.actualLine,
                     backgroundColor: c.actualFill,
                     tension: 0.2,
@@ -3733,7 +3734,7 @@ function rebuildCharts() {
                 },
                 {
                     label: 'Completed',
-                    data: [8, 13, 19, 25, 30, 37, 46, 54, 61, 68, 75, 81],
+                    data: [8, 13, 19, 25, 30, 37, 46, 54, 61, 68, 75, 82],
                     borderColor: c.actualLine,
                     backgroundColor: c.actualFill,
                     tension: 0.3,
@@ -3763,7 +3764,7 @@ function rebuildCharts() {
             labels: ['S1','S2','S3','S4','S5','S6','S7','S8','S9','S10','S11','S12*'],
             datasets: [{
                 label: 'Tasks Delivered',
-                data: [8, 5, 6, 6, 5, 7, 9, 8, 7, 7, 7, 6],
+                data: [8, 5, 6, 6, 5, 7, 9, 8, 7, 7, 7, 7],
                 backgroundColor: barColors,
                 borderColor: borderColors,
                 borderWidth: 1,
@@ -3976,7 +3977,7 @@ initTasks();
         // ── SPRINT 12 — Diagnose & Restore ──
         { id:'TA-001', feature:'SSH access & EC2 service verification',        cat:'Infrastructure', pri:'Critical', effort:'S', sprint:'S12', status:'Done'      },
         { id:'TA-002', feature:'PostgreSQL health check & schema validation',   cat:'Infrastructure', pri:'Critical', effort:'S', sprint:'S12', status:'Done'      },
-        { id:'TA-003', feature:'Test all 22 API endpoints',                     cat:'Backend',        pri:'Critical', effort:'M', sprint:'S12', status:'In Sprint' },
+        { id:'TA-003', feature:'Test all 22 API endpoints',                     cat:'Backend',        pri:'Critical', effort:'M', sprint:'S12', status:'Done' },
         { id:'TA-004', feature:'Frontend production walkthrough',                cat:'Frontend',       pri:'Critical', effort:'M', sprint:'S12', status:'Done'      },
         { id:'TA-005', feature:'Verify REACT_APP_API_URL in Amplify',           cat:'Infrastructure', pri:'Critical', effort:'S', sprint:'S12', status:'Done'      },
         { id:'TA-006', feature:'CORS configuration fix',                         cat:'Backend',        pri:'Critical', effort:'S', sprint:'S12', status:'Done' },
