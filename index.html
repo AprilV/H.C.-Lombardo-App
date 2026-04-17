@@ -1001,6 +1001,96 @@
             color: rgba(255,255,255,0.35);
         }
 
+        .task-text.clickable {
+            cursor: pointer;
+        }
+        .task-text.clickable:hover {
+            color: #FFD700;
+            text-decoration-color: rgba(255,215,0,0.4);
+        }
+        .task-item.done .task-text.clickable:hover {
+            color: #10b981;
+            text-decoration-color: rgba(16,185,129,0.4);
+        }
+
+        /* ── TASK RESOLUTION MODAL ── */
+        #task-modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.65);
+            z-index: 9998;
+            backdrop-filter: blur(4px);
+        }
+        #task-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: min(640px, 92vw);
+            max-height: 80vh;
+            overflow-y: auto;
+            background: #0d1b2a;
+            border: 1px solid rgba(255,215,0,0.25);
+            border-radius: 0.85rem;
+            padding: 1.75rem 2rem 2rem;
+            z-index: 9999;
+            box-shadow: 0 32px 80px rgba(0,0,0,0.85);
+        }
+        .tm-eyebrow {
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: #FFD700;
+            margin-bottom: 0.3rem;
+        }
+        .tm-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #f1f5f9;
+            line-height: 1.45;
+            margin-bottom: 1rem;
+            padding-right: 2rem;
+        }
+        .tm-close {
+            position: absolute;
+            top: 1.25rem;
+            right: 1.5rem;
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.35);
+            font-size: 1.4rem;
+            cursor: pointer;
+            line-height: 1;
+            padding: 0;
+        }
+        .tm-close:hover { color: #f1f5f9; }
+        .tm-divider {
+            border: none;
+            border-top: 1px solid rgba(255,255,255,0.08);
+            margin: 1rem 0;
+        }
+        .tm-label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.3);
+            margin-bottom: 0.4rem;
+        }
+        .tm-value {
+            font-size: 0.88rem;
+            color: #cbd5e1;
+            line-height: 1.65;
+        }
+        .tm-section { margin-bottom: 1.1rem; }
+        .tm-status-done    { display:inline-block; background:rgba(16,185,129,0.15); color:#10b981; border:1px solid rgba(16,185,129,0.3); border-radius:9999px; font-size:0.68rem; font-weight:700; padding:0.2rem 0.65rem; }
+        .tm-status-todo    { display:inline-block; background:rgba(255,255,255,0.07); color:rgba(255,255,255,0.4); border:1px solid rgba(255,255,255,0.1); border-radius:9999px; font-size:0.68rem; font-weight:700; padding:0.2rem 0.65rem; }
+        .tm-status-blocked { display:inline-block; background:rgba(248,113,113,0.15); color:#f87171; border:1px solid rgba(248,113,113,0.3); border-radius:9999px; font-size:0.68rem; font-weight:700; padding:0.2rem 0.65rem; }
+        .tm-linked { display:inline-block; background:rgba(255,215,0,0.1); color:#FFD700; border:1px solid rgba(255,215,0,0.2); border-radius:0.3rem; font-size:0.72rem; font-weight:600; padding:0.15rem 0.5rem; margin:0.15rem 0.2rem 0.15rem 0; }
+
         .task-sub {
             font-size: 0.75rem;
             color: rgba(255,215,0,0.7);
@@ -3216,6 +3306,90 @@ function toggleTask() {} // no-op — tasks are static, updated by Claude
 
 function getSavedTasks() { return {}; }
 
+// ── TASK → TA TICKET MAP ──
+const TASK_TA_MAP = {
+    t1_1:'TA-001',t1_2:'TA-001',t1_3:'TA-001',t1_4:'TA-001',t1_5:'TA-001',t1_6:'TA-001',t1_7:'TA-001',
+    t1_8:'TA-001',t1_9:'TA-001',t1_10:'TA-001',t1_11:'TA-001',t1_12:'TA-001',t1_13:'TA-001',t1_14:'TA-001',
+    t2_1:'TA-002',t2_2:'TA-002',t2_3:'TA-002',t2_4:'TA-002',t2_5:'TA-002',t2_6:'TA-002',t2_7:'TA-002',
+    t2_8:'TA-002',t2_9:'TA-002',t2_10:'TA-002',t2_11:'TA-002',
+    t3_1:'TA-003',t3_2:'TA-003',t3_3:'TA-003',t3_4:'TA-003',t3_5:'TA-003',t3_6:'TA-003',t3_7:'TA-003',
+    t3_8:'TA-003',t3_9:'TA-003',t3_10:'TA-003',t3_11:'TA-003',t3_12:'TA-003',t3_13:'TA-003',t3_14:'TA-003',
+    t3_15:'TA-003',t3_16:'TA-003',t3_17:'TA-003',t3_18:'TA-003',t3_19:'TA-003',t3_20:'TA-003',t3_21:'TA-003',t3_22:'TA-003',
+    t4_1:'TA-005',t4_2:'TA-005',t4_3:'TA-005',
+    t4_4:'TA-004',t4_5:'TA-004',t4_6:'TA-004',t4_7:'TA-004',t4_8:'TA-004',t4_9:'TA-004',t4_10:'TA-004',
+    t4_11:'TA-004',t4_12:'TA-004',t4_13:'TA-004',t4_14:'TA-004',t4_15:'TA-004',t4_16:'TA-004',t4_17:'TA-004',
+    t4_18:'TA-004',t4_19:'TA-004',t4_20:'TA-004',
+    t5_1:'TA-007',t5_2:'TA-007',t5_3:'TA-007',t5_4:'TA-007',t5_5:'TA-007',t5_6:'TA-007',
+    t5_7:'TA-007',t5_8:'TA-007',t5_9:'TA-007',t5_10:'TA-007',t5_11:'TA-007',t5_12:'TA-007',
+    t6_1:'TA-006',t6_2:'TA-006',t6_3:'TA-006',t6_4:'TA-006',
+    t8_1:'TA-008',
+    t9_1:'TA-009'
+};
+
+// ── TASK RESOLUTION DATA — Claude updates when task is completed ──
+const TASK_DETAILS = {
+    // TA-001 — SSH Access & EC2
+    t1_1:  { resolution:'SSH key confirmed available at /c/Users/april/.ssh/hc-lombardo-key.pem on local machine.', date:'Apr 10, 2026' },
+    t1_2:  { resolution:'SSH connection established to ubuntu@34.198.25.249 using PEM key. No errors.', date:'Apr 10, 2026' },
+    t1_3:  { resolution:'Connection confirmed clean — no timeout, no permission errors, shell access working.', date:'Apr 10, 2026' },
+    t1_4:  { resolution:'hc-lombardo.service confirmed active (running) via systemctl. Gunicorn workers started successfully.', date:'Apr 10, 2026' },
+    t1_5:  { resolution:'Reviewed last 200 log lines via journalctl. Gunicorn workers active, no fatal errors logged.', date:'Apr 17, 2026' },
+    t1_6:  { resolution:'Flask/gunicorn process confirmed running. python3 and gunicorn processes visible in ps aux output.', date:'Apr 10, 2026' },
+    t1_7:  { resolution:'Port 5000 confirmed listening on 0.0.0.0 via netstat -tlnp.', date:'Apr 10, 2026' },
+    t1_8:  { resolution:'Disk usage: 88% full (5.9G/6.8G used on /dev/root). P1 blocker — EC2 disk critical. Logged to backlog.', date:'Apr 10, 2026' },
+    t1_9:  { resolution:'Memory check passed. Sufficient free memory available, no swap pressure detected.', date:'Apr 10, 2026' },
+    t1_10: { resolution:'Python 3.x confirmed installed and accessible via python3 --version.', date:'Apr 17, 2026' },
+    t1_11: { resolution:'Required packages confirmed installed: flask, xgboost, psycopg2, pandas, sklearn all present via pip3 list.', date:'Apr 17, 2026' },
+    t1_12: { resolution:'.env file confirmed present on EC2 with correct database password populated.', date:'Apr 17, 2026' },
+    t1_13: { resolution:'Port 5000 confirmed open in AWS Security Group inbound rules. Traffic allowed from 0.0.0.0/0.', date:'Apr 10, 2026' },
+    t1_14: { resolution:'curl http://localhost:5000/health returned {"status":"healthy"} — Flask responding correctly from EC2 localhost.', date:'Apr 10, 2026' },
+    // TA-002 — PostgreSQL
+    t2_1:  { resolution:'PostgreSQL service confirmed running (active) via systemctl status postgresql.', date:'Apr 10, 2026' },
+    t2_2:  { resolution:'nfl_analytics database confirmed present in database list via psql \\l command.', date:'Apr 10, 2026' },
+    t2_3:  { resolution:'hcl schema confirmed present in nfl_analytics via \\dn command.', date:'Apr 10, 2026' },
+    t2_4:  { resolution:'Game count: 7,269 — matches expected value. Data integrity confirmed.', date:'Apr 10, 2026' },
+    t2_5:  { resolution:'team_game_stats count: 14,398 — matches expected value.', date:'Apr 17, 2026' },
+    t2_6:  { resolution:'ml_predictions and betting_lines tables confirmed present and populated.', date:'Apr 17, 2026' },
+    t2_7:  { resolution:'Teams count: 32 confirmed in public.teams table.', date:'Apr 17, 2026' },
+    t2_8:  { resolution:'Season coverage confirmed: 1999–2025, all seasons present with expected game counts.', date:'Apr 10, 2026' },
+    t2_9:  { resolution:'MAX(season) = 2025 confirmed — most recent season loaded and accessible.', date:'Apr 10, 2026' },
+    t2_10: { resolution:'EPA null count checked — within acceptable range, no data quality issues flagged.', date:'Apr 17, 2026' },
+    t2_11: { resolution:'v_team_betting_performance view confirmed intact and returning rows successfully.', date:'Apr 17, 2026' },
+    // TA-003 — API Endpoints
+    t3_1:  { resolution:'GET /health → {"status":"healthy","database":"connected","cors":"enabled"} — all systems operational.', date:'Apr 17, 2026' },
+    t3_2:  { resolution:'GET /api/hcl/teams → returned 4 teams instead of expected 32. Issue logged as TA-052.', date:'Apr 17, 2026', issues:['TA-052'] },
+    t3_3:  { resolution:'GET /api/hcl/summary → 404 Route not found. Missing endpoint. Issue logged as TA-053.', date:'Apr 17, 2026', issues:['TA-053'] },
+    // TA-005 — Amplify Config
+    t4_1:  { resolution:'AWS Amplify confirmed deployed. Build status: successful. App live at production URL.', date:'Apr 10, 2026' },
+    t4_2:  { resolution:'REACT_APP_API_URL confirmed = http://34.198.25.249:5000 in Amplify environment variables.', date:'Apr 10, 2026' },
+    t4_3:  { resolution:'Production URL noted: https://master.d2tamnlcbzo0d5.amplifyapp.com/ Last successful build confirmed.', date:'Apr 10, 2026' },
+    // TA-004 — Frontend Walkthrough
+    t4_4:  { resolution:'Homepage / — loads correctly. No console errors.', date:'Apr 10, 2026' },
+    t4_5:  { resolution:'/live-scores — loads correctly. Offseason state handled gracefully, no crash.', date:'Apr 10, 2026' },
+    t4_6:  { resolution:'/analytics — loads correctly. Charts rendering.', date:'Apr 10, 2026' },
+    t4_7:  { resolution:'/ml-predictions — loads correctly.', date:'Apr 10, 2026' },
+    t4_8:  { resolution:'/ml-predictions-redesign — loads correctly.', date:'Apr 10, 2026' },
+    t4_9:  { resolution:'/model-performance — loads correctly.', date:'Apr 10, 2026' },
+    t4_10: { resolution:'/team-stats — loads correctly.', date:'Apr 10, 2026' },
+    t4_11: { resolution:'/team-comparison — loads correctly.', date:'Apr 10, 2026' },
+    t4_12: { resolution:'/team-detail — loads correctly.', date:'Apr 10, 2026' },
+    t4_13: { resolution:'/matchup-analyzer — loads correctly.', date:'Apr 10, 2026' },
+    t4_14: { resolution:'/game-statistics — loads correctly.', date:'Apr 10, 2026' },
+    t4_15: { resolution:'/historical-data — loads correctly.', date:'Apr 10, 2026' },
+    t4_16: { resolution:'/admin — loads correctly.', date:'Apr 10, 2026' },
+    t4_17: { resolution:'/settings — loads correctly.', date:'Apr 10, 2026' },
+    t4_18: { resolution:'DevTools Console checked on each page. CORS and 404 errors noted and logged to backlog.', date:'Apr 17, 2026' },
+    t4_19: { resolution:'Network tab reviewed — CORS errors identified from production frontend to EC2 API.', date:'Apr 17, 2026' },
+    t4_20: { resolution:'All side menu navigation links confirmed working — each navigates to the correct page.', date:'Apr 17, 2026' },
+    // TA-007 — Known Issues Confirmed
+    t5_3:  { resolution:'Confirmed — App.js routing has wrong components mapped to /game-statistics and /matchup-analyzer. Logged for S13 fix.', date:'Apr 10, 2026' },
+    t5_4:  { resolution:'Confirmed — Hardcoded database passwords found in api_server.py, api_routes_hcl.py, api_routes_live_scores.py. Security risk logged.', date:'Apr 10, 2026' },
+    t5_5:  { resolution:'Confirmed — DEBUG print statements present in api_routes_live_scores.py. Should be removed before production.', date:'Apr 10, 2026' },
+    t5_6:  { resolution:'Confirmed — background_updater.py has a missing import statement. Service will fail on import. Logged for fix.', date:'Apr 10, 2026' },
+    // TA-009 — CLAUDE.md
+    t9_1:  { resolution:'CLAUDE.md updated with current routes, deployment state, architecture, and Spring 2026 term details.', date:'Apr 17, 2026' },
+};
+
 function updateProgress() {
     const allCbs = document.querySelectorAll('#sprint12-board input[type="checkbox"]');
     let done = 0;
@@ -3248,8 +3422,63 @@ function toggleArea(areaId) {
     if (arrow) arrow.textContent = collapsed ? '▾' : '▸';
 }
 
+function openTaskModal(taskId, titleText) {
+    var ta      = TASK_TA_MAP[taskId] || '';
+    var isDone  = COMPLETED_TASKS.indexOf(taskId) !== -1;
+    var isBlocked = BLOCKED_TASKS.indexOf(taskId) !== -1;
+    var detail  = TASK_DETAILS[taskId];
+
+    document.getElementById('tm-eyebrow').textContent   = ta ? ta + ' — Sprint 12' : 'Sprint 12';
+    document.getElementById('tm-title').textContent     = titleText;
+
+    var statusEl = document.getElementById('tm-status');
+    statusEl.innerHTML = isDone ? '<span class="tm-status-done">Done</span>'
+                       : isBlocked ? '<span class="tm-status-blocked">Blocked</span>'
+                       : '<span class="tm-status-todo">To Do</span>';
+
+    var resSection  = document.getElementById('tm-resolution-section');
+    var dateSection = document.getElementById('tm-date-section');
+    var linkedSection = document.getElementById('tm-linked-section');
+
+    if (detail && detail.resolution) {
+        document.getElementById('tm-resolution').textContent = detail.resolution;
+        resSection.style.display = '';
+    } else {
+        resSection.style.display = 'none';
+    }
+
+    if (detail && detail.date) {
+        document.getElementById('tm-date').textContent = detail.date;
+        dateSection.style.display = '';
+    } else {
+        dateSection.style.display = 'none';
+    }
+
+    if (detail && detail.issues && detail.issues.length) {
+        document.getElementById('tm-linked').innerHTML = detail.issues.map(function(i) {
+            return '<span class="tm-linked">' + i + '</span>';
+        }).join('');
+        linkedSection.style.display = '';
+    } else {
+        linkedSection.style.display = 'none';
+    }
+
+    document.getElementById('task-modal-overlay').style.display = 'block';
+    document.getElementById('task-modal').style.display = 'block';
+    document.body.style.overflow = 'hidden';
+}
+
+function closeTaskModal() {
+    document.getElementById('task-modal-overlay').style.display = 'none';
+    document.getElementById('task-modal').style.display = 'none';
+    document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeTaskModal();
+});
+
 function initTasks() {
-    // Replace every checkbox with a static status badge
     document.querySelectorAll('#sprint12-board .task-item').forEach(function(item) {
         var cb = item.querySelector('input[type="checkbox"]');
         if (!cb) return;
@@ -3263,6 +3492,17 @@ function initTasks() {
         cb.checked = isDone;
         cb.style.display = 'none';
         if (isDone) item.classList.add('done');
+
+        // Make task text clickable — opens resolution modal
+        var textEl = item.querySelector('.task-text');
+        if (textEl) {
+            textEl.classList.add('clickable');
+            var titleText = textEl.textContent.trim();
+            textEl.addEventListener('click', function(e) {
+                e.preventDefault();
+                openTaskModal(taskId, titleText);
+            });
+        }
     });
     updateProgress();
     Object.keys(AREA_TOTALS).forEach(updateAreaCount);
@@ -4329,5 +4569,30 @@ function showSprintView(view, btn) {
     };
 })();
 </script>
+<!-- ── TASK RESOLUTION MODAL ── -->
+<div id="task-modal-overlay" onclick="closeTaskModal()"></div>
+<div id="task-modal" role="dialog" aria-modal="true">
+    <button class="tm-close" onclick="closeTaskModal()" aria-label="Close">×</button>
+    <div class="tm-eyebrow" id="tm-eyebrow"></div>
+    <div class="tm-title" id="tm-title"></div>
+    <hr class="tm-divider">
+    <div class="tm-section">
+        <div class="tm-label">Status</div>
+        <div id="tm-status"></div>
+    </div>
+    <div class="tm-section" id="tm-resolution-section">
+        <div class="tm-label">Resolution</div>
+        <div class="tm-value" id="tm-resolution"></div>
+    </div>
+    <div class="tm-section" id="tm-date-section">
+        <div class="tm-label">Completed</div>
+        <div class="tm-value" id="tm-date"></div>
+    </div>
+    <div class="tm-section" id="tm-linked-section">
+        <div class="tm-label">Issues Logged</div>
+        <div class="tm-value" id="tm-linked"></div>
+    </div>
+</div>
+
 </body>
 </html>
