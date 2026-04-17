@@ -1816,7 +1816,7 @@
         </div>
         <div class="pm-metric">
             <div class="pm-metric-label">Total Open Tasks</div>
-            <div class="pm-metric-value" style="color:#FFA500;">13</div>
+            <div class="pm-metric-value" style="color:#FFA500;">15</div>
             <div class="pm-metric-sub">Disk critical · 6 from code analysis · AWS MFA locked</div>
         </div>
         <div class="pm-metric">
@@ -1866,7 +1866,7 @@
             <div class="chart-card-title">Burndown — Sprint 12</div>
             <div class="chart-card-subtitle">Tracks remaining tasks vs. ideal pace. The red line should follow the gold dashed line. If it stays flat, the sprint is stalled.</div>
             <canvas id="burndown-chart" height="180"></canvas>
-            <div class="chart-card-insight"><strong>S12 status:</strong> 60 of 83 tasks complete as of Day 12. Ahead of ideal pace. Remaining 23 tasks: TA-003 (ML endpoints, live scores), TA-006 (CORS), TA-007 (task log). Sprint closes Apr 18.</div>
+            <div class="chart-card-insight"><strong>S12 status:</strong> 71 of 83 tasks complete as of Day 12. Ahead of ideal pace. Remaining 12 tasks: TA-003 (live scores), TA-006 (CORS), TA-007 (task log). Sprint closes Apr 18.</div>
         </div>
 
         <div class="chart-card">
@@ -1890,7 +1890,7 @@
 
         <div class="chart-card">
             <div class="chart-card-title">Backlog by Severity</div>
-            <div class="chart-card-subtitle">Current task distribution across all 13 backlog tasks by severity. P1 = production blockers that must be fixed before anything else ships. P4 = polish only.</div>
+            <div class="chart-card-subtitle">Current task distribution across all 15 backlog tasks by severity. P1 = production blockers that must be fixed before anything else ships. P4 = polish only.</div>
             <canvas id="severity-chart" height="180"></canvas>
             <div class="chart-card-insight"><strong>S12 progress:</strong> 8 tasks resolved this sprint (routing, hardcoded credentials, debug output, missing import). 2 P1 blockers remain open (EC2 disk, AWS MFA). ML schema and broken SQL queued for S13.</div>
         </div>
@@ -3300,6 +3300,7 @@ const COMPLETED_TASKS = [
     // Area 3 — TA-003: API Endpoints (tested Apr 17)
     't3_1', 't3_2', 't3_3',
     't3_4', 't3_5', 't3_6', 't3_7', 't3_8', 't3_9', 't3_10',
+    't3_11', 't3_12', 't3_13', 't3_14', 't3_15', 't3_16', 't3_17', 't3_18', 't3_19', 't3_20', 't3_21',
     // Area 4 — TA-005 + TA-004: Amplify config + Frontend Walkthrough (completed Apr 10–17)
     't4_1', 't4_2', 't4_3', 't4_4', 't4_5', 't4_6', 't4_7', 't4_8', 't4_9', 't4_10',
     't4_11', 't4_12', 't4_13', 't4_14', 't4_15', 't4_16', 't4_17', 't4_18', 't4_19', 't4_20',
@@ -3377,6 +3378,17 @@ const TASK_DETAILS = {
     t3_8:  { resolution:'GET /api/hcl/analytics/weather → success. Returns conditions, count, and success flag.', date:'Apr 17, 2026' },
     t3_9:  { resolution:'GET /api/hcl/analytics/rest → success. Returns count, rest_categories, and season.', date:'Apr 17, 2026' },
     t3_10: { resolution:'GET /api/hcl/analytics/referees → success. Returns count, referees, and season.', date:'Apr 17, 2026' },
+    t3_11: { resolution:'GET /api/ml/model-info → success. Returns full neural network architecture (41 inputs, 3 hidden layers, ReLU/Sigmoid activations).', date:'Apr 17, 2026' },
+    t3_12: { resolution:'GET /api/ml/model-performance → empty response. Endpoint exists but returns no data. Task logged as TA-054.', date:'Apr 17, 2026', issues:['TA-054'] },
+    t3_13: { resolution:'GET /api/ml/predict-week/2024/18 → success. Returns predictions with actual scores, AI spread, and win probabilities.', date:'Apr 17, 2026' },
+    t3_14: { resolution:'GET /api/ml/predict-upcoming → success. Returns empty predictions — expected, offseason, no upcoming games.', date:'Apr 17, 2026' },
+    t3_15: { resolution:'GET /api/ml/available-weeks → success. Returns 53 weeks of data across 2024–2025 seasons.', date:'Apr 17, 2026' },
+    t3_16: { resolution:'GET /api/ml/season-ai-vs-vegas/2024 → success. AI 20.3% (52 wins), Vegas 13.3% (34 wins), 170 ties across 256 games.', date:'Apr 17, 2026' },
+    t3_17: { resolution:'GET /api/ml/performance-stats → success. Returns week-by-week accuracy and MAE stats.', date:'Apr 17, 2026' },
+    t3_18: { resolution:'GET /api/elo/ratings/current → success. Returns full 32-team ELO rankings, last updated Dec 19, 2025.', date:'Apr 17, 2026' },
+    t3_19: { resolution:'GET /api/elo/predict-week/2024/18 → failure. Returns "No games found for 2024 Week 18." ELO data gap. Task logged as TA-055.', date:'Apr 17, 2026', issues:['TA-055'] },
+    t3_20: { resolution:'GET /api/predictions/current-week → success. Returns empty predictions — expected, offseason.', date:'Apr 17, 2026' },
+    t3_21: { resolution:'GET /api/predictions/combined/2024/18 → success. Returns combined XGBoost predictions for Week 18 2024 games.', date:'Apr 17, 2026' },
     // TA-005 — Amplify Config
     t4_1:  { resolution:'AWS Amplify confirmed deployed. Build status: successful. App live at production URL.', date:'Apr 10, 2026' },
     t4_2:  { resolution:'REACT_APP_API_URL confirmed = http://34.198.25.249:5000 in Amplify environment variables.', date:'Apr 10, 2026' },
@@ -3675,7 +3687,7 @@ function rebuildCharts() {
                 },
                 {
                     label: 'Actual Remaining',
-                    data: [83, 83, 79, 79, 68, 65, 62, 58, 55, 50, 42, 23, null, null],
+                    data: [83, 83, 79, 79, 68, 65, 62, 58, 55, 50, 42, 12, null, null],
                     borderColor: c.actualLine,
                     backgroundColor: c.actualFill,
                     tension: 0.2,
@@ -3768,7 +3780,7 @@ function rebuildCharts() {
         data: {
             labels: ['P1 — Blocker', 'P2 — Major', 'P3 — Minor', 'P4 — Polish'],
             datasets: [{
-                data: [4, 10, 5, 1],
+                data: [4, 11, 6, 1],
                 backgroundColor: [
                     'rgba(213,10,10,0.75)',
                     'rgba(255,165,0,0.75)',
@@ -4011,6 +4023,8 @@ initTasks();
         { id:'TA-051', feature:'Rotate GitHub webhook secret — GitHub disclosed Sep–Dec 2025 bug exposed secrets in X-Github-Encoded-Secret header; rotate Amplify webhook secret as precaution', cat:'Security', pri:'Low', effort:'XS', sprint:'TBD', status:'Backlog' },
         { id:'TA-052', feature:'Fix /api/hcl/teams returning 4 teams instead of 32 — discovered during TA-003 API audit Apr 17', cat:'Backend', pri:'High', effort:'S', sprint:'TBD', status:'Backlog' },
         { id:'TA-053', feature:'Add missing /api/hcl/summary endpoint — route not found during TA-003 API audit Apr 17', cat:'Backend', pri:'Medium', effort:'S', sprint:'TBD', status:'Backlog' },
+        { id:'TA-054', feature:'Fix /api/ml/model-performance returning empty response — endpoint exists but no data returned, discovered TA-003 audit Apr 17', cat:'Backend', pri:'High', effort:'S', sprint:'TBD', status:'Backlog' },
+        { id:'TA-055', feature:'Fix /api/elo/predict-week/2024/18 returning no games found — ELO data gap for Week 18, discovered TA-003 audit Apr 17', cat:'Backend', pri:'Medium', effort:'S', sprint:'TBD', status:'Backlog' },
     ];
 
     window.PB_ITEMS = items;
