@@ -1882,10 +1882,10 @@
     <div class="chart-grid-2" style="margin-bottom:1.5rem;">
 
         <div class="chart-card">
-            <div class="chart-card-title">Velocity — Issues Closed Per Sprint</div>
-            <div class="chart-card-subtitle">How much work was delivered each sprint. Consistent bars = predictable team. Drops = scope creep or blockers. Average velocity informs sprint planning.</div>
+            <div class="chart-card-title">Velocity — TA Items Delivered Per Sprint</div>
+            <div class="chart-card-subtitle">How many backlog tasks (TA items) were completed each sprint. Consistent bars = predictable team. Drops = scope creep or blockers. Average velocity informs sprint planning.</div>
             <canvas id="velocity-chart" height="180"></canvas>
-            <div class="chart-card-insight"><strong>Avg velocity:</strong> ~6.8 issues/sprint across S1–S11. At this pace, 13 open backlog items take ~2 sprints to clear — aligns with S13 plan. S12 bar will fill in at sprint close.</div>
+            <div class="chart-card-insight"><strong>Avg velocity:</strong> ~6.8 TA items/sprint across S1–S11. S12 delivered 5 TA items (TA-001, TA-002, TA-004, TA-005, TA-009). Remaining TA-003, TA-006, TA-007 carry into S13.</div>
         </div>
 
         <div class="chart-card">
@@ -3744,7 +3744,7 @@ function rebuildCharts() {
         data: {
             labels: ['S1','S2','S3','S4','S5','S6','S7','S8','S9','S10','S11','S12*'],
             datasets: [{
-                label: 'Issues Closed',
+                label: 'TA Items Delivered',
                 data: [8, 5, 6, 6, 5, 7, 9, 8, 7, 7, 7, 5],
                 backgroundColor: barColors,
                 borderColor: borderColors,
