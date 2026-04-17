@@ -1816,7 +1816,7 @@
         </div>
         <div class="pm-metric">
             <div class="pm-metric-label">Total Open Tasks</div>
-            <div class="pm-metric-value" style="color:#FFA500;">15</div>
+            <div class="pm-metric-value" style="color:#FFA500;">16</div>
             <div class="pm-metric-sub">Disk critical · 6 from code analysis · AWS MFA locked</div>
         </div>
         <div class="pm-metric">
@@ -1866,14 +1866,14 @@
             <div class="chart-card-title">Burndown — Sprint 12</div>
             <div class="chart-card-subtitle">Tracks remaining tasks vs. ideal pace. The red line should follow the gold dashed line. If it stays flat, the sprint is stalled.</div>
             <canvas id="burndown-chart" height="180"></canvas>
-            <div class="chart-card-insight"><strong>S12 status:</strong> 71 of 83 tasks complete as of Day 12. Ahead of ideal pace. Remaining 12 tasks: TA-003 (live scores), TA-006 (CORS), TA-007 (task log). Sprint closes Apr 18.</div>
+            <div class="chart-card-insight"><strong>S12 status:</strong> 75 of 83 tasks complete as of Day 12. Ahead of ideal pace. Remaining 8 tasks: TA-003 (live scores), TA-007 (task log). Sprint closes Apr 18.</div>
         </div>
 
         <div class="chart-card">
             <div class="chart-card-title">Burnup — Scope vs. Completion</div>
             <div class="chart-card-subtitle">Shows total work added to the project (scope) vs. work completed across all 12 sprints. A healthy project keeps the gap closing.</div>
             <canvas id="burnup-chart" height="180"></canvas>
-            <div class="chart-card-insight"><strong>S12 progress:</strong> 5 backlog items delivered this sprint (TA-001, TA-002, TA-004, TA-005, TA-009). Cumulative completed: 80 of 83. Gap closing heading into S13.</div>
+            <div class="chart-card-insight"><strong>S12 progress:</strong> 6 backlog items delivered this sprint (TA-001, TA-002, TA-004, TA-005, TA-006, TA-009). Cumulative completed: 81 of 83. Gap closing heading into S13.</div>
         </div>
 
     </div>
@@ -1885,12 +1885,12 @@
             <div class="chart-card-title">Velocity — TA Items Delivered Per Sprint</div>
             <div class="chart-card-subtitle">How many backlog tasks (TA items) were completed each sprint. Consistent bars = predictable team. Drops = scope creep or blockers. Average velocity informs sprint planning.</div>
             <canvas id="velocity-chart" height="180"></canvas>
-            <div class="chart-card-insight"><strong>Avg velocity:</strong> ~6.8 TA items/sprint across S1–S11. S12 delivered 5 TA items (TA-001, TA-002, TA-004, TA-005, TA-009). Remaining TA-003, TA-006, TA-007 carry into S13.</div>
+            <div class="chart-card-insight"><strong>Avg velocity:</strong> ~6.8 TA items/sprint across S1–S11. S12 delivered 6 TA items (TA-001, TA-002, TA-004, TA-005, TA-006, TA-009). Remaining TA-003, TA-007 carry into S13.</div>
         </div>
 
         <div class="chart-card">
             <div class="chart-card-title">Backlog by Severity</div>
-            <div class="chart-card-subtitle">Current task distribution across all 15 backlog tasks by severity. P1 = production blockers that must be fixed before anything else ships. P4 = polish only.</div>
+            <div class="chart-card-subtitle">Current task distribution across all 16 backlog tasks by severity. P1 = production blockers that must be fixed before anything else ships. P4 = polish only.</div>
             <canvas id="severity-chart" height="180"></canvas>
             <div class="chart-card-insight"><strong>S12 progress:</strong> 8 tasks resolved this sprint (routing, hardcoded credentials, debug output, missing import). 2 P1 blockers remain open (EC2 disk, AWS MFA). ML schema and broken SQL queued for S13.</div>
         </div>
@@ -3306,7 +3306,8 @@ const COMPLETED_TASKS = [
     't4_11', 't4_12', 't4_13', 't4_14', 't4_15', 't4_16', 't4_17', 't4_18', 't4_19', 't4_20',
     // Area 5 — TA-007: Known issues confirmed
     't5_3', 't5_4', 't5_5', 't5_6',
-    // Area 6 — TA-006: CORS
+    // Area 6 — TA-006: CORS (completed Apr 17)
+    't6_1', 't6_2', 't6_3', 't6_4',
     // TA-009 — CLAUDE.md updated (Apr 17)
     't9_1',
 ];
@@ -3411,7 +3412,12 @@ const TASK_DETAILS = {
     t4_18: { resolution:'DevTools Console checked on each page. CORS and 404 errors noted and logged to backlog.', date:'Apr 17, 2026' },
     t4_19: { resolution:'Network tab reviewed — CORS errors identified from production frontend to EC2 API.', date:'Apr 17, 2026' },
     t4_20: { resolution:'All side menu navigation links confirmed working — each navigates to the correct page.', date:'Apr 17, 2026' },
-    // TA-007 — Known Issues Confirmed
+    // TA-006 — CORS Configuration Fix
+    t6_1:  { resolution:'curl http://34.198.25.249:5000/health → {"cors":"enabled","database":"connected","status":"healthy"}. EC2 reachable from local machine.', date:'Apr 17, 2026' },
+    t6_2:  { resolution:'CORS preflight to Amplify origin confirmed 200 OK. Access-Control-Allow-Origin correctly returns Amplify domain. Production frontend connectivity verified.', date:'Apr 17, 2026' },
+    t6_3:  { resolution:'api_server.py line 51 — Amplify domain explicitly listed in CORS origins. nfl.aprilsykes.dev also listed but domain not yet configured. Logged as TA-056.', date:'Apr 17, 2026', issues:['TA-056'] },
+    t6_4:  { resolution:'Tested 4 endpoints with Amplify origin header — all return correct Access-Control-Allow-Origin header. No CORS errors on any active endpoint.', date:'Apr 17, 2026' },
+    // TA-007 — Known Tasks Confirmed
     t5_3:  { resolution:'Confirmed — App.js routing has wrong components mapped to /game-statistics and /matchup-analyzer. Logged for S13 fix.', date:'Apr 10, 2026' },
     t5_4:  { resolution:'Confirmed — Hardcoded database passwords found in api_server.py, api_routes_hcl.py, api_routes_live_scores.py. Security risk logged.', date:'Apr 10, 2026' },
     t5_5:  { resolution:'Confirmed — DEBUG print statements present in api_routes_live_scores.py. Should be removed before production.', date:'Apr 10, 2026' },
@@ -3687,7 +3693,7 @@ function rebuildCharts() {
                 },
                 {
                     label: 'Actual Remaining',
-                    data: [83, 83, 79, 79, 68, 65, 62, 58, 55, 50, 42, 12, null, null],
+                    data: [83, 83, 79, 79, 68, 65, 62, 58, 55, 50, 42, 8, null, null],
                     borderColor: c.actualLine,
                     backgroundColor: c.actualFill,
                     tension: 0.2,
@@ -3727,7 +3733,7 @@ function rebuildCharts() {
                 },
                 {
                     label: 'Completed',
-                    data: [8, 13, 19, 25, 30, 37, 46, 54, 61, 68, 75, 80],
+                    data: [8, 13, 19, 25, 30, 37, 46, 54, 61, 68, 75, 81],
                     borderColor: c.actualLine,
                     backgroundColor: c.actualFill,
                     tension: 0.3,
@@ -3757,7 +3763,7 @@ function rebuildCharts() {
             labels: ['S1','S2','S3','S4','S5','S6','S7','S8','S9','S10','S11','S12*'],
             datasets: [{
                 label: 'Tasks Delivered',
-                data: [8, 5, 6, 6, 5, 7, 9, 8, 7, 7, 7, 5],
+                data: [8, 5, 6, 6, 5, 7, 9, 8, 7, 7, 7, 6],
                 backgroundColor: barColors,
                 borderColor: borderColors,
                 borderWidth: 1,
@@ -3780,7 +3786,7 @@ function rebuildCharts() {
         data: {
             labels: ['P1 — Blocker', 'P2 — Major', 'P3 — Minor', 'P4 — Polish'],
             datasets: [{
-                data: [4, 11, 6, 1],
+                data: [4, 12, 6, 1],
                 backgroundColor: [
                     'rgba(213,10,10,0.75)',
                     'rgba(255,165,0,0.75)',
@@ -3973,7 +3979,7 @@ initTasks();
         { id:'TA-003', feature:'Test all 22 API endpoints',                     cat:'Backend',        pri:'Critical', effort:'M', sprint:'S12', status:'In Sprint' },
         { id:'TA-004', feature:'Frontend production walkthrough',                cat:'Frontend',       pri:'Critical', effort:'M', sprint:'S12', status:'Done'      },
         { id:'TA-005', feature:'Verify REACT_APP_API_URL in Amplify',           cat:'Infrastructure', pri:'Critical', effort:'S', sprint:'S12', status:'Done'      },
-        { id:'TA-006', feature:'CORS configuration fix',                         cat:'Backend',        pri:'Critical', effort:'S', sprint:'S12', status:'In Sprint' },
+        { id:'TA-006', feature:'CORS configuration fix',                         cat:'Backend',        pri:'Critical', effort:'S', sprint:'S12', status:'Done' },
         { id:'TA-007', feature:'Production Task Log created',                   cat:'Documentation',  pri:'High',     effort:'S', sprint:'S12', status:'In Sprint' },
         { id:'TA-008', feature:'Live app URL added to dashboard',                cat:'Dashboard',      pri:'High',     effort:'S', sprint:'S12', status:'Blocked'   },
         { id:'TA-009', feature:'CLAUDE.md updated to reflect current state',     cat:'Documentation',  pri:'Medium',   effort:'S', sprint:'S12', status:'Done'      },
@@ -4025,6 +4031,7 @@ initTasks();
         { id:'TA-053', feature:'Add missing /api/hcl/summary endpoint — route not found during TA-003 API audit Apr 17', cat:'Backend', pri:'Medium', effort:'S', sprint:'TBD', status:'Backlog' },
         { id:'TA-054', feature:'Fix /api/ml/model-performance returning empty response — endpoint exists but no data returned, discovered TA-003 audit Apr 17', cat:'Backend', pri:'High', effort:'S', sprint:'TBD', status:'Backlog' },
         { id:'TA-055', feature:'Fix /api/elo/predict-week/2024/18 returning no games found — ELO data gap for Week 18, discovered TA-003 audit Apr 17', cat:'Backend', pri:'Medium', effort:'S', sprint:'TBD', status:'Backlog' },
+        { id:'TA-056', feature:'Restore nfl.aprilsykes.dev custom domain — was working before Amplify migration, broken during transfer, needs DNS and Amplify domain config', cat:'Infrastructure', pri:'High', effort:'M', sprint:'TBD', status:'Backlog' },
     ];
 
     window.PB_ITEMS = items;
