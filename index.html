@@ -1815,7 +1815,7 @@
             <div class="pm-metric-sub">Disk critical (R-09) · AWS MFA locked (R-10)</div>
         </div>
         <div class="pm-metric">
-            <div class="pm-metric-label">Total Open Issues</div>
+            <div class="pm-metric-label">Total Open Tasks</div>
             <div class="pm-metric-value" style="color:#FFA500;">13</div>
             <div class="pm-metric-sub">Disk critical · 6 from code analysis · AWS MFA locked</div>
         </div>
@@ -1834,7 +1834,7 @@
     </div>
 
     <!-- ── OPEN BLOCKERS ── -->
-    <div class="dash-section-label">Open Blockers &amp; Top Issues</div>
+    <div class="dash-section-label">Open Blockers &amp; Top Tasks</div>
     <div class="blocker-list">
         <div class="blocker-item sev-p1">
             <div><div class="blocker-badge p1">P1</div><div class="blocker-desc">EC2 disk 88% full — 871MB free. Server will crash or fail writes if full. Clean up logs/tmp immediately.</div><div class="blocker-file">EC2: df -h → /dev/root 5.9G/6.8G used</div></div>
@@ -1866,7 +1866,7 @@
             <div class="chart-card-title">Burndown — Sprint 12</div>
             <div class="chart-card-subtitle">Tracks remaining tasks vs. ideal pace. The red line should follow the gold dashed line. If it stays flat, the sprint is stalled.</div>
             <canvas id="burndown-chart" height="180"></canvas>
-            <div class="chart-card-insight"><strong>S12 status:</strong> 60 of 83 tasks complete as of Day 12. Ahead of ideal pace. Remaining 23 tasks: TA-003 (ML endpoints, live scores), TA-006 (CORS), TA-007 (issue log). Sprint closes Apr 18.</div>
+            <div class="chart-card-insight"><strong>S12 status:</strong> 60 of 83 tasks complete as of Day 12. Ahead of ideal pace. Remaining 23 tasks: TA-003 (ML endpoints, live scores), TA-006 (CORS), TA-007 (task log). Sprint closes Apr 18.</div>
         </div>
 
         <div class="chart-card">
@@ -1890,9 +1890,9 @@
 
         <div class="chart-card">
             <div class="chart-card-title">Backlog by Severity</div>
-            <div class="chart-card-subtitle">Current issue distribution across all 13 logged bugs. P1 = production blockers that must be fixed before anything else ships. P4 = polish only.</div>
+            <div class="chart-card-subtitle">Current task distribution across all 13 backlog tasks by severity. P1 = production blockers that must be fixed before anything else ships. P4 = polish only.</div>
             <canvas id="severity-chart" height="180"></canvas>
-            <div class="chart-card-insight"><strong>S12 progress:</strong> 8 issues resolved this sprint (routing, hardcoded credentials, debug output, missing import). 2 P1 blockers remain open (EC2 disk, AWS MFA). ML schema and broken SQL queued for S13.</div>
+            <div class="chart-card-insight"><strong>S12 progress:</strong> 8 tasks resolved this sprint (routing, hardcoded credentials, debug output, missing import). 2 P1 blockers remain open (EC2 disk, AWS MFA). ML schema and broken SQL queued for S13.</div>
         </div>
 
     </div>
@@ -2244,14 +2244,14 @@
             <!-- TA-007: Production Issue Log -->
             <div class="area-card">
                 <div class="area-header" onclick="toggleArea('ta007')">
-                    <div class="area-title">📁 TA-007 — Production Issue Log &amp; Local Code Audit <span class="area-count" id="count-ta007">0/12</span></div>
+                    <div class="area-title">📁 TA-007 — Production Task Log &amp; Local Code Audit <span class="area-count" id="count-ta007">0/12</span></div>
                     <span id="arrow-ta007">▾</span>
                 </div>
                 <div class="area-body" id="ta007">
                     <div class="area-section-label">Git Status</div>
                     <label class="task-item" id="wrap-t5_1"><input type="checkbox" id="t5_1" onchange="toggleTask('t5_1')"><span class="task-text">git status — list all modified files</span></label>
                     <label class="task-item" id="wrap-t5_2"><input type="checkbox" id="t5_2" onchange="toggleTask('t5_2')"><span class="task-text">git diff frontend/src/App.js — check known routing bugs</span></label>
-                    <div class="area-section-label">Known Issue Confirmations</div>
+                    <div class="area-section-label">Known Task Confirmations</div>
                     <label class="task-item" id="wrap-t5_3"><input type="checkbox" id="t5_3" onchange="toggleTask('t5_3')"><span class="task-text">Confirm App.js routing — /game-statistics and /matchup-analyzer wrong components</span></label>
                     <label class="task-item" id="wrap-t5_4"><input type="checkbox" id="t5_4" onchange="toggleTask('t5_4')"><span class="task-text">Confirm hardcoded password in api_server.py, api_routes_hcl.py, api_routes_live_scores.py</span></label>
                     <label class="task-item" id="wrap-t5_5"><input type="checkbox" id="t5_5" onchange="toggleTask('t5_5')"><span class="task-text">Confirm DEBUG print statements in api_routes_live_scores.py</span></label>
@@ -2370,7 +2370,7 @@
                     <div class="dod-item">PostgreSQL verified running with correct schema</div>
                     <div class="dod-item">REACT_APP_API_URL confirmed in Amplify env vars</div>
                     <div class="dod-item">Every frontend page loads without console errors</div>
-                    <div class="dod-item">Production Issue Log created and committed</div>
+                    <div class="dod-item">Production Task Log created and committed</div>
                     <div class="dod-item">CLAUDE.md updated to reflect current state</div>
                     <div class="dod-item">Code committed and pushed to GitHub</div>
                 </div>
@@ -3364,12 +3364,12 @@ const TASK_DETAILS = {
     t2_7:  { resolution:'Teams count: 32 confirmed in public.teams table.', date:'Apr 17, 2026' },
     t2_8:  { resolution:'Season coverage confirmed: 1999–2025, all seasons present with expected game counts.', date:'Apr 10, 2026' },
     t2_9:  { resolution:'MAX(season) = 2025 confirmed — most recent season loaded and accessible.', date:'Apr 10, 2026' },
-    t2_10: { resolution:'EPA null count checked — within acceptable range, no data quality issues flagged.', date:'Apr 17, 2026' },
+    t2_10: { resolution:'EPA null count checked — within acceptable range, no data quality problems flagged.', date:'Apr 17, 2026' },
     t2_11: { resolution:'v_team_betting_performance view confirmed intact and returning rows successfully.', date:'Apr 17, 2026' },
     // TA-003 — API Endpoints
     t3_1:  { resolution:'GET /health → {"status":"healthy","database":"connected","cors":"enabled"} — all systems operational.', date:'Apr 17, 2026' },
-    t3_2:  { resolution:'GET /api/hcl/teams → returned 4 teams instead of expected 32. Issue logged as TA-052.', date:'Apr 17, 2026', issues:['TA-052'] },
-    t3_3:  { resolution:'GET /api/hcl/summary → 404 Route not found. Missing endpoint. Issue logged as TA-053.', date:'Apr 17, 2026', issues:['TA-053'] },
+    t3_2:  { resolution:'GET /api/hcl/teams → returned 4 teams instead of expected 32. Task logged as TA-052.', date:'Apr 17, 2026', issues:['TA-052'] },
+    t3_3:  { resolution:'GET /api/hcl/summary → 404 Route not found. Missing endpoint. Task logged as TA-053.', date:'Apr 17, 2026', issues:['TA-053'] },
     t3_4:  { resolution:'GET /api/hcl/teams/NE → success. Team data returned with expected structure.', date:'Apr 17, 2026' },
     t3_5:  { resolution:'GET /api/hcl/teams/NE/games → success. Returns count, games array, and season.', date:'Apr 17, 2026' },
     t3_6:  { resolution:'GET /api/hcl/games/week/2024/10 → success. Returns count, games, and season for Week 10 2024.', date:'Apr 17, 2026' },
@@ -3744,7 +3744,7 @@ function rebuildCharts() {
         data: {
             labels: ['S1','S2','S3','S4','S5','S6','S7','S8','S9','S10','S11','S12*'],
             datasets: [{
-                label: 'TA Items Delivered',
+                label: 'Tasks Delivered',
                 data: [8, 5, 6, 6, 5, 7, 9, 8, 7, 7, 7, 5],
                 backgroundColor: barColors,
                 borderColor: borderColors,
@@ -3962,7 +3962,7 @@ initTasks();
         { id:'TA-004', feature:'Frontend production walkthrough',                cat:'Frontend',       pri:'Critical', effort:'M', sprint:'S12', status:'Done'      },
         { id:'TA-005', feature:'Verify REACT_APP_API_URL in Amplify',           cat:'Infrastructure', pri:'Critical', effort:'S', sprint:'S12', status:'Done'      },
         { id:'TA-006', feature:'CORS configuration fix',                         cat:'Backend',        pri:'Critical', effort:'S', sprint:'S12', status:'In Sprint' },
-        { id:'TA-007', feature:'Production Issue Log created',                   cat:'Documentation',  pri:'High',     effort:'S', sprint:'S12', status:'In Sprint' },
+        { id:'TA-007', feature:'Production Task Log created',                   cat:'Documentation',  pri:'High',     effort:'S', sprint:'S12', status:'In Sprint' },
         { id:'TA-008', feature:'Live app URL added to dashboard',                cat:'Dashboard',      pri:'High',     effort:'S', sprint:'S12', status:'Blocked'   },
         { id:'TA-009', feature:'CLAUDE.md updated to reflect current state',     cat:'Documentation',  pri:'Medium',   effort:'S', sprint:'S12', status:'Done'      },
 
@@ -3984,7 +3984,7 @@ initTasks();
         { id:'TA-024', feature:'ML Predictions page showing live results in prod', cat:'Frontend',       pri:'High',     effort:'M', sprint:'TBD', status:'Backlog'   },
         { id:'TA-025', feature:'Record model accuracy metrics in ModelPerformance', cat:'ML',            pri:'Medium',   effort:'S', sprint:'TBD', status:'Backlog'   },
         { id:'TA-026', feature:'Mobile-responsive pass — all pages at 375px',     cat:'Frontend',       pri:'High',     effort:'L', sprint:'TBD', status:'Backlog'   },
-        { id:'TA-027', feature:'Fix all broken layouts and overflow issues',       cat:'Frontend',       pri:'High',     effort:'M', sprint:'TBD', status:'Backlog'   },
+        { id:'TA-027', feature:'Fix all broken layouts and overflow problems',       cat:'Frontend',       pri:'High',     effort:'M', sprint:'TBD', status:'Backlog'   },
         { id:'TA-028', feature:'Loading states and error states on all pages',     cat:'Frontend',       pri:'Medium',   effort:'M', sprint:'TBD', status:'Backlog'   },
         { id:'TA-029', feature:'Zero console errors in production',                cat:'Frontend',       pri:'High',     effort:'M', sprint:'TBD', status:'Backlog'   },
         { id:'TA-030', feature:'Full production walkthrough — advisor demo-ready', cat:'QA',             pri:'Critical', effort:'M', sprint:'TBD', status:'Backlog'   },
@@ -4063,7 +4063,7 @@ function showSprintView(view, btn) {
         { id:'R-03', risk:'2025 NFL data missing or malformed in NFLverse',            like:'M', impact:'H', mitigation:'Validate row counts and spot-check game data after ingest. Fall back to ESPN API if needed.',          sprint:'S13', status:'open' },
         { id:'R-04', risk:'ML model accuracy drops after retraining on 2025 data',     like:'M', impact:'M', mitigation:'Compare accuracy to prior baseline before deploying. Document both results. Do not deploy if worse.', sprint:'S14', status:'open' },
         { id:'R-05', risk:'CORS errors blocking frontend from hitting EC2 API',        like:'H', impact:'H', mitigation:'Confirm Amplify domain is whitelisted in Flask CORS config. Test every endpoint after deploy.',       sprint:'S12', status:'open' },
-        { id:'R-06', risk:'AWS Amplify build fails after a push',                      like:'M', impact:'M', mitigation:'Check Amplify build logs; most failures are env var or npm dependency issues. Fix and repush.',        sprint:'S12', status:'open' },
+        { id:'R-06', risk:'AWS Amplify build fails after a push',                      like:'M', impact:'M', mitigation:'Check Amplify build logs; most failures are env var or npm dependency problems. Fix and repush.',        sprint:'S12', status:'open' },
         { id:'R-07', risk:'Project scope too large to complete by Jun 13',             like:'M', impact:'H', mitigation:'Sprints are fixed and linear. If behind, defer UI polish (S15) before cutting ML work (S14).',        sprint:'All', status:'open' },
         { id:'R-08', risk:'PostgreSQL data loss or schema corruption',                 like:'L', impact:'H', mitigation:'pg_dump backup before any schema changes. EC2 snapshots via AWS console.',                            sprint:'S13', status:'open' },
         { id:'R-09', risk:'EC2 disk full — server crash or failed writes',            like:'H', impact:'H', mitigation:'Clean up logs, tmp files, old backups. df -h to monitor. Disk at 88% as of Apr 10 — immediate action needed.', sprint:'S12', status:'open' },
@@ -4180,7 +4180,7 @@ function showSprintView(view, btn) {
     const NEXT_SPRINT_GOALS = {
         'Sprint 12 — Diagnose & Restore': [
             'Complete all Sprint 12 diagnosis tasks (Areas 3–5)',
-            'Document all production issues in Production Issue Log',
+            'Document all production findings in Production Task Log',
             'Update CLAUDE.md with current system state',
         ],
         'Sprint 13 — Data & Clean': [
@@ -4377,8 +4377,8 @@ function showSprintView(view, btn) {
 
         + sec('Actual Progress This Week', completedBody)
 
-        + sec('Issues &amp; How Addressed',
-            '<p style="margin:0;color:' + (d.issues ? '#1e293b' : '#64748b') + ';line-height:1.75;">' + (d.issues || 'No issues logged for this reporting period.') + '</p>')
+        + sec('Tasks &amp; How Addressed',
+            '<p style="margin:0;color:' + (d.issues ? '#1e293b' : '#64748b') + ';line-height:1.75;">' + (d.issues || 'No tasks logged for this reporting period.') + '</p>')
 
         + sec('Prevention / Mitigation',
             '<p style="margin:0;color:' + (d.prevention ? '#1e293b' : '#64748b') + ';line-height:1.75;">' + (d.prevention || 'No prevention notes logged for this reporting period.') + '</p>')
@@ -4415,7 +4415,7 @@ function showSprintView(view, btn) {
 + (d.completedTasks.length
     ? d.completedTasks.map(function(t){ return '  ✓ ' + t; }).join('\n')
     : (d.narrative || '(see hours log for details)')) + '\n\n'
-+ 'ISSUES & HOW ADDRESSED\n' + (d.issues || '(none logged)') + '\n\n'
++ 'TASKS & HOW ADDRESSED\n' + (d.issues || '(none logged)') + '\n\n'
 + 'PREVENTION / MITIGATION\n' + (d.prevention || '(none logged)') + '\n\n'
 + 'EXPECTED PROGRESS NEXT WEEK\n'
 + (d.nextIsTBD ? d.nextGoals[0] : d.nextGoals.map(function(g){ return '  • ' + g; }).join('\n')) + '\n\n'
@@ -4616,7 +4616,7 @@ function showSprintView(view, btn) {
         <div class="tm-value" id="tm-date"></div>
     </div>
     <div class="tm-section" id="tm-linked-section">
-        <div class="tm-label">Issues Logged</div>
+        <div class="tm-label">Tasks Logged</div>
         <div class="tm-value" id="tm-linked"></div>
     </div>
 </div>
