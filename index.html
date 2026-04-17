@@ -1003,20 +1003,21 @@
 
         .task-text.clickable {
             cursor: pointer;
-            text-decoration: underline dotted rgba(255,255,255,0.2);
-            text-underline-offset: 3px;
         }
         .task-text.clickable:hover {
-            color: #FFD700;
-            text-decoration-color: rgba(255,215,0,0.6);
-        }
-        .task-item.done .task-text.clickable {
-            text-decoration: line-through underline dotted rgba(255,255,255,0.15);
-            text-underline-offset: 3px;
+            color: #60a5fa;
         }
         .task-item.done .task-text.clickable:hover {
-            color: #10b981;
-            text-decoration-color: rgba(16,185,129,0.5);
+            color: #60a5fa;
+        }
+        .task-info-icon {
+            flex-shrink: 0;
+            font-size: 0.72rem;
+            color: #60a5fa;
+            opacity: 0.7;
+            margin-left: 0.3rem;
+            cursor: pointer;
+            user-select: none;
         }
 
         /* ── TASK RESOLUTION MODAL ── */
@@ -3512,6 +3513,15 @@ function initTasks() {
                 e.preventDefault();
                 openTaskModal(taskId, titleText);
             });
+            var icon = document.createElement('span');
+            icon.className = 'task-info-icon';
+            icon.textContent = 'ⓘ';
+            icon.title = 'Click to view details';
+            icon.addEventListener('click', function(e) {
+                e.preventDefault();
+                openTaskModal(taskId, titleText);
+            });
+            item.appendChild(icon);
         }
     });
     updateProgress();
