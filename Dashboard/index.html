@@ -1866,7 +1866,7 @@
             <div class="chart-card-title">Burndown — Sprint 12</div>
             <div class="chart-card-subtitle">Tracks remaining tasks vs. ideal pace. The red line should follow the gold dashed line. If it stays flat, the sprint is stalled.</div>
             <canvas id="burndown-chart" height="180"></canvas>
-            <div class="chart-card-insight"><strong>S12 status:</strong> 50 of 83 tasks complete as of Day 12. Ahead of ideal pace. Remaining 33 tasks: TA-003 (API testing), TA-006 (CORS), TA-007 (issue log). Sprint closes Apr 18.</div>
+            <div class="chart-card-insight"><strong>S12 status:</strong> 60 of 83 tasks complete as of Day 12. Ahead of ideal pace. Remaining 23 tasks: TA-003 (ML endpoints, live scores), TA-006 (CORS), TA-007 (issue log). Sprint closes Apr 18.</div>
         </div>
 
         <div class="chart-card">
@@ -3675,7 +3675,7 @@ function rebuildCharts() {
                 },
                 {
                     label: 'Actual Remaining',
-                    data: [83, 83, 79, 79, 68, 65, 62, 58, 55, 50, 42, 33, null, null],
+                    data: [83, 83, 79, 79, 68, 65, 62, 58, 55, 50, 42, 23, null, null],
                     borderColor: c.actualLine,
                     backgroundColor: c.actualFill,
                     tension: 0.2,
