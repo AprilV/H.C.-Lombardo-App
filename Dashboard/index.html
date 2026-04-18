@@ -1822,7 +1822,7 @@
         </div>
         <div class="pm-metric">
             <div class="pm-metric-label">Total Open Tasks</div>
-            <div class="pm-metric-value" style="color:#FFA500;">17</div>
+            <div class="pm-metric-value" style="color:#FFA500;">25</div>
             <div class="pm-metric-sub">Disk critical · 6 from code analysis · AWS MFA locked</div>
         </div>
         <div class="pm-metric">
@@ -1896,9 +1896,9 @@
 
         <div class="chart-card">
             <div class="chart-card-title">Backlog by Severity</div>
-            <div class="chart-card-subtitle">Current task distribution across all 17 backlog tasks by severity. P1 = production blockers that must be fixed before anything else ships. P4 = polish only.</div>
+            <div class="chart-card-subtitle">Current task distribution across all 25 backlog tasks by severity. P1 = production blockers that must be fixed before anything else ships. P4 = polish only.</div>
             <canvas id="severity-chart" height="180"></canvas>
-            <div class="chart-card-insight"><strong>S12 progress:</strong> 8 tasks resolved this sprint (routing, hardcoded credentials, debug output, missing import). 2 P1 blockers remain open (EC2 disk, AWS MFA). ML schema and broken SQL queued for S13.</div>
+            <div class="chart-card-insight"><strong>S13 focus:</strong> 4 new P1 tasks added — ML pipeline rebuild (broken schema, SQL, retrain), EC2 disk cleanup. 9 P1 blockers total. ML pipeline fixes (TA-057, TA-058, TA-063) assigned to S13.</div>
         </div>
 
     </div>
@@ -3844,7 +3844,7 @@ function rebuildCharts() {
         data: {
             labels: ['P1 — Blocker', 'P2 — Major', 'P3 — Minor', 'P4 — Polish'],
             datasets: [{
-                data: [5, 12, 6, 1],
+                data: [9, 13, 7, 2],
                 backgroundColor: [
                     'rgba(213,10,10,0.75)',
                     'rgba(255,165,0,0.75)',
@@ -4090,6 +4090,15 @@ initTasks();
         { id:'TA-054', feature:'Fix /api/ml/model-performance returning empty response — endpoint exists but no data returned, discovered TA-003 audit Apr 17', cat:'Backend', pri:'High', effort:'S', sprint:'TBD', status:'Backlog' },
         { id:'TA-055', feature:'Fix /api/elo/predict-week/2024/18 returning no games found — ELO data gap for Week 18, discovered TA-003 audit Apr 17', cat:'Backend', pri:'Medium', effort:'S', sprint:'TBD', status:'Backlog' },
         { id:'TA-056', feature:'Restore nfl.aprilsykes.dev custom domain — was working before Amplify migration, broken during transfer, needs DNS and Amplify domain config', cat:'Infrastructure', pri:'High', effort:'M', sprint:'TBD', status:'Backlog' },
+        // ── SPRINT 13 — ML Pipeline & Data Cleanup ──
+        { id:'TA-057', feature:'Fix train_xgb_winner.py schema — change hcl_test to hcl (line 255) so model trains on production data', cat:'ML', pri:'Critical', effort:'S', sprint:'S13', status:'Backlog' },
+        { id:'TA-058', feature:'Fix broken SQL WINDOW clause in train_xgb_spread.py (lines 95-116) — missing closing paren causes duplicate OVER definitions, SQL fails on execution', cat:'ML', pri:'Critical', effort:'S', sprint:'S13', status:'Backlog' },
+        { id:'TA-059', feature:'Fix hardcoded default season 2025 across all backend routes — api_routes_hcl.py (7 endpoints), api_routes_ml.py, api_routes_live_scores.py — update for 2026 season', cat:'Backend', pri:'High', effort:'S', sprint:'S13', status:'Backlog' },
+        { id:'TA-060', feature:'Implement upcoming week detection in predict_ensemble.py (line 338) — currently a TODO stub, --upcoming flag prints error and exits', cat:'ML', pri:'Medium', effort:'M', sprint:'S13', status:'Backlog' },
+        { id:'TA-061', feature:'Retrain XGBoost winner model with corrected data pipeline — depends on TA-057 and TA-058 being resolved first', cat:'ML', pri:'Critical', effort:'L', sprint:'TBD', status:'Backlog' },
+        { id:'TA-062', feature:'Retrain XGBoost spread model with corrected data pipeline — depends on TA-057 and TA-058 being resolved first', cat:'ML', pri:'Critical', effort:'L', sprint:'TBD', status:'Backlog' },
+        { id:'TA-063', feature:'EC2 disk cleanup — remove logs, tmp files, old builds to free space; disk at 88% (5.9G/6.8G), server will crash if full', cat:'Infrastructure', pri:'Critical', effort:'S', sprint:'S13', status:'Backlog' },
+        { id:'TA-064', feature:'Evaluate managed database to replace EC2 PostgreSQL — research AWS RDS, Railway, or Render to eliminate disk management and reduce single point of failure', cat:'Infrastructure', pri:'Low', effort:'M', sprint:'TBD', status:'Backlog' },
     ];
 
     window.PB_ITEMS = items;
