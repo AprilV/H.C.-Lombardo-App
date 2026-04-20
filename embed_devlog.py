@@ -1,12 +1,15 @@
 """
-Replace the entire Project Logbook tab in Dashboard/index.html with the
-generated terminal dev log, using a split-screen layout.
+Replace the Project Logbook tab in Dashboard/index.html.
 
-Start marker : <div id="tab-ailog"   (replaces entire tab content)
-End marker   : </div><!-- /tab-ailog -->
+Extracts ONLY the .ln div lines from devlog_output.html (not the full
+standalone page), adds scoped CSS, and builds a clean split-screen layout:
+  LEFT  (flex:1)  — scrollable log lines with sticky mini-header
+  RIGHT (300px)   — search, filters, stats, scroll buttons, open link
 """
 import os
 import sys
+import re
+from datetime import date
 
 DASHBOARD = "c:/ReactGitEC2/IS330/H.C Lombardo App/Dashboard/index.html"
 DEVLOG    = "c:/ReactGitEC2/IS330/H.C Lombardo App/devlog_output.html"
@@ -15,11 +18,22 @@ with open(DASHBOARD, 'r', encoding='utf-8') as f:
     lines = f.readlines()
 
 with open(DEVLOG, 'r', encoding='utf-8') as f:
-    devlog_content = f.read()
+    devlog_raw = f.read()
 
-# Find start (the opening <div id="tab-ailog") and end markers
-start_line = None
-end_line   = None
+# ── Extract only the .ln div lines (each is a single line in the output) ──
+ln_lines = re.findall(r'<div class="ln[^>]*>.*?</div>', devlog_raw)
+ln_count = len(ln_lines)
+log_fragment = '\n'.join(ln_lines)
+
+# Stats for the right-panel table
+commit_count  = sum(1 for l in ln_lines if 'ln-commit' in l)
+key_count     = sum(1 for l in ln_lines if 'c-key' in l or 'ln-keylabel' in l)
+bug_count     = sum(1 for l in ln_lines if ' c-bug' in l)
+fix_count     = sum(1 for l in ln_lines if ' c-fix' in l)
+today_str     = date.today().strftime('%b %d, %Y')
+
+# ── Find start/end markers in dashboard ──
+start_line = end_line = None
 for i, line in enumerate(lines):
     if start_line is None and '<div id="tab-ailog"' in line:
         start_line = i
@@ -28,102 +42,178 @@ for i, line in enumerate(lines):
         break
 
 if start_line is None or end_line is None:
-    print(f"ERROR: Could not find markers. start={start_line} end={end_line}")
+    print(f"ERROR: markers not found. start={start_line} end={end_line}")
     sys.exit(1)
 
 print(f"Replacing lines {start_line+1} to {end_line+1} ({end_line - start_line + 1} lines)")
-
-today_str = "Apr 19, 2026"
+print(f"Extracted {ln_count:,} log lines from {commit_count} commits")
 
 new_section = f"""<div id="tab-ailog" class="tab-panel">
-<div style="display:flex;height:calc(100vh - 120px);overflow:hidden;gap:0;font-family:'Courier New',monospace;">
 
-  <!-- LEFT: Log lines -->
-  <div id="frag-log-wrap" style="flex:1 1 65%;overflow-y:auto;overflow-x:auto;background:#0d1117;padding:0.75rem 0.5rem;">
-    <!-- ─── SECTION 13: COMPLETE DEVELOPER LOG (AUTO-GENERATED FROM GIT) ─── -->
-{devlog_content}
+<style>
+/* ── Scoped logbook CSS — no position:fixed, no html/body resets ── */
+#frag-log-wrap {{
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.84rem;
+  line-height: 1.6;
+  color: #c9d1d9;
+}}
+#frag-log-wrap .ln {{padding:0.05rem 1rem;white-space:pre-wrap;word-break:break-all}}
+#frag-log-wrap .ln:hover {{background:#161b22}}
+#frag-log-wrap .ln-sep {{height:3px;background:#161b22;margin:1px 0}}
+#frag-log-wrap .ln-commit {{border-left:3px solid #30363d}}
+#frag-log-wrap .c-key .ln-commit,#frag-log-wrap .ln-keylabel {{border-left-color:#f0883e!important}}
+#frag-log-wrap .c-bug {{border-left-color:#f85149!important}}
+#frag-log-wrap .c-fix {{border-left-color:#3fb950!important}}
+#frag-log-wrap .ln-add {{background:rgba(63,185,80,0.04)}}
+#frag-log-wrap .ln-del {{background:rgba(248,81,73,0.04)}}
+#frag-log-wrap .ln-live {{border-left:3px solid #58a6ff;background:rgba(88,166,255,0.04)}}
+#frag-log-wrap .hidden {{display:none!important}}
+#frag-log-wrap .ts {{color:#484f58;user-select:none}}
+#frag-log-wrap .lbl-key {{color:#f0883e;font-weight:700}}
+#frag-log-wrap .lbl-bug {{color:#f85149;font-weight:700}}
+#frag-log-wrap .lbl-fix {{color:#3fb950;font-weight:700}}
+#frag-log-wrap .lbl-nrm {{color:#6e7681}}
+#frag-log-wrap .lbl-stat {{color:#79c0ff}}
+#frag-log-wrap .lbl-file {{color:#d29922}}
+#frag-log-wrap .lbl-add {{color:#3fb950}}
+#frag-log-wrap .lbl-del {{color:#f85149}}
+#frag-log-wrap .lbl-meta,#frag-log-wrap .c-meta {{color:#484f58}}
+#frag-log-wrap .lbl-live {{color:#58a6ff;font-weight:700}}
+#frag-log-wrap .c-hash {{color:#3fb950;font-weight:700}}
+#frag-log-wrap .c-msg {{color:#e6edf3}}
+#frag-log-wrap .c-keylabel {{color:#f0883e;font-weight:700}}
+#frag-log-wrap .c-stat {{color:#79c0ff}}
+#frag-log-wrap .c-fname,#frag-log-wrap .c-livefile {{color:#e6edf3}}
+#frag-log-wrap .c-difffile {{color:#d29922;font-weight:700}}
+#frag-log-wrap .c-hunk {{color:#79c0ff}}
+#frag-log-wrap .d-add {{color:#3fb950}}
+#frag-log-wrap .d-del {{color:#f85149}}
+#frag-log-wrap mark.hl {{background:#f0883e;color:#000;border-radius:1px}}
+#frag-log-wrap mark.hl.cur {{background:#ffd700}}
+</style>
+
+<div style="display:flex;height:calc(100vh - 120px);overflow:hidden;gap:0;">
+
+  <!-- ── LEFT: Log lines (clean embed — no sub-tabs, no position:fixed) ── -->
+  <div id="frag-log-wrap" style="flex:1 1 0;overflow-y:auto;overflow-x:hidden;background:#0d1117;">
+
+    <!-- Sticky mini-header inside the scroll container -->
+    <div style="position:sticky;top:0;z-index:10;background:#0d1117;
+                border-bottom:2px solid #f0883e;padding:0.4rem 1rem;
+                display:flex;align-items:center;gap:1rem;">
+      <span style="color:#f0883e;font-weight:700;font-size:0.82rem;white-space:nowrap;">PROJECT LOGBOOK</span>
+      <span style="color:#484f58;font-size:0.7rem;white-space:nowrap;">{commit_count} commits &middot; {ln_count:,} lines</span>
+      <span style="color:#484f58;font-size:0.7rem;margin-left:auto;white-space:nowrap;">Oct 2025 &ndash; {today_str}</span>
+    </div>
+
+    <!-- Log lines -->
+    <div id="frag-log-body" style="padding-bottom:2rem;">
+{log_fragment}
+    </div>
   </div>
 
-  <!-- RIGHT: Controls panel -->
-  <div style="flex:0 0 310px;min-width:240px;background:#161b22;border-left:1px solid #30363d;
-       display:flex;flex-direction:column;overflow:hidden;">
+  <!-- ── RIGHT: Controls panel ── -->
+  <div style="flex:0 0 300px;min-width:220px;background:#161b22;
+              border-left:1px solid #30363d;display:flex;flex-direction:column;overflow:hidden;">
 
-    <!-- Search at top -->
+    <!-- Search (top of right panel) -->
     <div style="padding:0.75rem;border-bottom:1px solid #30363d;">
-      <div style="font-size:0.7rem;font-weight:700;color:#f0883e;letter-spacing:0.08em;margin-bottom:0.4rem;">PROJECT LOGBOOK</div>
-      <input id="frag-q" type="text" placeholder="Search commits, files, errors..."
+      <div style="font-size:0.68rem;font-weight:700;color:#f0883e;
+                  letter-spacing:0.08em;margin-bottom:0.4rem;">SEARCH LOG</div>
+      <input id="frag-q" type="text" placeholder="commits, files, errors..."
         style="width:100%;box-sizing:border-box;background:#0d1117;color:#c9d1d9;
                border:1px solid #30363d;border-radius:3px;padding:0.35rem 0.6rem;
                font-size:0.76rem;font-family:'Courier New',monospace;outline:none;"
         autocomplete="off" spellcheck="false">
       <div style="display:flex;gap:0.3rem;margin-top:0.35rem;align-items:center;">
         <button id="frag-prev" title="Previous match"
-          style="background:#0d1117;color:#c9d1d9;border:1px solid #30363d;border-radius:3px;
-                 padding:0.25rem 0.5rem;font-size:0.72rem;cursor:pointer;">&#8593;</button>
+          style="background:#0d1117;color:#c9d1d9;border:1px solid #30363d;
+                 border-radius:3px;padding:0.25rem 0.5rem;font-size:0.72rem;cursor:pointer;">&#8593;</button>
         <button id="frag-next" title="Next match"
-          style="background:#0d1117;color:#c9d1d9;border:1px solid #30363d;border-radius:3px;
-                 padding:0.25rem 0.5rem;font-size:0.72rem;cursor:pointer;">&#8595;</button>
-        <button id="frag-clr" title="Clear search"
-          style="background:transparent;color:#8b949e;border:1px solid #30363d;border-radius:3px;
-                 padding:0.25rem 0.5rem;font-size:0.72rem;cursor:pointer;">&#10005;</button>
-        <span id="frag-cnt" style="color:#8b949e;font-size:0.68rem;margin-left:auto;"></span>
+          style="background:#0d1117;color:#c9d1d9;border:1px solid #30363d;
+                 border-radius:3px;padding:0.25rem 0.5rem;font-size:0.72rem;cursor:pointer;">&#8595;</button>
+        <button id="frag-clr" title="Clear"
+          style="background:transparent;color:#8b949e;border:1px solid #30363d;
+                 border-radius:3px;padding:0.25rem 0.5rem;font-size:0.72rem;cursor:pointer;">&#10005;</button>
+        <span id="frag-cnt"
+          style="color:#8b949e;font-size:0.68rem;margin-left:auto;">{ln_count:,} lines</span>
       </div>
     </div>
 
     <!-- Filter buttons -->
     <div style="padding:0.6rem 0.75rem;border-bottom:1px solid #30363d;">
-      <div style="font-size:0.68rem;color:#8b949e;margin-bottom:0.35rem;letter-spacing:0.06em;">FILTER BY TYPE</div>
+      <div style="font-size:0.68rem;color:#8b949e;margin-bottom:0.35rem;
+                  letter-spacing:0.06em;">FILTER BY TYPE</div>
       <div style="display:flex;flex-wrap:wrap;gap:0.3rem;">
-        <button onclick="fragFilter('')"    class="ff-btn" data-f=""    style="background:#1f6feb;color:#fff;border:1px solid #1f6feb;border-radius:3px;padding:0.22rem 0.5rem;font-size:0.7rem;cursor:pointer;">All</button>
-        <button onclick="fragFilter('key')" class="ff-btn" data-f="key" style="background:#0d1117;color:#ffd700;border:1px solid #30363d;border-radius:3px;padding:0.22rem 0.5rem;font-size:0.7rem;cursor:pointer;">&#9733; Key</button>
-        <button onclick="fragFilter('bug')" class="ff-btn" data-f="bug" style="background:#0d1117;color:#f85149;border:1px solid #30363d;border-radius:3px;padding:0.22rem 0.5rem;font-size:0.7rem;cursor:pointer;">Bug</button>
-        <button onclick="fragFilter('fix')" class="ff-btn" data-f="fix" style="background:#0d1117;color:#3fb950;border:1px solid #30363d;border-radius:3px;padding:0.22rem 0.5rem;font-size:0.7rem;cursor:pointer;">Fix</button>
-        <button onclick="fragFilter('add')" class="ff-btn" data-f="add" style="background:#0d1117;color:#3fb950;border:1px solid #30363d;border-radius:3px;padding:0.22rem 0.5rem;font-size:0.7rem;cursor:pointer;">Add</button>
-        <button onclick="fragFilter('del')" class="ff-btn" data-f="del" style="background:#0d1117;color:#f85149;border:1px solid #30363d;border-radius:3px;padding:0.22rem 0.5rem;font-size:0.7rem;cursor:pointer;">Del</button>
+        <button onclick="fragFilter('')"       class="ff-btn" data-f=""
+          style="background:#1f6feb;color:#fff;border:1px solid #1f6feb;
+                 border-radius:3px;padding:0.22rem 0.5rem;font-size:0.7rem;cursor:pointer;">All</button>
+        <button onclick="fragFilter('key')"    class="ff-btn" data-f="key"
+          style="background:#0d1117;color:#ffd700;border:1px solid #30363d;
+                 border-radius:3px;padding:0.22rem 0.5rem;font-size:0.7rem;cursor:pointer;">&#9733; Key</button>
+        <button onclick="fragFilter('bug')"    class="ff-btn" data-f="bug"
+          style="background:#0d1117;color:#f85149;border:1px solid #30363d;
+                 border-radius:3px;padding:0.22rem 0.5rem;font-size:0.7rem;cursor:pointer;">Bug</button>
+        <button onclick="fragFilter('fix')"    class="ff-btn" data-f="fix"
+          style="background:#0d1117;color:#3fb950;border:1px solid #30363d;
+                 border-radius:3px;padding:0.22rem 0.5rem;font-size:0.7rem;cursor:pointer;">Fix</button>
+        <button onclick="fragFilter('commit')" class="ff-btn" data-f="commit"
+          style="background:#0d1117;color:#79c0ff;border:1px solid #30363d;
+                 border-radius:3px;padding:0.22rem 0.5rem;font-size:0.7rem;cursor:pointer;">Commits</button>
+        <button onclick="fragFilter('file')"   class="ff-btn" data-f="file"
+          style="background:#0d1117;color:#d29922;border:1px solid #30363d;
+                 border-radius:3px;padding:0.22rem 0.5rem;font-size:0.7rem;cursor:pointer;">Files</button>
       </div>
     </div>
 
-    <!-- Stats -->
+    <!-- Repository stats -->
     <div style="padding:0.6rem 0.75rem;border-bottom:1px solid #30363d;">
-      <div style="font-size:0.68rem;color:#8b949e;margin-bottom:0.4rem;letter-spacing:0.06em;">REPOSITORY STATS</div>
+      <div style="font-size:0.68rem;color:#8b949e;margin-bottom:0.4rem;
+                  letter-spacing:0.06em;">REPOSITORY STATS</div>
       <table style="width:100%;font-size:0.74rem;border-collapse:collapse;">
-        <tr><td style="color:#8b949e;padding:0.1rem 0;">Total commits</td><td style="color:#c9d1d9;text-align:right;">372</td></tr>
-        <tr><td style="color:#8b949e;padding:0.1rem 0;">Key milestones</td><td style="color:#ffd700;text-align:right;">48</td></tr>
-        <tr><td style="color:#8b949e;padding:0.1rem 0;">Bugs logged</td><td style="color:#f85149;text-align:right;">21</td></tr>
-        <tr><td style="color:#8b949e;padding:0.1rem 0;">Fixes applied</td><td style="color:#3fb950;text-align:right;">105</td></tr>
-        <tr><td style="color:#8b949e;padding:0.1rem 0;">Log lines</td><td style="color:#c9d1d9;text-align:right;">17,121</td></tr>
-        <tr><td style="color:#8b949e;padding:0.1rem 0;">Period</td><td style="color:#c9d1d9;text-align:right;">Oct 7 – {today_str}</td></tr>
+        <tr><td style="color:#8b949e;padding:0.1rem 0;">Total commits</td>
+            <td style="color:#c9d1d9;text-align:right;">{commit_count}</td></tr>
+        <tr><td style="color:#8b949e;padding:0.1rem 0;">Key milestones</td>
+            <td style="color:#ffd700;text-align:right;">{key_count}</td></tr>
+        <tr><td style="color:#8b949e;padding:0.1rem 0;">Bugs logged</td>
+            <td style="color:#f85149;text-align:right;">{bug_count}</td></tr>
+        <tr><td style="color:#8b949e;padding:0.1rem 0;">Fixes applied</td>
+            <td style="color:#3fb950;text-align:right;">{fix_count}</td></tr>
+        <tr><td style="color:#8b949e;padding:0.1rem 0;">Log lines</td>
+            <td style="color:#c9d1d9;text-align:right;">{ln_count:,}</td></tr>
+        <tr><td style="color:#8b949e;padding:0.1rem 0;">Period</td>
+            <td style="color:#c9d1d9;text-align:right;">Oct 2025&ndash;now</td></tr>
       </table>
     </div>
 
     <!-- Scroll controls -->
     <div style="padding:0.6rem 0.75rem;border-bottom:1px solid #30363d;display:flex;gap:0.4rem;">
       <button onclick="document.getElementById('frag-log-wrap').scrollTop=0"
-        style="flex:1;background:#0d1117;color:#c9d1d9;border:1px solid #30363d;border-radius:3px;
-               padding:0.3rem;font-size:0.72rem;cursor:pointer;">&#8679; Top</button>
-      <button onclick="var w=document.getElementById('frag-log-wrap');w.scrollTop=w.scrollHeight"
-        style="flex:1;background:#0d1117;color:#c9d1d9;border:1px solid #30363d;border-radius:3px;
-               padding:0.3rem;font-size:0.72rem;cursor:pointer;">&#8681; Bottom</button>
+        style="flex:1;background:#0d1117;color:#c9d1d9;border:1px solid #30363d;
+               border-radius:3px;padding:0.3rem;font-size:0.72rem;cursor:pointer;">&#8679; Top</button>
+      <button onclick="(function(){{var w=document.getElementById('frag-log-wrap');w.scrollTop=w.scrollHeight;}})()"
+        style="flex:1;background:#0d1117;color:#c9d1d9;border:1px solid #30363d;
+               border-radius:3px;padding:0.3rem;font-size:0.72rem;cursor:pointer;">&#8681; Latest</button>
     </div>
 
-    <!-- Open full logbook link -->
+    <!-- Open full logbook -->
     <div style="padding:0.75rem;">
       <a href="docs/devlog/index.html" target="_blank"
-        style="display:block;text-align:center;background:#1f6feb;color:#fff;border-radius:3px;
-               padding:0.45rem;font-size:0.76rem;font-family:'Courier New',monospace;
-               text-decoration:none;font-weight:700;">
+        style="display:block;text-align:center;background:#1f6feb;color:#fff;
+               border-radius:3px;padding:0.45rem;font-size:0.76rem;
+               font-family:'Courier New',monospace;text-decoration:none;font-weight:700;">
         &#8599; Open Full Logbook</a>
       <div style="color:#8b949e;font-size:0.66rem;text-align:center;margin-top:0.35rem;">
-        Includes Live Feed + Calendar archive
+        Live Feed + Calendar in full view
       </div>
     </div>
 
-    <!-- Scroll to bottom filler -->
     <div style="flex:1;"></div>
 
-    <!-- Footer -->
-    <div style="padding:0.5rem 0.75rem;border-top:1px solid #30363d;font-size:0.65rem;color:#484f58;text-align:center;">
-      Auto-generated {today_str} · pre-commit hook
+    <div style="padding:0.5rem 0.75rem;border-top:1px solid #30363d;
+                font-size:0.65rem;color:#484f58;text-align:center;">
+      Auto-generated {today_str} &middot; pre-commit hook
     </div>
   </div>
 
@@ -132,14 +222,15 @@ new_section = f"""<div id="tab-ailog" class="tab-panel">
 <script>
 (function(){{
   var wrap  = document.getElementById('frag-log-wrap');
+  var body  = document.getElementById('frag-log-body');
   var qEl   = document.getElementById('frag-q');
   var cntEl = document.getElementById('frag-cnt');
-  var all   = Array.from(document.querySelectorAll('#frag-log-wrap .ln'));
+  var all   = Array.from(body.querySelectorAll('.ln'));
   var activeFilter = '';
   var matches = [], matchIdx = -1;
 
   function clearMarks() {{
-    document.querySelectorAll('#frag-log-wrap mark.hl').forEach(function(m) {{
+    body.querySelectorAll('mark.hl').forEach(function(m) {{
       m.parentNode.replaceChild(document.createTextNode(m.textContent), m);
       m.parentNode.normalize();
     }});
@@ -151,7 +242,7 @@ new_section = f"""<div id="tab-ailog" class="tab-panel">
     clearMarks();
     var visible = [];
     all.forEach(function(el) {{
-      var typeOk = !activeFilter || (el.classList.contains('ln-' + activeFilter));
+      var typeOk = !activeFilter || el.classList.contains('ln-' + activeFilter);
       var textOk = !q || (el.dataset.text || '').includes(q);
       if (typeOk && textOk) {{
         el.classList.remove('hidden');
@@ -172,7 +263,6 @@ new_section = f"""<div id="tab-ailog" class="tab-panel">
             if (idx > last) parts.push(document.createTextNode(t.slice(last, idx)));
             var mark = document.createElement('mark');
             mark.className = 'hl';
-            mark.style.cssText = 'background:#ffd700;color:#000;border-radius:2px;';
             mark.textContent = t.slice(idx, idx + q.length);
             parts.push(mark);
             last = idx + q.length;
@@ -185,13 +275,13 @@ new_section = f"""<div id="tab-ailog" class="tab-panel">
           }}
         }});
       }});
-      matches = Array.from(document.querySelectorAll('#frag-log-wrap mark.hl'));
+      matches = Array.from(body.querySelectorAll('mark.hl'));
       matchIdx = 0;
       scrollToMatch();
     }}
     if (cntEl) {{
       if (q) cntEl.textContent = matches.length ? (matchIdx+1)+'/'+matches.length : '0 results';
-      else cntEl.textContent = visible.length + ' lines';
+      else   cntEl.textContent = visible.length.toLocaleString() + ' lines';
     }}
   }}
 
@@ -228,7 +318,7 @@ new_section = f"""<div id="tab-ailog" class="tab-panel">
     if (qEl) qEl.value = '';
     activeFilter = '';
     document.querySelectorAll('.ff-btn').forEach(function(b) {{
-      b.style.background = b.dataset.f === '' ? '#1f6feb' : '#0d1117';
+      b.style.background  = b.dataset.f === '' ? '#1f6feb' : '#0d1117';
       b.style.borderColor = b.dataset.f === '' ? '#1f6feb' : '#30363d';
     }});
     applyFilter();
@@ -248,16 +338,14 @@ new_section = f"""<div id="tab-ailog" class="tab-panel">
     if (qEl) {{ qEl.value = q; applyFilter(); }}
   }};
 
-  // Initial count
-  if (cntEl) cntEl.textContent = all.length + ' lines';
+  if (cntEl) cntEl.textContent = all.length.toLocaleString() + ' lines';
 }})();
 </script>
 
 </div><!-- /tab-ailog -->
 """
 
-new_lines = lines[:start_line] + [new_section]
-new_lines += lines[end_line+1:]
+new_lines = lines[:start_line] + [new_section] + lines[end_line+1:]
 
 with open(DASHBOARD, 'w', encoding='utf-8') as f:
     f.writelines(new_lines)
