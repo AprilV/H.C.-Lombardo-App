@@ -1114,6 +1114,9 @@
             padding: 0.75rem 1.25rem 0.25rem;
         }
 
+        /* ── SELECT OPTION FIX — dark background, dark text so options are readable ── */
+        select option { background: #1e293b; color: #f1f5f9; }
+
         /* ── BACKLOG STYLES ── */
         .backlog-controls {
             display: flex;
@@ -2648,7 +2651,7 @@
         <!-- Week selector + action buttons -->
         <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1.25rem; flex-wrap:wrap;">
             <label style="font-size:0.85rem; color:var(--muted); font-weight:600;">Report:</label>
-            <select id="report-week-select" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,215,0,0.3); border-radius:0.4rem; color:#f1f5f9; font-size:0.88rem; font-family:inherit; padding:0.4rem 0.75rem; outline:none; min-width:280px;"></select>
+            <select id="report-week-select" style="background:#1e293b; border:1px solid rgba(255,215,0,0.3); border-radius:0.4rem; color:#f1f5f9; font-size:0.88rem; font-family:inherit; padding:0.4rem 0.75rem; outline:none; min-width:280px;"></select>
             <div style="margin-left:auto; display:flex; gap:0.5rem;">
                 <button onclick="copyReport()" id="copy-btn" style="background:rgba(255,215,0,0.15); border:1px solid rgba(255,215,0,0.4); color:#FFD700; border-radius:0.35rem; padding:0.35rem 1rem; font-size:0.78rem; font-weight:700; cursor:pointer;">Copy</button>
                 <button onclick="downloadReport()" style="background:rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.4); color:#10b981; border-radius:0.35rem; padding:0.35rem 1rem; font-size:0.78rem; font-weight:700; cursor:pointer;">Download</button>
