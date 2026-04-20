@@ -2636,27 +2636,23 @@
 <div id="tab-report" class="tab-panel">
     <div style="max-width:860px; margin:2rem auto; padding:0 2rem;">
 
-        <h2 style="font-size:1.4rem; font-weight:700; color:#f1f5f9; margin-bottom:0.25rem;">Weekly Progress Report</h2>
-        <p style="color:var(--muted); font-size:0.88rem; margin-bottom:1.5rem;">Auto-fills from your Hours Log and Sprint board. Select a week, then copy or download to submit to Canvas.</p>
+        <h2 style="font-size:1.4rem; font-weight:700; color:#f1f5f9; margin-bottom:0.25rem;">Progress Reports</h2>
+        <p style="color:var(--muted); font-size:0.88rem; margin-bottom:1.25rem;">Select a sprint for a two-week summary, or select a specific week for an individual report. All weeks are archived here.</p>
 
-        <!-- Week selector + action buttons in one row -->
+        <!-- Sprint filter -->
+        <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.75rem; flex-wrap:wrap;">
+            <span style="font-size:0.8rem; color:var(--muted); font-weight:600; margin-right:0.25rem;">Sprint:</span>
+            <div id="report-sprint-btns"></div>
+        </div>
+
+        <!-- Week selector + action buttons -->
         <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1.25rem; flex-wrap:wrap;">
-            <label style="font-size:0.85rem; color:var(--muted); font-weight:600;">Week:</label>
-            <select id="report-week-select" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,215,0,0.3); border-radius:0.4rem; color:#f1f5f9; font-size:0.88rem; padding:0.4rem 0.75rem; outline:none;">
-                <option value="1">Week 1 — Apr 6–12 (Sprint 12)</option>
-                <option value="2">Week 2 — Apr 13–18 (Sprint 12)</option>
-                <option value="3">Week 3 — Apr 20–26 (Sprint 13)</option>
-                <option value="4">Week 4 — Apr 27–May 2 (Sprint 13)</option>
-                <option value="5">Week 5 — May 4–10 (Sprint 14)</option>
-                <option value="6">Week 6 — May 11–16 (Sprint 14)</option>
-                <option value="7">Week 7 — May 18–24 (Sprint 15)</option>
-                <option value="8">Week 8 — May 25–30 (Sprint 15)</option>
-                <option value="9">Week 9 — Jun 1–7 (Sprint 16)</option>
-                <option value="10">Week 10 — Jun 8–13 (Sprint 16)</option>
-            </select>
+            <label style="font-size:0.85rem; color:var(--muted); font-weight:600;">Report:</label>
+            <select id="report-week-select" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,215,0,0.3); border-radius:0.4rem; color:#f1f5f9; font-size:0.88rem; padding:0.4rem 0.75rem; outline:none; min-width:280px;"></select>
             <div style="margin-left:auto; display:flex; gap:0.5rem;">
                 <button onclick="copyReport()" id="copy-btn" style="background:rgba(255,215,0,0.15); border:1px solid rgba(255,215,0,0.4); color:#FFD700; border-radius:0.35rem; padding:0.35rem 1rem; font-size:0.78rem; font-weight:700; cursor:pointer;">Copy</button>
                 <button onclick="downloadReport()" style="background:rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.4); color:#10b981; border-radius:0.35rem; padding:0.35rem 1rem; font-size:0.78rem; font-weight:700; cursor:pointer;">Download</button>
+                <button onclick="printReport()" style="background:rgba(99,179,237,0.15); border:1px solid rgba(99,179,237,0.3); color:#93c5fd; border-radius:0.35rem; padding:0.35rem 1rem; font-size:0.78rem; font-weight:700; cursor:pointer;">Print</button>
             </div>
         </div>
 
@@ -4458,16 +4454,16 @@ function showSprintView(view, btn) {
 /* ── WEEKLY REPORT GENERATOR ── */
 (function() {
     const WEEK_META = [
-        { num:1,  dates:'Apr 6–12, 2026',   sprint:'Sprint 12 — Diagnose & Restore', sprintDates:'Apr 6–18' },
-        { num:2,  dates:'Apr 13–18, 2026',  sprint:'Sprint 12 — Diagnose & Restore', sprintDates:'Apr 6–18' },
-        { num:3,  dates:'Apr 20–26, 2026',  sprint:'Sprint 13 — Data & Clean',        sprintDates:'Apr 20–May 2' },
-        { num:4,  dates:'Apr 27–May 2, 2026',sprint:'Sprint 13 — Data & Clean',       sprintDates:'Apr 20–May 2' },
-        { num:5,  dates:'May 4–10, 2026',   sprint:'Sprint 14 — ML Retrain',          sprintDates:'May 4–16' },
-        { num:6,  dates:'May 11–16, 2026',  sprint:'Sprint 14 — ML Retrain',          sprintDates:'May 4–16' },
-        { num:7,  dates:'May 18–24, 2026',  sprint:'Sprint 15 — UI & UX Polish',      sprintDates:'May 18–30' },
-        { num:8,  dates:'May 25–30, 2026',  sprint:'Sprint 15 — UI & UX Polish',      sprintDates:'May 18–30' },
-        { num:9,  dates:'Jun 1–7, 2026',    sprint:'Sprint 16 — Hardening & Release', sprintDates:'Jun 1–13' },
-        { num:10, dates:'Jun 8–13, 2026',   sprint:'Sprint 16 — Hardening & Release', sprintDates:'Jun 1–13' },
+        { num:1,  dates:'Apr 6–12, 2026',    sprint:'Sprint 12 — Diagnose & Restore', sprintKey:'S12', sprintDates:'Apr 6–19' },
+        { num:2,  dates:'Apr 13–19, 2026',   sprint:'Sprint 12 — Diagnose & Restore', sprintKey:'S12', sprintDates:'Apr 6–19' },
+        { num:3,  dates:'Apr 20–26, 2026',   sprint:'Sprint 13 — Data & Clean',        sprintKey:'S13', sprintDates:'Apr 20–May 2' },
+        { num:4,  dates:'Apr 27–May 2, 2026',sprint:'Sprint 13 — Data & Clean',        sprintKey:'S13', sprintDates:'Apr 20–May 2' },
+        { num:5,  dates:'May 4–10, 2026',    sprint:'Sprint 14 — ML Retrain',          sprintKey:'S14', sprintDates:'May 4–16' },
+        { num:6,  dates:'May 11–16, 2026',   sprint:'Sprint 14 — ML Retrain',          sprintKey:'S14', sprintDates:'May 4–16' },
+        { num:7,  dates:'May 18–24, 2026',   sprint:'Sprint 15 — UI & UX Polish',      sprintKey:'S15', sprintDates:'May 18–30' },
+        { num:8,  dates:'May 25–30, 2026',   sprint:'Sprint 15 — UI & UX Polish',      sprintKey:'S15', sprintDates:'May 18–30' },
+        { num:9,  dates:'Jun 1–7, 2026',     sprint:'Sprint 16 — Hardening & Release', sprintKey:'S16', sprintDates:'Jun 1–13' },
+        { num:10, dates:'Jun 8–13, 2026',    sprint:'Sprint 16 — Hardening & Release', sprintKey:'S16', sprintDates:'Jun 1–13' },
     ];
 
     const NEXT_SPRINT_GOALS = {
@@ -4477,7 +4473,13 @@ function showSprintView(view, btn) {
             'Update CLAUDE.md with current system state',
         ],
         'Sprint 13 — Data & Clean': [
-            'Goals TBD — assigned at sprint planning after Sprint 12 closes',
+            'EC2 disk cleanup — free space before server crashes (TA-063)',
+            'Remove hardcoded credentials, move passwords to .env (TA-010, TA-011)',
+            'Fix ML training schema hcl_test → hcl (TA-057)',
+            'Fix broken SQL WINDOW clause in spread model (TA-058)',
+            'Fix hardcoded season 2025 across all backend routes (TA-059)',
+            'Load 2025 NFL season data into PostgreSQL (TA-012)',
+            'Validate data integrity — row counts and spot checks (TA-013)',
         ],
         'Sprint 14 — ML Retrain': [
             'Goals TBD — assigned at sprint planning after Sprint 13 closes',
@@ -4738,7 +4740,7 @@ function showSprintView(view, btn) {
         if (!text) return;
         var sel = document.getElementById('report-week-select');
         var weekLabel = sel ? sel.options[sel.selectedIndex].text.replace(/[^a-zA-Z0-9\-]/g, '_').replace(/__+/g, '_') : 'report';
-        var filename = 'IS471_Weekly_Report_' + weekLabel + '.txt';
+        var filename = 'IS471_Report_' + weekLabel + '.txt';
         var blob = new Blob([text], { type: 'text/plain' });
         var a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
@@ -4747,13 +4749,150 @@ function showSprintView(view, btn) {
         URL.revokeObjectURL(a.href);
     };
 
-    // Auto-render on load and when week changes
-    (function() {
+    window.printReport = function() {
+        var text = window._reportPlainText || '';
+        if (!text) return;
         var sel = document.getElementById('report-week-select');
-        if (sel) {
-            sel.value = getCurrentWeekNum();
-            sel.addEventListener('change', renderReport);
+        var title = sel ? sel.options[sel.selectedIndex].text : 'Progress Report';
+        var win = window.open('', '_blank');
+        win.document.write('<html><head><title>' + title + '</title><style>body{font-family:sans-serif;font-size:13px;padding:2rem;max-width:800px;margin:0 auto;}pre{white-space:pre-wrap;font-family:inherit;font-size:13px;line-height:1.7;}h2{margin-bottom:0.5rem;}p{color:#666;font-size:11px;margin-bottom:1.5rem;}</style></head><body>');
+        win.document.write('<h2>H.C. Lombardo NFL Analytics — ' + title + '</h2>');
+        win.document.write('<p>April V. Sykes · Olympic College · Senior Capstone Spring 2026 · Printed ' + new Date().toLocaleDateString() + '</p>');
+        win.document.write('<pre>' + text.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</pre>');
+        win.document.write('</body></html>');
+        win.document.close();
+        win.print();
+    };
+
+    // Build sprint summary report (combines both weeks of a sprint)
+    function buildSprintSummaryText(sprintKey) {
+        var weeks = WEEK_META.filter(function(w) { return w.sprintKey === sprintKey; });
+        if (!weeks.length) return '';
+        var hoursData = getHoursData();
+        var sprintName = weeks[0].sprint;
+        var sprintDates = weeks[0].sprintDates;
+        var totalHours = 0;
+        var allNotes = [];
+        weeks.forEach(function(w) {
+            var d = hoursData['w' + w.num] || {};
+            totalHours += parseFloat(d.hours || 0) || 0;
+            if (d.notes) allNotes.push('Week ' + w.num + ' (' + w.dates + '): ' + d.notes);
+        });
+        var lines = [
+            '═══════════════════════════════════════════════',
+            'SPRINT SUMMARY REPORT',
+            'H.C. Lombardo NFL Analytics — Senior Capstone',
+            '═══════════════════════════════════════════════',
+            '',
+            'Sprint:       ' + sprintName,
+            'Sprint Dates: ' + sprintDates,
+            'Student:      April V. Sykes',
+            'Advisor:      Richard Becker',
+            'Institution:  Olympic College — Spring 2026',
+            '',
+            '───────────────────────────────────────────────',
+            'HOURS SUMMARY',
+            '───────────────────────────────────────────────',
+            'Total hours this sprint: ' + totalHours,
+            '',
+        ];
+        if (allNotes.length) {
+            lines.push('WORK LOG');
+            lines.push('───────────────────────────────────────────────');
+            allNotes.forEach(function(n) { lines.push(n); lines.push(''); });
         }
+        // Sprint goals
+        var goals = NEXT_SPRINT_GOALS[sprintName] || [];
+        if (goals.length) {
+            lines.push('SPRINT GOALS');
+            lines.push('───────────────────────────────────────────────');
+            goals.forEach(function(g) { lines.push('• ' + g); });
+            lines.push('');
+        }
+        return lines.join('\n');
+    }
+
+    // Build dropdown options — filtered by sprint or show all
+    function buildReportDropdown(sprintFilter) {
+        var sel = document.getElementById('report-week-select');
+        if (!sel) return;
+        var today = new Date(); today.setHours(0,0,0,0);
+        var curWeek = getCurrentWeekNum();
+        sel.innerHTML = '';
+
+        // If filtering by a specific sprint, add sprint summary option first
+        if (sprintFilter && sprintFilter !== 'all') {
+            var summaryOpt = document.createElement('option');
+            summaryOpt.value = 'summary-' + sprintFilter;
+            var sprintMeta = WEEK_META.find(function(w) { return w.sprintKey === sprintFilter; });
+            summaryOpt.textContent = (sprintMeta ? sprintMeta.sprint : sprintFilter) + ' — Full Sprint Summary';
+            sel.appendChild(summaryOpt);
+        }
+
+        WEEK_META.forEach(function(w) {
+            if (sprintFilter && sprintFilter !== 'all' && w.sprintKey !== sprintFilter) return;
+            var opt = document.createElement('option');
+            opt.value = w.num;
+            opt.textContent = 'Week ' + w.num + ' — ' + w.dates + ' (' + w.sprintKey + ')';
+            if (w.num === curWeek && (!sprintFilter || sprintFilter === 'all')) opt.selected = true;
+            sel.appendChild(opt);
+        });
+
+        // Default select current week or sprint summary
+        if (sprintFilter && sprintFilter !== 'all') {
+            sel.value = 'summary-' + sprintFilter;
+        }
+        renderReport();
+    }
+
+    // Build sprint filter buttons
+    function buildSprintFilterButtons() {
+        var container = document.getElementById('report-sprint-btns');
+        if (!container) return;
+        var sprints = [];
+        WEEK_META.forEach(function(w) {
+            if (!sprints.find(function(s) { return s.key === w.sprintKey; })) {
+                sprints.push({ key: w.sprintKey, label: w.sprintKey });
+            }
+        });
+        var html = '<button class="filter-btn active" onclick="filterReportBySprint(\'all\',this)">All</button>';
+        sprints.forEach(function(s) {
+            html += '<button class="filter-btn" onclick="filterReportBySprint(\'' + s.key + '\',this)">' + s.label + '</button>';
+        });
+        container.innerHTML = html;
+    }
+
+    window.filterReportBySprint = function(sprintKey, btn) {
+        if (btn) {
+            btn.closest('#report-sprint-btns').querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('active'); });
+            btn.classList.add('active');
+        }
+        buildReportDropdown(sprintKey);
+    };
+
+    // Override renderReport to handle sprint summary
+    var _origRenderReport = window.renderReport;
+    window.renderReport = function() {
+        var sel = document.getElementById('report-week-select');
+        if (!sel) return;
+        var val = sel.value;
+        if (val && val.indexOf('summary-') === 0) {
+            var sprintKey = val.replace('summary-', '');
+            var text = buildSprintSummaryText(sprintKey);
+            window._reportPlainText = text;
+            var out = document.getElementById('report-output');
+            if (out) out.innerHTML = '<pre style="background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:0.5rem;padding:1.5rem;font-family:monospace;font-size:0.82rem;color:#e2e8f0;white-space:pre-wrap;line-height:1.7;">' + text.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</pre>';
+        } else {
+            if (_origRenderReport) _origRenderReport();
+        }
+    };
+
+    // Init
+    (function() {
+        buildSprintFilterButtons();
+        buildReportDropdown('all');
+        var sel = document.getElementById('report-week-select');
+        if (sel) sel.addEventListener('change', renderReport);
         renderReport();
     })();
 })();
