@@ -2713,10 +2713,10 @@
 <!--  TAB: AI PROJECT LOG                                           -->
 <!-- ══════════════════════════════════════════════════════════════ -->
 <div id="tab-ailog" class="tab-panel">
-<div style="max-width:960px; margin:2rem auto; padding:0 2rem 3rem;">
+<div style="max-width:1100px; margin:2rem auto; padding:0 2rem 3rem;">
 
-    <h2 style="font-size:1.4rem; font-weight:700; color:#f1f5f9; margin-bottom:0.25rem;">🤖 AI Project Log</h2>
-    <p style="color:var(--muted); font-size:0.88rem; margin-bottom:1rem;">Written for Claude Code · Read this at every session start · April V. Sykes, Project Manager · Compiled: Apr 19, 2026</p>
+    <h2 style="font-size:1.4rem; font-weight:700; color:#f1f5f9; margin-bottom:0.25rem;">🤖 AI Project Log — Complete History</h2>
+    <p style="color:var(--muted); font-size:0.88rem; margin-bottom:1rem;">Written for Claude Code · Every commit, every file, every change from Day 1 · April V. Sykes, Project Manager · Compiled: Apr 19, 2026</p>
 
     <div style="background:rgba(251,191,36,0.08); border:1px solid rgba(251,191,36,0.4); border-radius:0.5rem; padding:0.85rem 1.1rem; font-size:0.83rem; color:#fbbf24; margin-bottom:2rem; line-height:1.7;">
         <strong>⚠ MANDATORY SESSION START:</strong> Read this page IN FULL. Then read memory files (handover_apr19.md, feedback_preferences.md). Then read Dashboard/index.html. Then and only then respond to April. No code. No changes. No GitHub. Nothing without April's explicit go-ahead.
@@ -3163,6 +3163,786 @@ git push origin master &amp;&amp; git push origin gh-pages</pre>
             <p><strong style="color:#f1f5f9;">Not reporting back after actions</strong> — Contract requires reporting after EVERY single action. User had to demand status reports multiple times. This is not optional.</p>
             <p style="margin-bottom:0;"><strong style="color:#f1f5f9;">Making changes without authorization</strong> — Changed default sprint filter, TA-008 sprint field, and other items without explicit go-ahead. The rule is: no code, no changes, no GitHub — nothing without April's explicit go-ahead.</p>
         </div>
+    </div>
+
+    <!-- ─── SECTION 13: COMPLETE PROJECT HISTORY ─── -->
+    <div style="background:var(--card); border:1px solid var(--border); border-radius:0.75rem; padding:1.5rem; margin-bottom:1.5rem;">
+        <h3 style="font-size:1rem; font-weight:700; color:#FFD700; margin:0 0 0.5rem;">§13 — Complete Project History (Oct 7, 2025 – Apr 19, 2026)</h3>
+        <p style="color:var(--muted); font-size:0.8rem; margin-bottom:1.25rem;">Every commit. Every file. Every change. Organized chronologically. This is the full 8-month record of what was built and how.</p>
+
+        <div style="font-family:monospace; font-size:0.77rem; line-height:1.85; color:#f1f5f9;">
+
+        <!-- PHASE 0 -->
+        <div style="margin-bottom:1.75rem;">
+        <div style="font-size:0.85rem; font-weight:700; color:#FFD700; border-bottom:1px solid rgba(255,215,0,0.25); padding-bottom:0.4rem; margin-bottom:0.75rem;">▶ PHASE 0 — Initial Bootstrap (Oct 7, 2025)</div>
+        <div style="color:var(--muted); margin-bottom:0.35rem; font-size:0.74rem;">Project starts as a basic Flask/SQLite dashboard. No React. No PostgreSQL. Just a Python web app.</div>
+
+        <div style="margin-bottom:0.6rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-10-07</span> &nbsp;<span style="color:#10b981;">COMMIT</span> &nbsp;<span style="color:#f1f5f9;">Initial commit: H.C. Lombardo NFL Analytics Dashboard</span><br>
+        <span style="color:var(--muted);">Files: app.py (Flask app, SQLite, top 10 NFL offense/defense) · check_database.py · data/nfl_teams.db (SQLite) · dr.foster.md (assignment doc) · logs/hc_lombardo_20251007.log (404 lines) · nfl_database_loader.py (126 lines) · scrape_teamrankings.py (87 lines, scrapes PPG/PA from TeamRankings.com) · templates/index.html (194 lines, Jinja2 template) · test_ml_model.py (33 lines) · old_app reference</span><br>
+        <span style="color:#93c5fd;">10 files · 1,012 lines added. Stack at this point: Python Flask + SQLite + Jinja2 templates. No React. No PostgreSQL. No ML.</span>
+        </div>
+        </div>
+
+        <!-- PHASE 1 -->
+        <div style="margin-bottom:1.75rem;">
+        <div style="font-size:0.85rem; font-weight:700; color:#FFD700; border-bottom:1px solid rgba(255,215,0,0.25); padding-bottom:0.4rem; margin-bottom:0.75rem;">▶ PHASE 1 — PostgreSQL Migration, Workspace Organization, React Introduction (Oct 8–14, 2025)</div>
+        <div style="color:var(--muted); margin-bottom:0.35rem; font-size:0.74rem;">Migrated from SQLite to PostgreSQL. Created testbed environment. Introduced React frontend. Dr. Foster assignment deliverable built as interactive HTML dashboard.</div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-10-08</span> · <span style="color:#f1f5f9;">PostgreSQL migration: Migrate from SQLite to PostgreSQL 18 — add ESPN CDN team logos, all 32 teams, gold color scheme, scrollable lists</span><br>
+        <span style="color:var(--muted);">Files: app.py → api_server.py refactor · nfl_database_loader.py (138 lines, PostgreSQL loader) · download_team_logos.py (74 lines) · frontend/public/images/teams/ (all 32 team PNG logos added) · frontend/src/App.js (331 lines, React app begins) · frontend/src/Homepage.js + Homepage.css · frontend/src/SideMenu.js + SideMenu.css · frontend/src/TeamStats.js + TeamStats.css</span><br>
+        <span style="color:#93c5fd;">Key decision: SQLite abandoned for PostgreSQL 18. React frontend created for the first time. ESPN CDN logos added for all 32 teams. 250 files, 71,265 lines added (bulk from backups + testbed).</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-10-08</span> · <span style="color:#f1f5f9;">Add testbed for safe feature experimentation (testbed/ folder, experiments/, prototypes/)</span><br>
+        <span style="color:var(--muted);">Files: testbed/README.md · testbed/experiments/test_espn_api.py (132 lines) · testbed/experiments/ dir · .gitignore updated</span><br>
+        <span style="color:#93c5fd;">Established testbed-first methodology — test before deploying to production. Used throughout the project.</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-10-08</span> · <span style="color:#f1f5f9;">Add automatic daily data refresh from TeamRankings.com (24-hour auto-refresh, scrape PPG/PA)</span><br>
+        <span style="color:var(--muted);">Files: scrape_teamrankings.py (expanded to 296 lines) · metadata table added to DB for last-update tracking</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-10-08</span> · <span style="color:#f1f5f9;">Implement comprehensive logging system</span><br>
+        <span style="color:var(--muted);">Files: logging_config.py (92 lines)</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-10-08</span> · <span style="color:#f1f5f9;">Document Weeks 2-4: PostgreSQL migration, live data, professional UI (dr.foster.md updated)</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-10-09</span> · <span style="color:#f1f5f9;">Workspace reorganization series (6 commits)</span><br>
+        <span style="color:var(--muted);">Renamed dr.foster.md → 00_DR_FOSTER.md · Moved all test files to testbed/ · Created docs/ folder · Split dr.foster assignment into week1.md + weeks2-4.md + README · Created dr.foster/ folder with assignment.md · Added interactive HTML dashboard for Dr. Foster (711 lines, tabbed navigation) · Pre-safety commits before each major change</span><br>
+        <span style="color:#93c5fd;">Methodology: "safety commit before every restructure." Pattern used throughout the project.</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-10-10</span> · <span style="color:#f1f5f9;">PRODUCTION READY: Dr. Foster 3D Interactive Dashboard v2.0 (2,178 lines)</span><br>
+        <span style="color:var(--muted);">Files: dr.foster/index.html (2,178 lines — complete interactive 3D dashboard) · BEST_PRACTICES.md (first version, 160 lines) · api_server.py updates · Multiple backup archives created · testbed/dr_foster_interface_v2/ with full test docs (DEMO_SCRIPT.md, DEPLOYMENT_SUMMARY.md, FINAL_REPORT.md, etc.)</span><br>
+        <span style="color:#93c5fd;">This is the first time BEST_PRACTICES.md appears in the project. The 3D visualization is built with Three.js. Dashboard for Dr. Foster (original advisor) is submitted.</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-10-14</span> · <span style="color:#f1f5f9;">BACKUP: Pre-cleanup commit — major backup of all files before removing duplicates</span><br>
+        <span style="color:var(--muted);">Files: backups/pre_cleanup_20251014_184445/ (massive archive — api_server.py, app.py, all Python scripts) · SCALABLE_STATS_GUIDE.md · NFL_STATS_GUIDELINES.py · START.bat + STOP.bat added · 79 files, 17,078 lines</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-10-14</span> · <span style="color:#f1f5f9;">CLEANUP: Remove confirmed duplicates (data_refresh_scheduler.py duplicated live_data_updater.py, testbed/production_system/ folder)</span><br>
+        <span style="color:var(--muted);">Files removed: data_refresh_scheduler.py (167 lines) · testbed/production_system/README.md + TEST_RESULTS.md + health_check.py + live_data_updater.py + shutdown.py + startup.py · 1,882 lines deleted</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-10-14</span> · <span style="color:#f1f5f9;">Beautiful NFL homepage redesign: Dropdown interface, scrolling logo background, compact status bar</span><br>
+        <span style="color:var(--muted);">Files: frontend/src/App.css (472 lines added) · frontend/src/App.js (281 lines, dropdown UI, scrolling NFL background, status bar)</span><br>
+        <span style="color:#93c5fd;">This is the major React homepage redesign. The NFL scrolling logo background and dropdown navigation pattern appears here for the first time.</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-10-14</span> · <span style="color:#f1f5f9;">Production verified: Flawless startup/shutdown confirmed. LIVE_SYSTEM_STATUS.md, PRODUCTION_STATUS.md, QUICK_START.md, SHUTDOWN_VERIFICATION.md, STARTUP_VERIFICATION.md added</span><br>
+        <span style="color:var(--muted);">START.bat updated (69 lines). 6 files, 744 lines of documentation.</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-10-14</span> · <span style="color:#f1f5f9;">PWA Complete: Local assets, dual startup modes, AFC/NFC theming, ESPN API fix</span><br>
+        <span style="color:var(--muted);">Files: backups/backup_20251014_233507/ (full project backup at this point — 250 files including all team logos, all React components, all Python scripts)</span>
+        </div>
+        </div>
+
+        <!-- PHASE 2 -->
+        <div style="margin-bottom:1.75rem;">
+        <div style="font-size:0.85rem; font-weight:700; color:#FFD700; border-bottom:1px solid rgba(255,215,0,0.25); padding-bottom:0.4rem; margin-bottom:0.75rem;">▶ PHASE 2 — React Expansion, Analytics Dashboard, Milestones, Sociology Research (Oct 15–31, 2025)</div>
+        <div style="color:var(--muted); margin-bottom:0.35rem; font-size:0.74rem;">Full React app expands. Analytics dashboard with 6 tabs. Dr. Foster documentation updated. SOC319 research begins using this project as a case study.</div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-10-15</span> · <span style="color:#f1f5f9;">Production Update: 3NF Database Documentation, Tab Memory, Scroll Fix, Chart Error Fix, Portfolio Links, Footer Credits</span><br>
+        <span style="color:var(--muted);">Files: frontend/src/App.js · analytics auto-refresh added · live data integration</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-10-15</span> · <span style="color:#f1f5f9;">Feature: Milestones Tab — Agile journey and human-AI collaboration documentation (2 files, 802 lines)</span><br>
+        <span style="color:var(--muted);">Files: MILESTONES_TAB_FEATURE.md (372 lines) · dr.foster/index.html (430 lines added — Milestones tab with Agile sprint history and human-AI collaboration section)</span><br>
+        <span style="color:#93c5fd;">First time the Agile methodology is documented in the project deliverables.</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-10-15</span> · <span style="color:#f1f5f9;">Add favicon route, remove GitHub API 500 error (production hotfix)</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-10-15</span> · <span style="color:#f1f5f9;">Fix week calculation: Update to 2025 season (Sep 4), now shows Week 6 instead of Week 18</span><br>
+        <span style="color:var(--muted);">Files: frontend/src/App.js (week calculation logic)</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-10-15</span> · <span style="color:#f1f5f9;">Research: Create SOCIOLOGY.md for SOC319 — Human-AI collaboration study (553 lines)</span><br>
+        <span style="color:var(--muted);">Files: SOCIOLOGY.md created — documents this project as a research case study for SOC319 class. Central research question: how does human-AI collaboration change the nature of creative and technical work?</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-10-15</span> · <span style="color:#f1f5f9;">Update SOCIOLOGY.md: Add central research question, hypothesis, ongoing observations (4 commits)</span><br>
+        <span style="color:var(--muted);">Adds: witness encounter documentation · public AI perception patterns · researcher personal context (56 yrs, 20+ yrs IT/leadership, SOC101 completed)</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-10-15</span> · <span style="color:#f1f5f9;">Analytics Dashboard Complete: Live data integration, auto-refresh, dual startup modes</span><br>
+        <span style="color:var(--muted);">Files: frontend/src/App.js · Analytics tab with live PostgreSQL data</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-10-16</span> · <span style="color:#f1f5f9;">SOC319 data: Document Oct 16 critical moment — researcher's skepticism question reveals Turkle's knowing-vs-feeling paradox</span><br>
+        <span style="color:var(--muted);">Files: SOCIOLOGY.md · Also: document Oct 21 regression (protocol breach, broken commits, lessons learned)</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-10-21</span> · <span style="color:#f1f5f9;">Add live data validation system (TESTED IN TESTBED)</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-10-27</span> · <span style="color:#f1f5f9;">Complete Dr. Foster Dashboard Documentation Updates — Sprint 1–8 Complete</span><br>
+        <span style="color:var(--muted);">Files: dr.foster documentation updated with full sprint history through S8</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-10-30</span> · <span style="color:#f1f5f9;">Phase 2B: Feature Engineering Views &amp; Analytics API — 4 analytical views (betting, weather, rest, referees) with 5 new API endpoints</span><br>
+        <span style="color:var(--muted);">Files: api_routes_hcl.py (new file, analytical views added) · All endpoints tested and working in production</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-10-31</span> · <span style="color:#f1f5f9;">Phase 2C: Analytics Dashboard — 6 tabs (Summary, Betting, Weather, Rest, Referees, Custom Builder) integrated into React app</span><br>
+        <span style="color:var(--muted);">Files: frontend/src/Analytics.js (new component) · frontend/src/App.js (Analytics route added) · SideMenu.js (Analytics link added) · Stat legends explaining all metrics · Fixed dropdown styling (black text on white)</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-10-31</span> · <span style="color:#f1f5f9;">Frontend: Add classic shimmering gold effect to H.C. LOMBARDO header and Italian quote — Phase 2C complete</span>
+        </div>
+        </div>
+
+        <!-- PHASE 3 -->
+        <div style="margin-bottom:1.75rem;">
+        <div style="font-size:0.85rem; font-weight:700; color:#FFD700; border-bottom:1px solid rgba(255,215,0,0.25); padding-bottom:0.4rem; margin-bottom:0.75rem;">▶ PHASE 3 — Historical Database Load, ML Predictions, Sprint 9–10 (Nov 1–27, 2025)</div>
+        <div style="color:var(--muted); margin-bottom:0.35rem; font-size:0.74rem;">7,263 NFL games loaded (1999–2025). EPA stats calculated. ML prediction model reaches 54.6% accuracy. Live scores ticker built. Custom Query Builder. GameStatistics page.</div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-11-01</span> · <span style="color:#f1f5f9;">Week 6 Complete: Sprint 8 — Historical Database Infrastructure + Premium Gold Branding. Weeks 4–6 docs updated for Dr. Foster</span><br>
+        <span style="color:var(--muted);">Files: dr.foster/ documentation · 950+ games loaded at this point (2022–2025) · Gold shimmer header effect</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-11-06</span> · <span style="color:#f1f5f9;">Sprint 9 Data Enhancement — Testbed Phase: Add 13 EPA/advanced stat columns, validate calculations</span><br>
+        <span style="color:var(--muted);">Files: Schema migration scripts · Added columns: epa_per_play, success_rate, pass_epa, rush_epa, wpa, cpoe, air_yards, yac, explosive_play_pct, stuff_rate, pass_success_rate, rush_success_rate + more. EPA tested on 2024 sample first (testbed-first methodology).</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-11-06</span> · <span style="color:#f1f5f9;">Sprint 9 COMPLETE: Historical data load — 7,263 games (1999–2025, 27 seasons), 14,312 team-game records, 100% EPA coverage</span><br>
+        <span style="color:var(--muted);">Files: ingest_historical_games.py · insert logic: includes opponent, is_home, season, week fields · Fixed numpy type conversion for PostgreSQL · Total load time: 4min 23sec · Avg EPA/play: -0.0188 · Success rate: 43.6%</span><br>
+        <span style="color:#10b981; font-weight:700;">KEY MILESTONE: This is when the database became the full 7,263-game historical dataset that all ML models train on.</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-11-06</span> · <span style="color:#f1f5f9;">Sprint 9 &amp; 10 Planning: ML Predictions (neural network, 950+ games) + Custom Query Builder</span><br>
+        <span style="color:var(--muted);">Files: CURRENT_STATUS.md created · Sprint 9: Neural network game predictions, 3 hidden layers, 70 features · Sprint 10: Custom Query Builder</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-11-11</span> · <span style="color:#f1f5f9;">Add GameStatistics page: team comparison, separate season selectors, team logos, 404 error handler for React Router</span><br>
+        <span style="color:var(--muted);">Files: frontend/src/GameStatistics.js (new) · App.js (route added) · 404 handler added</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-11-11</span> · <span style="color:#f1f5f9;">Sprint 10 Complete: Dr. Foster dashboard streamlined, sociology content removed, GitHub tab updated</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-11-18</span> · <span style="color:#f1f5f9;">Fix ML Predictions and standardize page headers — Remove NFL scrolling backgrounds, fix date filtering for Week 12, resolve CORS issues, standardize header sizes and colors</span><br>
+        <span style="color:var(--muted);">Files: frontend/src/MLPredictions.js · App.js</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-11-18</span> · <span style="color:#f1f5f9;">Fix team detail page: restore all game stats, add team logos, fix navigation, update database loader</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-11-20</span> · <span style="color:#f1f5f9;">Sprint 10 &amp; 11: Score &amp; Spread Predictions — Point spread regression model, predicted final scores display, AI vs Vegas spread comparison, value play detection (3+ pt differences), dual model architecture</span><br>
+        <span style="color:var(--muted);">Files: api_routes_ml.py · frontend/src/MLPredictions.js · Models achieving 10.35 MAE on point spreads at this stage</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-11-20</span> · <span style="color:#f1f5f9;">Add ML Prediction Performance Tracking System — 3-season validation (2023–2025), 692 games tracked, Vegas comparison dashboard, week-by-week charts, 54.6% overall accuracy beating Vegas 52.5%</span><br>
+        <span style="color:var(--muted);">Files: frontend/src/ModelPerformance.js (new — major new page) · api_routes_ml.py (performance endpoint) · Week 1 handling fixed for all seasons</span><br>
+        <span style="color:#10b981; font-weight:700;">KEY MILESTONE: First time AI accuracy is formally tracked and compared against Vegas. 54.6% vs Vegas 52.5%.</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-11-20</span> · <span style="color:#f1f5f9;">Add team color headers, AI predictions ticker, admin documentation</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-11-21</span> · <span style="color:#f1f5f9;">Complete redesign: 3D neural network visualization + modern Historical Stats &amp; Matchup Analyzer pages</span><br>
+        <span style="color:var(--muted);">Files: frontend/src/MLPredictions.js (3D neural net visualization) · frontend/src/MatchupAnalyzer.js + css · frontend/src/HistoricalData.js</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-11-21</span> · <span style="color:#f1f5f9;">Add live scores ticker: drag-to-scroll, AI predictions, team logos, timezone conversion, manual scroll controls</span><br>
+        <span style="color:var(--muted);">Files: frontend/src/LiveGamesTicker.js (new) · LiveGamesTicker.css (new) · App.js (ticker integrated into homepage)</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-11-21</span> · <span style="color:#f1f5f9;">Complete Analytics Custom Builder — Real data display for betting, weather, rest stats with Select All/Reset buttons</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-11-21</span> · <span style="color:#f1f5f9;">Feature: Full season schedule display with completed games filtering</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-11-23</span> · <span style="color:#f1f5f9;">Add live score differential tracker — compare current score against AI and Vegas lines in real-time</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-11-23</span> · <span style="color:#f1f5f9;">Fix Analytics betting endpoint — remove non-existent table join causing 500 errors</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-11-25</span> · <span style="color:#f1f5f9;">Add Render deployment configuration (render.yaml, database setup script, API URL changes)</span><br>
+        <span style="color:var(--muted);">Files: render.yaml · Dockerfile added · frontend API URLs changed to relative paths · PORT variable handling added</span><br>
+        <span style="color:#f87171;">NOTE: Render was ultimately abandoned. EC2 is the production backend.</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-11-25</span> · <span style="color:#f1f5f9;">Retrain AI model with corrected NFLverse spread signs — Fix spread sign convention</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-11-26</span> · <span style="color:#f1f5f9;">Fix homepage standings — use HCL API with real 2025 data (not Render's empty DB)</span><br>
+        <span style="color:var(--muted);">Files: frontend/src/Homepage.js · api_server.py · Remove old database scripts interfering with builds · Disable ESLint strict mode in production build</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-11-27</span> · <span style="color:#f1f5f9;">Point API calls to EC2 server for Amplify deployment — switch from relative paths back to EC2 URL</span><br>
+        <span style="color:var(--muted);">Files: frontend/src/ (multiple components, API URL changed to EC2 endpoint)</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-11-27</span> · <span style="color:#f1f5f9;">Add Amplify domain to CORS whitelist</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-11-27</span> · <span style="color:#f1f5f9;">Fix Washington logo mapping (WSH → was.png) in Homepage and TeamStats</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-11-27</span> · <span style="color:#f1f5f9;">Add live score storage and closing spread locking system</span><br>
+        <span style="color:var(--muted);">Files: api_routes_live_scores.py · save_live_scores.py (new)</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-11-27</span> · <span style="color:#f1f5f9;">FIX CRITICAL: Spread coverage checkmarks — compare to 'yes' string not truthy value</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-11-27</span> · <span style="color:#f1f5f9;">Add ML Predictions enhancements: show all games, LIVE badges, value plays tracker, AI vs Vegas comparison scorecard</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-11-27</span> · <span style="color:#f1f5f9;">Fix NFLverse auto-update — Start background updater with API server for 30-minute data refreshes</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-11-28</span> · <span style="color:#f1f5f9;">Comprehensive page sizing reduction — reduce fonts, padding, margins across ALL components for professional streamlined look on large monitors (8 commits)</span><br>
+        <span style="color:var(--muted);">Files: frontend/src/App.css · Homepage.css · LiveGamesTicker.css · All component CSS files · Root font size reduced to fix rem scaling on ultrawide monitors · Update BEST_PRACTICES.md: "NEVER GUESS — CHECK CODE FIRST, especially root CSS files"</span><br>
+        <span style="color:#93c5fd;">BEST_PRACTICES.md updated directly as a result of a sizing bug caused by not checking the root CSS file first.</span>
+        </div>
+        </div>
+
+        <!-- PHASE 4 -->
+        <div style="margin-bottom:1.75rem;">
+        <div style="font-size:0.85rem; font-weight:700; color:#FFD700; border-bottom:1px solid rgba(255,215,0,0.25); padding-bottom:0.4rem; margin-bottom:0.75rem;">▶ PHASE 4 — Render/Railway Abandonment, EC2 Permanent Deployment (Nov 30 – Dec 3, 2025)</div>
+        <div style="color:var(--muted); margin-bottom:0.35rem; font-size:0.74rem;">Render and Railway deployments both failed due to PostgreSQL SSL/connection issues. Decision made to use EC2 as the permanent backend. All Render/Railway references removed.</div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-11-30</span> · <span style="color:#f1f5f9;">Add python-dotenv to GitHub Actions dependencies (and 9 follow-up commits debugging SSL/checkout issues with Render)</span><br>
+        <span style="color:var(--muted);">All attempts to get Render's PostgreSQL working: sslmode=prefer → sslmode=require → gssencmode=disable → force checkout → rename workflow → replace workflow file → fetch full history · None resolved the connection problem.</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-12-01</span> · <span style="color:#f1f5f9;">MAJOR FIX: Remove ALL Render/Railway references — use EC2 localhost PostgreSQL only</span><br>
+        <span style="color:var(--muted);">Files: api_server.py · api_routes_hcl.py · api_routes_ml.py · api_routes_live_scores.py · db_config.py · All hardcoded Render URLs removed. EC2 is now the one and only backend.</span><br>
+        <span style="color:#10b981; font-weight:700;">KEY DECISION: Backend permanently lives on EC2. No serverless. No Render. No Railway. This is the architecture that remains today.</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-12-01</span> · <span style="color:#f1f5f9;">FIX: GitHub Actions workflow SSH execution (SSH + StrictHostKeyChecking=no)</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-12-01</span> · <span style="color:#f1f5f9;">Add /api/game-statistics endpoint for team game stats</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-12-01</span> · <span style="color:#f1f5f9;">Fix: Use simple stats from games table instead of broken pbp import</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-12-02</span> · <span style="color:#f1f5f9;">GitHub Actions: Run BOTH ingest_historical_games.py AND update_2025_with_epa.py to get all 64 stats</span><br>
+        <span style="color:var(--muted);">Files: .github/workflows/nfl-data-update.yml · Calculates ALL 13 EPA/advanced stats: wpa, cpoe, air_yards, yac, explosive, stuff, pass/rush success rates</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-12-02</span> · <span style="color:#f1f5f9;">Add EPA stats to team detail and game endpoints — epa_per_play, pass_epa, rush_epa, success_rate, explosive_play_pct</span><br>
+        <span style="color:var(--muted);">Files: api_routes_hcl.py · api_routes_ml.py</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-12-02</span> · <span style="color:#f1f5f9;">Handle nflverse 404 gracefully — exit cleanly if 2025 play-by-play not available yet</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-12-02</span> · <span style="color:#f1f5f9;">Complete reorganization: unified test environment, organize docs/scripts, remove testbed/dr.foster</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-12-03</span> · <span style="color:#f1f5f9;">Fix workflow: scripts are in root directory, not scripts/data_loading/</span>
+        </div>
+        </div>
+
+        <!-- PHASE 5 -->
+        <div style="margin-bottom:1.75rem;">
+        <div style="font-size:0.85rem; font-weight:700; color:#FFD700; border-bottom:1px solid rgba(255,215,0,0.25); padding-bottom:0.4rem; margin-bottom:0.75rem;">▶ PHASE 5 — XGBoost Training, Elo System, Color Scheme Unification (Dec 18–21, 2025)</div>
+        <div style="color:var(--muted); margin-bottom:0.35rem; font-size:0.74rem;">XGBoost models trained with 46 features achieving 60.7% winner accuracy. NFL Elo rating system built. Color scheme unified across all pages. v0.1.0 Alpha tagged.</div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-12-18</span> · <span style="color:#f1f5f9;">Add TEST workflow for AWS SSM (hcl_test schema only)</span><br>
+        <span style="color:var(--muted);">Files: .github/workflows/ · Tests run against hcl_test schema, not production hcl.</span><br>
+        <span style="color:#f87171;">NOTE: hcl_test schema is the bug that later became TA-057 — train_xgb_winner.py still references hcl_test in production.</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-12-18</span> · <span style="color:#f1f5f9;">Add schema creation script · Replace SSH with AWS SSM in production workflow · Use db_config for all connections</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-12-18</span> · <span style="color:#f1f5f9;">Fix ML training scripts — use db_config instead of hardcoded credentials · Update to 2020–2025 seasons only</span><br>
+        <span style="color:var(--muted);">Files: ml/train_xgb_winner.py · ml/train_xgb_spread.py</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-12-18</span> · <span style="color:#f1f5f9;">Add XGBoost models — 61% winner accuracy, 11.1 MAE spread (no data leakage)</span><br>
+        <span style="color:var(--muted);">Files: ml/models/xgb_winner.pkl (first version) · ml/models/xgb_spread.pkl (first version)</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-12-18</span> · <span style="color:#f1f5f9;">Use production hcl schema for training (has 2020–2025 historical data)</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-12-18</span> · <span style="color:#f1f5f9;">Train XGBoost with full 46-feature set (EPA + advanced metrics) — 60.7% winner, 11.6 MAE spread</span><br>
+        <span style="color:var(--muted);">Files: ml/train_xgb_winner.py · ml/train_xgb_spread.py · ml/models/xgb_winner.pkl (352K final) · ml/models/xgb_spread.pkl (543K final) · 46 features: EPA per play, win probability added to pass/rush EPA and previous season stats</span><br>
+        <span style="color:#10b981; font-weight:700;">KEY MILESTONE: These are the model files still deployed to EC2 today (Dec 19, 2025 timestamp). xgb_winner.pkl 352K · xgb_spread.pkl 543K.</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-12-18</span> · <span style="color:#f1f5f9;">Rewrite predict_week.py — use 46-feature computation matching training models</span><br>
+        <span style="color:var(--muted);">Files: ml/predict_week.py</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-12-18</span> · <span style="color:#f1f5f9;">Add automated Vegas line scraping and update pipeline · Add cron setup script · Add EC2 server restart script · Add Amplify SPA routing config</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-12-19</span> · <span style="color:#f1f5f9;">Implement NFL Elo rating system — 538-style, custom implementation</span><br>
+        <span style="color:var(--muted);">Files: ml/elo_ratings.py (new) · elo_ratings_current.json (new, 1.2K, 32-team ratings) · api_server.py (Elo endpoints added: /api/elo/ratings/current · /api/elo/predict-week/)</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-12-19</span> · <span style="color:#f1f5f9;">Integrate Elo into frontend — add 4-tab system (Elo, XGBoost, Vegas Line, Ensemble)</span><br>
+        <span style="color:var(--muted);">Files: frontend/src/MLPredictionsRedesign.js (new major redesign — separate winner picks from spreads, historical week navigation) · MLPredictions.js updated</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-12-19</span> · <span style="color:#f1f5f9;">FIX: Vegas spread display showing 0.0 — get spreads from games.spread_line via JOIN · Add Vegas line to both consensus and split predictions</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-12-19</span> · <span style="color:#f1f5f9;">Phase 1–7: Apply unified Analytics color scheme to App, Homepage, MLPredictions, GameStatistics, MatchupAnalyzer, TeamDetail — complete color unification</span><br>
+        <span style="color:var(--muted);">Files: frontend/src/App.css · Homepage.css · MLPredictions.css · GameStatistics.css · MatchupAnalyzer.css · TeamDetail.css · index.css · Reorganize AI reference docs into docs/ai_reference/</span><br>
+        <span style="color:#93c5fd;">This is when docs/ai_reference/ folder was first created. AI_EXECUTION_CONTRACT.md, READ_THIS_FIRST.md, BEST_PRACTICES.md moved here.</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-12-19</span> · <span style="color:#f1f5f9;">Set version to v0.1.0 (Alpha — Color Scheme Unification)</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-12-20</span> · <span style="color:#f1f5f9;">Complete Classic Light mode — Phase 2 &amp; 3: Homepage ticker + Team Detail styling (Material Blue #1976D2)</span><br>
+        <span style="color:var(--muted);">Files: frontend/src/App.css · Homepage.css · LiveGamesTicker.css · TeamDetail.css</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-12-20</span> · <span style="color:#f1f5f9;">Display ELO, XGBoost, and Vegas as three separate prediction systems</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-12-21</span> · <span style="color:#f1f5f9;">Add Moneyline/Spread predictions with proper Vegas formatting</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2025-12-21</span> · <span style="color:#f1f5f9;">Add standalone background updater service (fixes multi-worker Gunicorn issue) · Add game-level data updates · Fix NFLverse inline implementation · Simplify to team standings only (game data complete for season)</span><br>
+        <span style="color:var(--muted);">Files: background_updater.py (major refactor) — this is the final state of background_updater.py that exists today</span>
+        </div>
+
+        <div style="background:rgba(251,191,36,0.06); border:1px solid rgba(251,191,36,0.2); border-radius:0.35rem; padding:0.5rem 0.75rem; margin:0.75rem 0; font-size:0.76rem; color:#fbbf24;">
+        ⚠ GAP: Dec 22, 2025 – Apr 3, 2026 (103 days) — No commits. App is deployed and running on EC2 + Amplify. Winter break / term transition. New term (IS330 Senior Capstone) begins April 6, 2026. Advisor changes from Dr. Foster to Richard Becker.
+        </div>
+        </div>
+
+        <!-- PHASE 6 -->
+        <div style="margin-bottom:1.75rem;">
+        <div style="font-size:0.85rem; font-weight:700; color:#FFD700; border-bottom:1px solid rgba(255,215,0,0.25); padding-bottom:0.4rem; margin-bottom:0.75rem;">▶ PHASE 6 — Spring 2026 Capstone Kickoff: PM Dashboard Built from Scratch (Apr 4–5, 2026)</div>
+        <div style="color:var(--muted); margin-bottom:0.35rem; font-size:0.74rem;">The PM Dashboard (Dashboard/index.html) is built from scratch for IS330. Entirely separate from the NFL analytics app. Contains all Agile PM artifacts: sprint board, burndown/burnup, risk register, decision log, hours log, retrospectives, weekly reports, product backlog.</div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-04</span> · <span style="color:#f1f5f9;">Spring 2026 capstone kickoff — full project reorganization and PM dashboard (1cc206ac)</span><br>
+        <span style="color:var(--muted);">Files: Dashboard/index.html (new file — PM dashboard created) · This is the initial PM dashboard with: Sprint board, Hours Log, Definition of Done, Retrospective, Risk Register, Decision Log, Weekly Report. Chart.js integrated. All tab switching. Dark theme.</span><br>
+        <span style="color:#10b981; font-weight:700;">KEY MILESTONE: Dashboard/index.html created. This is the file we work in for the entire IS330 term.</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-06</span> · <span style="color:#f1f5f9;">Add Hours Log tab and Definition of Done to dashboard</span><br>
+        <span style="color:var(--muted);">Files: Dashboard/index.html</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-06</span> · <span style="color:#f1f5f9;">Fix nav tab vertical text alignment</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-06</span> · <span style="color:#f1f5f9;">Add Weekly Report tab — auto-generates Canvas report from sprint board and hours log</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-06</span> · <span style="color:#f1f5f9;">Replace critical path with Gantt chart · Add Sprint Retrospective sub-view · Fix retro sub-nav, add Risk Register and Decision Log tabs · Move Gantt and blockers above charts</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-06</span> · <span style="color:#f1f5f9;">Convert hours/retro/report from localStorage to hardcoded — all data now publicly visible</span><br>
+        <span style="color:var(--muted);">Files: Dashboard/index.html · Dashboard/DASHBOARD_UPDATE_GUIDE.md (112 lines)</span><br>
+        <span style="color:#f87171;">RULE ESTABLISHED: No localStorage. All data hardcoded. This is why the dashboard never uses browser storage.</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-06</span> · <span style="color:#f1f5f9;">Remove all localStorage — everything hardcoded and publicly visible</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-06</span> · <span style="color:#f1f5f9;">Retro: replace textareas with static text, updated by Claude at sprint close</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-06</span> · <span style="color:#f1f5f9;">Weekly report: remove all inputs/localStorage, auto-renders from hardcoded data</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-06</span> · <span style="color:#f1f5f9;">Add Product Backlog tab with PB-001 through PB-005, fix missing closing div · Full product backlog — 45 items across all 5 sprints plus unscheduled</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-06</span> · <span style="color:#f1f5f9;">Replace checkboxes with static status badges, remove Log New Issue form</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-06</span> · <span style="color:#f1f5f9;">Upgrade 3D architecture diagram — deep space theme + NFLverse node (Three.js)</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-06</span> · <span style="color:#f1f5f9;">S12 bug fixes: routing, credentials, debug output, broken import (0dba4f20)</span><br>
+        <span style="color:var(--muted);">Files: Dashboard/index.html · api_routes_hcl.py · api_routes_live_scores.py · api_server.py · background_updater.py · frontend/src/App.js (routing bug fixed — wrong components mapped to /game-statistics and /matchup-analyzer) · frontend/src/SideMenu.js · frontend/src/MLPredictionsRedesign.backup.js (deleted — 731 lines removed)</span><br>
+        <span style="color:#10b981; font-weight:700;">This commit documents the S12 findings: routing bugs, hardcoded passwords, DEBUG prints, broken import. These are now TA-010, TA-011 in the backlog.</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-06</span> · <span style="color:#f1f5f9;">Merge Sprint Plan + Sprint board into one Sprints tab (153c3376)</span><br>
+        <span style="color:var(--muted);">Files: Dashboard/index.html (507 lines changed, 371 inserted, 136 deleted)</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-06</span> · <span style="color:#f1f5f9;">Dashboard: fix orphaned Sprint 12 HTML, add NFLverse arch card, update Flask card</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-06</span> · <span style="color:#f1f5f9;">Sprint page: add top tabs (Board / DoD), remove Sprint 12 from overview grid · Sprint page: move Retrospective to top tabs</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-06</span> · <span style="color:#f1f5f9;">Dashboard: persist active tab in URL hash, restore on refresh</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-06</span> · <span style="color:#f1f5f9;">Dashboard: reorder nav tabs — Decisions, Risk Register, Weekly Report, About · Move Risk Register after Backlog in nav · Sprint 12 kickoff: update RAG banner, metrics, week 1 notes</span>
+        </div>
+        </div>
+
+        <!-- SPRINT 12 WEEK 1 -->
+        <div style="margin-bottom:1.75rem;">
+        <div style="font-size:0.85rem; font-weight:700; color:#FFD700; border-bottom:1px solid rgba(255,215,0,0.25); padding-bottom:0.4rem; margin-bottom:0.75rem;">▶ SPRINT 12 — Week 1 (Apr 6–12, 2026) · Theme: Diagnose &amp; Restore</div>
+        <div style="color:var(--muted); margin-bottom:0.35rem; font-size:0.74rem;">EC2 found stopped on Apr 10. Restarted via AWS CLI (console locked — root MFA lost). Full code analysis. PostgreSQL verified. Area 4 (Amplify + Frontend walkthrough) complete. Disk at 88% flagged as P1. 15 hours logged this week.</div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-10</span> · <span style="color:#f1f5f9;">Dashboard: update game count to 7,269, fix backlog stats, add BUG-014 through BUG-020 and TASK-001</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-10</span> · <span style="color:#f1f5f9;">Dashboard: Apr 10 updates — RAG, metrics, blockers, hours, risks, decisions</span><br>
+        <span style="color:var(--muted);">EC2 stopped → restarted. Disk 88% logged as P1 blocker (R-09). AWS MFA lost logged as R-10.</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-10</span> · <span style="color:#f1f5f9;">Dashboard: fix charts, task progress, dynamic release countdown</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-10</span> · <span style="color:#f1f5f9;">Fix: sprint task % always showing 0% — checkboxes not being marked checked</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-10</span> · <span style="color:#f1f5f9;">Fix: clarify Sprint 12 week selector labels — sprint ends Apr 18 not Apr 12</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-10</span> · <span style="color:#f1f5f9;">Fix: Gantt dates off by 1 day — UTC vs local time parsing bug · Fix Gantt bar alignment (TERM_DAYS=70) · Gantt: add end-date label inside each sprint bar</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-10</span> · <span style="color:#f1f5f9;">Fix: Live App button now opens production Amplify URL</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-10</span> · <span style="color:#f1f5f9;">Dashboard: update week 1 hours to 11 (added 4 hours Apr 10)</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-10</span> · <span style="color:#f1f5f9;">Dashboard: add live clock, last-updated bar, update RAG for live app</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-10</span> · <span style="color:#f1f5f9;">Docs: add DASHBOARD_UPDATE_GUIDE.md — complete tab-by-tab update reference (158 lines)</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-10</span> · <span style="color:#f1f5f9;">Dashboard: mark Area 4 complete (TA-001/TA-004/TA-005), add tasks, hours 15, report download, add PB-046</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-11</span> · <span style="color:#f1f5f9;">Theme: complete Executive Dark mode overhaul + color scheme restoration (66e4e2ce)</span><br>
+        <span style="color:var(--muted);">Files: frontend/src/App.css (997 lines, major rewrite) · Homepage.css (+486) · LiveGamesTicker.css (+135) · MLPredictions.css (+299) · MatchupAnalyzer.css (+66) · Settings.js · SideMenu.js · TeamDetail.css · GameStatistics.css · REMOVED: Analytics-light.css (489 lines) · Homepage-light.css (283 lines) · LiveGamesTicker-light.css (201 lines) · LiveScores.js (281 lines) · LiveScores.css (412 lines) · MLPredictionsRedesign-light.css (621 lines) · TeamComparison-light.css (110 lines) · TeamDetail-light.css (261 lines) · MatchupAnalyzer.css.backup (433 lines) · GameStatistics.css.backup (1,739 lines) · App.js.backup · App.js.broken · docs/archive/dr.foster-original/ (entire folder — 5 files, 3,914 lines). 38 files, 1,441 insertions, 11,739 deletions.</span><br>
+        <span style="color:#10b981; font-weight:700;">KEY COMMIT: Massive cleanup. All light-mode CSS files, all backup files, all Dr. Foster original archive removed. Executive Dark is the single theme going forward.</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-11</span> · <span style="color:#f1f5f9;">Homepage: add theme selector dropdown (NFL / Executive Dark / Classic Light)</span><br>
+        <span style="color:var(--muted);">Files: frontend/src/Homepage.css (+61) · frontend/src/Homepage.js (+17)</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-11</span> · <span style="color:#f1f5f9;">Sprint board: add PB ticket refs to Area headers · Add PB-047/048 to product backlog</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-11</span> · <span style="color:#f1f5f9;">Sprint board: restructure S12 from 6 areas to 9 PB-numbered ticket cards (PB-001 through PB-009)</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-11</span> · <span style="color:#f1f5f9;">Dashboard: custom sprint dropdown (Edge-safe), dark mode default, PB-005 Done, PB-003 endpoint count fix</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-11</span> · <span style="color:#f1f5f9;">Dashboard: rename Dark Mode → Executive Dark · Add PB-049 (cross-browser) + PB-050 (light mode rework)</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-11</span> · <span style="color:#f1f5f9;">Backlog: remove all future sprint assignments — everything past S12 is TBD until planning</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-11</span> · <span style="color:#f1f5f9;">Dashboard: body class=dark on load, explicit background on every dropdown option · Backlog: remove sprint column + group headers, fix dropdown container background</span>
+        </div>
+        </div>
+
+        <!-- SPRINT 12 WEEK 2 -->
+        <div style="margin-bottom:1.75rem;">
+        <div style="font-size:0.85rem; font-weight:700; color:#FFD700; border-bottom:1px solid rgba(255,215,0,0.25); padding-bottom:0.4rem; margin-bottom:0.75rem;">▶ SPRINT 12 — Week 2 (Apr 13–19, 2026) · 17 hours · S12 Closed GREEN Apr 18</div>
+        <div style="color:var(--muted); margin-bottom:0.35rem; font-size:0.74rem;">All 22 API endpoints tested. TA-003 through TA-007 completed. TA-008 blocked (AWS MFA). S12 closed. Apr 19: Major PM dashboard rebuild — Product Backlog Tracker, sprint automation, Progress Reports rebuilt.</div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-14</span> · <span style="color:#f1f5f9;">Backlog: add PB-051 — rotate GitHub webhook secret (security notice Apr 2026)</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-14</span> · <span style="color:#f1f5f9;">Sprints: move Sprint Backlog tab from Backlog page to Sprints page · Rename Sprint Backlog tab to Bug Tracker</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-14</span> · <span style="color:#f1f5f9;">Dashboard: rename nav tabs to proper PM terms (Risk Management, Hours Log, Decision Log)</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-14</span> · <span style="color:#f1f5f9;">Bug Tracker: replace BUG-xxx list with PB-001 through PB-009 sprint items</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-14</span> · <span style="color:#f1f5f9;">Risk Management: add R-11 — AI assistant making incorrect changes (first documentation of AI risk)</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-14</span> · <span style="color:#f1f5f9;">Product Backlog: add Bug Tracker sub-tab with BUG-001–BUG-020 + TASK-001, sortable by column · Rename Bug Tracker to Task Tracker</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-14</span> · <span style="color:#f1f5f9;">Task Tracker: add search/filter/sort JS, remove dead backlog functions</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-14</span> · <span style="color:#f1f5f9;">Rename PB-xxx → TA-xxx, remove all BUG-xxx/TASK-xxx numbering (238 lines changed)</span><br>
+        <span style="color:#93c5fd;">All backlog items now use TA-xxx format. This is when the current TA-001 through TA-064 naming convention was established.</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-14</span> · <span style="color:#f1f5f9;">Remove all future sprint assignments — S12 only (88 lines changed, 81 deleted)</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-14</span> · <span style="color:#f1f5f9;">Weekly report: fix sprint detection, content, TBD handling · Styled HTML layout · IS471 fix, remove incomplete tasks · Professional document layout · Move Copy/Download buttons above report</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-15</span> · <span style="color:#f1f5f9;">Fix meta description — remove 'Professional gambling analytics', add proper capstone description</span><br>
+        <span style="color:var(--muted);">Files: frontend/public/index.html</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-15</span> · <span style="color:#f1f5f9;">Add Open Graph tags so link previews pull NFL image on Handshake/LinkedIn · REVERTED same day</span><br>
+        <span style="color:var(--muted);">Files: frontend/public/index.html · Added then reverted (conflicted with capstone presentation)</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-17</span> · <span style="color:#f1f5f9;">Sprint 12 dashboard update: mark TA-001/002/004/009 Done, extend burndown through Day 12, update hours Week 2 (12h), RAG/insights/blockers updated (01675b70)</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-17</span> · <span style="color:#f1f5f9;">Fix severity chart insight text</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-17</span> · <span style="color:#f1f5f9;">Add task resolution modal — click task title to see resolution details (5f5f3444)</span><br>
+        <span style="color:var(--muted);">Files: Dashboard/index.html (267 lines added) · docs/SPRINT_EXECUTION_PROCESS.md (91 lines, new) · TASK_DETAILS data structure created · TASK_TA_MAP created · Click-to-view modal with resolution text for every subtask</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-17</span> · <span style="color:#f1f5f9;">Task text dotted underline (signals clickable) · Add visible hint on sprint board · Clickable tasks: single blue color, persistent info icon · Info icon: gold color, full opacity</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-17</span> · <span style="color:#f1f5f9;">TA-003 Health &amp; Core done, TA-052/053 added to backlog · Update burndown Day 12: 33→23</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-17</span> · <span style="color:#f1f5f9;">Update sprint process doc — chart updates required after every section</span><br>
+        <span style="color:var(--muted);">Files: docs/SPRINT_EXECUTION_PROCESS.md (+12 lines)</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-17</span> · <span style="color:#f1f5f9;">TA-003 Historical Data done — all 7 endpoints pass · TA-003 ML Endpoints done (t3_11–t3_21), TA-054/TA-055 logged</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-17</span> · <span style="color:#f1f5f9;">Velocity chart: rename 'Issues Closed' → 'TA Items Delivered'</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-17</span> · <span style="color:#f1f5f9;">Dashboard: replace all visible 'issue' with 'task' or 'problem' — terminology cleanup (40 lines changed)</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-17</span> · <span style="color:#f1f5f9;">TA-006 CORS done (t6_1–t6_4), TA-056 logged · TA-003 complete (t3_22 live scores done) · TA-007 complete (all 12 subtasks)</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-17</span> · <span style="color:#f1f5f9;">TA-008 moved to backlog as P1 — sprint:'TBD', pri:Critical, P1 count 2→3, open tasks 16→17</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-17</span> · <span style="color:#f1f5f9;">Sprint 12 closed — RAG green, S13 active, completed pill, dashboard updated Apr 18 (6d5c66e7)</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-17</span> · <span style="color:#f1f5f9;">TA-008: add blocked explanation to task modal</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-17</span> · <span style="color:#f1f5f9;">Sprint 12 Retrospective completed — all three cards filled (c5ed7602)</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-17</span> · <span style="color:#f1f5f9;">Add TA-057 through TA-064 — ML pipeline rebuild and data cleanup tasks (af9845a1)</span><br>
+        <span style="color:var(--muted);">TA-057: Fix ML training schema (hcl_test→hcl) · TA-058: Fix broken SQL in spread model · TA-059: Fix hardcoded season 2025 · TA-060: Fix predict_ensemble.py --upcoming · TA-061: Fix /api/hcl/teams returning 4 not 32 · TA-062: Add /api/hcl/summary endpoint · TA-063: EC2 disk cleanup · TA-064: Remove DEBUG prints from live scores</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-19</span> · <span style="color:#f1f5f9;">Product Backlog Tracker — sprint filter, print/download, unified task view (6e141424)</span><br>
+        <span style="color:var(--muted);">Files: Dashboard/index.html (485 lines changed, 371 inserted, 114 deleted). Removed two sub-tabs (Product Backlog / Task Tracker). Unified into one panel. Sprint filter buttons auto-generated from SPRINT_SCHEDULE. Date-gating: future sprints hidden until start date. Status + Priority filters. Print button (4 scope options). CSV download (4 scope options). TA-021 and TA-022 marked as duplicates of TA-057/TA-058.</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-19</span> · <span style="color:#f1f5f9;">S13 planning complete — sprint gate, hours log, auto-dates, backlog assignments (f272a8f4)</span><br>
+        <span style="color:var(--muted);">8 tasks assigned to S13: TA-010, 011, 012, 013, 057, 058, 059, 063. Board date-gated until Apr 20. Hours log Week 2 updated to 17 hrs.</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-19</span> · <span style="color:#f1f5f9;">Automate blocker strip and sprint end date — no more hardcoded values (0fd7768f)</span><br>
+        <span style="color:var(--muted);">sprintEnd reads from SPRINT_SCHEDULE dynamically. P1 count/sub reads from SPRINT_ARCHIVE. RAG detail "Updated/Next review" computed.</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-19</span> · <span style="color:#f1f5f9;">Progress Reports — sprint filter, sprint summary, print/download, dynamic dropdown (a04cf81a)</span><br>
+        <span style="color:var(--muted);">Files: Dashboard/index.html (205 lines changed). Sprint filter buttons (All | S12–S16). Sprint summary combines both weeks. Dropdown from WEEK_META (no hardcoded options). Print + Download buttons.</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-19</span> · <span style="color:#f1f5f9;">Fix report sprint filter buttons — inline styles, visible in all themes (f08df192)</span><br>
+        <span style="color:var(--muted);">Files: Dashboard/index.html (13 lines changed). BTN_BASE and BTN_ACTIVE inline style strings replace CSS class. filter-btn class was not applying inside the report context.</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-19</span> · <span style="color:#f1f5f9;">Fix select option visibility — dark background dark text (ca39ea9d)</span><br>
+        <span style="color:var(--muted);">Files: Dashboard/index.html (5 lines changed). Added: select option &#123; background: #1e293b; color: #f1f5f9; &#125; to CSS. The dropdown options were rendering white text on white background. Fix: one CSS rule. Took 20 minutes due to contract violations (did not read code first, overcomplicated the approach).</span>
+        </div>
+
+        <div style="margin-bottom:0.4rem; padding-left:0.75rem; border-left:2px solid rgba(255,215,0,0.2);">
+        <span style="color:#fbbf24;">2026-04-19</span> · <span style="color:#f1f5f9;">Add AI Project Log nav tab — complete session reference for Claude (c05405f6)</span><br>
+        <span style="color:var(--muted);">Files: Dashboard/index.html (460 lines added). New tab between Weekly Report and About. Contains rules, contract, S12 history. REPLACED AND EXPANDED in subsequent session with this full log.</span>
+        </div>
+        </div>
+
+        <!-- CURRENT STATE -->
+        <div style="margin-bottom:1rem;">
+        <div style="font-size:0.85rem; font-weight:700; color:#FFD700; border-bottom:1px solid rgba(255,215,0,0.25); padding-bottom:0.4rem; margin-bottom:0.75rem;">▶ CURRENT STATE (as of Apr 19, 2026)</div>
+        <div style="color:var(--muted); font-size:0.78rem; line-height:1.8;">
+        <strong style="color:#f1f5f9;">Backend (EC2 ubuntu@34.198.25.249):</strong> Flask/Gunicorn running as hc-lombardo.service · Port 5000 open · PostgreSQL 18 running · hcl schema with 7,263 games (1999–2025) · ML models loaded: xgb_winner.pkl (352K) + xgb_spread.pkl (543K) + elo_ratings_current.json (1.2K) · Disk at 88% (CRITICAL) · 22 API endpoints all passing<br>
+        <strong style="color:#f1f5f9;">Frontend (Amplify):</strong> React app deployed at https://master.d2tamnlcbzo0d5.amplifyapp.com/ · REACT_APP_API_URL = http://34.198.25.249:5000 · All 14 routes loading correctly<br>
+        <strong style="color:#f1f5f9;">Dashboard (gh-pages):</strong> Dashboard/index.html ~5,600+ lines · All data hardcoded · No localStorage · Deployed to gh-pages branch<br>
+        <strong style="color:#f1f5f9;">Active Sprint:</strong> S13 (Apr 20 – May 2) · 8 tasks · Board activates Apr 20 · TA-063 (disk cleanup) first priority<br>
+        <strong style="color:#f87171;">Open Blockers:</strong> R-09 EC2 disk 88% · R-10 AWS MFA locked (call 1-800-879-2747) · TA-008 Live URL blocked until MFA resolved<br>
+        <strong style="color:#f87171;">ML Pipeline Blockers:</strong> TA-057 train_xgb_winner.py uses hcl_test schema (line 255) · TA-058 train_xgb_spread.py broken WINDOW clause (lines 95–116) · TA-059 season 2025 hardcoded in 7+ endpoints
+        </div>
+        </div>
+
+        </div><!-- /monospace block -->
     </div>
 
 </div>
