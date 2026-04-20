@@ -25,7 +25,11 @@ except ImportError:
     logger.warning("dashboard_api not found")
 
 from api_routes_hcl import hcl_bp
-from api_routes_ml import ml_api
+try:
+    from api_routes_ml import ml_api
+except Exception as e:
+    ml_api = None
+    logger.warning(f"ML routes not loaded: {e}")
 from api_routes_live_scores import live_scores_api
 
 try:
@@ -65,7 +69,8 @@ if register_dashboard_routes:
 app.register_blueprint(hcl_bp)
 
 # Register ML API routes
-app.register_blueprint(ml_api)
+if ml_api:
+    app.register_blueprint(ml_api)
 
 # Register Live Scores API routes
 app.register_blueprint(live_scores_api)

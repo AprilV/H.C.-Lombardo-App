@@ -87,35 +87,35 @@ class ShutdownManager:
             # Wait for graceful shutdown
             try:
                 proc.wait(timeout=timeout)
-                print(f"   ✅ {name} stopped gracefully")
+                print(f"   [OK] {name} stopped gracefully")
                 return True
             except psutil.TimeoutExpired:
                 # Force kill if still running
-                print(f"   ⏳ Forcing {name} to stop...")
+                print(f"   [WAIT] Forcing {name} to stop...")
                 proc.kill()
                 proc.wait(timeout=2)
-                print(f"   ✅ {name} force stopped")
+                print(f"   [OK] {name} force stopped")
                 return True
                 
         except psutil.NoSuchProcess:
-            print(f"   ℹ️  {name} already stopped")
+            print(f"   [INFO]  {name} already stopped")
             return True
         except psutil.AccessDenied:
-            print(f"   ❌ Access denied stopping {name}")
+            print(f"   [ERROR] Access denied stopping {name}")
             return False
         except Exception as e:
-            print(f"   ❌ Error stopping {name}: {str(e)}")
+            print(f"   [ERROR] Error stopping {name}: {str(e)}")
             return False
     
     def shutdown_api_server(self) -> bool:
         """Shutdown Flask API server on port 5000"""
-        print("\n🛑 Shutting down API server...")
+        print("\n[STOP] Shutting down API server...")
         
         # Find by port
         processes = self.find_processes_by_port(5000)
         
         if not processes:
-            print("   ℹ️  No API server running on port 5000")
+            print("   [INFO]  No API server running on port 5000")
             return True
         
         success = True
@@ -127,13 +127,13 @@ class ShutdownManager:
     
     def shutdown_react_frontend(self) -> bool:
         """Shutdown React dev server on port 3000"""
-        print("\n🛑 Shutting down React frontend...")
+        print("\n[STOP] Shutting down React frontend...")
         
         # Find by port
         processes = self.find_processes_by_port(3000)
         
         if not processes:
-            print("   ℹ️  No React server running on port 3000")
+            print("   [INFO]  No React server running on port 3000")
             return True
         
         success = True
@@ -149,15 +149,32 @@ class ShutdownManager:
         
         return success
     
+    def shutdown_log_watcher(self) -> bool:
+        """Shutdown dev log watcher on port 8765"""
+        print("\n[STOP] Shutting down dev log watcher...")
+
+        processes = self.find_processes_by_port(8765)
+
+        if not processes:
+            print("   [INFO]  No log watcher running on port 8765")
+            return True
+
+        success = True
+        for proc in processes:
+            if not self.stop_process(proc['pid'], f"Log Watcher ({proc['name']})"):
+                success = False
+
+        return success
+
     def cleanup_python_processes(self) -> bool:
         """Stop any remaining Python processes related to the app"""
-        print("\n🧹 Cleaning up Python processes...")
+        print("\n[CLEAN] Cleaning up Python processes...")
         
         # Find api_server.py processes
         api_procs = self.find_python_processes('api_server.py')
         
         if not api_procs:
-            print("   ℹ️  No additional Python processes found")
+            print("   [INFO]  No additional Python processes found")
             return True
         
         success = True
@@ -169,7 +186,7 @@ class ShutdownManager:
     
     def verify_shutdown(self) -> bool:
         """Verify all services are stopped"""
-        print("\n🔍 Verifying shutdown...")
+        print("\n[CHECK] Verifying shutdown...")
         
         issues = []
         
@@ -180,27 +197,30 @@ class ShutdownManager:
                 issues.append(f"Port {port} ({name}) still in use")
         
         if issues:
-            print("   ⚠️  Issues detected:")
+            print("   [WARN]  Issues detected:")
             for issue in issues:
                 print(f"      • {issue}")
             return False
         else:
-            print("   ✅ All services stopped successfully")
+            print("   [OK] All services stopped successfully")
             return True
     
     def run_shutdown(self) -> bool:
         """Run complete shutdown sequence"""
         print("\n" + "="*70)
-        print("🛑 H.C. LOMBARDO APP - GRACEFUL SHUTDOWN")
+        print("[STOP] H.C. LOMBARDO APP - GRACEFUL SHUTDOWN")
         print("="*70)
         
         # Shutdown in reverse order
         self.shutdown_react_frontend()
         time.sleep(1)
-        
+
+        self.shutdown_log_watcher()
+        time.sleep(1)
+
         self.shutdown_api_server()
         time.sleep(1)
-        
+
         self.cleanup_python_processes()
         time.sleep(1)
         
@@ -209,9 +229,9 @@ class ShutdownManager:
         
         print("\n" + "="*70)
         if success:
-            print("✅ SHUTDOWN COMPLETE")
+            print("[OK] SHUTDOWN COMPLETE")
         else:
-            print("⚠️  SHUTDOWN COMPLETED WITH WARNINGS")
+            print("[WARN]  SHUTDOWN COMPLETED WITH WARNINGS")
             print("   Some processes may still be running")
             print("   💡 Try running with --force for aggressive cleanup")
         print("="*70 + "\n")
@@ -225,7 +245,7 @@ def main():
     force = '--force' in sys.argv
     
     if force:
-        print("\n⚠️  FORCE MODE: Will aggressively stop all related processes\n")
+        print("\n[WARN]  FORCE MODE: Will aggressively stop all related processes\n")
         time.sleep(2)
     
     success = manager.run_shutdown()
