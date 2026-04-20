@@ -106,47 +106,119 @@ for line in lines:
 if current_commit:
     parts.append((current_commit.copy(), current_stats.copy()))
 
+MONO = ("font-family:'Courier New',Courier,monospace; font-size:0.72rem; "
+        "line-height:1.65; color:#c9d1d9; white-space:pre;")
+
+ctrl_style = (
+    "display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap; "
+    "background:#161b22; border:1px solid #30363d; border-radius:0.5rem; "
+    "padding:0.75rem 1rem; margin-bottom:0.75rem; position:sticky; top:0; z-index:10;"
+)
+input_style = (
+    "flex:1; min-width:220px; background:#0d1117; color:#c9d1d9; "
+    "border:1px solid #30363d; border-radius:0.375rem; padding:0.375rem 0.625rem; "
+    "font-size:0.8rem; outline:none;"
+)
+select_style = (
+    "background:#0d1117; color:#c9d1d9; border:1px solid #30363d; "
+    "border-radius:0.375rem; padding:0.375rem 0.625rem; font-size:0.8rem; cursor:pointer;"
+)
+btn_style = (
+    "background:transparent; color:#8b949e; border:1px solid #30363d; "
+    "border-radius:0.375rem; padding:0.375rem 0.625rem; font-size:0.8rem; "
+    "cursor:pointer; white-space:nowrap;"
+)
+count_style = "color:#8b949e; font-size:0.78rem; margin-left:auto; white-space:nowrap;"
+
 out = []
-out.append('<pre style="background:#0d1117; color:#c9d1d9; font-family:\'Courier New\',Courier,monospace; '
-           'font-size:0.72rem; line-height:1.65; padding:1.5rem; border-radius:0.5rem; '
-           'overflow-x:auto; white-space:pre; border:1px solid #30363d;">')
+
+# ── Controls bar ──────────────────────────────────────────────────────────────
+out.append(f'<div id="devlog-root">')
+out.append(f'<div id="devlog-ctrl" style="{ctrl_style}">')
+out.append(
+    f'<input id="devlog-search" type="text" placeholder="Search commits, hashes, files…" '
+    f'style="{input_style}" autocomplete="off" spellcheck="false">'
+)
+out.append(
+    f'<select id="devlog-sort" style="{select_style}">'
+    f'<option value="oldest">Date: Oldest → Newest</option>'
+    f'<option value="newest">Date: Newest → Oldest</option>'
+    f'<option value="key-first">Key Commits First</option>'
+    f'<option value="key-only">Key Commits Only</option>'
+    f'</select>'
+)
+out.append(f'<button id="devlog-clear" style="{btn_style}">✕ Clear</button>')
+out.append(f'<span id="devlog-count" style="{count_style}">{len(parts)} of {len(parts)} commits</span>')
+out.append('</div>')
+
+# ── Header block ──────────────────────────────────────────────────────────────
+out.append(
+    f'<pre style="background:#0d1117; {MONO} padding:1rem 1.5rem 0.5rem; '
+    f'border-radius:0.5rem 0.5rem 0 0; border:1px solid #30363d; border-bottom:none; margin:0;">'
+)
 out.append(html.escape('=' * 80) + '\n')
 out.append('<span style="color:#f0883e;font-weight:bold;">H.C. LOMBARDO NFL ANALYTICS — COMPLETE DEVELOPER LOG</span>\n')
-out.append(html.escape('Total: ' + str(len(parts)) + ' commits | Oct 7, 2025 – Apr 19, 2026') + '\n')
+out.append(html.escape(f'Total: {len(parts)} commits | Oct 7, 2025 – present') + '\n')
 out.append(html.escape('Every commit. Every file. Every change. Every bug. Every failed attempt. Every fix.') + '\n')
 out.append(html.escape('Timestamps: local time (PDT/PST). Author: AprilV (ChatGPT-assisted Oct 2025, Claude Code Nov 2025+).') + '\n')
 out.append(html.escape('FULL 24MB DIFF LOG (all diffs, all line numbers): docs/ai_reference/DEV_LOG_FULL.txt') + '\n')
-out.append(html.escape('=' * 80) + '\n\n')
+out.append(html.escape('=' * 80))
+out.append('</pre>')
+
+# ── Commits container ─────────────────────────────────────────────────────────
+out.append(
+    '<div id="devlog-commits" style="background:#0d1117; border:1px solid #30363d; '
+    'border-top:none; border-radius:0 0 0.5rem 0.5rem; overflow-x:auto;">'
+)
 
 for commit, cstats in parts:
     h = commit.get('short', '')
     full_h = commit.get('hash', '')
     date = commit.get('date', '')
     msg = commit.get('msg', '')
-
     is_key = h in KEY_COMMITS
+
+    # Build file list for search (just file names from stat lines)
+    file_names = []
+    for s in cstats:
+        if '|' in s and ' changed,' not in s and 'Bin ' not in s:
+            file_names.append(s.split('|')[0].strip())
+
+    data_attrs = (
+        f'data-date="{html.escape(date)}" '
+        f'data-key="{"1" if is_key else "0"}" '
+        f'data-hash="{html.escape(h)}" '
+        f'data-msg="{html.escape(msg.lower())}" '
+        f'data-files="{html.escape(" ".join(file_names).lower())}"'
+    )
+
+    inner = []
 
     if is_key:
         label = KEY_COMMITS[h]
-        out.append('\n<span style="color:#f0883e;">' + html.escape('▓' * 80) + '</span>\n')
-        out.append('<span style="color:#f0883e;font-weight:bold;">KEY: ' + html.escape(label) + '</span>\n')
-        out.append('<span style="color:#f0883e;">' + html.escape(date) + '</span>'
-                   ' | <span style="color:#3fb950;font-weight:bold;">' + html.escape(h) + '</span>'
-                   ' | <span style="color:#79c0ff;">' + html.escape(msg) + '</span>\n')
+        inner.append('\n<span style="color:#f0883e;">' + html.escape('▓' * 80) + '</span>\n')
+        inner.append('<span style="color:#f0883e;font-weight:bold;">KEY: ' + html.escape(label) + '</span>\n')
+        inner.append(
+            '<span style="color:#f0883e;">' + html.escape(date) + '</span>'
+            ' | <span style="color:#3fb950;font-weight:bold;">' + html.escape(h) + '</span>'
+            ' | <span style="color:#79c0ff;">' + html.escape(msg) + '</span>\n'
+        )
     else:
-        out.append('<span style="color:#21262d;">' + html.escape('─' * 80) + '</span>\n')
-        out.append('<span style="color:#8b949e;">' + html.escape(date) + '</span>'
-                   ' | <span style="color:#3fb950;">' + html.escape(h) + '</span>'
-                   ' | ' + html.escape(msg) + '\n')
+        inner.append('<span style="color:#21262d;">' + html.escape('─' * 80) + '</span>\n')
+        inner.append(
+            '<span style="color:#8b949e;">' + html.escape(date) + '</span>'
+            ' | <span style="color:#3fb950;">' + html.escape(h) + '</span>'
+            ' | ' + html.escape(msg) + '\n'
+        )
 
     for s in cstats:
         s = s.rstrip()
         if not s:
             continue
         if ' changed,' in s:
-            out.append('<span style="color:#79c0ff;">  ' + html.escape(s) + '</span>\n')
+            inner.append('<span style="color:#79c0ff;">  ' + html.escape(s) + '</span>\n')
         elif 'Bin ' in s:
-            out.append('<span style="color:#6e7681;">  ' + html.escape(s) + '</span>\n')
+            inner.append('<span style="color:#6e7681;">  ' + html.escape(s) + '</span>\n')
         elif '|' in s:
             fname_part, rest_part = s.split('|', 1)
             colored_rest = ''
@@ -157,16 +229,16 @@ for commit, cstats in parts:
                     colored_rest += '<span style="color:#f85149;">-</span>'
                 else:
                     colored_rest += html.escape(ch)
-            out.append('  <span style="color:#e6edf3;">' + html.escape(fname_part) + '</span>|' + colored_rest + '\n')
+            inner.append('  <span style="color:#e6edf3;">' + html.escape(fname_part) + '</span>|' + colored_rest + '\n')
         else:
-            out.append('  ' + html.escape(s) + '\n')
+            inner.append('  ' + html.escape(s) + '\n')
 
     if is_key and full_h:
         diff = get_diff(full_h)
         if diff:
-            out.append('\n<span style="color:#58a6ff;">' + html.escape('┌' + '─' * 78) + '</span>\n')
-            out.append('<span style="color:#58a6ff;">│ ACTUAL CODE: git show ' + html.escape(h) + '</span>\n')
-            out.append('<span style="color:#58a6ff;">' + html.escape('└' + '─' * 78) + '</span>\n')
+            inner.append('\n<span style="color:#58a6ff;">' + html.escape('┌' + '─' * 78) + '</span>\n')
+            inner.append('<span style="color:#58a6ff;">│ ACTUAL CODE: git show ' + html.escape(h) + '</span>\n')
+            inner.append('<span style="color:#58a6ff;">' + html.escape('└' + '─' * 78) + '</span>\n')
             diff_lines = diff.split('\n')
             shown = 0
             MAX_DIFF = 500
@@ -177,26 +249,94 @@ for commit, cstats in parts:
                 if not in_diff:
                     continue
                 if shown >= MAX_DIFF:
-                    out.append('<span style="color:#8b949e;">  ... [see docs/ai_reference/DEV_LOG_FULL.txt for complete diff]</span>\n')
+                    inner.append('<span style="color:#8b949e;">  ... [see docs/ai_reference/DEV_LOG_FULL.txt for complete diff]</span>\n')
                     break
                 if dl.startswith('+') and not dl.startswith('+++'):
-                    out.append('<span style="color:#3fb950;">' + html.escape(dl) + '</span>\n')
+                    inner.append('<span style="color:#3fb950;">' + html.escape(dl) + '</span>\n')
                 elif dl.startswith('-') and not dl.startswith('---'):
-                    out.append('<span style="color:#f85149;">' + html.escape(dl) + '</span>\n')
+                    inner.append('<span style="color:#f85149;">' + html.escape(dl) + '</span>\n')
                 elif dl.startswith('@@'):
-                    out.append('<span style="color:#79c0ff;">' + html.escape(dl) + '</span>\n')
+                    inner.append('<span style="color:#79c0ff;">' + html.escape(dl) + '</span>\n')
                 elif dl.startswith('diff --git'):
-                    out.append('\n<span style="color:#d29922;">' + html.escape(dl) + '</span>\n')
+                    inner.append('\n<span style="color:#d29922;">' + html.escape(dl) + '</span>\n')
                 elif dl.startswith(('---', '+++', 'index ', 'new file', 'deleted file', 'Binary')):
-                    out.append('<span style="color:#6e7681;">' + html.escape(dl) + '</span>\n')
+                    inner.append('<span style="color:#6e7681;">' + html.escape(dl) + '</span>\n')
                 else:
-                    out.append(html.escape(dl) + '\n')
+                    inner.append(html.escape(dl) + '\n')
                 shown += 1
-            out.append('<span style="color:#58a6ff;">' + html.escape('─' * 80) + '</span>\n')
+            inner.append('<span style="color:#58a6ff;">' + html.escape('─' * 80) + '</span>\n')
 
-    out.append('\n')
+    content = ''.join(inner)
+    out.append(
+        f'<div class="dc" {data_attrs} '
+        f'style="{MONO} padding:0 1.5rem 0.25rem; margin:0; display:block;">'
+        + content +
+        '</div>'
+    )
 
-out.append('</pre>')
+out.append('</div>')  # /devlog-commits
+out.append('</div>')  # /devlog-root
+
+# ── Search/sort JS ────────────────────────────────────────────────────────────
+out.append('''<script>
+(function () {
+  var root     = document.getElementById('devlog-root');
+  var searchEl = document.getElementById('devlog-search');
+  var sortEl   = document.getElementById('devlog-sort');
+  var clearBtn = document.getElementById('devlog-clear');
+  var countEl  = document.getElementById('devlog-count');
+  var container = document.getElementById('devlog-commits');
+
+  var all = Array.from(container.querySelectorAll('.dc'));
+  var total = all.length;
+
+  function update() {
+    var q = searchEl.value.toLowerCase().trim();
+    var sv = sortEl.value;
+
+    // Filter
+    var visible = all.filter(function (el) {
+      if (sv === 'key-only' && el.dataset.key !== '1') return false;
+      if (!q) return true;
+      return (
+        el.dataset.msg.includes(q) ||
+        el.dataset.hash.includes(q) ||
+        el.dataset.files.includes(q) ||
+        el.dataset.date.includes(q)
+      );
+    });
+
+    // Sort
+    if (sv === 'newest') {
+      visible = visible.slice().sort(function (a, b) {
+        return b.dataset.date < a.dataset.date ? -1 : b.dataset.date > a.dataset.date ? 1 : 0;
+      });
+    } else if (sv === 'oldest' || sv === 'key-only') {
+      visible = visible.slice().sort(function (a, b) {
+        return a.dataset.date < b.dataset.date ? -1 : a.dataset.date > b.dataset.date ? 1 : 0;
+      });
+    } else if (sv === 'key-first') {
+      visible = visible.slice().sort(function (a, b) {
+        if (b.dataset.key !== a.dataset.key) return Number(b.dataset.key) - Number(a.dataset.key);
+        return a.dataset.date < b.dataset.date ? -1 : 1;
+      });
+    }
+
+    // Show/hide + reorder
+    all.forEach(function (el) { el.style.display = 'none'; });
+    visible.forEach(function (el) {
+      el.style.display = 'block';
+      container.appendChild(el);
+    });
+
+    countEl.textContent = visible.length + ' of ' + total + ' commits';
+  }
+
+  searchEl.addEventListener('input', update);
+  sortEl.addEventListener('change', update);
+  clearBtn.addEventListener('click', function () { searchEl.value = ''; update(); });
+})();
+</script>''')
 
 outpath = 'c:/ReactGitEC2/IS330/H.C Lombardo App/devlog_output.html'
 with open(outpath, 'w', encoding='utf-8') as f:
