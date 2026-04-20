@@ -1772,7 +1772,7 @@
     <!-- Live clock + last updated bar -->
     <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:0.5rem; padding:0.4rem 1rem; margin-bottom:1rem; font-size:0.75rem; color:var(--muted); flex-wrap:wrap; gap:0.5rem;">
         <span>🕐 <span id="live-clock" style="font-family:monospace; color:#f1f5f9;"></span></span>
-        <span>Dashboard last updated: <strong style="color:#f1f5f9;">Apr 18, 2026 — Sprint 12 closed · Sprint 13 starts Apr 20</strong></span>
+        <span>Dashboard last updated: <strong style="color:#f1f5f9;" id="dash-last-updated"></strong></span>
     </div>
 
     <!-- Project identity row -->
@@ -1810,7 +1810,7 @@
             <div class="rag-label green" id="rag-label">ON TRACK — GREEN</div>
             <div class="rag-message" id="rag-message">Sprint 12 closed Apr 18 · 8 of 9 tasks delivered · TA-008 blocked (AWS MFA) · Sprint 13 starts Apr 20</div>
         </div>
-        <div class="rag-detail" id="rag-detail">Updated: Apr 18, 2026 &nbsp;·&nbsp; Next review: Apr 20 (S13 kickoff)</div>
+        <div class="rag-detail" id="rag-detail"></div>
     </div>
 
     <!-- ── PM METRICS STRIP ── -->
@@ -2834,7 +2834,7 @@ function syncDashMetrics() {
     if (countEl) countEl.textContent = done + ' of ' + total + ' tasks';
 }
 
-// Live clock
+// Live clock + auto last-updated
 (function() {
     function tick() {
         var el = document.getElementById('live-clock');
@@ -2847,6 +2847,7 @@ function syncDashMetrics() {
     }
     tick();
     setInterval(tick, 1000);
+
 })();
 
 // Update days remaining dynamically
@@ -3839,7 +3840,18 @@ function loadSprintDashboard(num) {
     var ragMsg = document.getElementById('rag-message');
     if (ragMsg) ragMsg.textContent = s.rag.msg;
     var ragDetail = document.getElementById('rag-detail');
-    if (ragDetail) ragDetail.textContent = s.rag.detail;
+    if (ragDetail) {
+        var lastMod = new Date(document.lastModified);
+        var updatedStr = lastMod.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+        var today = new Date(); today.setHours(0,0,0,0);
+        var nextSprint = (window.SPRINT_SCHEDULE || []).find(function(sp) {
+            return new Date(sp.start) > today;
+        });
+        var nextReviewStr = nextSprint
+            ? 'Next sprint: S' + nextSprint.num + ' — ' + nextSprint.theme + ' (' + nextSprint.displayDates + ')'
+            : 'Final sprint in progress';
+        ragDetail.textContent = 'Updated: ' + updatedStr + '  ·  ' + nextReviewStr;
+    }
 
     // Update metrics strip
     var el;
@@ -3856,6 +3868,19 @@ function loadSprintDashboard(num) {
     el = document.getElementById('burnup-chart-insight');   if (el) el.innerHTML = s.burnupInsight;
     el = document.getElementById('velocity-chart-insight'); if (el) el.innerHTML = s.velocityInsight;
     el = document.getElementById('severity-chart-insight'); if (el) el.innerHTML = s.severityInsight;
+
+    // Auto-populate "Dashboard last updated" bar
+    var lu = document.getElementById('dash-last-updated');
+    if (lu) {
+        var lastMod = new Date(document.lastModified);
+        var updDate = lastMod.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+        var activeSprint = (window.SPRINT_SCHEDULE || []).find(function(sp) {
+            var s = new Date(sp.start), e = new Date(sp.end);
+            var now = new Date(); now.setHours(0,0,0,0);
+            return now >= s && now <= e;
+        });
+        lu.textContent = updDate + (activeSprint ? ' — S' + activeSprint.num + ': ' + activeSprint.theme : '');
+    }
 
     // Rebuild charts with this sprint's data
     rebuildCharts();
@@ -4045,7 +4070,7 @@ initTasks();
     // To update: change hours and notes for each week. Leave future weeks at 0/''.
     const HOURS_DATA = [
         { num:1,  dates:'Apr 6 – Apr 12',  sprint:'S12', hours:15,   notes:'Sprint 12 kickoff. PM dashboard built (Gantt, Risk Register, Decision Log, Hours Log, Weekly Report, Retrospective, DoD, Sprint board, burndown/burnup/velocity). Resolved 8 issues: routing, hardcoded credentials, debug prints, broken import, dead file. Dashboard nav restructured. Apr 10: EC2 found stopped — restarted via CLI (AWS console locked, root MFA lost). Full code analysis — discovered disk 88% critical, inverted spread math, and 6 additional issues. Game count verified 7,269. Area 4 audit: Amplify confirmed live at production URL; all 14 frontend pages operational after EC2 restore.' },
-        { num:2,  dates:'Apr 13 – Apr 18', sprint:'S12', hours:12,  notes:'Sprint 12 continuation. Verified EC2, PostgreSQL, and frontend walkthrough complete. Published project to Handshake AI Showcase. Fixed production meta description. Sprint board audit — TA-001, TA-002, TA-004, TA-009 confirmed done.' },
+        { num:2,  dates:'Apr 13 – Apr 19', sprint:'S12', hours:17,  notes:'Sprint 12 close + inter-sprint planning. Verified EC2, PostgreSQL, and frontend walkthrough complete. Published project to Handshake AI Showcase. Fixed production meta description. Sprint board audit — TA-001, TA-002, TA-004, TA-009 confirmed done. Apr 19: PM dashboard — Product Backlog Tracker redesign, sprint filter automation, print/download export, sprint selector, S13 pre-planning and backlog cleanup.' },
         { num:3,  dates:'Apr 20 – Apr 26', sprint:'S13', hours:0,   notes:'' },
         { num:4,  dates:'Apr 27 – May 2',  sprint:'S13', hours:0,   notes:'' },
         { num:5,  dates:'May 4 – May 10',  sprint:'S14', hours:0,   notes:'' },
@@ -4212,10 +4237,10 @@ initTasks();
         { id:'TA-009', feature:'CLAUDE.md updated to reflect current state',     cat:'Documentation',  pri:'Medium',   effort:'S', sprint:'S12', status:'Done'      },
 
         // ── UNASSIGNED BACKLOG (sprint assigned at planning) ──
-        { id:'TA-010', feature:'Remove hardcoded credentials from api_server.py, api_routes_hcl.py, api_routes_live_scores.py', cat:'Security', pri:'Critical', effort:'S', sprint:'TBD', status:'Backlog' },
-        { id:'TA-011', feature:'Move all passwords to .env files',               cat:'Security',       pri:'Critical', effort:'S', sprint:'TBD', status:'Backlog'   },
-        { id:'TA-012', feature:'Load 2025 NFL season data into PostgreSQL',      cat:'Data',           pri:'Critical', effort:'L', sprint:'TBD', status:'Backlog'   },
-        { id:'TA-013', feature:'Validate data integrity — row counts & spot checks', cat:'Data',       pri:'High',     effort:'M', sprint:'TBD', status:'Backlog'   },
+        { id:'TA-010', feature:'Remove hardcoded credentials from api_server.py, api_routes_hcl.py, api_routes_live_scores.py', cat:'Security', pri:'Critical', effort:'S', sprint:'S13', status:'Backlog' },
+        { id:'TA-011', feature:'Move all passwords to .env files',               cat:'Security',       pri:'Critical', effort:'S', sprint:'S13', status:'Backlog'   },
+        { id:'TA-012', feature:'Load 2025 NFL season data into PostgreSQL',      cat:'Data',           pri:'Critical', effort:'L', sprint:'S13', status:'Backlog'   },
+        { id:'TA-013', feature:'Validate data integrity — row counts & spot checks', cat:'Data',       pri:'High',     effort:'M', sprint:'S13', status:'Backlog'   },
         { id:'TA-014', feature:'Fix broken frontend routes — /game-statistics and /matchup-analyzer wrong components', cat:'Frontend', pri:'High', effort:'S', sprint:'TBD', status:'Backlog' },
         { id:'TA-015', feature:'Fix background_updater.py missing import',        cat:'Backend',        pri:'High',     effort:'S', sprint:'TBD', status:'Backlog'   },
         { id:'TA-016', feature:'Confirm background updater running in production', cat:'Infrastructure', pri:'High',     effort:'S', sprint:'TBD', status:'Backlog'   },
@@ -4223,8 +4248,8 @@ initTasks();
         { id:'TA-018', feature:'Retrain XGBoost winner classifier on 2025 data', cat:'ML',             pri:'Critical', effort:'L', sprint:'TBD', status:'Backlog'   },
         { id:'TA-019', feature:'Retrain spread regressor — document MAE',         cat:'ML',             pri:'Critical', effort:'L', sprint:'TBD', status:'Backlog'   },
         { id:'TA-020', feature:'Recalculate Elo ratings through 2025 season',     cat:'ML',             pri:'High',     effort:'M', sprint:'TBD', status:'Backlog'   },
-        { id:'TA-021', feature:'Fix ML training schema (hcl_test → hcl)',         cat:'ML',             pri:'Critical', effort:'S', sprint:'TBD', status:'Backlog'   },
-        { id:'TA-022', feature:'Fix broken SQL in train_xgb_spread.py',           cat:'ML',             pri:'High',     effort:'S', sprint:'TBD', status:'Backlog'   },
+        { id:'TA-021', feature:'Fix ML training schema (hcl_test → hcl) — duplicate of TA-057, consolidated there', cat:'ML', pri:'Critical', effort:'S', sprint:'TBD', status:'Backlog' },
+        { id:'TA-022', feature:'Fix broken SQL in train_xgb_spread.py — duplicate of TA-058, consolidated there',   cat:'ML', pri:'High',     effort:'S', sprint:'TBD', status:'Backlog' },
         { id:'TA-023', feature:'Verify no data leakage in feature pipeline',      cat:'ML',             pri:'High',     effort:'M', sprint:'TBD', status:'Backlog'   },
         { id:'TA-024', feature:'ML Predictions page showing live results in prod', cat:'Frontend',       pri:'High',     effort:'M', sprint:'TBD', status:'Backlog'   },
         { id:'TA-025', feature:'Record model accuracy metrics in ModelPerformance', cat:'ML',            pri:'Medium',   effort:'S', sprint:'TBD', status:'Backlog'   },
@@ -4259,13 +4284,13 @@ initTasks();
         { id:'TA-054', feature:'Fix /api/ml/model-performance returning empty response — endpoint exists but no data returned, discovered TA-003 audit Apr 17', cat:'Backend', pri:'High', effort:'S', sprint:'TBD', status:'Backlog' },
         { id:'TA-055', feature:'Fix /api/elo/predict-week/2024/18 returning no games found — ELO data gap for Week 18, discovered TA-003 audit Apr 17', cat:'Backend', pri:'Medium', effort:'S', sprint:'TBD', status:'Backlog' },
         { id:'TA-056', feature:'Restore nfl.aprilsykes.dev custom domain — was working before Amplify migration, broken during transfer, needs DNS and Amplify domain config', cat:'Infrastructure', pri:'High', effort:'M', sprint:'TBD', status:'Backlog' },
-        { id:'TA-057', feature:'Fix train_xgb_winner.py schema — change hcl_test to hcl (line 255) so model trains on production data', cat:'ML', pri:'Critical', effort:'S', sprint:'TBD', status:'Backlog' },
-        { id:'TA-058', feature:'Fix broken SQL WINDOW clause in train_xgb_spread.py (lines 95-116) — missing closing paren causes duplicate OVER definitions, SQL fails on execution', cat:'ML', pri:'Critical', effort:'S', sprint:'TBD', status:'Backlog' },
-        { id:'TA-059', feature:'Fix hardcoded default season 2025 across all backend routes — api_routes_hcl.py (7 endpoints), api_routes_ml.py, api_routes_live_scores.py — update for 2026 season', cat:'Backend', pri:'High', effort:'S', sprint:'TBD', status:'Backlog' },
+        { id:'TA-057', feature:'Fix train_xgb_winner.py schema — change hcl_test to hcl (line 255) so model trains on production data', cat:'ML', pri:'Critical', effort:'S', sprint:'S13', status:'Backlog' },
+        { id:'TA-058', feature:'Fix broken SQL WINDOW clause in train_xgb_spread.py (lines 95-116) — missing closing paren causes duplicate OVER definitions, SQL fails on execution', cat:'ML', pri:'Critical', effort:'S', sprint:'S13', status:'Backlog' },
+        { id:'TA-059', feature:'Fix hardcoded default season 2025 across all backend routes — api_routes_hcl.py (7 endpoints), api_routes_ml.py, api_routes_live_scores.py — update for 2026 season', cat:'Backend', pri:'High', effort:'S', sprint:'S13', status:'Backlog' },
         { id:'TA-060', feature:'Implement upcoming week detection in predict_ensemble.py (line 338) — currently a TODO stub, --upcoming flag prints error and exits', cat:'ML', pri:'Medium', effort:'M', sprint:'TBD', status:'Backlog' },
         { id:'TA-061', feature:'Retrain XGBoost winner model with corrected data pipeline — depends on TA-057 and TA-058 being resolved first', cat:'ML', pri:'Critical', effort:'L', sprint:'TBD', status:'Backlog' },
         { id:'TA-062', feature:'Retrain XGBoost spread model with corrected data pipeline — depends on TA-057 and TA-058 being resolved first', cat:'ML', pri:'Critical', effort:'L', sprint:'TBD', status:'Backlog' },
-        { id:'TA-063', feature:'EC2 disk cleanup — remove logs, tmp files, old builds to free space; disk at 88% (5.9G/6.8G), server will crash if full', cat:'Infrastructure', pri:'Critical', effort:'S', sprint:'TBD', status:'Backlog' },
+        { id:'TA-063', feature:'EC2 disk cleanup — remove logs, tmp files, old builds to free space; disk at 88% (5.9G/6.8G), server will crash if full', cat:'Infrastructure', pri:'Critical', effort:'S', sprint:'S13', status:'Backlog' },
         { id:'TA-064', feature:'Evaluate managed database to replace EC2 PostgreSQL — research AWS RDS, Railway, or Render to eliminate disk management and reduce single point of failure', cat:'Infrastructure', pri:'Low', effort:'M', sprint:'TBD', status:'Backlog' },
         { id:'TA-065', feature:'Build sprint selector dropdown on Dashboard home page — SPRINT_ARCHIVE data object + loadSprintDashboard() function; switches charts and metrics by sprint', cat:'Dashboard', pri:'Medium', effort:'M', sprint:'TBD', status:'Backlog' },
         { id:'TA-066', feature:'Database-backed PM dashboard automation — store sprint/task completion state in PostgreSQL, expose via Flask API, eliminate hardcoded COMPLETED_TASKS array', cat:'Dashboard', pri:'Medium', effort:'L', sprint:'TBD', status:'Backlog' },
@@ -4731,14 +4756,21 @@ function showSprintView(view, btn) {
     var ttSortAsc = true;
 
     // Build sprint filter buttons dynamically from SPRINT_SCHEDULE
+    // Sprints whose start date is in the future are locked — not selectable until planning date arrives
     (function buildSprintButtons() {
         var container = document.getElementById('tt-sprint-btns');
         if (!container) return;
-        var curSprint = 'S' + (window.getCurrentSprint ? window.getCurrentSprint() : 13);
+        var today = new Date(); today.setHours(0,0,0,0);
         var html = '<button class="filter-btn active" onclick="setTTFilter(\'sprint\',\'all\',this)">All</button>';
         (window.SPRINT_SCHEDULE || []).forEach(function(s) {
             var key = 'S' + s.num;
-            html += '<button class="filter-btn" onclick="setTTFilter(\'sprint\',\'' + key + '\',this)">' + key + '</button>';
+            var sprintStart = new Date(s.start);
+            if (sprintStart > today) {
+                // Future sprint — show as locked, not clickable
+                html += '<button class="filter-btn" disabled title="Sprint starts ' + s.displayDates.split('–')[0].trim() + '" style="opacity:0.35;cursor:not-allowed;">' + key + '</button>';
+            } else {
+                html += '<button class="filter-btn" onclick="setTTFilter(\'sprint\',\'' + key + '\',this)">' + key + '</button>';
+            }
         });
         html += '<button class="filter-btn" onclick="setTTFilter(\'sprint\',\'TBD\',this)">TBD</button>';
         container.innerHTML = html;
@@ -4777,7 +4809,13 @@ function showSprintView(view, btn) {
         var search = (document.getElementById('tt-search') || {}).value || '';
         search = search.toLowerCase();
 
+        // Only show items whose assigned sprint has started
+        var today = new Date(); today.setHours(0,0,0,0);
         var filtered = items.filter(function(item) {
+            if (item.sprint !== 'TBD' && item.sprint !== 'all') {
+                var sp = (window.SPRINT_SCHEDULE || []).find(function(s) { return 'S' + s.num === item.sprint; });
+                if (sp && new Date(sp.start) > today) return false;
+            }
             if (ttFilters.sprint !== 'all' && item.sprint !== ttFilters.sprint) return false;
             if (ttFilters.pri !== 'all' && item.pri !== ttFilters.pri) return false;
             if (ttFilters.status !== 'all' && item.status !== ttFilters.status) return false;
