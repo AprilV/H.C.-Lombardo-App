@@ -1832,13 +1832,13 @@
         </div>
         <div class="pm-metric">
             <div class="pm-metric-label">Open P1 Blockers</div>
-            <div class="pm-metric-value" style="color:#ff6b6b;">3</div>
-            <div class="pm-metric-sub">Disk critical (R-09) · AWS MFA locked (R-10) · Live URL blocked (TA-008)</div>
+            <div class="pm-metric-value" style="color:#ff6b6b;" id="dash-p1-count">3</div>
+            <div class="pm-metric-sub" id="dash-p1-sub">Disk critical (R-09) · AWS MFA locked (R-10) · Live URL blocked (TA-008)</div>
         </div>
         <div class="pm-metric">
             <div class="pm-metric-label">Total Open Tasks</div>
-            <div class="pm-metric-value" style="color:#FFA500;">25</div>
-            <div class="pm-metric-sub">Disk critical · 6 from code analysis · AWS MFA locked</div>
+            <div class="pm-metric-value" style="color:#FFA500;" id="dash-open-count">25</div>
+            <div class="pm-metric-sub" id="dash-open-sub">Disk critical · 6 from code analysis · AWS MFA locked</div>
         </div>
         <div class="pm-metric">
             <div class="pm-metric-label">Target Release</div>
@@ -2850,17 +2850,19 @@ function syncDashMetrics() {
 
 })();
 
-// Update days remaining dynamically
+// Update days remaining dynamically — reads from SPRINT_SCHEDULE, no hardcoded dates
 (function() {
-    const sprintEnd = new Date('2026-04-18');
-    const releaseDate = new Date('2026-06-13');
-    const today = new Date();
-    today.setHours(0,0,0,0);
-    const sprintDiff = Math.max(0, Math.round((sprintEnd - today) / 86400000));
-    const releaseDiff = Math.max(0, Math.round((releaseDate - today) / 86400000));
-    const el = document.getElementById('days-remaining');
-    if (el) el.textContent = sprintDiff;
-    const rel = document.getElementById('release-days-sub');
+    var today = new Date(); today.setHours(0,0,0,0);
+    var releaseDate = new Date('2026-06-13');
+    var activeSprint = (window.SPRINT_SCHEDULE || []).find(function(s) {
+        return today >= new Date(s.start) && today <= new Date(s.end);
+    });
+    var sprintEnd = activeSprint ? new Date(activeSprint.end) : null;
+    var sprintDiff = sprintEnd ? Math.max(0, Math.round((sprintEnd - today) / 86400000)) : 0;
+    var releaseDiff = Math.max(0, Math.round((releaseDate - today) / 86400000));
+    var el = document.getElementById('days-remaining');
+    if (el) el.textContent = activeSprint ? sprintDiff : '—';
+    var rel = document.getElementById('release-days-sub');
     if (rel) rel.textContent = releaseDiff + ' days remaining from today';
 })();
 
@@ -3746,7 +3748,9 @@ var SPRINT_ARCHIVE = {
         velocityInsight: '<strong>Avg velocity:</strong> ~6.8 TA items/sprint across S1–S11. S12 delivered 8 TA items. TA-008 blocked, carries to S13.',
         velocity: { labels: ['S1','S2','S3','S4','S5','S6','S7','S8','S9','S10','S11','S12*'], data: [8,5,6,6,5,7,9,8,7,7,7,8], activeIndex: 11 },
         severityInsight: '<strong>S13 focus:</strong> 4 new P1 tasks added — ML pipeline rebuild (broken schema, SQL, retrain), EC2 disk cleanup. 9 P1 blockers total. ML pipeline fixes (TA-057, TA-058, TA-063) assigned to S13.',
-        severity: [9,13,7,2]
+        severity: [9,13,7,2],
+        p1Count: '3', p1Sub: 'Disk critical (R-09) · AWS MFA locked (R-10) · Live URL blocked (TA-008)',
+        openCount: '25', openSub: 'Disk critical · 6 from code analysis · AWS MFA locked'
     },
     13: {
         label: 'Sprint 13 — Data & Clean',
@@ -3761,7 +3765,9 @@ var SPRINT_ARCHIVE = {
         velocityInsight: '<strong>S13 velocity:</strong> Sprint in planning. Board activates Apr 20 — velocity updates as tasks complete.',
         velocity: { labels: ['S1','S2','S3','S4','S5','S6','S7','S8','S9','S10','S11','S12'], data: [8,5,6,6,5,7,9,8,7,7,7,8], activeIndex: -1 },
         severityInsight: '<strong>S13 focus:</strong> 9 P1 blockers total. ML pipeline rebuild (TA-057, TA-058), EC2 disk cleanup (TA-063) assigned to S13.',
-        severity: [9,13,7,2]
+        severity: [9,13,7,2],
+        p1Count: '3', p1Sub: 'Disk critical (R-09) · AWS MFA locked (R-10) · Live URL blocked (TA-008)',
+        openCount: '57', openSub: '8 in S13 · 49 in backlog'
     }
 };
 
@@ -3861,6 +3867,10 @@ function loadSprintDashboard(num) {
     el = document.getElementById('dash-days-remaining-sub');    if (el) el.textContent = s.metrics.daysSub;
     el = document.getElementById('dash-task-pct');              if (el) el.textContent = s.metrics.taskPct;
     el = document.getElementById('dash-task-count');            if (el) el.textContent = s.metrics.taskCount;
+    el = document.getElementById('dash-p1-count');              if (el && s.p1Count) el.textContent = s.p1Count;
+    el = document.getElementById('dash-p1-sub');                if (el && s.p1Sub)   el.textContent = s.p1Sub;
+    el = document.getElementById('dash-open-count');            if (el && s.openCount) el.textContent = s.openCount;
+    el = document.getElementById('dash-open-sub');              if (el && s.openSub)   el.textContent = s.openSub;
 
     // Update chart titles and insight text
     el = document.getElementById('burndown-chart-title');   if (el) el.textContent = s.burndownTitle;
