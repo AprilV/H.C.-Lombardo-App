@@ -41,9 +41,15 @@ echo       React Frontend starting (compiles in 20-30 seconds)
 
 REM Step 4: Start Live Data Updater
 echo.
-echo [4/4] Starting Live Data Updater...
+echo [4/5] Starting Live Data Updater...
 start "H.C. Lombardo Data Updater" /MIN python live_data_updater.py --continuous 15
 echo       Data Updater started (updates every 15 minutes)
+
+REM Step 5: Start Dev Log Watcher
+echo.
+echo [5/5] Starting Dev Log Watcher...
+start "H.C. Lombardo Dev Log" /MIN python log_watcher.py
+echo       Dev Log Watcher started (http://localhost:8765/)
 
 REM Wait for services to stabilize
 echo.
@@ -61,6 +67,7 @@ echo   Dr. Foster Interface:     dr.foster\index.html
 echo   API Health Check:         http://localhost:5000/health
 echo   Database:                 PostgreSQL (32 teams)
 echo   Live Updates:             Every 15 minutes
+   Dev Log (live):           http://localhost:8765/
 echo.
 echo ==========================================================
 echo.
