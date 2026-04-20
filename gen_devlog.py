@@ -5,22 +5,63 @@ import subprocess
 REPO = "c:/ReactGitEC2/IS330/H.C Lombardo App"
 
 KEY_COMMITS = {
-    '63d729e6': 'INITIAL COMMIT — first line of code ever written, Flask/SQLite, app.py 56 lines',
-    'f984bb4a': 'POSTGRESQL MIGRATION — SQLite abandoned, db_config.py born, all 32 teams',
-    '9caf343e': 'ANALYTICS API — api_routes_hcl.py feature engineering views, 5 new endpoints',
-    'c08685c8': '7,263 GAMES LOADED — full 1999-2025 historical dataset, 4min 23sec load time',
-    '3c9f7a03': 'ML PERFORMANCE TRACKING — 54.6% accuracy vs Vegas 52.5%, ModelPerformance.js created',
-    'a8f9aa8e': 'SCORE AND SPREAD MODEL — point spread regression, 10.35 MAE, dual model architecture',
-    '6b28364a': 'EC2 PERMANENT FIX — all Render/Railway refs removed, 19 files deleted, this is the architecture today',
-    '63148f67': 'hcl_test SCHEMA WORKFLOW — TEST workflow created; train_xgb_winner.py hardcoded this schema, became TA-057',
-    'e15d4d9c': 'ML CREDS FIX — hardcoded passwords replaced with db_config environment variables',
-    '03313def': 'XGBOOST 46-FEATURE — 60.7% winner accuracy 11.6 MAE spread, these model files still on EC2 today',
-    '1d7554e4': 'ELO RATING SYSTEM — FiveThirtyEight-style 252-line class, PHI(1768) BAL(1705) BUF(1702) top 3',
-    '83a2b97c': 'BACKGROUND UPDATER SIMPLIFIED — team standings only, game data complete for season',
-    '1cc206ac': 'SPRING 2026 CAPSTONE KICKOFF — PM dashboard created from scratch, all data hardcoded',
-    '0dba4f20': 'S12 BUG FIXES — App.js routing fixed, hardcoded aprilv120 password removed, broken import fixed',
-    '66e4e2ce': 'EXECUTIVE DARK OVERHAUL — 38 files, 1441 insertions 11739 deletions, light mode CSS deleted forever',
-    '6d5c66e7': 'SPRINT 12 CLOSED GREEN — 8 of 9 tasks delivered, TA-008 blocked AWS MFA',
+    # ── PHASE 0-1: INITIAL BUILD ──────────────────────────────────────────────
+    '63d729e6': 'INITIAL COMMIT — first line of code, Flask/SQLite, app.py 56 lines, templates/index.html',
+    'f984bb4a': 'POSTGRESQL MIGRATION — SQLite abandoned, db_config.py created, all 32 teams, ESPN logos',
+    # ── PHASE 2: REACT + ANALYTICS ───────────────────────────────────────────
+    '9caf343e': 'ANALYTICS API — api_routes_hcl.py, 4 analytical views (betting/weather/rest/referees), 5 endpoints',
+    '0982849b': 'ANALYTICS DASHBOARD — Analytics.js created, 6 tabs in React, stat legends, dropdown styling fixed',
+    # ── PHASE 3: HISTORICAL DATA + ML ────────────────────────────────────────
+    'c08685c8': '7,263 GAMES LOADED — full 1999-2025 dataset, 14,312 team-game records, 4min 23sec, 100% EPA',
+    '3c9f7a03': 'ML PERFORMANCE TRACKING — 54.6% vs Vegas 52.5%, ModelPerformance.js, 692 games, 3 seasons tracked',
+    'a8f9aa8e': 'SCORE AND SPREAD MODEL — point spread regression added, 10.35 MAE, dual model architecture',
+    '5253d026': 'LIVE SCORES TICKER — LiveGamesTicker.js created, drag-to-scroll, AI predictions, team logos',
+    # ── PHASE 4: RENDER/RAILWAY FAILURE SEQUENCE (14 attempts, all failed) ───
+    '1d80012c': 'RENDER ATTEMPT 1 — add python-dotenv to GitHub Actions (start of 14-commit failure sequence)',
+    '3da12a16': 'RENDER ATTEMPT 2 — move python-dotenv first to force workflow refresh',
+    '53c06ac0': 'RENDER ATTEMPT 3 — make dotenv import optional for GitHub Actions',
+    '9147217a': 'RENDER ATTEMPT 4 — add SSL requirement for Render database connections',
+    '440d24b5': 'RENDER ATTEMPT 5 — replace entire workflow file to clear GitHub cache',
+    'c7f4bd6d': 'RENDER ATTEMPT 6 — add gssencmode=disable for PostgreSQL SSL',
+    '2bdbe90f': 'RENDER ATTEMPT 7 — add verification step to confirm gssencmode in code',
+    '2969e68e': 'RENDER FINAL ATTEMPT — MAJOR FIX: remove ALL Render refs, but SSH heredoc still broken',
+    '6b28364a': 'EC2 PERMANENT FIX — ALL Render/Railway removed, 19 files deleted, SSH single-line commands, THIS IS THE ARCHITECTURE TODAY',
+    # ── PHASE 5: XGBOOST TRAINING SEQUENCE ───────────────────────────────────
+    '6587f437': 'XGBOOST ATTEMPT 1 — update ML scripts to 2020-2025 seasons',
+    'e15d4d9c': 'XGBOOST ATTEMPT 2 — hardcoded passwords replaced with db_config (was aprilv120 hardcoded)',
+    '73c2e67e': 'XGBOOST ATTEMPT 3 — add sys.path for db_config import',
+    '87c40faf': 'XGBOOST ATTEMPT 4 — fix import order for db_config',
+    '7607e3a6': 'XGBOOST ATTEMPT 5 — fix spread training script encoding',
+    '80f3155a': 'XGBOOST ATTEMPT 6 — clean up orphaned CTE code from spread query',
+    '150177f2': 'XGBOOST ATTEMPT 7 — fix spread model save path to ml/models/',
+    '79f92425': 'XGBOOST ATTEMPT 8 — first working models, 61% winner 11.1 MAE, no data leakage',
+    '114f8772': 'XGBOOST ATTEMPT 9 — switch to production hcl schema (had been using hcl_test)',
+    '03313def': 'XGBOOST FINAL — 46-feature set, 60.7% winner accuracy, 11.6 MAE spread, THESE ARE THE MODELS ON EC2 TODAY',
+    '63148f67': 'hcl_test SCHEMA ORIGIN — TEST workflow hardcodes hcl_test; later train_xgb_winner.py kept it — became TA-057',
+    # ── PHASE 5: ELO + COLOR UNIFICATION ─────────────────────────────────────
+    '1d7554e4': 'ELO RATING SYSTEM — ml/elo_ratings.py created, 252 lines, FiveThirtyEight-style, PHI(1768) top rated',
+    'f6cf12a3': 'VERSION v0.1.0 ALPHA — color scheme unification complete, first version tag',
+    # ── PHASE 5: NFLVERSE BACKGROUND UPDATER FIXES (Dec 21) ──────────────────
+    '5d2e5dbf': 'BACKGROUND UPDATER FIX 1 — standalone service added (fixes multi-worker gunicorn issue)',
+    'a9cf27c3': 'BACKGROUND UPDATER FIX 2 — fix method name run_full_update vs run_update',
+    '799bfd80': 'BACKGROUND UPDATER FIX 3 — fix import path for multi_source_data_fetcher',
+    '2a436850': 'BACKGROUND UPDATER FIX 4 — add game-level data updates to background service',
+    '555b828f': 'BACKGROUND UPDATER FIX 5 — add nfl_data_py dependency',
+    '1137baea': 'BACKGROUND UPDATER FIX 6 — fix database connection to use environment variables',
+    '435f24a9': 'BACKGROUND UPDATER FIX 7 — fix NFLverse with inline implementation and error handling',
+    '83a2b97c': 'BACKGROUND UPDATER FINAL — simplified to team standings only, game data is complete for season',
+    # ── PHASE 6: SPRING 2026 CAPSTONE KICKOFF ────────────────────────────────
+    '1cc206ac': 'SPRING 2026 CAPSTONE KICKOFF — PM dashboard built from scratch, 1 commit, full dashboard',
+    '2c69668e': 'REMOVE ALL LOCALSTORAGE — everything hardcoded and publicly visible, no exceptions',
+    '08773fa7': 'HARDCODE HOURS/RETRO/REPORT — localStorage eliminated from these sections',
+    '61d5f532': 'WEEKLY REPORT — remove all inputs/localStorage, auto-renders from hardcoded data',
+    # ── SPRINT 12 ─────────────────────────────────────────────────────────────
+    '0dba4f20': 'S12 BUG FIXES — App.js routing fixed (wrong components), aprilv120 password removed, broken import fixed',
+    '66e4e2ce': 'EXECUTIVE DARK OVERHAUL — 38 files, 1441 insertions, 11739 DELETIONS, all light-mode CSS gone forever',
+    '5f5f3444': 'TASK RESOLUTION MODAL — click task title to see resolution, TASK_DETAILS data structure, 267 lines added',
+    '6d5c66e7': 'SPRINT 12 CLOSED GREEN — 8 of 9 tasks, 32 hours, TA-008 blocked AWS MFA locked',
+    '6e141424': 'PRODUCT BACKLOG TRACKER — unified from 2 sub-tabs, sprint filter, print/CSV, date-gating',
+    '7d59f65e': 'AI PROJECT LOG v1 — first version deployed (reformatted summary, NOT a real log — replaced by this)',
 }
 
 

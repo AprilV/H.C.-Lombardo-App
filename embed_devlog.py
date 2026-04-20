@@ -17,7 +17,7 @@ with open(DEVLOG, 'r', encoding='utf-8') as f:
 start_line = None
 end_line = None
 for i, line in enumerate(lines):
-    if '<!-- ─── SECTION 13: COMPLETE PROJECT HISTORY ─── -->' in line:
+    if '<!-- ─── SECTION 13:' in line:
         start_line = i
     if '</div><!-- /tab-ailog -->' in line:
         end_line = i
