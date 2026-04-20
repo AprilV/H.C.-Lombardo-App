@@ -1762,6 +1762,7 @@
         <button class="nav-tab" onclick="showTab('hours', this)">⏱️ Hours Log</button>
         <button class="nav-tab" onclick="showTab('decisions', this)">🧭 Decision Log</button>
         <button class="nav-tab" onclick="showTab('report', this)">📝 Weekly Report</button>
+        <button class="nav-tab" onclick="showTab('ailog', this)">🤖 AI Project Log</button>
         <button class="nav-tab" onclick="showTab('about', this)">👤 About</button>
     </div>
 </div>
@@ -2707,6 +2708,465 @@
 
 </div>
 </div>
+
+<!-- ══════════════════════════════════════════════════════════════ -->
+<!--  TAB: AI PROJECT LOG                                           -->
+<!-- ══════════════════════════════════════════════════════════════ -->
+<div id="tab-ailog" class="tab-panel">
+<div style="max-width:960px; margin:2rem auto; padding:0 2rem 3rem;">
+
+    <h2 style="font-size:1.4rem; font-weight:700; color:#f1f5f9; margin-bottom:0.25rem;">🤖 AI Project Log</h2>
+    <p style="color:var(--muted); font-size:0.88rem; margin-bottom:1rem;">Written for Claude Code · Read this at every session start · April V. Sykes, Project Manager · Compiled: Apr 19, 2026</p>
+
+    <div style="background:rgba(251,191,36,0.08); border:1px solid rgba(251,191,36,0.4); border-radius:0.5rem; padding:0.85rem 1.1rem; font-size:0.83rem; color:#fbbf24; margin-bottom:2rem; line-height:1.7;">
+        <strong>⚠ MANDATORY SESSION START:</strong> Read this page IN FULL. Then read memory files (handover_apr19.md, feedback_preferences.md). Then read Dashboard/index.html. Then and only then respond to April. No code. No changes. No GitHub. Nothing without April's explicit go-ahead.
+    </div>
+
+    <!-- ─── SECTION 1: SESSION START CHECKLIST ─── -->
+    <div style="background:var(--card); border:1px solid var(--border); border-radius:0.75rem; padding:1.5rem; margin-bottom:1.5rem;">
+        <h3 style="font-size:1rem; font-weight:700; color:#FFD700; margin:0 0 1rem;">§1 — SESSION START CHECKLIST (Non-Negotiable)</h3>
+        <p style="color:var(--muted); font-size:0.83rem; margin-bottom:0.75rem;">Every single session. No exceptions. Do these before saying or doing ANYTHING.</p>
+        <ol style="color:#f1f5f9; font-size:0.84rem; line-height:2; margin:0; padding-left:1.5rem;">
+            <li>Read <code style="background:rgba(255,255,255,0.08); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.8rem;">memory/handover_apr19.md</code> — full project state, what was done, what's next</li>
+            <li>Read <code style="background:rgba(255,255,255,0.08); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.8rem;">memory/feedback_preferences.md</code> — operating rules and session preferences</li>
+            <li>Read ALL other files in the memory directory</li>
+            <li>Read <code style="background:rgba(255,255,255,0.08); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.8rem;">docs/ai_reference/AI_EXECUTION_CONTRACT.md</code></li>
+            <li>Read <code style="background:rgba(255,255,255,0.08); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.8rem;">docs/ai_reference/READ_THIS_FIRST.md</code> and <code style="background:rgba(255,255,255,0.08); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.8rem;">BEST_PRACTICES.md</code></li>
+            <li>Read <code style="background:rgba(255,255,255,0.08); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.8rem;">Dashboard/index.html</code> — understand current state, do NOT ask April what's done</li>
+            <li>THEN AND ONLY THEN — respond to April</li>
+        </ol>
+        <div style="margin-top:1rem; padding-top:0.75rem; border-top:1px solid var(--border-subtle); font-size:0.8rem; color:#f87171;">
+            <strong>Why this rule exists:</strong> On Apr 19, 2026, Claude skipped this step, built in the wrong location, wasted April's day off, and violated the contract repeatedly. This checklist exists because of that failure.
+        </div>
+    </div>
+
+    <!-- ─── SECTION 2: AI EXECUTION CONTRACT ─── -->
+    <div style="background:var(--card); border:1px solid var(--border); border-radius:0.75rem; padding:1.5rem; margin-bottom:1.5rem;">
+        <h3 style="font-size:1rem; font-weight:700; color:#FFD700; margin:0 0 1rem;">§2 — AI_EXECUTION_CONTRACT.md (Full Text)</h3>
+        <div style="font-size:0.82rem; line-height:1.8; color:#f1f5f9;">
+            <p style="color:#f87171; font-weight:700; margin-bottom:0.5rem;">STATUS: ACTIVE — NON-NEGOTIABLE · APPLIES TO: ALL AI ASSISTANTS · PRIORITY: ABSOLUTE</p>
+
+            <p style="color:#FFD700; font-weight:700; margin:1rem 0 0.35rem;">1. REQUIRED PRECONDITION: FULL INGESTION</p>
+            <p style="color:var(--muted);">BEFORE responding to ANY request, the AI MUST: (1) Read this document in FULL. (2) Confirm that ALL rules can be followed. (3) Identify whether additional documents must be read before proceeding.<br>
+            PROHIBITED: Skimming · Partial reading · "I inferred" · "I assumed" · Proceeding without certainty.<br>
+            IF FULL COMPLIANCE IS NOT POSSIBLE → STOP → ASK QUESTIONS → WAIT</p>
+
+            <p style="color:#FFD700; font-weight:700; margin:1rem 0 0.35rem;">2. AUTHORITY ORDER (STRICT)</p>
+            <p style="color:var(--muted);">The AI MUST obey instructions in this order: (1) AI_EXECUTION_CONTRACT.md · (2) READ_THIS_FIRST.md · (3) BEST_PRACTICES.md · (4) Master reference/architecture documentation · (5) The actual codebase.<br>
+            The AI is NOT permitted to resolve conflicts independently. IF CONFLICT EXISTS → STOP → ASK → WAIT</p>
+
+            <p style="color:#FFD700; font-weight:700; margin:1rem 0 0.35rem;">3. NO-ASSUMPTION RULE (HARD STOP)</p>
+            <p style="color:var(--muted);">The AI is FORBIDDEN from assuming: project state · sprint or phase · environment (dev/test/prod) · scope of requested change · intent behind a request · file ownership · "obvious" solutions.<br>
+            ASSUMPTIONS ARE FAILURES. IF REQUIRED INFORMATION IS MISSING → ASK QUESTIONS → DO NOT PROCEED</p>
+
+            <p style="color:#FFD700; font-weight:700; margin:1rem 0 0.35rem;">4. EXECUTION PHILOSOPHY (LOCKED)</p>
+            <p style="color:var(--muted);">Priorities IN ORDER: (1) Correctness &gt; Speed · (2) System integrity &gt; Local fixes · (3) Questions &gt; Guessing · (4) Long-term stability &gt; Short-term output.<br>
+            "Best effort" is NOT acceptable. Progress without correctness is FAILURE.</p>
+
+            <p style="color:#FFD700; font-weight:700; margin:1rem 0 0.35rem;">5. SYSTEM-WIDE AWARENESS REQUIREMENT</p>
+            <p style="color:var(--muted);">The AI MUST assume the system is interconnected, stateful, and sensitive to partial changes. BEFORE any change: (1) Identify ALL affected files. (2) Identify ALL affected modules/pages/components. (3) Identify ALL downstream effects.<br>
+            PROHIBITED: Example-only fixes · Single-file fixes when shared systems exist · Ignoring indirect impact.</p>
+
+            <p style="color:#FFD700; font-weight:700; margin:1rem 0 0.35rem;">6. MANDATORY CLEANUP RULE</p>
+            <p style="color:var(--muted);">WHENEVER code is modified, the AI MUST: Remove obsolete logic · Remove superseded implementations · Remove unused imports/variables/functions · Remove commented-out code · Eliminate duplicate logic.<br>
+            PROHIBITED: Leaving "just in case" code · Commenting out instead of removing · Parallel implementations of the same logic. Version control replaces commented code.</p>
+
+            <p style="color:#FFD700; font-weight:700; margin:1rem 0 0.35rem;">7. QUESTION-FIRST FALLBACK (REQUIRED)</p>
+            <p style="color:var(--muted);">The AI MUST ask questions when: instructions are ambiguous · scope is unclear · multiple valid approaches exist · there is risk of breaking existing behavior · documentation is incomplete or conflicting.<br>
+            DO NOT: Guess · Fill gaps · Proceed silently. Asking questions is REQUIRED behavior.</p>
+
+            <p style="color:#FFD700; font-weight:700; margin:1rem 0 0.35rem;">8. REQUIRED RESPONSE FORMAT</p>
+            <p style="color:var(--muted);">ANY solution or plan MUST include: (1) Documents read · (2) Files reviewed · (3) Files impacted · (4) Changes proposed · (5) Code to be removed · (6) Open questions (if any). EMPTY SECTIONS ARE NOT PERMITTED.</p>
+
+            <p style="color:#FFD700; font-weight:700; margin:1rem 0 0.35rem;">9. FAILURE CONDITIONS</p>
+            <p style="color:var(--muted);">The AI HAS FAILED if it: skims documentation · makes assumptions · applies partial fixes · leaves dead or duplicate code · optimizes for speed over correctness · proceeds without clarification. ON FAILURE → STOP → ASK → WAIT</p>
+
+            <p style="color:#FFD700; font-weight:700; margin:1rem 0 0.35rem;">10. FINAL DIRECTIVE</p>
+            <p style="color:var(--muted); margin-bottom:0;">The AI is not here to be fast. The AI is here to be correct. Compliance is mandatory. Deviation is not permitted.</p>
+        </div>
+    </div>
+
+    <!-- ─── SECTION 3: READ_THIS_FIRST SUMMARY ─── -->
+    <div style="background:var(--card); border:1px solid var(--border); border-radius:0.75rem; padding:1.5rem; margin-bottom:1.5rem;">
+        <h3 style="font-size:1rem; font-weight:700; color:#FFD700; margin:0 0 1rem;">§3 — READ_THIS_FIRST.md (Summary)</h3>
+        <div style="font-size:0.82rem; line-height:1.8; color:var(--muted);">
+            <p><strong style="color:#f1f5f9;">This is NOT a sandbox.</strong> This codebase is not a tutorial, demo, or experiment environment. Changes cascade. Treat all changes as potentially system-wide.</p>
+            <p><strong style="color:#f87171;">FAILURE looks like:</strong> skipping required reads · guessing intent or scope · fixing only one instance of a repeated issue · leaving dead/duplicate/commented-out code · applying changes without identifying impact · proceeding without asking when uncertain.</p>
+            <p style="margin-bottom:0;"><strong style="color:#10b981;">SUCCESS looks like:</strong> asking questions early · identifying full scope before acting · applying consistent system-wide changes · cleaning up obsolete code · preserving existing behavior unless instructed otherwise · preferring correctness over speed.</p>
+        </div>
+    </div>
+
+    <!-- ─── SECTION 4: ROLE AND WORKING RULES ─── -->
+    <div style="background:var(--card); border:1px solid var(--border); border-radius:0.75rem; padding:1.5rem; margin-bottom:1.5rem;">
+        <h3 style="font-size:1rem; font-weight:700; color:#FFD700; margin:0 0 1rem;">§4 — Role, Working Rules &amp; Operating Procedure</h3>
+        <div style="font-size:0.82rem; line-height:1.8; color:#f1f5f9;">
+            <p style="font-size:0.9rem; font-weight:700; color:#FFD700; margin-bottom:0.35rem;">ROLE — NON-NEGOTIABLE</p>
+            <p style="color:var(--muted);">April is the Project Manager. Claude is the developer. Nothing more. Do not move without April's explicit permission. Do not assume, anticipate, or act ahead of instruction. Do not underestimate April's knowledge — she knows exactly what she's doing. April directs. Claude executes. That is the only dynamic.</p>
+
+            <p style="font-size:0.9rem; font-weight:700; color:#FFD700; margin:0.75rem 0 0.35rem;">THIS IS A WEB PAGE — NOT AN APP</p>
+            <p style="color:var(--muted);">Always refer to it as a web page. Best practices for web development apply to everything: layout, typography, UX patterns, instructional text placement, accessibility, and visual hierarchy. This will be reviewed by employers, professors, and other students. Every decision must reflect professional web development standards.</p>
+
+            <p style="font-size:0.9rem; font-weight:700; color:#FFD700; margin:0.75rem 0 0.35rem;">AUTOMATION RULE</p>
+            <p style="color:var(--muted);">Automate it while building it. Don't hardcode something that can be driven by data or logic. If a value changes over time (dates, sprint numbers, counts) — compute it. If something repeats a pattern — loop it. Hardcoding is only acceptable when there is no reasonable automated alternative.</p>
+
+            <p style="font-size:0.9rem; font-weight:700; color:#FFD700; margin:0.75rem 0 0.35rem;">AGILE TERMINOLOGY — NO EXCEPTIONS</p>
+            <p style="color:var(--muted); margin-bottom:0;"><strong style="color:#f1f5f9;">Task</strong> = a TA-xxx backlog item (planned work) · <strong style="color:#f1f5f9;">Subtask</strong> = checklist item under a task · <strong style="color:#f1f5f9;">Blocker</strong> = active impediment (P1/P2) · <strong style="color:#f1f5f9;">Issue</strong> = unplanned operational event (EC2 down, MFA locked) — NOT a synonym for task. Never use "issue" to mean "task" anywhere on the dashboard, in text, or in conversation.</p>
+
+            <p style="font-size:0.9rem; font-weight:700; color:#FFD700; margin:0.75rem 0 0.35rem;">COMMUNICATION RULES</p>
+            <p style="color:var(--muted); margin-bottom:0;">Don't summarize what you just did — April can read the diff · Don't push forward to the next task — wait for April's instruction · Don't ask questions that can be answered by reading the code · Report back after EVERY single action · One task per session — if April gives more than one, ask which to do first.</p>
+
+            <p style="font-size:0.9rem; font-weight:700; color:#FFD700; margin:0.75rem 0 0.35rem;">DASHBOARD RULES</p>
+            <p style="color:var(--muted); margin-bottom:0;">Deploy path: gh-pages branch, not master. master is app code only · No localStorage. No dynamic fetching. All data hardcoded · Only change exactly what was asked — nothing more · Dashboard structure is locked — do not change nav, tab structure, or naming without explicit instruction · Current last TA ID: TA-064. Next new item = TA-065.</p>
+
+            <p style="font-size:0.9rem; font-weight:700; color:#FFD700; margin:0.75rem 0 0.35rem;">GIT / DEPLOY COMMAND</p>
+            <p style="color:var(--muted); margin-bottom:0;">Always push both master AND gh-pages on every dashboard change:</p>
+            <pre style="background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); border-radius:0.4rem; padding:0.75rem 1rem; font-size:0.76rem; color:#10b981; margin-top:0.5rem; overflow-x:auto; white-space:pre-wrap;">git checkout gh-pages
+git show master:Dashboard/index.html &gt; index.html
+git add index.html &amp;&amp; git commit -m "Deploy: ..."
+git checkout master
+git push origin master &amp;&amp; git push origin gh-pages</pre>
+            <p style="color:var(--muted); margin:0.5rem 0 0;">EC2 SSH: <code style="background:rgba(255,255,255,0.08); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.76rem;">ssh -i /c/Users/april/.ssh/hc-lombardo-key.pem ubuntu@34.198.25.249</code></p>
+        </div>
+    </div>
+
+    <!-- ─── SECTION 5: PROJECT OVERVIEW ─── -->
+    <div style="background:var(--card); border:1px solid var(--border); border-radius:0.75rem; padding:1.5rem; margin-bottom:1.5rem;">
+        <h3 style="font-size:1rem; font-weight:700; color:#FFD700; margin:0 0 1rem;">§5 — Project Overview &amp; Architecture</h3>
+        <div style="font-size:0.82rem; line-height:1.8; color:var(--muted);">
+            <p><strong style="color:#f1f5f9;">Project:</strong> H.C. Lombardo NFL Analytics App — Senior Capstone, Olympic College, Spring 2026 (Apr 6 – Jun 13, 2026)</p>
+            <p><strong style="color:#f1f5f9;">Student / PM:</strong> April V. Sykes &nbsp;·&nbsp; <strong style="color:#f1f5f9;">Advisor:</strong> Richard Becker (replaced Dr. Foster this term)</p>
+            <p><strong style="color:#f1f5f9;">Goal:</strong> Public-release-ready NFL analytics application. Self-directed; April submits performance reports and measurable deliverables.</p>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-top:0.75rem;">
+                <div style="background:rgba(255,255,255,0.03); border:1px solid var(--border-subtle); border-radius:0.5rem; padding:0.75rem;">
+                    <p style="color:#FFD700; font-weight:700; font-size:0.8rem; margin:0 0 0.4rem;">FRONTEND</p>
+                    <p style="margin:0; font-size:0.8rem;">React (port 3000) → AWS Amplify (auto-deploy from GitHub)<br>URL: https://master.d2tamnlcbzo0d5.amplifyapp.com/</p>
+                </div>
+                <div style="background:rgba(255,255,255,0.03); border:1px solid var(--border-subtle); border-radius:0.5rem; padding:0.75rem;">
+                    <p style="color:#FFD700; font-weight:700; font-size:0.8rem; margin:0 0 0.4rem;">BACKEND</p>
+                    <p style="margin:0; font-size:0.8rem;">Flask API (port 5000) → EC2 ubuntu@34.198.25.249<br>Service: hc-lombardo.service (gunicorn)</p>
+                </div>
+                <div style="background:rgba(255,255,255,0.03); border:1px solid var(--border-subtle); border-radius:0.5rem; padding:0.75rem;">
+                    <p style="color:#FFD700; font-weight:700; font-size:0.8rem; margin:0 0 0.4rem;">DATABASE</p>
+                    <p style="margin:0; font-size:0.8rem;">PostgreSQL on EC2 localhost:5432 · Schema: hcl<br>7,263+ games (1999–2025) · 14,398 team-game records</p>
+                </div>
+                <div style="background:rgba(255,255,255,0.03); border:1px solid var(--border-subtle); border-radius:0.5rem; padding:0.75rem;">
+                    <p style="color:#FFD700; font-weight:700; font-size:0.8rem; margin:0 0 0.4rem;">ML MODELS</p>
+                    <p style="margin:0; font-size:0.8rem;">XGBoost winner + spread models (ml/ directory)<br>xgb_winner.pkl (352K) · xgb_spread.pkl (543K) · Dated Dec 19, 2025</p>
+                </div>
+            </div>
+
+            <p style="margin-top:1rem;"><strong style="color:#f1f5f9;">Key Backend Files:</strong> api_server.py · api_routes_hcl.py · api_routes_ml.py · api_routes_live_scores.py · db_config.py · background_updater.py</p>
+            <p style="margin-bottom:0;"><strong style="color:#f1f5f9;">Key Frontend Files (frontend/src/):</strong> App.js · Analytics.js · MLPredictions.js · MLPredictionsRedesign.js · MatchupAnalyzer.js · TeamComparison.js · LiveScores.js · ModelPerformance.js · Admin.js</p>
+        </div>
+    </div>
+
+    <!-- ─── SECTION 6: SPRINT SCHEDULE ─── -->
+    <div style="background:var(--card); border:1px solid var(--border); border-radius:0.75rem; padding:1.5rem; margin-bottom:1.5rem;">
+        <h3 style="font-size:1rem; font-weight:700; color:#FFD700; margin:0 0 1rem;">§6 — Sprint Schedule</h3>
+        <table style="width:100%; border-collapse:collapse; font-size:0.82rem;">
+            <thead>
+                <tr style="border-bottom:1px solid var(--border);">
+                    <th style="text-align:left; padding:0.4rem 0.75rem; color:var(--muted); font-weight:600;">Sprint</th>
+                    <th style="text-align:left; padding:0.4rem 0.75rem; color:var(--muted); font-weight:600;">Dates</th>
+                    <th style="text-align:left; padding:0.4rem 0.75rem; color:var(--muted); font-weight:600;">Theme</th>
+                    <th style="text-align:left; padding:0.4rem 0.75rem; color:var(--muted); font-weight:600;">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="border-bottom:1px solid var(--border-subtle);">
+                    <td style="padding:0.5rem 0.75rem; color:#f1f5f9; font-weight:700;">S1–S11</td>
+                    <td style="padding:0.5rem 0.75rem; color:var(--muted);">Sep 2025 – Apr 5, 2026</td>
+                    <td style="padding:0.5rem 0.75rem; color:var(--muted);">App Build (pre-capstone term)</td>
+                    <td style="padding:0.5rem 0.75rem;"><span style="background:rgba(16,185,129,0.15); color:#10b981; border:1px solid rgba(16,185,129,0.3); border-radius:9999px; padding:0.1rem 0.6rem; font-size:0.72rem; font-weight:700;">Completed</span></td>
+                </tr>
+                <tr style="border-bottom:1px solid var(--border-subtle); background:rgba(255,255,255,0.02);">
+                    <td style="padding:0.5rem 0.75rem; color:#f1f5f9; font-weight:700;">S12</td>
+                    <td style="padding:0.5rem 0.75rem; color:var(--muted);">Apr 6–19, 2026</td>
+                    <td style="padding:0.5rem 0.75rem; color:var(--muted);">Diagnose &amp; Restore</td>
+                    <td style="padding:0.5rem 0.75rem;"><span style="background:rgba(16,185,129,0.15); color:#10b981; border:1px solid rgba(16,185,129,0.3); border-radius:9999px; padding:0.1rem 0.6rem; font-size:0.72rem; font-weight:700;">Closed GREEN</span></td>
+                </tr>
+                <tr style="border-bottom:1px solid var(--border-subtle);">
+                    <td style="padding:0.5rem 0.75rem; color:#FFD700; font-weight:700;">S13</td>
+                    <td style="padding:0.5rem 0.75rem; color:var(--muted);">Apr 20–May 2, 2026</td>
+                    <td style="padding:0.5rem 0.75rem; color:var(--muted);">Data &amp; Clean</td>
+                    <td style="padding:0.5rem 0.75rem;"><span style="background:rgba(251,191,36,0.15); color:#fbbf24; border:1px solid rgba(251,191,36,0.3); border-radius:9999px; padding:0.1rem 0.6rem; font-size:0.72rem; font-weight:700;">Active</span></td>
+                </tr>
+                <tr style="border-bottom:1px solid var(--border-subtle); background:rgba(255,255,255,0.02);">
+                    <td style="padding:0.5rem 0.75rem; color:#f1f5f9;">S14</td>
+                    <td style="padding:0.5rem 0.75rem; color:var(--muted);">May 4–16, 2026</td>
+                    <td style="padding:0.5rem 0.75rem; color:var(--muted);">ML Retrain</td>
+                    <td style="padding:0.5rem 0.75rem;"><span style="background:rgba(148,163,184,0.1); color:#94a3b8; border:1px solid rgba(148,163,184,0.2); border-radius:9999px; padding:0.1rem 0.6rem; font-size:0.72rem; font-weight:700;">Upcoming</span></td>
+                </tr>
+                <tr style="border-bottom:1px solid var(--border-subtle);">
+                    <td style="padding:0.5rem 0.75rem; color:#f1f5f9;">S15</td>
+                    <td style="padding:0.5rem 0.75rem; color:var(--muted);">May 18–30, 2026</td>
+                    <td style="padding:0.5rem 0.75rem; color:var(--muted);">UI &amp; UX Polish</td>
+                    <td style="padding:0.5rem 0.75rem;"><span style="background:rgba(148,163,184,0.1); color:#94a3b8; border:1px solid rgba(148,163,184,0.2); border-radius:9999px; padding:0.1rem 0.6rem; font-size:0.72rem; font-weight:700;">Upcoming</span></td>
+                </tr>
+                <tr>
+                    <td style="padding:0.5rem 0.75rem; color:#f1f5f9;">S16</td>
+                    <td style="padding:0.5rem 0.75rem; color:var(--muted);">Jun 1–13, 2026</td>
+                    <td style="padding:0.5rem 0.75rem; color:var(--muted);">Hardening &amp; Release</td>
+                    <td style="padding:0.5rem 0.75rem;"><span style="background:rgba(148,163,184,0.1); color:#94a3b8; border:1px solid rgba(148,163,184,0.2); border-radius:9999px; padding:0.1rem 0.6rem; font-size:0.72rem; font-weight:700;">Upcoming</span></td>
+                </tr>
+            </tbody>
+        </table>
+        <p style="color:var(--muted); font-size:0.78rem; margin-top:0.75rem; margin-bottom:0;">Term ends Jun 13, 2026. Work continues after term. Future sprint content is decided at planning AFTER the previous sprint closes — never pre-assign tasks.</p>
+    </div>
+
+    <!-- ─── SECTION 7: SPRINT 12 FULL HISTORY ─── -->
+    <div style="background:var(--card); border:1px solid var(--border); border-radius:0.75rem; padding:1.5rem; margin-bottom:1.5rem;">
+        <h3 style="font-size:1rem; font-weight:700; color:#FFD700; margin:0 0 0.4rem;">§7 — Sprint 12 Full History (Apr 6–19, 2026)</h3>
+        <p style="color:var(--muted); font-size:0.82rem; margin-bottom:1rem;">Theme: Diagnose &amp; Restore · Closed GREEN Apr 18 · 8 of 9 tasks delivered (84 of 85 subtasks complete) · Hours: 32 total (W1: 15 hrs · W2: 17 hrs)</p>
+
+        <!-- TA-001 -->
+        <div style="margin-bottom:1.25rem;">
+            <div style="display:flex; align-items:baseline; gap:0.75rem; margin-bottom:0.4rem;">
+                <span style="background:rgba(16,185,129,0.15); color:#10b981; border:1px solid rgba(16,185,129,0.3); border-radius:9999px; padding:0.1rem 0.6rem; font-size:0.72rem; font-weight:700;">DONE</span>
+                <strong style="color:#f1f5f9; font-size:0.88rem;">TA-001 — SSH Access &amp; EC2 Service Verification</strong>
+                <span style="color:var(--muted); font-size:0.78rem;">14 subtasks · P1 Critical</span>
+            </div>
+            <div style="font-size:0.8rem; color:var(--muted); line-height:1.7; padding-left:0.75rem; border-left:2px solid rgba(16,185,129,0.3);">
+                SSH key confirmed at /c/Users/april/.ssh/hc-lombardo-key.pem · SSH to ubuntu@34.198.25.249 confirmed clean · hc-lombardo.service active (running) via systemctl · Last 200 gunicorn log lines reviewed — no fatal errors · Flask/gunicorn process visible in ps aux · Port 5000 listening on 0.0.0.0 confirmed via netstat · <strong style="color:#f87171;">Disk usage: 88% full (5.9G/6.8G) — P1 blocker logged (R-09, TA-063)</strong> · Memory OK, no swap pressure · Python 3.x confirmed · Required packages confirmed (flask, xgboost, psycopg2, pandas, sklearn) · .env file confirmed present on EC2 with correct DB password · Port 5000 open in AWS Security Group · curl localhost:5000/health → {"status":"healthy"} confirmed.
+                <br><em style="color:#fbbf24;">Note: EC2 was found STOPPED at start of S12. Restarted via AWS CLI (not console — root MFA lost, R-10 active).</em>
+            </div>
+        </div>
+
+        <!-- TA-002 -->
+        <div style="margin-bottom:1.25rem;">
+            <div style="display:flex; align-items:baseline; gap:0.75rem; margin-bottom:0.4rem;">
+                <span style="background:rgba(16,185,129,0.15); color:#10b981; border:1px solid rgba(16,185,129,0.3); border-radius:9999px; padding:0.1rem 0.6rem; font-size:0.72rem; font-weight:700;">DONE</span>
+                <strong style="color:#f1f5f9; font-size:0.88rem;">TA-002 — PostgreSQL Health Check &amp; Schema Validation</strong>
+                <span style="color:var(--muted); font-size:0.78rem;">11 subtasks · P1 Critical</span>
+            </div>
+            <div style="font-size:0.8rem; color:var(--muted); line-height:1.7; padding-left:0.75rem; border-left:2px solid rgba(16,185,129,0.3);">
+                PostgreSQL service confirmed running · nfl_analytics DB confirmed present · hcl schema confirmed present · Game count: 7,269 (matches expected) · team_game_stats count: 14,398 · ml_predictions and betting_lines tables confirmed present and populated · 32 teams confirmed in public.teams · Season coverage: 1999–2025 all present · MAX(season) = 2025 confirmed · EPA null count within acceptable range · v_team_betting_performance view intact and returning rows.
+            </div>
+        </div>
+
+        <!-- TA-003 -->
+        <div style="margin-bottom:1.25rem;">
+            <div style="display:flex; align-items:baseline; gap:0.75rem; margin-bottom:0.4rem;">
+                <span style="background:rgba(16,185,129,0.15); color:#10b981; border:1px solid rgba(16,185,129,0.3); border-radius:9999px; padding:0.1rem 0.6rem; font-size:0.72rem; font-weight:700;">DONE</span>
+                <strong style="color:#f1f5f9; font-size:0.88rem;">TA-003 — Test All 22 API Endpoints</strong>
+                <span style="color:var(--muted); font-size:0.78rem;">22 subtasks · P1 Critical</span>
+            </div>
+            <div style="font-size:0.8rem; color:var(--muted); line-height:1.7; padding-left:0.75rem; border-left:2px solid rgba(16,185,129,0.3);">
+                /health → healthy · /api/hcl/teams → 4 teams returned (expected 32 — logged TA-052) · /api/hcl/summary → 404 (logged TA-053) · /api/hcl/teams/NE → OK · /api/hcl/teams/NE/games → OK · /api/hcl/games/week/2024/10 → OK · /api/hcl/analytics/betting → OK · /api/hcl/analytics/weather → OK · /api/hcl/analytics/rest → OK · /api/hcl/analytics/referees → OK · /api/ml/model-info → OK (41 inputs, 3 hidden layers) · /api/ml/model-performance → empty response (logged TA-054) · /api/ml/predict-week/2024/18 → OK · /api/ml/predict-upcoming → OK (empty, offseason) · /api/ml/available-weeks → 53 weeks · /api/ml/season-ai-vs-vegas/2024 → AI 20.3% (52W), Vegas 13.3% (34W), 170 ties · /api/ml/performance-stats → OK · /api/elo/ratings/current → 32-team ELO rankings · /api/elo/predict-week/2024/18 → failure "No games found" (logged TA-055) · /api/predictions/current-week → OK (empty) · /api/predictions/combined/2024/18 → OK · /api/live-scores → OK (Super Bowl final).
+            </div>
+        </div>
+
+        <!-- TA-004 -->
+        <div style="margin-bottom:1.25rem;">
+            <div style="display:flex; align-items:baseline; gap:0.75rem; margin-bottom:0.4rem;">
+                <span style="background:rgba(16,185,129,0.15); color:#10b981; border:1px solid rgba(16,185,129,0.3); border-radius:9999px; padding:0.1rem 0.6rem; font-size:0.72rem; font-weight:700;">DONE</span>
+                <strong style="color:#f1f5f9; font-size:0.88rem;">TA-004 — Frontend Production Walkthrough</strong>
+                <span style="color:var(--muted); font-size:0.78rem;">17 subtasks · P1 Critical</span>
+            </div>
+            <div style="font-size:0.8rem; color:var(--muted); line-height:1.7; padding-left:0.75rem; border-left:2px solid rgba(16,185,129,0.3);">
+                All 14 frontend routes confirmed loading: / · /live-scores · /analytics · /ml-predictions · /ml-predictions-redesign · /model-performance · /team-stats · /team-comparison · /team-detail · /matchup-analyzer · /game-statistics · /historical-data · /admin · /settings · DevTools console checked — CORS and 404 errors noted and logged · Network tab reviewed — CORS errors from Amplify to EC2 identified · All side menu navigation links confirmed working.
+            </div>
+        </div>
+
+        <!-- TA-005 -->
+        <div style="margin-bottom:1.25rem;">
+            <div style="display:flex; align-items:baseline; gap:0.75rem; margin-bottom:0.4rem;">
+                <span style="background:rgba(16,185,129,0.15); color:#10b981; border:1px solid rgba(16,185,129,0.3); border-radius:9999px; padding:0.1rem 0.6rem; font-size:0.72rem; font-weight:700;">DONE</span>
+                <strong style="color:#f1f5f9; font-size:0.88rem;">TA-005 — Verify REACT_APP_API_URL in Amplify</strong>
+                <span style="color:var(--muted); font-size:0.78rem;">3 subtasks · P1 Critical</span>
+            </div>
+            <div style="font-size:0.8rem; color:var(--muted); line-height:1.7; padding-left:0.75rem; border-left:2px solid rgba(16,185,129,0.3);">
+                AWS Amplify confirmed deployed, build successful · REACT_APP_API_URL = http://34.198.25.249:5000 confirmed in Amplify env vars · Production URL: https://master.d2tamnlcbzo0d5.amplifyapp.com/ — last build confirmed successful.
+            </div>
+        </div>
+
+        <!-- TA-006 -->
+        <div style="margin-bottom:1.25rem;">
+            <div style="display:flex; align-items:baseline; gap:0.75rem; margin-bottom:0.4rem;">
+                <span style="background:rgba(16,185,129,0.15); color:#10b981; border:1px solid rgba(16,185,129,0.3); border-radius:9999px; padding:0.1rem 0.6rem; font-size:0.72rem; font-weight:700;">DONE</span>
+                <strong style="color:#f1f5f9; font-size:0.88rem;">TA-006 — CORS Configuration Fix</strong>
+                <span style="color:var(--muted); font-size:0.78rem;">4 subtasks · P1 Critical</span>
+            </div>
+            <div style="font-size:0.8rem; color:var(--muted); line-height:1.7; padding-left:0.75rem; border-left:2px solid rgba(16,185,129,0.3);">
+                curl to EC2 → healthy confirmed · CORS preflight to Amplify origin → 200 OK, Access-Control-Allow-Origin correct · api_server.py line 51 — Amplify domain explicitly listed; nfl.aprilsykes.dev also listed (domain not yet configured — logged TA-056) · 4 endpoints tested with Amplify origin header — all return correct CORS headers.
+            </div>
+        </div>
+
+        <!-- TA-007 -->
+        <div style="margin-bottom:1.25rem;">
+            <div style="display:flex; align-items:baseline; gap:0.75rem; margin-bottom:0.4rem;">
+                <span style="background:rgba(16,185,129,0.15); color:#10b981; border:1px solid rgba(16,185,129,0.3); border-radius:9999px; padding:0.1rem 0.6rem; font-size:0.72rem; font-weight:700;">DONE</span>
+                <strong style="color:#f1f5f9; font-size:0.88rem;">TA-007 — Production Task Log Created</strong>
+                <span style="color:var(--muted); font-size:0.78rem;">12 subtasks · P2 High</span>
+            </div>
+            <div style="font-size:0.8rem; color:var(--muted); line-height:1.7; padding-left:0.75rem; border-left:2px solid rgba(16,185,129,0.3);">
+                git status clean — no modified tracked files · App.js git diff clean · App.js routing bug confirmed: wrong components mapped to /game-statistics and /matchup-analyzer (logged for S13) · <strong style="color:#f87171;">Hardcoded DB passwords confirmed in api_server.py, api_routes_hcl.py, api_routes_live_scores.py (security risk)</strong> · DEBUG print statements confirmed in api_routes_live_scores.py · background_updater.py confirmed missing import (will fail) · <strong style="color:#f87171;">train_xgb_winner.py line 255: load_data(schema='hcl_test') — uses wrong schema, not production hcl</strong> · <strong style="color:#f87171;">train_xgb_spread.py lines 95–116: broken WINDOW clause, missing closing paren — SQL will fail on execution</strong> · predict_ensemble.py line 338: --upcoming flag not implemented, prints error and exits · <strong style="color:#fbbf24;">Default season 2025 hardcoded in api_routes_hcl.py (7 endpoints), api_routes_ml.py (3 locations), api_routes_live_scores.py — will need update for 2026</strong> · ML models present: xgb_winner.pkl (352K), xgb_spread.pkl (543K), elo_ratings_current.json (1.2K) · All model files dated Dec 19, 2025.
+            </div>
+        </div>
+
+        <!-- TA-008 -->
+        <div style="margin-bottom:1.25rem;">
+            <div style="display:flex; align-items:baseline; gap:0.75rem; margin-bottom:0.4rem;">
+                <span style="background:rgba(248,113,113,0.15); color:#f87171; border:1px solid rgba(248,113,113,0.3); border-radius:9999px; padding:0.1rem 0.6rem; font-size:0.72rem; font-weight:700;">BLOCKED</span>
+                <strong style="color:#f1f5f9; font-size:0.88rem;">TA-008 — Live App URL Added to Dashboard</strong>
+                <span style="color:var(--muted); font-size:0.78rem;">1 subtask · P1 Critical · Sprint: S12 → Backlog</span>
+            </div>
+            <div style="font-size:0.8rem; color:var(--muted); line-height:1.7; padding-left:0.75rem; border-left:2px solid rgba(248,113,113,0.4);">
+                BLOCKED — Cannot retrieve Amplify live URL from AWS console. Root MFA device was lost, locking all console-based access. <strong style="color:#fbbf24;">To unblock: call AWS Support at 1-800-879-2747 to reset root MFA.</strong> Once console access is restored, retrieve the Amplify URL and add it to the Dashboard overview section. Moved to backlog as P1 Critical.
+            </div>
+        </div>
+
+        <!-- TA-009 -->
+        <div style="margin-bottom:0;">
+            <div style="display:flex; align-items:baseline; gap:0.75rem; margin-bottom:0.4rem;">
+                <span style="background:rgba(16,185,129,0.15); color:#10b981; border:1px solid rgba(16,185,129,0.3); border-radius:9999px; padding:0.1rem 0.6rem; font-size:0.72rem; font-weight:700;">DONE</span>
+                <strong style="color:#f1f5f9; font-size:0.88rem;">TA-009 — CLAUDE.md Updated</strong>
+                <span style="color:var(--muted); font-size:0.78rem;">1 subtask · P2 High</span>
+            </div>
+            <div style="font-size:0.8rem; color:var(--muted); line-height:1.7; padding-left:0.75rem; border-left:2px solid rgba(16,185,129,0.3);">
+                CLAUDE.md updated with current routes, deployment state, architecture, and Spring 2026 term details. Advisor changed from Dr. Foster to Richard Becker. All references updated.
+            </div>
+        </div>
+    </div>
+
+    <!-- ─── SECTION 8: APR 19 DASHBOARD WORK ─── -->
+    <div style="background:var(--card); border:1px solid var(--border); border-radius:0.75rem; padding:1.5rem; margin-bottom:1.5rem;">
+        <h3 style="font-size:1rem; font-weight:700; color:#FFD700; margin:0 0 0.4rem;">§8 — Apr 19 Dashboard Work (All in Dashboard/index.html)</h3>
+        <p style="color:var(--muted); font-size:0.82rem; margin-bottom:1rem;">Committed and deployed to master + gh-pages. Approx. 5 hours of work.</p>
+        <div style="font-size:0.82rem; line-height:1.9; color:var(--muted);">
+            <p><strong style="color:#f1f5f9;">Product Backlog Tracker tab rebuilt:</strong> Removed two sub-tabs (Product Backlog / Task Tracker). Unified into one "Product Backlog Tracker" panel. Sprint filter buttons (All | S12–S16 | TBD) auto-generated from SPRINT_SCHEDULE with date-gating (future sprints greyed out). Future sprint items hidden until sprint start date. Status + priority filters stack with sprint filter. Print button (4 scope options). CSV download (4 scope options). Instructional text added per web best practices. TA-008 sprint restored to S12. TA-021 and TA-022 marked as duplicates of TA-057 and TA-058.</p>
+            <p><strong style="color:#f1f5f9;">Dashboard home automation:</strong> "Dashboard last updated" bar now reads document.lastModified (auto-updates every deploy). RAG detail "Updated / Next review" computed from SPRINT_SCHEDULE. P1 blocker count/sub and open task count/sub driven from SPRINT_ARCHIVE. sprintEnd variable reads from SPRINT_SCHEDULE dynamically (was hardcoded).</p>
+            <p><strong style="color:#f1f5f9;">Sprint selector dropdown (Dashboard home):</strong> Built above RAG banner — filters all charts/metrics by sprint. Drives SPRINT_ARCHIVE data for burndown, burnup, velocity, severity. getCurrentSprint() auto-detects active sprint by date.</p>
+            <p><strong style="color:#f1f5f9;">Sprint board tab:</strong> initSprintBoardTab() generates sprint cards dynamically from SPRINT_SCHEDULE. Status (completed/active/upcoming) computed by date. Sprint board dropdown auto-selects current sprint.</p>
+            <p><strong style="color:#f1f5f9;">Progress Reports tab rebuilt:</strong> Sprint filter buttons (All | S12–S16). Selecting a sprint shows "Sprint X Full Summary" + individual week options. Sprint summary combines both weeks into one report. Print button (professional printable page). Download (.txt) with sprint/week label in filename. Dropdown options generated from WEEK_META. CSS fix: select option { background: #1e293b; color: #f1f5f9; } — options were white on white, unreadable.</p>
+            <p style="margin-bottom:0;"><strong style="color:#f1f5f9;">S13 planning:</strong> 8 tasks assigned (TA-010, 011, 012, 013, 057, 058, 059, 063). Sprint board S13 date-gated until Apr 20. SPRINT_ARCHIVE[13] has placeholder data — updates as sprint progresses.</p>
+        </div>
+    </div>
+
+    <!-- ─── SECTION 9: SPRINT 13 PLAN ─── -->
+    <div style="background:var(--card); border:1px solid var(--border); border-radius:0.75rem; padding:1.5rem; margin-bottom:1.5rem;">
+        <h3 style="font-size:1rem; font-weight:700; color:#FFD700; margin:0 0 0.4rem;">§9 — Sprint 13 Plan (Apr 20 – May 2, 2026)</h3>
+        <p style="color:var(--muted); font-size:0.82rem; margin-bottom:1rem;">Theme: Data &amp; Clean · Capacity: ~30 hours · 8 tasks assigned · Board activates Apr 20</p>
+        <table style="width:100%; border-collapse:collapse; font-size:0.82rem;">
+            <thead>
+                <tr style="border-bottom:1px solid var(--border);">
+                    <th style="text-align:left; padding:0.4rem 0.75rem; color:var(--muted); font-weight:600;">ID</th>
+                    <th style="text-align:left; padding:0.4rem 0.75rem; color:var(--muted); font-weight:600;">Task</th>
+                    <th style="text-align:left; padding:0.4rem 0.75rem; color:var(--muted); font-weight:600;">Priority</th>
+                    <th style="text-align:left; padding:0.4rem 0.75rem; color:var(--muted); font-weight:600;">Why</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="border-bottom:1px solid var(--border-subtle);">
+                    <td style="padding:0.5rem 0.75rem; color:#FFD700; font-weight:700; white-space:nowrap;">TA-063</td>
+                    <td style="padding:0.5rem 0.75rem; color:#f1f5f9;">EC2 disk cleanup</td>
+                    <td style="padding:0.5rem 0.75rem; color:#f87171; font-weight:700;">Critical</td>
+                    <td style="padding:0.5rem 0.75rem; color:var(--muted);">Disk at 88% — server crashes if full</td>
+                </tr>
+                <tr style="border-bottom:1px solid var(--border-subtle); background:rgba(255,255,255,0.02);">
+                    <td style="padding:0.5rem 0.75rem; color:#FFD700; font-weight:700;">TA-010</td>
+                    <td style="padding:0.5rem 0.75rem; color:#f1f5f9;">Remove hardcoded credentials</td>
+                    <td style="padding:0.5rem 0.75rem; color:#f87171; font-weight:700;">Critical</td>
+                    <td style="padding:0.5rem 0.75rem; color:var(--muted);">Security vulnerability in production</td>
+                </tr>
+                <tr style="border-bottom:1px solid var(--border-subtle);">
+                    <td style="padding:0.5rem 0.75rem; color:#FFD700; font-weight:700;">TA-011</td>
+                    <td style="padding:0.5rem 0.75rem; color:#f1f5f9;">Move passwords to .env</td>
+                    <td style="padding:0.5rem 0.75rem; color:#f87171; font-weight:700;">Critical</td>
+                    <td style="padding:0.5rem 0.75rem; color:var(--muted);">Goes with TA-010</td>
+                </tr>
+                <tr style="border-bottom:1px solid var(--border-subtle); background:rgba(255,255,255,0.02);">
+                    <td style="padding:0.5rem 0.75rem; color:#FFD700; font-weight:700;">TA-057</td>
+                    <td style="padding:0.5rem 0.75rem; color:#f1f5f9;">Fix ML training schema (hcl_test→hcl)</td>
+                    <td style="padding:0.5rem 0.75rem; color:#f87171; font-weight:700;">Critical</td>
+                    <td style="padding:0.5rem 0.75rem; color:var(--muted);">train_xgb_winner.py line 255 — uses wrong schema; blocker for all ML retraining</td>
+                </tr>
+                <tr style="border-bottom:1px solid var(--border-subtle);">
+                    <td style="padding:0.5rem 0.75rem; color:#FFD700; font-weight:700;">TA-058</td>
+                    <td style="padding:0.5rem 0.75rem; color:#f1f5f9;">Fix broken SQL in spread model</td>
+                    <td style="padding:0.5rem 0.75rem; color:#f87171; font-weight:700;">Critical</td>
+                    <td style="padding:0.5rem 0.75rem; color:var(--muted);">train_xgb_spread.py lines 95–116: broken WINDOW clause; blocker for all ML retraining</td>
+                </tr>
+                <tr style="border-bottom:1px solid var(--border-subtle); background:rgba(255,255,255,0.02);">
+                    <td style="padding:0.5rem 0.75rem; color:#FFD700; font-weight:700;">TA-059</td>
+                    <td style="padding:0.5rem 0.75rem; color:#f1f5f9;">Fix hardcoded season 2025 in backend</td>
+                    <td style="padding:0.5rem 0.75rem; color:#fbbf24; font-weight:700;">High</td>
+                    <td style="padding:0.5rem 0.75rem; color:var(--muted);">7+ endpoints returning wrong season data</td>
+                </tr>
+                <tr style="border-bottom:1px solid var(--border-subtle);">
+                    <td style="padding:0.5rem 0.75rem; color:#FFD700; font-weight:700;">TA-012</td>
+                    <td style="padding:0.5rem 0.75rem; color:#f1f5f9;">Load 2025 NFL season data</td>
+                    <td style="padding:0.5rem 0.75rem; color:#f87171; font-weight:700;">Critical</td>
+                    <td style="padding:0.5rem 0.75rem; color:var(--muted);">Models running on stale data</td>
+                </tr>
+                <tr>
+                    <td style="padding:0.5rem 0.75rem; color:#FFD700; font-weight:700;">TA-013</td>
+                    <td style="padding:0.5rem 0.75rem; color:#f1f5f9;">Validate data integrity</td>
+                    <td style="padding:0.5rem 0.75rem; color:#fbbf24; font-weight:700;">High</td>
+                    <td style="padding:0.5rem 0.75rem; color:var(--muted);">Don't retrain on bad data</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ─── SECTION 10: KNOWN BLOCKERS ─── -->
+    <div style="background:var(--card); border:1px solid var(--border); border-radius:0.75rem; padding:1.5rem; margin-bottom:1.5rem;">
+        <h3 style="font-size:1rem; font-weight:700; color:#FFD700; margin:0 0 1rem;">§10 — Known Blockers (as of Apr 19, 2026)</h3>
+        <div style="font-size:0.82rem; line-height:1.8; color:var(--muted);">
+            <div style="background:rgba(248,113,113,0.06); border:1px solid rgba(248,113,113,0.25); border-radius:0.5rem; padding:0.75rem 1rem; margin-bottom:0.75rem;">
+                <strong style="color:#f87171;">TA-008 / R-10 — AWS Console Locked (Root MFA Lost)</strong><br>
+                Status: P1 · Sprint: Backlog · To unblock: Call AWS Support 1-800-879-2747 to reset root MFA. Once resolved: retrieve Amplify live URL from console and add to dashboard overview section.
+            </div>
+            <div style="background:rgba(248,113,113,0.06); border:1px solid rgba(248,113,113,0.25); border-radius:0.5rem; padding:0.75rem 1rem; margin-bottom:0.75rem;">
+                <strong style="color:#f87171;">R-09 — EC2 Disk at 88% (Critical)</strong><br>
+                Status: P1 · Assigned: TA-063 in S13 · Action: SSH in, run df -h, clean logs/tmp/old backups before server crashes. Monitor with df -h after cleanup.
+            </div>
+            <div style="background:rgba(248,113,113,0.06); border:1px solid rgba(248,113,113,0.25); border-radius:0.5rem; padding:0.75rem 1rem;">
+                <strong style="color:#fbbf24;">ML Pipeline Blockers (TA-057, TA-058)</strong><br>
+                train_xgb_winner.py uses wrong schema 'hcl_test' instead of 'hcl' (line 255). train_xgb_spread.py has broken SQL WINDOW clause (lines 95–116). Both block all ML retraining in S13/S14.
+            </div>
+        </div>
+    </div>
+
+    <!-- ─── SECTION 11: DASHBOARD ARCHITECTURE ─── -->
+    <div style="background:var(--card); border:1px solid var(--border); border-radius:0.75rem; padding:1.5rem; margin-bottom:1.5rem;">
+        <h3 style="font-size:1rem; font-weight:700; color:#FFD700; margin:0 0 1rem;">§11 — Dashboard Architecture (Dashboard/index.html)</h3>
+        <p style="color:var(--muted); font-size:0.82rem; margin-bottom:0.75rem;">Single-file PM dashboard. All data hardcoded. No localStorage. Deployed to gh-pages only. ~5,100+ lines.</p>
+        <div style="font-size:0.82rem; line-height:1.9; color:var(--muted);">
+            <p><strong style="color:#f1f5f9;">Key Data Structures:</strong></p>
+            <ul style="margin:0 0 0.75rem; padding-left:1.5rem;">
+                <li><strong style="color:#FFD700;">SPRINT_SCHEDULE</strong> — single source of truth for all sprint dates/themes. Auto-detects current sprint. All date-gating reads from here. Never hardcode sprint dates elsewhere.</li>
+                <li><strong style="color:#FFD700;">SPRINT_ARCHIVE[N]</strong> — per-sprint data: RAG, metrics, burndown, burnup, velocity, severity, p1Count, p1Sub, openCount, openSub. Update when sprint closes.</li>
+                <li><strong style="color:#FFD700;">COMPLETED_TASKS</strong> — array of all completed subtask IDs (t1_1, t1_2, etc.). Add when subtask is done. Never remove.</li>
+                <li><strong style="color:#FFD700;">TASK_DETAILS</strong> — resolution text + date for every subtask. Claude updates when subtask is completed.</li>
+                <li><strong style="color:#FFD700;">PB_ITEMS</strong> — all 66 backlog items with sprint/status/priority. Flip Backlog → In Sprint at sprint start. Flip In Sprint → Done when all subtasks close.</li>
+                <li><strong style="color:#FFD700;">HOURS_DATA</strong> — 10-week array. hours:0 and notes:'' for future weeks. Claude updates weekly.</li>
+                <li><strong style="color:#FFD700;">WEEK_META</strong> — 10-week metadata for report generator. Sprint labels and dates.</li>
+                <li><strong style="color:#FFD700;">getCurrentSprint()</strong> — reads today vs SPRINT_SCHEDULE, returns active sprint number. No manual updates at sprint boundaries.</li>
+                <li><strong style="color:#FFD700;">loadSprintDashboard(num)</strong> — updates all dashboard elements for selected sprint from SPRINT_ARCHIVE.</li>
+            </ul>
+            <p><strong style="color:#f1f5f9;">Sprint Transition Checklist (when April says "close S-X, open S-X+1"):</strong></p>
+            <p><em>CLOSE:</em> SPRINT_ARCHIVE[N] — full metrics, RAG msg, burndown actual, burnup/velocity/severity arrays + insights, p1Count, p1Sub, openCount, openSub · COMPLETED_TASKS — add completed subtask IDs · PB_ITEMS — flip In Sprint → Done or Backlog · HOURS_DATA — update hours + notes · About tab — increment sprints completed count</p>
+            <p style="margin-bottom:0;"><em>OPEN:</em> SPRINT_ARCHIVE[N+1] — update from placeholder to real kickoff data · PB_ITEMS — flip assigned items Backlog → In Sprint · Build sprint board panel (task cards + checkboxes). April provides: hours worked, tasks completed, blockers, decisions. Claude updates everything above. Read the code first. Always.</p>
+        </div>
+    </div>
+
+    <!-- ─── SECTION 12: WHAT NOT TO DO ─── -->
+    <div style="background:rgba(248,113,113,0.05); border:1px solid rgba(248,113,113,0.3); border-radius:0.75rem; padding:1.5rem; margin-bottom:1.5rem;">
+        <h3 style="font-size:1rem; font-weight:700; color:#f87171; margin:0 0 1rem;">§12 — What Went Wrong in S12 (Learn From These)</h3>
+        <div style="font-size:0.82rem; line-height:1.9; color:var(--muted);">
+            <p><strong style="color:#f1f5f9;">Built in the wrong location</strong> — Built sprint metrics in the Sprint Backlog tab instead of Dashboard home. Full reversal required. Root cause: did not read the code first, made assumptions about where things should go.</p>
+            <p><strong style="color:#f1f5f9;">Pre-assigned S13 tasks before planning</strong> — TA-057/058/059/060/063/065 were assigned to S13 before sprint planning had occurred. April was extremely frustrated. Rule: Sprint content is decided at planning AFTER the previous sprint closes. Future sprint sections = "TBD" or "Unassigned" only.</p>
+            <p><strong style="color:#f1f5f9;">Changed TA-008 sprint field without permission</strong> — Changed sprint:'S12' to sprint:'TBD' without authorization. TA-008 originated in S12 and belongs there even though it's in backlog. Always ask before changing existing data.</p>
+            <p><strong style="color:#f1f5f9;">Select option visibility bug — 20 minutes wasted</strong> — User reported "I can't see anything to select!!!!" because dropdown options were white-on-white. Claude violated contract by not reading the code first, then overcomplicated the fix by suggesting a custom dropdown replacement. The fix was one CSS rule: select option &#123; background: #1e293b; color: #f1f5f9; &#125;. This took 20 minutes because the contract was not followed.</p>
+            <p><strong style="color:#f1f5f9;">Not reporting back after actions</strong> — Contract requires reporting after EVERY single action. User had to demand status reports multiple times. This is not optional.</p>
+            <p style="margin-bottom:0;"><strong style="color:#f1f5f9;">Making changes without authorization</strong> — Changed default sprint filter, TA-008 sprint field, and other items without explicit go-ahead. The rule is: no code, no changes, no GitHub — nothing without April's explicit go-ahead.</p>
+        </div>
+    </div>
+
+</div>
+</div><!-- /tab-ailog -->
 
 <!-- FOOTER -->
 <footer>
