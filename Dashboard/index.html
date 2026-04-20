@@ -2648,7 +2648,7 @@
         <!-- Week selector + action buttons -->
         <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1.25rem; flex-wrap:wrap;">
             <label style="font-size:0.85rem; color:var(--muted); font-weight:600;">Report:</label>
-            <select id="report-week-select" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,215,0,0.3); border-radius:0.4rem; color:#f1f5f9; font-size:0.88rem; padding:0.4rem 0.75rem; outline:none; min-width:280px;"></select>
+            <select id="report-week-select" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,215,0,0.3); border-radius:0.4rem; color:#f1f5f9; font-size:0.88rem; font-family:inherit; padding:0.4rem 0.75rem; outline:none; min-width:280px;"></select>
             <div style="margin-left:auto; display:flex; gap:0.5rem;">
                 <button onclick="copyReport()" id="copy-btn" style="background:rgba(255,215,0,0.15); border:1px solid rgba(255,215,0,0.4); color:#FFD700; border-radius:0.35rem; padding:0.35rem 1rem; font-size:0.78rem; font-weight:700; cursor:pointer;">Copy</button>
                 <button onclick="downloadReport()" style="background:rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.4); color:#10b981; border-radius:0.35rem; padding:0.35rem 1rem; font-size:0.78rem; font-weight:700; cursor:pointer;">Download</button>
@@ -4846,6 +4846,9 @@ function showSprintView(view, btn) {
     }
 
     // Build sprint filter buttons
+    var BTN_BASE = 'font-family:inherit;font-size:0.78rem;font-weight:600;padding:0.3rem 0.75rem;border-radius:0.35rem;cursor:pointer;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:#94a3b8;margin-right:0.35rem;';
+    var BTN_ACTIVE = 'font-family:inherit;font-size:0.78rem;font-weight:600;padding:0.3rem 0.75rem;border-radius:0.35rem;cursor:pointer;border:1px solid rgba(255,215,0,0.5);background:rgba(255,215,0,0.15);color:#FFD700;margin-right:0.35rem;';
+
     function buildSprintFilterButtons() {
         var container = document.getElementById('report-sprint-btns');
         if (!container) return;
@@ -4855,17 +4858,17 @@ function showSprintView(view, btn) {
                 sprints.push({ key: w.sprintKey, label: w.sprintKey });
             }
         });
-        var html = '<button class="filter-btn active" onclick="filterReportBySprint(\'all\',this)">All</button>';
+        var html = '<button style="' + BTN_ACTIVE + '" onclick="filterReportBySprint(\'all\',this)">All</button>';
         sprints.forEach(function(s) {
-            html += '<button class="filter-btn" onclick="filterReportBySprint(\'' + s.key + '\',this)">' + s.label + '</button>';
+            html += '<button style="' + BTN_BASE + '" onclick="filterReportBySprint(\'' + s.key + '\',this)">' + s.label + '</button>';
         });
         container.innerHTML = html;
     }
 
     window.filterReportBySprint = function(sprintKey, btn) {
         if (btn) {
-            btn.closest('#report-sprint-btns').querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('active'); });
-            btn.classList.add('active');
+            btn.closest('#report-sprint-btns').querySelectorAll('button').forEach(function(b) { b.setAttribute('style', BTN_BASE); });
+            btn.setAttribute('style', BTN_ACTIVE);
         }
         buildReportDropdown(sprintKey);
     };
