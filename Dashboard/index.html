@@ -1788,27 +1788,42 @@
         </div>
     </div>
 
-    <!-- ── RAG STATUS ── -->
-    <div class="rag-banner green">
-        <div class="rag-dot green"></div>
-        <div>
-            <div class="rag-label green">ON TRACK — GREEN</div>
-            <div class="rag-message">Sprint 12 closed Apr 18 · 8 of 9 tasks delivered · TA-008 blocked (AWS MFA) · Sprint 13 starts Apr 20</div>
+    <!-- ── SPRINT SELECTOR ── -->
+    <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1rem;">
+        <span style="font-size:0.85rem; color:var(--muted); white-space:nowrap; font-weight:600;">Viewing Sprint:</span>
+        <div id="dash-sprint-dropdown" style="position:relative; min-width:340px;">
+            <button id="dash-sprint-btn" onclick="toggleDashSprintDropdown()" style="width:100%; display:flex; align-items:center; justify-content:space-between; gap:0.5rem; background:#1e2a3a; color:#f1f5f9; border:1px solid rgba(255,255,255,0.15); border-radius:0.5rem; padding:0.45rem 1rem; font-size:0.88rem; cursor:pointer; outline:none; text-align:left;">
+                <span id="dash-sprint-label">Sprint 12 — Diagnose &amp; Restore (Completed)</span>
+                <span id="dash-sprint-arrow" style="font-size:0.7rem; transition:transform 0.15s;">▼</span>
+            </button>
+            <div id="dash-sprint-list" style="display:none; position:absolute; top:calc(100% + 4px); left:0; right:0; background:#111c2b; border:1px solid rgba(255,255,255,0.15); border-radius:0.5rem; overflow:hidden; z-index:999; box-shadow:0 8px 24px rgba(0,0,0,0.6);">
+                <div class="dsd-opt" data-val="12" onclick="selectDashSprint(12,'Sprint 12 — Diagnose &amp; Restore (Completed)')" style="padding:0.55rem 1rem; cursor:pointer; color:#10b981; font-size:0.88rem; font-weight:600; background:#1a2e45;">Sprint 12 — Diagnose &amp; Restore <span style="color:#10b981;">(Completed)</span></div>
+                <div class="dsd-opt" data-val="13" onclick="selectDashSprint(13,'Sprint 13 — Data &amp; Clean (Upcoming)')" style="padding:0.55rem 1rem; cursor:pointer; color:#f1f5f9; font-size:0.88rem; background:#111c2b;">Sprint 13 — Data &amp; Clean <span style="color:#64748b; font-size:0.78rem;">(Upcoming — Apr 20)</span></div>
+            </div>
         </div>
-        <div class="rag-detail">Updated: Apr 18, 2026 &nbsp;·&nbsp; Next review: Apr 20 (S13 kickoff)</div>
+    </div>
+
+    <!-- ── RAG STATUS ── -->
+    <div class="rag-banner green" id="rag-banner">
+        <div class="rag-dot green" id="rag-dot"></div>
+        <div>
+            <div class="rag-label green" id="rag-label">ON TRACK — GREEN</div>
+            <div class="rag-message" id="rag-message">Sprint 12 closed Apr 18 · 8 of 9 tasks delivered · TA-008 blocked (AWS MFA) · Sprint 13 starts Apr 20</div>
+        </div>
+        <div class="rag-detail" id="rag-detail">Updated: Apr 18, 2026 &nbsp;·&nbsp; Next review: Apr 20 (S13 kickoff)</div>
     </div>
 
     <!-- ── PM METRICS STRIP ── -->
     <div class="pm-metrics-strip">
         <div class="pm-metric">
             <div class="pm-metric-label">Current Sprint</div>
-            <div class="pm-metric-value" style="color:#FFD700;">12</div>
-            <div class="pm-metric-sub">of 16 total · Diagnose &amp; Restore</div>
+            <div class="pm-metric-value" style="color:#FFD700;" id="dash-current-sprint">12</div>
+            <div class="pm-metric-sub" id="dash-current-sprint-sub">of 16 total · Diagnose &amp; Restore</div>
         </div>
         <div class="pm-metric">
             <div class="pm-metric-label">Days Remaining</div>
             <div class="pm-metric-value" style="color:#FFD700;" id="days-remaining">8</div>
-            <div class="pm-metric-sub">Sprint ends Apr 18, 2026</div>
+            <div class="pm-metric-sub" id="dash-days-remaining-sub">Sprint ends Apr 18, 2026</div>
         </div>
         <div class="pm-metric">
             <div class="pm-metric-label">Sprint Tasks Done</div>
@@ -1869,17 +1884,17 @@
     <div class="chart-grid-2">
 
         <div class="chart-card">
-            <div class="chart-card-title">Burndown — Sprint 12</div>
+            <div class="chart-card-title" id="burndown-chart-title">Burndown — Sprint 12</div>
             <div class="chart-card-subtitle">Tracks remaining tasks vs. ideal pace. The red line should follow the gold dashed line. If it stays flat, the sprint is stalled.</div>
             <canvas id="burndown-chart" height="180"></canvas>
-            <div class="chart-card-insight"><strong>S12 status:</strong> 84 of 85 tasks complete. 1 task blocked (TA-008 — awaiting AWS console access). Sprint closes Apr 18.</div>
+            <div class="chart-card-insight" id="burndown-chart-insight"><strong>S12 status:</strong> 84 of 85 tasks complete. 1 task blocked (TA-008 — awaiting AWS console access). Sprint closes Apr 18.</div>
         </div>
 
         <div class="chart-card">
             <div class="chart-card-title">Burnup — Scope vs. Completion</div>
             <div class="chart-card-subtitle">Shows total work added to the project (scope) vs. work completed across all 12 sprints. A healthy project keeps the gap closing.</div>
             <canvas id="burnup-chart" height="180"></canvas>
-            <div class="chart-card-insight"><strong>S12 progress:</strong> 8 backlog items delivered this sprint (TA-001, TA-002, TA-003, TA-004, TA-005, TA-006, TA-007, TA-009). Cumulative completed: 83 of 83. TA-008 blocked — carries to S13.</div>
+            <div class="chart-card-insight" id="burnup-chart-insight"><strong>S12 progress:</strong> 8 backlog items delivered this sprint (TA-001, TA-002, TA-003, TA-004, TA-005, TA-006, TA-007, TA-009). Cumulative completed: 83 of 83. TA-008 blocked — carries to S13.</div>
         </div>
 
     </div>
@@ -1891,14 +1906,14 @@
             <div class="chart-card-title">Velocity — TA Items Delivered Per Sprint</div>
             <div class="chart-card-subtitle">How many backlog tasks (TA items) were completed each sprint. Consistent bars = predictable team. Drops = scope creep or blockers. Average velocity informs sprint planning.</div>
             <canvas id="velocity-chart" height="180"></canvas>
-            <div class="chart-card-insight"><strong>Avg velocity:</strong> ~6.8 TA items/sprint across S1–S11. S12 delivered 8 TA items (TA-001, TA-002, TA-003, TA-004, TA-005, TA-006, TA-007, TA-009). TA-008 blocked, carries to S13.</div>
+            <div class="chart-card-insight" id="velocity-chart-insight"><strong>Avg velocity:</strong> ~6.8 TA items/sprint across S1–S11. S12 delivered 8 TA items (TA-001, TA-002, TA-003, TA-004, TA-005, TA-006, TA-007, TA-009). TA-008 blocked, carries to S13.</div>
         </div>
 
         <div class="chart-card">
             <div class="chart-card-title">Backlog by Severity</div>
             <div class="chart-card-subtitle">Current task distribution across all 25 backlog tasks by severity. P1 = production blockers that must be fixed before anything else ships. P4 = polish only.</div>
             <canvas id="severity-chart" height="180"></canvas>
-            <div class="chart-card-insight"><strong>S13 focus:</strong> 4 new P1 tasks added — ML pipeline rebuild (broken schema, SQL, retrain), EC2 disk cleanup. 9 P1 blockers total. ML pipeline fixes (TA-057, TA-058, TA-063) assigned to S13.</div>
+            <div class="chart-card-insight" id="severity-chart-insight"><strong>S13 focus:</strong> 4 new P1 tasks added — ML pipeline rebuild (broken schema, SQL, retrain), EC2 disk cleanup. 9 P1 blockers total. ML pipeline fixes (TA-057, TA-058, TA-063) assigned to S13.</div>
         </div>
 
     </div>
@@ -2023,32 +2038,7 @@
     <!-- ── BOARD VIEW ── -->
     <div id="spage-board">
         <div style="max-width:1300px; margin:1.5rem auto 0; padding:0 2rem;">
-            <div class="sprint-grid" style="margin-bottom:1.5rem;">
-                <div class="sprint-card active">
-                    <div class="sprint-num">Sprint 13</div>
-                    <div class="sprint-theme">Data &amp; Clean</div>
-                    <div class="sprint-dates">Apr 20 – May 2</div>
-                    <span class="sprint-status status-active">Active</span>
-                </div>
-                <div class="sprint-card upcoming">
-                    <div class="sprint-num">Sprint 14</div>
-                    <div class="sprint-theme">ML Retrain</div>
-                    <div class="sprint-dates">May 4 – May 16</div>
-                    <span class="sprint-status status-upcoming">Upcoming</span>
-                </div>
-                <div class="sprint-card upcoming">
-                    <div class="sprint-num">Sprint 15</div>
-                    <div class="sprint-theme">UI &amp; UX Polish</div>
-                    <div class="sprint-dates">May 18 – May 30</div>
-                    <span class="sprint-status status-upcoming">Upcoming</span>
-                </div>
-                <div class="sprint-card upcoming">
-                    <div class="sprint-num">Sprint 16</div>
-                    <div class="sprint-theme">Hardening &amp; Release</div>
-                    <div class="sprint-dates">Jun 1 – Jun 13</div>
-                    <span class="sprint-status status-upcoming">Upcoming</span>
-                </div>
-            </div>
+            <div class="sprint-grid" style="margin-bottom:1.5rem;" id="sprint-cards-grid"></div>
             <!-- Sprint selector (custom dropdown — Edge-safe) -->
             <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem;">
                 <span style="font-size:0.85rem; color:var(--muted); white-space:nowrap; font-weight:600;">View Sprint Board:</span>
@@ -2436,64 +2426,48 @@
 <!-- ══════════════════════════════════════ -->
 <div id="tab-backlog" class="tab-panel">
 
-<!-- Backlog sub-nav -->
-<div style="max-width:1300px; margin:1.25rem auto 0; padding:0 2rem;">
-    <div class="sprint-subnav">
-        <button class="subnav-btn active" onclick="showBacklogView('backlog-product', this)">Product Backlog</button>
-        <button class="subnav-btn" onclick="showBacklogView('backlog-bugs', this)">Task Tracker</button>
-    </div>
-</div>
-
-<!-- ── PRODUCT BACKLOG ── -->
-<div id="backlog-product">
+<!-- ── UNIFIED TASK TRACKER ── -->
+<div id="backlog-bugs">
 <div class="pm-panel">
     <div class="pm-header">
         <div>
-            <h2>📦 Product Backlog</h2>
-            <p>Master list of all project work — sprint items, future features, and unscheduled ideas. Owned by the product owner. Items are pulled into sprints as capacity allows.</p>
+            <h2>📋 Product Backlog Tracker</h2>
+            <p style="color:var(--muted); font-size:0.85rem; margin-top:0.35rem; line-height:1.6;">Use the <strong>Sprint</strong> filter to view tasks by sprint. Use <strong>Status</strong> and <strong>Priority</strong> to narrow results. Combine filters to find exactly what you need. Click any column header to sort.</p>
+        </div>
+        <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;">
+            <div style="position:relative; display:inline-block;">
+                <button onclick="toggleTTExportMenu('print')" style="background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.15); border-radius:0.4rem; color:#f1f5f9; font-size:0.8rem; padding:0.4rem 0.85rem; cursor:pointer; display:flex; align-items:center; gap:0.4rem;">🖨 Print <span style="font-size:0.65rem;">▼</span></button>
+                <div id="tt-print-menu" style="display:none; position:absolute; right:0; top:calc(100% + 4px); background:#1e293b; border:1px solid rgba(255,255,255,0.15); border-radius:0.4rem; z-index:100; min-width:200px; box-shadow:0 4px 16px rgba(0,0,0,0.4);">
+                    <div onclick="ttExport('print','current')" style="padding:0.6rem 1rem; cursor:pointer; font-size:0.8rem; color:#f1f5f9; border-bottom:1px solid rgba(255,255,255,0.08);">Current view</div>
+                    <div onclick="ttExport('print','done')" style="padding:0.6rem 1rem; cursor:pointer; font-size:0.8rem; color:#f1f5f9; border-bottom:1px solid rgba(255,255,255,0.08);">Completed tasks only</div>
+                    <div onclick="ttExport('print','sprint')" style="padding:0.6rem 1rem; cursor:pointer; font-size:0.8rem; color:#f1f5f9; border-bottom:1px solid rgba(255,255,255,0.08);">All sprints</div>
+                    <div onclick="ttExport('print','all')" style="padding:0.6rem 1rem; cursor:pointer; font-size:0.8rem; color:#f1f5f9;">Entire project</div>
+                </div>
+            </div>
+            <div style="position:relative; display:inline-block;">
+                <button onclick="toggleTTExportMenu('download')" style="background:rgba(99,179,237,0.12); border:1px solid rgba(99,179,237,0.3); border-radius:0.4rem; color:#93c5fd; font-size:0.8rem; padding:0.4rem 0.85rem; cursor:pointer; display:flex; align-items:center; gap:0.4rem;">⬇ Download <span style="font-size:0.65rem;">▼</span></button>
+                <div id="tt-download-menu" style="display:none; position:absolute; right:0; top:calc(100% + 4px); background:#1e293b; border:1px solid rgba(255,255,255,0.15); border-radius:0.4rem; z-index:100; min-width:200px; box-shadow:0 4px 16px rgba(0,0,0,0.4);">
+                    <div onclick="ttExport('download','current')" style="padding:0.6rem 1rem; cursor:pointer; font-size:0.8rem; color:#f1f5f9; border-bottom:1px solid rgba(255,255,255,0.08);">Current view</div>
+                    <div onclick="ttExport('download','done')" style="padding:0.6rem 1rem; cursor:pointer; font-size:0.8rem; color:#f1f5f9; border-bottom:1px solid rgba(255,255,255,0.08);">Completed tasks only</div>
+                    <div onclick="ttExport('download','sprint')" style="padding:0.6rem 1rem; cursor:pointer; font-size:0.8rem; color:#f1f5f9; border-bottom:1px solid rgba(255,255,255,0.08);">All sprints</div>
+                    <div onclick="ttExport('download','all')" style="padding:0.6rem 1rem; cursor:pointer; font-size:0.8rem; color:#f1f5f9;">Entire project</div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div style="overflow-x:auto; margin-top:0.5rem;">
-    <table style="width:100%; border-collapse:collapse; font-size:0.84rem;" id="pb-table">
-        <thead>
-            <tr style="border-bottom:2px solid var(--border);">
-                <th style="text-align:left; padding:0.6rem 0.75rem; color:#FFD700; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.08em; white-space:nowrap;">ID</th>
-                <th style="text-align:left; padding:0.6rem 0.75rem; color:#FFD700; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.08em;">Feature / Story</th>
-                <th style="text-align:left; padding:0.6rem 0.75rem; color:#FFD700; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.08em; white-space:nowrap;">Category</th>
-                <th style="text-align:center; padding:0.6rem 0.75rem; color:#FFD700; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.08em; white-space:nowrap;">Priority</th>
-                <th style="text-align:center; padding:0.6rem 0.75rem; color:#FFD700; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.08em; white-space:nowrap;">Effort</th>
-                <th style="text-align:center; padding:0.6rem 0.75rem; color:#FFD700; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.08em; white-space:nowrap;">Status</th>
-            </tr>
-        </thead>
-        <tbody id="pb-tbody"></tbody>
-    </table>
-    </div>
-</div>
-</div>
-
-<!-- ── TASK TRACKER ── -->
-<div id="backlog-bugs" style="display:none;">
-<div class="pm-panel">
-    <div class="pm-header">
-        <div>
-            <h2>📋 Task Tracker</h2>
-            <p>All PB items — searchable, filterable, sortable. Same data as the Product Backlog.</p>
-        </div>
-    </div>
-
-    <!-- Search + Filters -->
-    <div style="display:flex; flex-wrap:wrap; gap:0.75rem; align-items:center; margin-bottom:1rem;">
+    <!-- Filter Row 1: Sprint + Search -->
+    <div style="display:flex; flex-wrap:wrap; gap:0.75rem; align-items:center; margin-bottom:0.75rem;">
         <input id="tt-search" type="text" placeholder="Search tasks..." oninput="renderTaskTracker()"
             style="background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.15); border-radius:0.4rem; color:#f1f5f9; font-size:0.85rem; padding:0.4rem 0.85rem; outline:none; min-width:220px; flex:1;">
         <div class="backlog-controls" style="margin:0;">
-            <span style="font-size:0.8rem; color:var(--muted); margin-right:0.25rem;">Priority:</span>
-            <button class="filter-btn active" onclick="setTTFilter('pri','all',this)">All</button>
-            <button class="filter-btn" onclick="setTTFilter('pri','Critical',this)">Critical</button>
-            <button class="filter-btn" onclick="setTTFilter('pri','High',this)">High</button>
-            <button class="filter-btn" onclick="setTTFilter('pri','Medium',this)">Medium</button>
-            <button class="filter-btn" onclick="setTTFilter('pri','Low',this)">Low</button>
+            <span style="font-size:0.8rem; color:var(--muted); margin-right:0.25rem;">Sprint:</span>
+            <div id="tt-sprint-btns"></div>
         </div>
+    </div>
+
+    <!-- Filter Row 2: Status + Priority -->
+    <div style="display:flex; flex-wrap:wrap; gap:0.75rem; align-items:center; margin-bottom:1rem;">
         <div class="backlog-controls" style="margin:0;">
             <span style="font-size:0.8rem; color:var(--muted); margin-right:0.25rem;">Status:</span>
             <button class="filter-btn active" onclick="setTTFilter('status','all',this)">All</button>
@@ -2501,6 +2475,14 @@
             <button class="filter-btn" onclick="setTTFilter('status','Done',this)">Done</button>
             <button class="filter-btn" onclick="setTTFilter('status','Blocked',this)">Blocked</button>
             <button class="filter-btn" onclick="setTTFilter('status','Backlog',this)">Backlog</button>
+        </div>
+        <div class="backlog-controls" style="margin:0;">
+            <span style="font-size:0.8rem; color:var(--muted); margin-right:0.25rem;">Priority:</span>
+            <button class="filter-btn active" onclick="setTTFilter('pri','all',this)">All</button>
+            <button class="filter-btn" onclick="setTTFilter('pri','Critical',this)">Critical</button>
+            <button class="filter-btn" onclick="setTTFilter('pri','High',this)">High</button>
+            <button class="filter-btn" onclick="setTTFilter('pri','Medium',this)">Medium</button>
+            <button class="filter-btn" onclick="setTTFilter('pri','Low',this)">Low</button>
         </div>
     </div>
 
@@ -3720,6 +3702,189 @@ function getCanvas(id) {
     return clone;
 }
 
+// ── SPRINT ARCHIVE DATA ──
+// Sprint schedule — add new sprints here as they are planned
+var SPRINT_SCHEDULE = [
+    { num: 12, start: '2026-04-06', end: '2026-04-18', theme: 'Diagnose & Restore',   displayDates: 'Apr 6 – Apr 18'   },
+    { num: 13, start: '2026-04-20', end: '2026-05-02', theme: 'Data & Clean',          displayDates: 'Apr 20 – May 2'   },
+    { num: 14, start: '2026-05-04', end: '2026-05-16', theme: 'ML Retrain',            displayDates: 'May 4 – May 16'   },
+    { num: 15, start: '2026-05-18', end: '2026-05-30', theme: 'UI & UX Polish',        displayDates: 'May 18 – May 30'  },
+    { num: 16, start: '2026-06-01', end: '2026-06-13', theme: 'Hardening & Release',   displayDates: 'Jun 1 – Jun 13'   }
+];
+
+function getCurrentSprint() {
+    var today = new Date();
+    today.setHours(0,0,0,0);
+    // Return the sprint whose date range contains today, or the most recent past sprint
+    var current = SPRINT_SCHEDULE[0].num;
+    for (var i = 0; i < SPRINT_SCHEDULE.length; i++) {
+        var s = SPRINT_SCHEDULE[i];
+        var start = new Date(s.start);
+        var end = new Date(s.end);
+        end.setHours(23,59,59,999);
+        if (today >= start && today <= end) return s.num;
+        if (today > end) current = s.num;
+        if (today < start) break;
+    }
+    return current;
+}
+
+var CURRENT_DASH_SPRINT = getCurrentSprint();
+
+var SPRINT_ARCHIVE = {
+    12: {
+        label: 'Sprint 12 — Diagnose & Restore',
+        status: 'completed',
+        rag: { cls: 'green', label: 'ON TRACK — GREEN', msg: 'Sprint 12 closed Apr 18 · 8 of 9 tasks delivered · TA-008 blocked (AWS MFA) · Sprint 13 starts Apr 20', detail: 'Updated: Apr 18, 2026 · Next review: Apr 20 (S13 kickoff)' },
+        metrics: { sprintNum: '12', sprintSub: 'of 16 total · Diagnose &amp; Restore', daysVal: '0', daysSub: 'Sprint closed Apr 18, 2026', taskPct: '99%', taskCount: '84 of 85 tasks complete' },
+        burndownTitle: 'Burndown — Sprint 12',
+        burndownInsight: '<strong>S12 status:</strong> 84 of 85 tasks complete. 1 task blocked (TA-008 — awaiting AWS console access). Sprint closed Apr 18.',
+        burndown: { ideal: [83,77,71,65,59,53,47,41,35,29,23,17,11,0], actual: [83,83,79,79,68,65,62,58,55,50,42,1,null,null], max: 90 },
+        burnupInsight: '<strong>S12 progress:</strong> 8 backlog items delivered (TA-001 through TA-009). Cumulative completed: 83 of 83. TA-008 blocked — carries to S13.',
+        burnup: { labels: ['S1','S2','S3','S4','S5','S6','S7','S8','S9','S10','S11','S12*'], scope: [8,14,20,26,32,40,50,58,65,72,78,83], completed: [8,13,19,25,30,37,46,54,61,68,75,83] },
+        velocityInsight: '<strong>Avg velocity:</strong> ~6.8 TA items/sprint across S1–S11. S12 delivered 8 TA items. TA-008 blocked, carries to S13.',
+        velocity: { labels: ['S1','S2','S3','S4','S5','S6','S7','S8','S9','S10','S11','S12*'], data: [8,5,6,6,5,7,9,8,7,7,7,8], activeIndex: 11 },
+        severityInsight: '<strong>S13 focus:</strong> 4 new P1 tasks added — ML pipeline rebuild (broken schema, SQL, retrain), EC2 disk cleanup. 9 P1 blockers total. ML pipeline fixes (TA-057, TA-058, TA-063) assigned to S13.',
+        severity: [9,13,7,2]
+    },
+    13: {
+        label: 'Sprint 13 — Data & Clean',
+        status: 'upcoming',
+        rag: { cls: '', label: 'UPCOMING', msg: 'Sprint 13 starts Apr 20 · Board activates at kickoff · Sprint 12 closed GREEN', detail: 'Planning: Apr 20, 2026' },
+        metrics: { sprintNum: '13', sprintSub: 'of 16 total · Data &amp; Clean', daysVal: '—', daysSub: 'Sprint starts Apr 20, 2026', taskPct: '—', taskCount: 'Board activates Apr 20' },
+        burndownTitle: 'Burndown — Sprint 13 (Not Started)',
+        burndownInsight: 'Sprint 13 board activates Apr 20, 2026. Burndown data begins at kickoff.',
+        burndown: { ideal: null, actual: null, max: 90 },
+        burnupInsight: '<strong>S12 completed:</strong> 83 subtasks across 8 TA items. S13 scope will be set at kickoff Apr 20.',
+        burnup: { labels: ['S1','S2','S3','S4','S5','S6','S7','S8','S9','S10','S11','S12'], scope: [8,14,20,26,32,40,50,58,65,72,78,83], completed: [8,13,19,25,30,37,46,54,61,68,75,83] },
+        velocityInsight: '<strong>S13 velocity:</strong> Sprint in planning. Board activates Apr 20 — velocity updates as tasks complete.',
+        velocity: { labels: ['S1','S2','S3','S4','S5','S6','S7','S8','S9','S10','S11','S12'], data: [8,5,6,6,5,7,9,8,7,7,7,8], activeIndex: -1 },
+        severityInsight: '<strong>S13 focus:</strong> 9 P1 blockers total. ML pipeline rebuild (TA-057, TA-058), EC2 disk cleanup (TA-063) assigned to S13.',
+        severity: [9,13,7,2]
+    }
+};
+
+function initSprintBoardTab() {
+    var today = new Date();
+    today.setHours(0,0,0,0);
+    var currentNum = getCurrentSprint();
+
+    // Build sprint cards dynamically
+    var grid = document.getElementById('sprint-cards-grid');
+    if (grid) {
+        grid.innerHTML = SPRINT_SCHEDULE.map(function(s) {
+            var start = new Date(s.start);
+            var end = new Date(s.end);
+            end.setHours(23,59,59,999);
+            var cardClass, statusClass, statusLabel;
+            if (today > end) {
+                cardClass = 'sprint-card completed';
+                statusClass = 'sprint-status status-completed';
+                statusLabel = 'Completed';
+            } else if (today >= start && today <= end) {
+                cardClass = 'sprint-card active';
+                statusClass = 'sprint-status status-active';
+                statusLabel = 'Active Now';
+            } else {
+                cardClass = 'sprint-card upcoming';
+                statusClass = 'sprint-status status-upcoming';
+                statusLabel = 'Upcoming';
+            }
+            return '<div class="' + cardClass + '">' +
+                '<div class="sprint-num">Sprint ' + s.num + '</div>' +
+                '<div class="sprint-theme">' + s.theme + '</div>' +
+                '<div class="sprint-dates">' + s.displayDates + '</div>' +
+                '<span class="' + statusClass + '">' + statusLabel + '</span>' +
+                '</div>';
+        }).join('');
+    }
+
+    // Auto-select current sprint in the board dropdown and show its board
+    var label = 'Sprint ' + currentNum;
+    SPRINT_SCHEDULE.forEach(function(s) {
+        if (s.num === currentNum) label = 'Sprint ' + s.num + ' — ' + s.theme;
+    });
+    document.getElementById('sprint-dropdown-label').textContent = label;
+    document.querySelectorAll('.sd-opt').forEach(function(o) {
+        var isActive = parseInt(o.dataset.val) === currentNum;
+        o.style.background = isActive ? '#243447' : '#111c2b';
+        o.style.color = isActive ? '#FFD700' : '#f1f5f9';
+        o.style.fontWeight = isActive ? '600' : '';
+    });
+    showSprintBoard(String(currentNum));
+}
+
+function loadSprintDashboard(num) {
+    CURRENT_DASH_SPRINT = num;
+    var s = SPRINT_ARCHIVE[num];
+    if (!s) return;
+
+    // Update dropdown label and highlight active option
+    var lbl = document.getElementById('dash-sprint-label');
+    if (lbl) lbl.textContent = s.label + (s.status === 'completed' ? ' (Completed)' : ' (Upcoming)');
+    document.querySelectorAll('.dsd-opt').forEach(function(o) {
+        var isActive = String(o.dataset.val) === String(num);
+        o.style.background = isActive ? '#243447' : '#111c2b';
+        o.style.color = isActive ? '#FFD700' : '#f1f5f9';
+        o.style.fontWeight = isActive ? '600' : '';
+    });
+
+    // Update RAG banner
+    var banner = document.getElementById('rag-banner');
+    if (banner) banner.className = 'rag-banner' + (s.rag.cls ? ' ' + s.rag.cls : '');
+    var dot = document.getElementById('rag-dot');
+    if (dot) dot.className = 'rag-dot' + (s.rag.cls ? ' ' + s.rag.cls : '');
+    var ragLbl = document.getElementById('rag-label');
+    if (ragLbl) { ragLbl.className = 'rag-label' + (s.rag.cls ? ' ' + s.rag.cls : ''); ragLbl.textContent = s.rag.label; }
+    var ragMsg = document.getElementById('rag-message');
+    if (ragMsg) ragMsg.textContent = s.rag.msg;
+    var ragDetail = document.getElementById('rag-detail');
+    if (ragDetail) ragDetail.textContent = s.rag.detail;
+
+    // Update metrics strip
+    var el;
+    el = document.getElementById('dash-current-sprint');        if (el) el.textContent = s.metrics.sprintNum;
+    el = document.getElementById('dash-current-sprint-sub');    if (el) el.innerHTML = s.metrics.sprintSub;
+    el = document.getElementById('days-remaining');             if (el) el.textContent = s.metrics.daysVal;
+    el = document.getElementById('dash-days-remaining-sub');    if (el) el.textContent = s.metrics.daysSub;
+    el = document.getElementById('dash-task-pct');              if (el) el.textContent = s.metrics.taskPct;
+    el = document.getElementById('dash-task-count');            if (el) el.textContent = s.metrics.taskCount;
+
+    // Update chart titles and insight text
+    el = document.getElementById('burndown-chart-title');   if (el) el.textContent = s.burndownTitle;
+    el = document.getElementById('burndown-chart-insight'); if (el) el.innerHTML = s.burndownInsight;
+    el = document.getElementById('burnup-chart-insight');   if (el) el.innerHTML = s.burnupInsight;
+    el = document.getElementById('velocity-chart-insight'); if (el) el.innerHTML = s.velocityInsight;
+    el = document.getElementById('severity-chart-insight'); if (el) el.innerHTML = s.severityInsight;
+
+    // Rebuild charts with this sprint's data
+    rebuildCharts();
+}
+
+function toggleDashSprintDropdown() {
+    var list = document.getElementById('dash-sprint-list');
+    var arrow = document.getElementById('dash-sprint-arrow');
+    var open = list.style.display !== 'none';
+    list.style.display = open ? 'none' : '';
+    arrow.style.transform = open ? '' : 'rotate(180deg)';
+}
+
+function selectDashSprint(num, label) {
+    document.getElementById('dash-sprint-list').style.display = 'none';
+    document.getElementById('dash-sprint-arrow').style.transform = '';
+    loadSprintDashboard(num);
+}
+
+document.addEventListener('click', function(e) {
+    var dd = document.getElementById('dash-sprint-dropdown');
+    if (dd && !dd.contains(e.target)) {
+        var list = document.getElementById('dash-sprint-list');
+        var arrow = document.getElementById('dash-sprint-arrow');
+        if (list) list.style.display = 'none';
+        if (arrow) arrow.style.transform = '';
+    }
+});
+
 function rebuildCharts() {
     // Destroy existing instances first
     Object.values(chartInstances).forEach(c => { try { c.destroy(); } catch(e) {} });
@@ -3735,6 +3900,7 @@ function rebuildCharts() {
     if (!cvBurndown || !cvBurnup || !cvVelocity || !cvSeverity) return; // canvases not in DOM yet
 
     // ── BURNDOWN ──
+    var sd = SPRINT_ARCHIVE[CURRENT_DASH_SPRINT] || SPRINT_ARCHIVE[12];
     chartInstances.burndown = new Chart(cvBurndown, {
         type: 'line',
         data: {
@@ -3742,7 +3908,7 @@ function rebuildCharts() {
             datasets: [
                 {
                     label: 'Ideal Burndown',
-                    data: [83, 77, 71, 65, 59, 53, 47, 41, 35, 29, 23, 17, 11, 0],
+                    data: sd.burndown.ideal || [],
                     borderColor: c.idealLine,
                     borderDash: [5,4],
                     borderWidth: 2,
@@ -3751,7 +3917,7 @@ function rebuildCharts() {
                 },
                 {
                     label: 'Actual Remaining',
-                    data: [83, 83, 79, 79, 68, 65, 62, 58, 55, 50, 42, 1, null, null],
+                    data: sd.burndown.actual || [],
                     borderColor: c.actualLine,
                     backgroundColor: c.actualFill,
                     tension: 0.2,
@@ -3767,7 +3933,7 @@ function rebuildCharts() {
             plugins: { legend: { labels: { boxWidth: 12, color: c.legendColor } } },
             scales: {
                 x: { grid: makeGrid(), ticks: { color: c.textColor } },
-                y: { grid: makeGrid(), beginAtZero: true, max: 90, ticks: { color: c.textColor } }
+                y: { grid: makeGrid(), beginAtZero: true, max: sd.burndown.max || 90, ticks: { color: c.textColor } }
             }
         }
     });
@@ -3776,11 +3942,11 @@ function rebuildCharts() {
     chartInstances.burnup = new Chart(cvBurnup, {
         type: 'line',
         data: {
-            labels: ['S1','S2','S3','S4','S5','S6','S7','S8','S9','S10','S11','S12*'],
+            labels: sd.burnup.labels,
             datasets: [
                 {
                     label: 'Scope (Total Stories)',
-                    data: [8, 14, 20, 26, 32, 40, 50, 58, 65, 72, 78, 83],
+                    data: sd.burnup.scope,
                     borderColor: c.idealLine,
                     backgroundColor: c.idealFill,
                     borderDash: [5,4],
@@ -3791,7 +3957,7 @@ function rebuildCharts() {
                 },
                 {
                     label: 'Completed',
-                    data: [8, 13, 19, 25, 30, 37, 46, 54, 61, 68, 75, 83],
+                    data: sd.burnup.completed,
                     borderColor: c.actualLine,
                     backgroundColor: c.actualFill,
                     tension: 0.3,
@@ -3813,15 +3979,17 @@ function rebuildCharts() {
     });
 
     // ── VELOCITY ──
-    const barColors = Array(11).fill(c.barColor).concat([c.barActive]);
-    const borderColors = Array(11).fill(c.barBorder).concat(['#D50A0A']);
+    var vIdx = sd.velocity.activeIndex;
+    var vLen = sd.velocity.data.length;
+    var barColors = sd.velocity.data.map(function(_,i){ return i === vIdx ? c.barActive : c.barColor; });
+    var borderColors = sd.velocity.data.map(function(_,i){ return i === vIdx ? '#D50A0A' : c.barBorder; });
     chartInstances.velocity = new Chart(cvVelocity, {
         type: 'bar',
         data: {
-            labels: ['S1','S2','S3','S4','S5','S6','S7','S8','S9','S10','S11','S12*'],
+            labels: sd.velocity.labels,
             datasets: [{
                 label: 'Tasks Delivered',
-                data: [8, 5, 6, 6, 5, 7, 9, 8, 7, 7, 7, 8],
+                data: sd.velocity.data,
                 backgroundColor: barColors,
                 borderColor: borderColors,
                 borderWidth: 1,
@@ -3844,7 +4012,7 @@ function rebuildCharts() {
         data: {
             labels: ['P1 — Blocker', 'P2 — Major', 'P3 — Minor', 'P4 — Polish'],
             datasets: [{
-                data: [9, 13, 7, 2],
+                data: sd.severity,
                 backgroundColor: [
                     'rgba(213,10,10,0.75)',
                     'rgba(255,165,0,0.75)',
@@ -3865,7 +4033,8 @@ function rebuildCharts() {
     });
 }
 
-rebuildCharts();
+loadSprintDashboard(CURRENT_DASH_SPRINT);
+initSprintBoardTab();
 
 // Initialize on load
 initTasks();
@@ -4039,7 +4208,7 @@ initTasks();
         { id:'TA-005', feature:'Verify REACT_APP_API_URL in Amplify',           cat:'Infrastructure', pri:'Critical', effort:'S', sprint:'S12', status:'Done'      },
         { id:'TA-006', feature:'CORS configuration fix',                         cat:'Backend',        pri:'Critical', effort:'S', sprint:'S12', status:'Done' },
         { id:'TA-007', feature:'Production Task Log created',                   cat:'Documentation',  pri:'High',     effort:'S', sprint:'S12', status:'Done' },
-        { id:'TA-008', feature:'Live app URL added to dashboard',                cat:'Dashboard',      pri:'Critical', effort:'S', sprint:'TBD', status:'Backlog'   },
+        { id:'TA-008', feature:'Live app URL added to dashboard',                cat:'Dashboard',      pri:'Critical', effort:'S', sprint:'S12', status:'Backlog'   },
         { id:'TA-009', feature:'CLAUDE.md updated to reflect current state',     cat:'Documentation',  pri:'Medium',   effort:'S', sprint:'S12', status:'Done'      },
 
         // ── UNASSIGNED BACKLOG (sprint assigned at planning) ──
@@ -4090,15 +4259,16 @@ initTasks();
         { id:'TA-054', feature:'Fix /api/ml/model-performance returning empty response — endpoint exists but no data returned, discovered TA-003 audit Apr 17', cat:'Backend', pri:'High', effort:'S', sprint:'TBD', status:'Backlog' },
         { id:'TA-055', feature:'Fix /api/elo/predict-week/2024/18 returning no games found — ELO data gap for Week 18, discovered TA-003 audit Apr 17', cat:'Backend', pri:'Medium', effort:'S', sprint:'TBD', status:'Backlog' },
         { id:'TA-056', feature:'Restore nfl.aprilsykes.dev custom domain — was working before Amplify migration, broken during transfer, needs DNS and Amplify domain config', cat:'Infrastructure', pri:'High', effort:'M', sprint:'TBD', status:'Backlog' },
-        // ── SPRINT 13 — ML Pipeline & Data Cleanup ──
-        { id:'TA-057', feature:'Fix train_xgb_winner.py schema — change hcl_test to hcl (line 255) so model trains on production data', cat:'ML', pri:'Critical', effort:'S', sprint:'S13', status:'Backlog' },
-        { id:'TA-058', feature:'Fix broken SQL WINDOW clause in train_xgb_spread.py (lines 95-116) — missing closing paren causes duplicate OVER definitions, SQL fails on execution', cat:'ML', pri:'Critical', effort:'S', sprint:'S13', status:'Backlog' },
-        { id:'TA-059', feature:'Fix hardcoded default season 2025 across all backend routes — api_routes_hcl.py (7 endpoints), api_routes_ml.py, api_routes_live_scores.py — update for 2026 season', cat:'Backend', pri:'High', effort:'S', sprint:'S13', status:'Backlog' },
-        { id:'TA-060', feature:'Implement upcoming week detection in predict_ensemble.py (line 338) — currently a TODO stub, --upcoming flag prints error and exits', cat:'ML', pri:'Medium', effort:'M', sprint:'S13', status:'Backlog' },
+        { id:'TA-057', feature:'Fix train_xgb_winner.py schema — change hcl_test to hcl (line 255) so model trains on production data', cat:'ML', pri:'Critical', effort:'S', sprint:'TBD', status:'Backlog' },
+        { id:'TA-058', feature:'Fix broken SQL WINDOW clause in train_xgb_spread.py (lines 95-116) — missing closing paren causes duplicate OVER definitions, SQL fails on execution', cat:'ML', pri:'Critical', effort:'S', sprint:'TBD', status:'Backlog' },
+        { id:'TA-059', feature:'Fix hardcoded default season 2025 across all backend routes — api_routes_hcl.py (7 endpoints), api_routes_ml.py, api_routes_live_scores.py — update for 2026 season', cat:'Backend', pri:'High', effort:'S', sprint:'TBD', status:'Backlog' },
+        { id:'TA-060', feature:'Implement upcoming week detection in predict_ensemble.py (line 338) — currently a TODO stub, --upcoming flag prints error and exits', cat:'ML', pri:'Medium', effort:'M', sprint:'TBD', status:'Backlog' },
         { id:'TA-061', feature:'Retrain XGBoost winner model with corrected data pipeline — depends on TA-057 and TA-058 being resolved first', cat:'ML', pri:'Critical', effort:'L', sprint:'TBD', status:'Backlog' },
         { id:'TA-062', feature:'Retrain XGBoost spread model with corrected data pipeline — depends on TA-057 and TA-058 being resolved first', cat:'ML', pri:'Critical', effort:'L', sprint:'TBD', status:'Backlog' },
-        { id:'TA-063', feature:'EC2 disk cleanup — remove logs, tmp files, old builds to free space; disk at 88% (5.9G/6.8G), server will crash if full', cat:'Infrastructure', pri:'Critical', effort:'S', sprint:'S13', status:'Backlog' },
+        { id:'TA-063', feature:'EC2 disk cleanup — remove logs, tmp files, old builds to free space; disk at 88% (5.9G/6.8G), server will crash if full', cat:'Infrastructure', pri:'Critical', effort:'S', sprint:'TBD', status:'Backlog' },
         { id:'TA-064', feature:'Evaluate managed database to replace EC2 PostgreSQL — research AWS RDS, Railway, or Render to eliminate disk management and reduce single point of failure', cat:'Infrastructure', pri:'Low', effort:'M', sprint:'TBD', status:'Backlog' },
+        { id:'TA-065', feature:'Build sprint selector dropdown on Dashboard home page — SPRINT_ARCHIVE data object + loadSprintDashboard() function; switches charts and metrics by sprint', cat:'Dashboard', pri:'Medium', effort:'M', sprint:'TBD', status:'Backlog' },
+        { id:'TA-066', feature:'Database-backed PM dashboard automation — store sprint/task completion state in PostgreSQL, expose via Flask API, eliminate hardcoded COMPLETED_TASKS array', cat:'Dashboard', pri:'Medium', effort:'L', sprint:'TBD', status:'Backlog' },
     ];
 
     window.PB_ITEMS = items;
@@ -4108,7 +4278,7 @@ initTasks();
     // S12 items first, then everything else — no sprint labels except S12
     var s12Items = items.filter(function(i){ return i.sprint === 'S12'; });
     var backlogItems = items.filter(function(i){ return i.sprint !== 'S12'; });
-    var s12Header = '<tr><td colspan="6" style="padding:0.5rem 0.75rem 0.25rem; font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:#FFD700; border-bottom:1px solid var(--border);">Sprint 12 — Active</td></tr>';
+    var s12Header = '<tr><td colspan="6" style="padding:0.5rem 0.75rem 0.25rem; font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:#10b981; border-bottom:1px solid var(--border);">Sprint 12 — Completed</td></tr>';
     var backlogHeader = '<tr><td colspan="6" style="padding:0.5rem 0.75rem 0.25rem; font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:var(--muted); border-bottom:1px solid var(--border);">Backlog</td></tr>';
     function renderRow(item, i) {
         var bg = i % 2 === 0 ? '' : 'background:rgba(255,255,255,0.02);';
@@ -4556,9 +4726,23 @@ function showSprintView(view, btn) {
 
 /* ── TASK TRACKER ── */
 (function initTaskTracker() {
-    var ttFilters = { pri: 'all', status: 'all' };
+    var ttFilters = { sprint: 'all', pri: 'all', status: 'all' };
     var ttSortCol = -1;
     var ttSortAsc = true;
+
+    // Build sprint filter buttons dynamically from SPRINT_SCHEDULE
+    (function buildSprintButtons() {
+        var container = document.getElementById('tt-sprint-btns');
+        if (!container) return;
+        var curSprint = 'S' + (window.getCurrentSprint ? window.getCurrentSprint() : 13);
+        var html = '<button class="filter-btn active" onclick="setTTFilter(\'sprint\',\'all\',this)">All</button>';
+        (window.SPRINT_SCHEDULE || []).forEach(function(s) {
+            var key = 'S' + s.num;
+            html += '<button class="filter-btn" onclick="setTTFilter(\'sprint\',\'' + key + '\',this)">' + key + '</button>';
+        });
+        html += '<button class="filter-btn" onclick="setTTFilter(\'sprint\',\'TBD\',this)">TBD</button>';
+        container.innerHTML = html;
+    })();
 
     var PS = {
         'Critical': 'background:rgba(248,113,113,0.15);color:#f87171;border:1px solid rgba(248,113,113,0.3);',
@@ -4594,6 +4778,7 @@ function showSprintView(view, btn) {
         search = search.toLowerCase();
 
         var filtered = items.filter(function(item) {
+            if (ttFilters.sprint !== 'all' && item.sprint !== ttFilters.sprint) return false;
             if (ttFilters.pri !== 'all' && item.pri !== ttFilters.pri) return false;
             if (ttFilters.status !== 'all' && item.status !== ttFilters.status) return false;
             if (search) {
@@ -4673,15 +4858,87 @@ function showSprintView(view, btn) {
         window.renderTaskTracker();
     };
 
-    // Initial render happens when the Task Tracker tab is shown
-    // Hook into showBacklogView to trigger render on first open
-    var _origShowBacklogView = window.showBacklogView;
-    window.showBacklogView = function(view, btn) {
-        if (_origShowBacklogView) _origShowBacklogView(view, btn);
-        if (view === 'backlog-bugs') {
-            window.renderTaskTracker();
+    window.toggleTTExportMenu = function(type) {
+        var printMenu = document.getElementById('tt-print-menu');
+        var dlMenu = document.getElementById('tt-download-menu');
+        if (type === 'print') {
+            printMenu.style.display = printMenu.style.display === 'none' ? 'block' : 'none';
+            dlMenu.style.display = 'none';
+        } else {
+            dlMenu.style.display = dlMenu.style.display === 'none' ? 'block' : 'none';
+            printMenu.style.display = 'none';
         }
     };
+
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('#tt-print-menu') && !e.target.closest('#tt-download-menu') &&
+            !e.target.closest('button[onclick*="toggleTTExportMenu"]')) {
+            var pm = document.getElementById('tt-print-menu');
+            var dm = document.getElementById('tt-download-menu');
+            if (pm) pm.style.display = 'none';
+            if (dm) dm.style.display = 'none';
+        }
+    });
+
+    window.ttExport = function(action, scope) {
+        var allItems = window.PB_ITEMS || [];
+        var items;
+        if (scope === 'current') {
+            // use whatever is currently rendered
+            items = allItems.filter(function(item) {
+                if (ttFilters.sprint !== 'all' && item.sprint !== ttFilters.sprint) return false;
+                if (ttFilters.pri !== 'all' && item.pri !== ttFilters.pri) return false;
+                if (ttFilters.status !== 'all' && item.status !== ttFilters.status) return false;
+                var search = ((document.getElementById('tt-search') || {}).value || '').toLowerCase();
+                if (search) {
+                    var h = (item.id+' '+item.feature+' '+item.cat+' '+item.pri+' '+item.status+' '+item.sprint).toLowerCase();
+                    if (h.indexOf(search) === -1) return false;
+                }
+                return true;
+            });
+        } else if (scope === 'done') {
+            items = allItems.filter(function(i) { return i.status === 'Done'; });
+        } else if (scope === 'sprint') {
+            items = allItems.filter(function(i) { return i.sprint !== 'TBD'; });
+        } else {
+            items = allItems;
+        }
+
+        var scopeLabels = { current:'Current View', done:'Completed Tasks', sprint:'All Sprints', all:'Entire Project' };
+        var title = 'H.C. Lombardo — Product Backlog Tracker — ' + scopeLabels[scope];
+        var headers = ['ID', 'Feature / Task', 'Category', 'Priority', 'Effort', 'Sprint', 'Status'];
+
+        if (action === 'print') {
+            var rows = items.map(function(item) {
+                return '<tr><td>'+item.id+'</td><td>'+item.feature+'</td><td>'+item.cat+'</td><td>'+item.pri+'</td><td>'+item.effort+'</td><td>'+item.sprint+'</td><td>'+item.status+'</td></tr>';
+            }).join('');
+            var win = window.open('', '_blank');
+            win.document.write('<html><head><title>'+title+'</title><style>body{font-family:sans-serif;font-size:12px;padding:1rem;}h2{margin-bottom:0.5rem;}table{width:100%;border-collapse:collapse;}th,td{border:1px solid #ccc;padding:0.4rem 0.6rem;text-align:left;}th{background:#f0f0f0;font-weight:700;}tr:nth-child(even){background:#f9f9f9;}</style></head><body>');
+            win.document.write('<h2>'+title+'</h2>');
+            win.document.write('<p style="color:#666;font-size:11px;">Generated: '+new Date().toLocaleDateString()+' · '+items.length+' tasks</p>');
+            win.document.write('<table><thead><tr>'+headers.map(function(h){return '<th>'+h+'</th>';}).join('')+'</tr></thead><tbody>'+rows+'</tbody></table>');
+            win.document.write('</body></html>');
+            win.document.close();
+            win.print();
+        } else {
+            var csv = [headers.join(',')].concat(items.map(function(item) {
+                return [item.id, '"'+item.feature.replace(/"/g,'""')+'"', item.cat, item.pri, item.effort, item.sprint, item.status].join(',');
+            })).join('\n');
+            var blob = new Blob([csv], { type: 'text/csv' });
+            var a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = title.replace(/[^a-zA-Z0-9\- ]/g,'').replace(/ +/g,'_') + '.csv';
+            a.click();
+            URL.revokeObjectURL(a.href);
+        }
+
+        // close menus
+        document.getElementById('tt-print-menu').style.display = 'none';
+        document.getElementById('tt-download-menu').style.display = 'none';
+    };
+
+    // Initial render
+    window.renderTaskTracker();
 })();
 </script>
 <!-- ── TASK RESOLUTION MODAL ── -->
