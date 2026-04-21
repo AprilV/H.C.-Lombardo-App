@@ -386,7 +386,8 @@ mark.hl.cur{background:#ffd700}
 def make_js(total_commits, total_lines):
     return f"""
 (function(){{
-  var LIVE_URL = 'http://localhost:8765/archive/';
+  var ARCHIVE_URL = 'archive/';          /* static git-history JSON files */
+  var WATCHER_URL = 'http://localhost:8765/archive/'; /* live file-watcher (log_watcher.py) */
   var TODAY    = new Date().toISOString().slice(0,10);
 
   /* ── Tabs ── */
@@ -397,6 +398,7 @@ def make_js(total_commits, total_lines):
       btn.classList.add('active');
       document.getElementById('panel-'+btn.dataset.tab).classList.add('active');
       if(btn.dataset.tab==='live') startLive();
+      else stopLive();
     }});
   }});
 
@@ -531,21 +533,25 @@ def make_js(total_commits, total_lines):
   document.addEventListener('wheel',function(e){{ if(e.deltaY<0) liveFollow=false; }},{{passive:true}});
 
   function pollLive(){{
-    fetch(LIVE_URL+TODAY+'.json?t='+Date.now())
-      .then(function(r){{ return r.json(); }})
+    fetch(WATCHER_URL+TODAY+'.json?t='+Date.now())
+      .then(function(r){{ if(!r.ok) throw new Error(r.status); return r.json(); }})
       .then(function(entries){{
-        if(liveInd){{ liveInd.textContent='LIVE'; liveInd.style.color='#3fb950'; }}
+        if(liveInd){{ liveInd.textContent='LIVE'; liveInd.style.color='#3fb950'; liveInd.style.borderColor='#3fb950'; }}
         entries.forEach(appendLiveEntry);
       }})
       .catch(function(){{
-        if(liveInd){{ liveInd.textContent='OFFLINE'; liveInd.style.color='#484f58'; }}
+        if(liveInd){{ liveInd.textContent='OFFLINE'; liveInd.style.color='#484f58'; liveInd.style.borderColor=''; }}
       }});
   }}
 
   function startLive(){{
     if(liveTimer) return;
     pollLive();
-    liveTimer=setInterval(pollLive,3000);
+    liveTimer=setInterval(pollLive,5000);
+  }}
+
+  function stopLive(){{
+    if(liveTimer){{ clearInterval(liveTimer); liveTimer=null; }}
   }}
 
   /* ── Calendar ── */
@@ -623,38 +629,63 @@ def make_js(total_commits, total_lines):
   }}
 
   function loadDay(dateStr){{
+    var dayLog=document.getElementById('cal-day-log');
     var hdr=document.getElementById('cal-day-log-hdr');
     var body=document.getElementById('cal-day-log-body');
+    if(dayLog) dayLog.style.display='block';
     if(hdr) hdr.textContent='Log for '+dateStr+' (loading...)';
     if(body) body.innerHTML='';
 
-    fetch(LIVE_URL+dateStr+'.json?t='+Date.now())
-      .then(function(r){{ return r.json(); }})
+    fetch(ARCHIVE_URL+dateStr+'.json?t='+Date.now())
+      .then(function(r){{ if(!r.ok) throw new Error(r.status); return r.json(); }})
       .then(function(entries){{
-        if(hdr) hdr.textContent='Log for '+dateStr+' ('+entries.length+' entries)';
+        if(hdr) hdr.textContent='Log for '+dateStr+' \u2014 '+entries.length+' '+(entries.length===1?'entry':'entries');
         if(!body) return;
         if(entries.length===0){{
           body.innerHTML='<div class="ln" style="color:#484f58;padding:0.5rem 1rem;">No entries for this date.</div>';
           return;
         }}
         entries.forEach(function(entry){{
-          var labels={{'modified':'SAVE   ','created':'NEW    ','deleted':'DELETE ','renamed':'RENAME ','started':'WATCHER'}};
           var div=document.createElement('div');
-          div.className='ln ln-live';
-          div.innerHTML='<span class="ts">['+entry.ts+']</span> '+
-            '<span class="lbl-live">'+(labels[entry.type]||entry.type.toUpperCase().padEnd(7))+'</span> '+
-            '<span class="c-livefile">'+entry.file+'</span>'+
-            (entry.from?' <span class="c-meta">(was '+entry.from+')</span>':'');
+          if(entry.type==='commit'){{
+            /* Git history entry */
+            var clsMap={{'key':'c-key','bug':'c-bug','fix':'c-fix','normal':'c-normal'}};
+            var lblMap={{'key':'lbl-key','bug':'lbl-bug','fix':'lbl-fix','normal':'lbl-nrm'}};
+            var cls=clsMap[entry.cls]||'c-normal';
+            var lblCls=lblMap[entry.cls]||'lbl-nrm';
+            div.className='ln ln-commit '+cls;
+            var stats='';
+            if(entry.files) stats+=' <span class="c-stat">'+entry.files+' file'+(entry.files!==1?'s':'')+'</span>';
+            if(entry.ins)   stats+=' <span class="d-add">+'+entry.ins+'</span>';
+            if(entry.dels)  stats+=' <span class="d-del">-'+entry.dels+'</span>';
+            div.innerHTML=
+              '<span class="ts">['+entry.ts+']</span> '+
+              '<span class="'+lblCls+'">COMMIT </span> '+
+              '<span class="c-hash">'+entry.hash+'</span> &mdash; '+
+              '<span class="c-msg">'+entry.msg+'</span>'+
+              (entry.label?'<br><span style="padding-left:2rem;color:#f0883e;font-size:0.8rem;">*** KEY '+entry.label+'</span>':'')+
+              stats;
+          }} else {{
+            /* Live file-watcher entry */
+            var labels={{'modified':'SAVE   ','created':'NEW    ','deleted':'DELETE ','renamed':'RENAME ','started':'WATCHER'}};
+            div.className='ln ln-live';
+            div.innerHTML=
+              '<span class="ts">['+entry.ts+']</span> '+
+              '<span class="lbl-live">'+(labels[entry.type]||entry.type.toUpperCase().padEnd(7))+'</span> '+
+              '<span class="c-livefile">'+(entry.file||'')+'</span>'+
+              (entry.from?' <span class="c-meta">(was '+entry.from+')</span>':'');
+          }}
           body.appendChild(div);
         }});
       }})
       .catch(function(){{
-        if(hdr) hdr.textContent='Log for '+dateStr+' (no data)';
+        if(hdr) hdr.textContent='Log for '+dateStr+' \u2014 no data';
+        if(body) body.innerHTML='<div class="ln" style="color:#484f58;padding:0.5rem 1rem;">No archive data for this date.</div>';
       }});
   }}
 
-  /* Load calendar index */
-  fetch(LIVE_URL+'index.json?t='+Date.now())
+  /* Load calendar index from static archive files */
+  fetch(ARCHIVE_URL+'index.json?t='+Date.now())
     .then(function(r){{ return r.json(); }})
     .then(function(dates){{ buildCalendar(dates); }})
     .catch(function(){{ buildCalendar([]); }});
@@ -666,7 +697,7 @@ def make_js(total_commits, total_lines):
   if(calFilter) calFilter.addEventListener('click',function(){{
     var from=calFrom?calFrom.value:'';
     var to=calTo?calTo.value:'';
-    fetch(LIVE_URL+'index.json?t='+Date.now())
+    fetch(ARCHIVE_URL+'index.json?t='+Date.now())
       .then(function(r){{ return r.json(); }})
       .then(function(dates){{
         var filtered=dates.filter(function(d){{
@@ -878,12 +909,6 @@ logbook = f"""<!DOCTYPE html>
 </body>
 </html>"""
 
-# Show cal-day-log when a day is selected (JS patch)
-logbook = logbook.replace(
-    'body.appendChild(div);\n        }});\n      }})\n      .catch',
-    'body.appendChild(div);\n        }});\n        var dayLog=document.getElementById("cal-day-log"); if(dayLog) dayLog.style.display="block";\n      }})\n      .catch'
-)
-
 os.makedirs(os.path.dirname(LOGBOOK_OUT), exist_ok=True)
 with open(LOGBOOK_OUT, 'w', encoding='utf-8') as f:
     f.write(logbook)
@@ -1001,4 +1026,62 @@ with open(FRAGMENT_OUT, 'w', encoding='utf-8') as f:
 sz3 = os.path.getsize(FRAGMENT_OUT)
 print(f"Fragment: {sz3:,} bytes")
 print(f"  -> {FRAGMENT_OUT}")
+
+# ── Write per-date archive JSON from git history ──────────────────────────────
+print("\nWriting date archives...")
+ARCHIVE_DIR.mkdir(parents=True, exist_ok=True)
+
+from collections import defaultdict
+by_date = defaultdict(list)
+for c in commits:
+    day = c['date'][:10]
+    # Parse stat lines to count files/insertions/deletions
+    files_changed = 0
+    insertions = 0
+    deletions = 0
+    for sl in c.get('stat', []):
+        m = re.search(r'(\d+) file', sl)
+        if m:
+            files_changed = int(m.group(1))
+        m2 = re.search(r'(\d+) insertion', sl)
+        if m2:
+            insertions = int(m2.group(1))
+        m3 = re.search(r'(\d+) deletion', sl)
+        if m3:
+            deletions = int(m3.group(1))
+    cls = classify(c)
+    entry = {
+        'ts':    c['date'],
+        'type':  'commit',
+        'hash':  c['short'],
+        'msg':   c['msg'],
+        'cls':   cls,
+        'label': KEY_COMMITS.get(c['short'], ''),
+        'files': files_changed,
+        'ins':   insertions,
+        'dels':  deletions,
+    }
+    by_date[day].append(entry)
+
+dates_written = []
+for day, entries in sorted(by_date.items()):
+    path = ARCHIVE_DIR / f"{day}.json"
+    with open(path, 'w', encoding='utf-8') as f:
+        json.dump(entries, f, ensure_ascii=False)
+    dates_written.append(day)
+
+# Merge with any existing live-watcher dates in index.json
+index_path = ARCHIVE_DIR / 'index.json'
+existing = []
+if index_path.exists():
+    try:
+        existing = json.loads(index_path.read_text(encoding='utf-8'))
+    except Exception:
+        existing = []
+all_dates = sorted(set(dates_written) | set(existing))
+index_path.write_text(json.dumps(all_dates, ensure_ascii=False), encoding='utf-8')
+print(f"  {len(dates_written)} date archives written ({dates_written[0]} to {dates_written[-1]})")
+print(f"  index.json: {len(all_dates)} total dates")
+print(f"  -> {ARCHIVE_DIR}/")
+
 print(f"\nDone. {len(commits)} commits / {key_count} key / {bug_count} bugs / {fix_count} fixes / {len(log_lines):,} lines")
