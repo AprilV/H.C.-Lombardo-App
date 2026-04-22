@@ -155,6 +155,7 @@ ML-3, ML-7 (validate + display results)
 | ML accuracy doesn't improve after retrain | Medium | Medium | Document honestly; accuracy analysis is the deliverable |
 | Production deployment breaks something new | Low | High | Always test locally before pushing to master |
 | VS Code context lost between sessions | High | Low | Memory files + "save our context" habit |
+| AI delivery failure causes incorrect or scope-exceeding changes | High | High | Implemented Apr 22, 2026: transitioned from prior assistant to GPT-5.3-Codex. Enforced controls now active: contract-first execution, no assumptions, per-task chat isolation, mandatory human review before deploy, and explicit verification against requirements. Incident reference: dashboard navbar/logbook automation failure consumed ~16 hours and ~2.5 recovery days. |
 | Scope grows beyond 10 weeks | Medium | Medium | Strict P1-only focus if behind schedule |
 
 ---
@@ -164,7 +165,7 @@ ML-3, ML-7 (validate + display results)
 If something is stuck or unclear:
 1. Stop — don't keep pushing broken code
 2. Say: **"I'm stuck on [X] — what are my options?"**
-3. Claude will present options, you decide
+3. GPT-5.3-Codex will present options, you decide
 4. If involving Dr. Foster (class requirement), document it in sprint notes
 
 ---
@@ -209,6 +210,6 @@ Copy this for each completed sprint:
 
 ---
 
-*Last updated: April 3, 2026*
+*Last updated: April 22, 2026*
 *Owner: April V. Sykes*
 *Course: IS330 — Olympic College*
