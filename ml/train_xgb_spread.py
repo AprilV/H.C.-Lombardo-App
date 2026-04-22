@@ -92,28 +92,7 @@ def load_data(schema='hcl'):
                 AVG(time_of_possession_pct) OVER w as avg_top,
                 AVG(early_down_success_rate) OVER w as avg_early_down_success
             FROM game_stats
-            WINDOW w AS (PARTITION BY team, season ORDER BY week ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING
-        )
-                    PARTITION BY team, season 
-                    ORDER BY week 
-                    ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING
-                ) as avg_yards_per_play,
-                AVG(turnovers) OVER (
-                    PARTITION BY team, season 
-                    ORDER BY week 
-                    ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING
-                ) as avg_turnovers,
-                AVG(third_down_pct) OVER (
-                    PARTITION BY team, season 
-                    ORDER BY week 
-                    ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING
-                ) as avg_third_down_pct,
-                AVG(red_zone_pct) OVER (
-                    PARTITION BY team, season 
-                    ORDER BY week 
-                    ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING
-                ) as avg_red_zone_pct
-            FROM game_stats
+            WINDOW w AS (PARTITION BY team, season ORDER BY week ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING)
         )
         SELECT 
             g.game_id,

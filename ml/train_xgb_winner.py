@@ -249,10 +249,10 @@ def main():
     print_header("XGBoost Winner Prediction Model Training")
     print(f"Training Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print("Target: Predict NFL game winners (home vs away)")
-    print("Data: 2020-2025 seasons from hcl_test schema")
-    
+    print("Data: 2020-2025 seasons from hcl schema")
+
     # Load data
-    df = load_data(schema='hcl_test')
+    df = load_data(schema='hcl')
     
     # Prepare features
     X, y, feature_cols = prepare_features(df)

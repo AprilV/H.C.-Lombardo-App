@@ -7,6 +7,7 @@ from flask import Blueprint, jsonify, request
 import psycopg2
 from psycopg2.extras import RealDictCursor
 import os
+from datetime import datetime
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -33,13 +34,13 @@ def get_teams():
     Get list of all NFL teams with basic season stats
     
     Query params:
-        season: Season year (default: 2025)
+        season: Season year (default: current year)
     
     Returns:
         JSON array of teams with abbreviation, name, wins, losses, PPG, yards
     """
     try:
-        season = request.args.get('season', default=2025, type=int)
+        season = request.args.get('season', default=datetime.now().year, type=int)
         
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=RealDictCursor)
@@ -101,7 +102,7 @@ def get_team_details(team_abbr):
     """
     try:
         team_abbr = team_abbr.upper()
-        season = request.args.get('season', default=2025, type=int)
+        season = request.args.get('season', default=datetime.now().year, type=int)
         
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=RealDictCursor)
@@ -224,7 +225,7 @@ def get_team_games(team_abbr):
         team_abbr: Team abbreviation (e.g. 'BAL', 'KC')
     
     Query params:
-        season: Filter by season (default: 2025)
+        season: Filter by season (default: current year)
         limit: Max games to return (default: 20)
     
     Returns:
@@ -232,7 +233,7 @@ def get_team_games(team_abbr):
     """
     try:
         team_abbr = team_abbr.upper()
-        season = request.args.get('season', default=2025, type=int)
+        season = request.args.get('season', default=datetime.now().year, type=int)
         limit = request.args.get('limit', default=18, type=int)  # Changed default to 18 for full season
         
         conn = get_db_connection()
@@ -489,14 +490,14 @@ def get_betting_performance():
     Get team betting performance (ATS records, O/U trends)
     
     Query params:
-        season: Filter by season (default: 2025)
+        season: Filter by season (default: current year)
         team: Filter by specific team (optional)
     
     Returns:
         JSON with ATS records, over/under performance, favorite/underdog splits
     """
     try:
-        season = request.args.get('season', default=2025, type=int)
+        season = request.args.get('season', default=datetime.now().year, type=int)
         team = request.args.get('team', type=str)
         
         conn = get_db_connection()
@@ -644,13 +645,13 @@ def get_rest_advantage():
     Get team performance by days of rest
     
     Query params:
-        season: Filter by season (default: 2025)
+        season: Filter by season (default: current year)
     
     Returns:
         JSON with win rates and performance by rest days
     """
     try:
-        season = request.args.get('season', default=2025, type=int)
+        season = request.args.get('season', default=datetime.now().year, type=int)
         
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=RealDictCursor)
@@ -712,14 +713,14 @@ def get_referee_tendencies():
     Get referee officiating patterns and tendencies
     
     Query params:
-        season: Filter by season (default: 2025)
+        season: Filter by season (default: current year)
         referee: Filter by specific referee name (optional)
     
     Returns:
         JSON with referee stats, home bias, scoring averages
     """
     try:
-        season = request.args.get('season', default=2025, type=int)
+        season = request.args.get('season', default=datetime.now().year, type=int)
         referee = request.args.get('referee', type=str)
         
         conn = get_db_connection()
@@ -791,13 +792,13 @@ def get_analytics_summary():
     Get summary statistics from all analytical views
     
     Query params:
-        season: Filter by season (default: 2025)
+        season: Filter by season (default: current year)
     
     Returns:
         JSON with key insights from betting, weather, rest, and referee data
     """
     try:
-        season = request.args.get('season', default=2025, type=int)
+        season = request.args.get('season', default=datetime.now().year, type=int)
         
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=RealDictCursor)
