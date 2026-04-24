@@ -1,6 +1,15 @@
 name: Dashboard Pages Deploy
 
 on:
+  pull_request:
+    branches:
+      - master
+    paths:
+      - Dashboard/index.html
+      - Dashboard/DASHBOARD_UPDATE_GUIDE.md
+      - docs/DASHBOARD_UPDATE_GUIDE.md
+      - docs/SPRINT_EXECUTION_PROCESS.md
+      - .github/workflows/dashboard-pages-deploy.yml
   push:
     branches:
       - master
@@ -17,7 +26,27 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  validate-dashboard:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Verify dashboard source file exists
+        run: |
+          test -f Dashboard/index.html
+
+      - name: Block legacy manual deploy command in docs
+        run: |
+          if grep -n -E "git show master:Dashboard/index\.html > index\.html|git checkout gh-pages" Dashboard/DASHBOARD_UPDATE_GUIDE.md docs/DASHBOARD_UPDATE_GUIDE.md docs/SPRINT_EXECUTION_PROCESS.md; then
+            echo "Legacy manual gh-pages deploy command found."
+            exit 1
+          fi
+
   deploy-dashboard:
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
 
     steps:

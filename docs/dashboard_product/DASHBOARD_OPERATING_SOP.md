@@ -35,6 +35,34 @@ Run the PM dashboard with repeatable operating discipline.
 - Deploy `Dashboard/index.html` to `gh-pages` mirror workflow.
 - Validate live page after deployment.
 
+## GitHub Branch Protection Setup (Required)
+
+Open: Repository Settings -> Branches.
+
+Configure rule for `master` with these values:
+
+1. Require a pull request before merging: ON
+2. Required approving reviews: 1
+3. Dismiss stale pull request approvals when new commits are pushed: ON
+4. Require review from Code Owners: ON
+5. Require status checks to pass before merging: ON
+6. Required status check: `validate-dashboard` (from workflow `Dashboard Pages Deploy`)
+7. Require branches to be up to date before merging: ON
+8. Include administrators: ON
+9. Allow force pushes: OFF
+10. Allow deletions: OFF
+
+Configure rule for `gh-pages` with these values:
+
+1. Restrict pushes to automation only (GitHub Actions deploy workflow)
+2. Include administrators: ON
+3. Allow force pushes: OFF
+4. Allow deletions: OFF
+5. Require pull request before merging: OFF (workflow pushes deploy artifact directly)
+
+Operational note:
+- If emergency manual publish is required, temporarily relax `gh-pages` push restrictions, publish, then immediately restore restrictions.
+
 ## Definition of Done for Dashboard Tickets
 
 1. Acceptance criteria met.
