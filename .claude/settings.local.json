@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gh api:*)",
+      "Bash(python3 -)",
+      "Bash(aws iam:*)",
+      "Bash(python /tmp/gen_devlog.py)",
+      "Read(//tmp/**)",
+      "Bash(git commit -m ' *)",
+      "Bash(git ls-tree *)",
+      "Bash(cp Dashboard/index.html index.html)"
+    ]
+  }
+}

@@ -168,10 +168,10 @@ class WeeklyPredictor:
             features[f'home_{stat_name}'] = home_stats.get(key, defaults[key])
             features[f'away_{stat_name}'] = away_stats.get(key, defaults[key])
         
-        return features
-        features['ppg_differential'] = features['home_ppg_season'] - features['away_ppg_season']
-        features['success_differential'] = features['home_success_season'] - features['away_success_season']
-        features['ypp_differential'] = features['home_ypp_season'] - features['away_ypp_season']
+        features['ppg_differential'] = features['home_ppg'] - features['away_ppg']
+        features['success_differential'] = features['home_success'] - features['away_success']
+        features['ypp_differential'] = features['home_ypp'] - features['away_ypp']
+        features['epa_differential'] = features['home_epa'] - features['away_epa']
         
         # Handle NaN and inf values
         for key in features:
@@ -248,8 +248,8 @@ class WeeklyPredictor:
             
             # Key factors
             'key_factors': {
-                'home_epa': features.get('home_epa_season', 0),
-                'away_epa': features.get('away_epa_season', 0),
+                'home_epa': features.get('home_epa', 0),
+                'away_epa': features.get('away_epa', 0),
                 'epa_advantage': features.get('epa_differential', 0),
                 'home_recent_epa': features.get('home_epa_l3', 0),
                 'away_recent_epa': features.get('away_epa_l3', 0),

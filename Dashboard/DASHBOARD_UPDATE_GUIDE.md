@@ -5,6 +5,26 @@
 
 ---
 
+## Dashboard Product Governance (Required)
+
+This dashboard is managed as its own product stream.
+
+1. Before dashboard enhancements, create or update a `DSH-` ticket in `docs/dashboard_product/DASHBOARD_BACKLOG.md`.
+2. After dashboard enhancements, add an entry in `docs/dashboard_product/DASHBOARD_RELEASE_NOTES.md`.
+3. Follow operating rules in `docs/dashboard_product/DASHBOARD_OPERATING_SOP.md`.
+4. Keep ownership and source-of-truth aligned with `docs/dashboard_product/DASHBOARD_DATA_OWNERSHIP.md`.
+
+Reference set:
+- `docs/dashboard_product/README.md`
+- `docs/dashboard_product/DASHBOARD_CHARTER.md`
+- `docs/dashboard_product/DASHBOARD_BACKLOG.md`
+- `docs/dashboard_product/DASHBOARD_RELEASE_NOTES.md`
+- `docs/dashboard_product/DASHBOARD_OPERATING_SOP.md`
+- `docs/dashboard_product/DASHBOARD_DATA_OWNERSHIP.md`
+- `docs/dashboard_product/DASHBOARD_METRICS.md`
+
+---
+
 ## What April tells Claude each week:
 1. Hours worked that week
 2. What was worked on (1-2 sentences for notes)

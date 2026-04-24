@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(xargs grep *)",
+      "Bash(python3 -c ' *)",
+      "Read(//c/Users/april/.claude/projects/c--ReactGitEC2-IS330-H-C-Lombardo-App/**)",
+      "Bash(awk -F: '{if \\($1 >= 1427\\) print}')",
+      "Bash(awk -F: '{if \\($1 >= 1427\\) print $1\": \"$2}')",
+      "Bash(node --check c:/tmp/dash_script.js)",
+      "Bash(awk -F: '$1 >= 20182 && $1 <= 22602')",
+      "Bash(tasklist)",
+      "Bash(taskkill /F /IM python3.exe)",
+      "Bash(taskkill /F /IM python.exe)",
+      "Bash(tasklist /fi \"imagename eq python.exe\")"
+    ]
+  }
+}

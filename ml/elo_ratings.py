@@ -88,6 +88,35 @@ class EloRatingSystem:
 
         return new_home, new_away
 
+    def predict_game(self, home_team: str, away_team: str, is_neutral: bool = False):
+        """Return (home_win_prob, away_win_prob) from current Elo ratings."""
+        home_team = home_team.upper()
+        away_team = away_team.upper()
+
+        home_rating = self.get_rating(home_team)
+        away_rating = self.get_rating(away_team)
+
+        # Apply home edge for non-neutral games, matching update logic.
+        home_adj = home_rating + (0 if is_neutral else self.home_advantage)
+
+        home_win_prob = self._expected_score(home_adj, away_rating)
+        away_win_prob = 1.0 - home_win_prob
+        return home_win_prob, away_win_prob
+
+    def predict_spread(self, home_team: str, away_team: str, is_neutral: bool = False):
+        """Estimate point spread from Elo differential (home perspective)."""
+        home_team = home_team.upper()
+        away_team = away_team.upper()
+
+        home_rating = self.get_rating(home_team)
+        away_rating = self.get_rating(away_team)
+
+        home_adj = home_rating + (0 if is_neutral else self.home_advantage)
+        elo_diff = home_adj - away_rating
+
+        # Common heuristic: ~25 Elo points ~= 1 point on spread.
+        return elo_diff / 25.0
+
     def regress_to_mean(self):
         """Pull all ratings toward base_elo at season boundary."""
         for team in self._ratings:

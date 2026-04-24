@@ -14,6 +14,26 @@ April and Claude go through the dashboard together each session. April reports w
 
 ---
 
+## Dashboard Product Governance (Required)
+
+Dashboard platform work is tracked separately from app delivery work.
+
+1. Log dashboard enhancement work as `DSH-` tickets in `docs/dashboard_product/DASHBOARD_BACKLOG.md`.
+2. Add dashboard release entries to `docs/dashboard_product/DASHBOARD_RELEASE_NOTES.md`.
+3. Follow execution rules in `docs/dashboard_product/DASHBOARD_OPERATING_SOP.md`.
+4. Use source-of-truth ownership rules in `docs/dashboard_product/DASHBOARD_DATA_OWNERSHIP.md`.
+
+Reference set:
+- `docs/dashboard_product/README.md`
+- `docs/dashboard_product/DASHBOARD_CHARTER.md`
+- `docs/dashboard_product/DASHBOARD_BACKLOG.md`
+- `docs/dashboard_product/DASHBOARD_RELEASE_NOTES.md`
+- `docs/dashboard_product/DASHBOARD_OPERATING_SOP.md`
+- `docs/dashboard_product/DASHBOARD_DATA_OWNERSHIP.md`
+- `docs/dashboard_product/DASHBOARD_METRICS.md`
+
+---
+
 ## Deploy Process — ALWAYS both branches every time
 
 ```bash
