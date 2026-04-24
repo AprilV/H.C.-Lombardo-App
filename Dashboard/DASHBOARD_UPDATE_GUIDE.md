@@ -9,10 +9,12 @@
 1. Hours worked that week
 2. What was worked on (1-2 sentences for notes)
 3. Which sprint tasks got completed (by name or area)
-4. Any issues that came up and how they were handled
-5. Prevention — how could the issue have been avoided
-6. Any new bugs discovered
-7. Any new risks
+4. Resolution text for each completed subtask
+5. Completion date and timestamp for each completed subtask
+6. Any issues that came up and how they were handled
+7. Prevention — how could the issue have been avoided
+8. Any new bugs discovered
+9. Any new risks
 
 ---
 
@@ -23,9 +25,28 @@
 | 1 | `HOURS_DATA` — hours + notes for the week | JS ~line 3432 |
 | 2 | `ISSUES_DATA` — issues + prevention text | JS ~line 3757 |
 | 3 | `COMPLETED_TASKS` — task IDs checked off | JS ~line 3023 |
+| 3a | `TASK_DETAILS` — resolution + completed date + timestamp + updatedBy | JS task modal data block |
 | 4 | Burndown chart — add actual data point | JS chart data ~line 3292 |
 | 5 | RAG status message | HTML line 1680 |
 | 6 | RAG "Updated" date | HTML line 1682 |
+
+---
+
+## Task Resolution Modal Rules
+
+- Every completed sprint subtask must have a `TASK_DETAILS` entry with:
+	- `resolution`
+	- `date`
+	- `timestamp`
+	- `updatedBy`
+- Use the Task Resolution modal manual fields to enter/update those values.
+- Click `Apply In Memory` to stage changes in the current page session.
+- Click `Copy JS Snippet` and paste into `TASK_DETAILS` in `Dashboard/index.html`.
+- Commit + deploy to publish the update for everyone.
+
+Important:
+- No browser localStorage is used for these edits.
+- Manual modal edits are not shared until committed to `Dashboard/index.html` and deployed.
 
 ---
 

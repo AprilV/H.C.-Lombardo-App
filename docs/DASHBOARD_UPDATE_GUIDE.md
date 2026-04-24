@@ -62,9 +62,26 @@ git checkout master
 |---|---|---|
 | **COMPLETED_TASKS array** | ~line 3180 | As sprint tasks are completed |
 | **BLOCKED_TASKS array** | ~line 3189 | As tasks get blocked/unblocked |
+| **TASK_DETAILS entries** | Task modal data object | Add/update per completed subtask |
 | **Sprint cards** | `spage-board` div | Flip status at sprint boundaries |
 | **Retrospective** | `spage-retro` div | Fill 3 cards at sprint close |
 | **DoD accordion** | `spage-dod` div | Mark items met at sprint close |
+
+Task detail requirements for each completed subtask:
+- `resolution`
+- `date`
+- `timestamp`
+- `updatedBy`
+
+Use the Task Resolution modal manual fields:
+- Enter resolution text, completion date, timestamp, and who updated it.
+- `Apply In Memory` updates the page session only.
+- `Copy JS Snippet` then paste into `TASK_DETAILS` in `Dashboard/index.html`.
+- Commit/deploy to make the update visible to everyone.
+
+No local storage:
+- Dashboard task resolution edits do not use browser localStorage.
+- Entries are shared only through committed code in `Dashboard/index.html`.
 
 ### TAB 4: Backlog
 
