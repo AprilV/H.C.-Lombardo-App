@@ -27,6 +27,7 @@ Priority values:
 | DSH-005 | P2 | TODO | Metrics | Add lead-time and blocked-time KPI views | Dashboard can show lead time and blocked durations by sprint |
 | DSH-006 | P3 | TODO | Refactor | Reduce single-file risk by extracting data blocks | Static data sections can be maintained in separated files with build/import step |
 | DSH-007 | P3 | TODO | Quality | Add dashboard smoke test checklist | Standard verification list exists and is run before push |
+| DSH-008 | P1 | TODO | Security | Enforce branch protection and deploy guardrails | `master` requires PR + review + checks, `gh-pages` is automation-only push path, and branch protection settings are documented in the repo |
 
 ## Notes
 
