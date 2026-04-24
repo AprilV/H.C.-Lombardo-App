@@ -49,8 +49,9 @@ STOP.bat
 ### Testing Before Deployment
 1. Make changes in local environment
 2. Test thoroughly with `START-DEV.bat`
-3. Commit and push to GitHub
-4. Changes auto-deploy to production
+3. Open a pull request and review changes
+4. Merge to `master`
+5. Dashboard changes in `Dashboard/index.html` auto-publish to `gh-pages` via GitHub Actions
 
 ## Core Files
 

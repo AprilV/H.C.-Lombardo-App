@@ -34,19 +34,29 @@ Reference set:
 
 ---
 
-## Deploy Process — ALWAYS both branches every time
+## Deploy Process — source push plus automated `gh-pages` publish
 
 ```bash
 git add Dashboard/index.html
 git commit -m "Dashboard: description of changes"
-git checkout gh-pages
-git show master:Dashboard/index.html > index.html
-git add index.html
-git commit -m "Deploy: description"
-git push origin gh-pages
 git push origin master
-git checkout master
 ```
+
+`gh-pages` is published by workflow: `.github/workflows/dashboard-pages-deploy.yml`
+
+Emergency fallback only (workflow unavailable):
+
+```bash
+git fetch origin
+git worktree add .gh-pages-deploy-temp gh-pages
+cp Dashboard/index.html .gh-pages-deploy-temp/index.html
+git -C .gh-pages-deploy-temp add index.html
+git -C .gh-pages-deploy-temp commit -m "Deploy: description"
+git -C .gh-pages-deploy-temp push origin gh-pages
+git worktree remove .gh-pages-deploy-temp --force
+```
+
+Never use `git show master:Dashboard/index.html > index.html` redirection for deployment.
 
 ---
 

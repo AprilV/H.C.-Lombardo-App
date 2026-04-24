@@ -1,0 +1,9 @@
+# Repository-wide ownership
+* @AprilV
+
+# High-risk deployment and workflow surfaces
+/.github/workflows/* @AprilV
+/Dashboard/index.html @AprilV
+/Dashboard/DASHBOARD_UPDATE_GUIDE.md @AprilV
+/docs/DASHBOARD_UPDATE_GUIDE.md @AprilV
+/docs/SPRINT_EXECUTION_PROCESS.md @AprilV

@@ -30,13 +30,23 @@ Add the completed task IDs to `COMPLETED_TASKS` and resolutions to `TASK_DETAILS
 ```
 git add Dashboard/index.html
 git commit -m "TA-00X [section name] done"
-git checkout gh-pages
-git show master:Dashboard/index.html > index.html
-git add index.html
-git commit -m "Deploy: TA-00X [section name] done"
-git checkout master
-git push origin master && git push origin gh-pages
+git push origin master
 ```
+
+`gh-pages` deploy is automated by workflow: `.github/workflows/dashboard-pages-deploy.yml`
+
+Emergency fallback only (workflow unavailable):
+```
+git fetch origin
+git worktree add .gh-pages-deploy-temp gh-pages
+cp Dashboard/index.html .gh-pages-deploy-temp/index.html
+git -C .gh-pages-deploy-temp add index.html
+git -C .gh-pages-deploy-temp commit -m "Deploy: TA-00X [section name] done"
+git -C .gh-pages-deploy-temp push origin gh-pages
+git worktree remove .gh-pages-deploy-temp --force
+```
+
+Do not use `git show ... > index.html` redirection for deployment.
 
 **Step 5: Move to the next section.**
 

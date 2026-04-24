@@ -100,12 +100,20 @@ Important:
 cd "c:\ReactGitEC2\IS330\H.C Lombardo App"
 git add Dashboard/index.html
 git commit -m "Weekly update: Week N"
-git checkout gh-pages
-git show master:Dashboard/index.html > index.html
-git add index.html
-git commit -m "Deploy: Weekly update Week N"
-git push origin gh-pages
-git checkout master
 git push origin master
 ```
-**ALWAYS deploy to gh-pages. Master alone does nothing to the live site.**
+`gh-pages` is now published by workflow: `.github/workflows/dashboard-pages-deploy.yml`
+
+Emergency fallback only (workflow unavailable):
+```bash
+cd "c:\ReactGitEC2\IS330\H.C Lombardo App"
+git fetch origin
+git worktree add .gh-pages-deploy-temp gh-pages
+cp Dashboard/index.html .gh-pages-deploy-temp/index.html
+git -C .gh-pages-deploy-temp add index.html
+git -C .gh-pages-deploy-temp commit -m "Deploy: Weekly update Week N"
+git -C .gh-pages-deploy-temp push origin gh-pages
+git worktree remove .gh-pages-deploy-temp --force
+```
+
+Do not use `git show ... > index.html` redirection for deployment.

@@ -1,0 +1,53 @@
+name: Dashboard Pages Deploy
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - Dashboard/index.html
+      - .github/workflows/dashboard-pages-deploy.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: dashboard-pages-deploy
+  cancel-in-progress: true
+
+jobs:
+  deploy-dashboard:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure git identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Prepare gh-pages worktree
+        run: |
+          git fetch origin gh-pages
+          git worktree add gh-pages-worktree gh-pages
+
+      - name: Sync dashboard artifact
+        run: |
+          cp Dashboard/index.html gh-pages-worktree/index.html
+
+      - name: Commit and push if changed
+        run: |
+          cd gh-pages-worktree
+          if git diff --quiet -- index.html; then
+            echo "No dashboard changes to deploy."
+            exit 0
+          fi
+
+          git add index.html
+          git commit -m "Deploy dashboard from ${GITHUB_SHA::7}"
+          git push origin gh-pages
