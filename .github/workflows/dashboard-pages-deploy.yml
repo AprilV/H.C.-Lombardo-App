@@ -5,16 +5,15 @@ on:
     branches:
       - master
     paths:
-      - Dashboard/index.html
-      - Dashboard/DASHBOARD_UPDATE_GUIDE.md
-      - docs/DASHBOARD_UPDATE_GUIDE.md
-      - docs/SPRINT_EXECUTION_PROCESS.md
+      - pmforge_dashboard/index.html
+      - pmforge_dashboard/version.json
       - .github/workflows/dashboard-pages-deploy.yml
   push:
     branches:
       - master
     paths:
-      - Dashboard/index.html
+      - pmforge_dashboard/index.html
+      - pmforge_dashboard/version.json
       - .github/workflows/dashboard-pages-deploy.yml
   workflow_dispatch:
 
@@ -36,11 +35,11 @@ jobs:
 
       - name: Verify dashboard source file exists
         run: |
-          test -f Dashboard/index.html
+          test -f pmforge_dashboard/index.html
 
       - name: Block legacy manual deploy command in docs
         run: |
-          if grep -n -E "git show master:Dashboard/index\.html > index\.html|git checkout gh-pages" Dashboard/DASHBOARD_UPDATE_GUIDE.md docs/DASHBOARD_UPDATE_GUIDE.md docs/SPRINT_EXECUTION_PROCESS.md; then
+          if grep -n -E "git show master:Dashboard/index\.html > index\.html|git checkout gh-pages" backups/legacy_dashboard/DASHBOARD_UPDATE_GUIDE.md docs/DASHBOARD_UPDATE_GUIDE.md docs/SPRINT_EXECUTION_PROCESS.md; then
             echo "Legacy manual gh-pages deploy command found."
             exit 1
           fi
@@ -67,7 +66,7 @@ jobs:
 
       - name: Sync dashboard artifact
         run: |
-          cp Dashboard/index.html gh-pages-worktree/index.html
+          cp pmforge_dashboard/index.html gh-pages-worktree/index.html
 
       - name: Commit and push if changed
         run: |
@@ -78,5 +77,5 @@ jobs:
           fi
 
           git add index.html
-          git commit -m "Deploy dashboard from ${GITHUB_SHA::7}"
+          git commit -m "Deploy PM4 dashboard from ${GITHUB_SHA::7}"
           git push origin gh-pages

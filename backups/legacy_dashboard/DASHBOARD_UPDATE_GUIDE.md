@@ -1,0 +1,119 @@
+# Dashboard Update Guide
+**Who:** April tells Claude what happened. Claude updates the file and deploys to gh-pages.
+**Live site:** https://aprilv.github.io/H.C.-Lombardo-App/
+**Rule:** Zero localStorage. Everything hardcoded. Everything visible to everyone.
+
+---
+
+## Dashboard Product Governance (Required)
+
+This dashboard is managed as its own product stream.
+
+1. Before dashboard enhancements, create or update a `DSH-` ticket in `docs/dashboard_product/DASHBOARD_BACKLOG.md`.
+2. After dashboard enhancements, add an entry in `docs/dashboard_product/DASHBOARD_RELEASE_NOTES.md`.
+3. Follow operating rules in `docs/dashboard_product/DASHBOARD_OPERATING_SOP.md`.
+4. Keep ownership and source-of-truth aligned with `docs/dashboard_product/DASHBOARD_DATA_OWNERSHIP.md`.
+
+Reference set:
+- `docs/dashboard_product/README.md`
+- `docs/dashboard_product/DASHBOARD_CHARTER.md`
+- `docs/dashboard_product/DASHBOARD_BACKLOG.md`
+- `docs/dashboard_product/DASHBOARD_RELEASE_NOTES.md`
+- `docs/dashboard_product/DASHBOARD_OPERATING_SOP.md`
+- `docs/dashboard_product/DASHBOARD_DATA_OWNERSHIP.md`
+- `docs/dashboard_product/DASHBOARD_METRICS.md`
+
+---
+
+## What April tells Claude each week:
+1. Hours worked that week
+2. What was worked on (1-2 sentences for notes)
+3. Which sprint tasks got completed (by name or area)
+4. Resolution text for each completed subtask
+5. Completion date and timestamp for each completed subtask
+6. Any issues that came up and how they were handled
+7. Prevention — how could the issue have been avoided
+8. Any new bugs discovered
+9. Any new risks
+
+---
+
+## EVERY WEEK — Claude updates these:
+
+| # | What | Where in code |
+|---|------|--------------|
+| 1 | `HOURS_DATA` — hours + notes for the week | JS ~line 3432 |
+| 2 | `ISSUES_DATA` — issues + prevention text | JS ~line 3757 |
+| 3 | `COMPLETED_TASKS` — task IDs checked off | JS ~line 3023 |
+| 3a | `TASK_DETAILS` — resolution + completed date + timestamp + updatedBy | JS task modal data block |
+| 4 | Burndown chart — add actual data point | JS chart data ~line 3292 |
+| 5 | RAG status message | HTML line 1680 |
+| 6 | RAG "Updated" date | HTML line 1682 |
+
+---
+
+## Task Resolution Modal Rules
+
+- Every completed sprint subtask must have a `TASK_DETAILS` entry with:
+	- `resolution`
+	- `date`
+	- `timestamp`
+	- `updatedBy`
+- Use the Task Resolution modal manual fields to enter/update those values.
+- Click `Apply In Memory` to stage changes in the current page session.
+- Click `Copy JS Snippet` and paste into `TASK_DETAILS` in `Dashboard/index.html`.
+- Commit + deploy to publish the update for everyone.
+
+Important:
+- No browser localStorage is used for these edits.
+- Manual modal edits are not shared until committed to `Dashboard/index.html` and deployed.
+
+---
+
+## AT SPRINT CLOSE ONLY — Claude updates these:
+
+| # | What | Where |
+|---|------|-------|
+| 7  | Retrospective — hardcode three answers | Sprint tab retro HTML |
+| 8  | Velocity chart — add closed issues count | JS chart data |
+| 9  | Burnup chart — update completed work bar | JS chart data |
+| 10 | Sprint card — active→completed, next→active | Sprint Plan tab HTML |
+| 11 | Sprint board — replace with next sprint tasks | Sprint tab HTML |
+| 12 | Nav tab label — e.g. ⚡ Sprint 12 → ⚡ Sprint 13 | Nav HTML |
+| 13 | Open blockers — remove fixed, add new | Overview tab HTML |
+| 14 | Backlog — update OPEN → FIXED | Backlog table HTML |
+| 15 | Risk register — update status, add new risks | JS risks array |
+| 16 | Definition of Done — mark sprint complete | Sprint Plan accordion |
+
+---
+
+## AUTOMATIC — never touch:
+- Gantt today marker (date-calculated)
+- Days remaining counter (date-calculated)
+- Sprint task progress % and counts (reads COMPLETED_TASKS)
+- Week selector default on Weekly Report tab (date-calculated)
+
+---
+
+## Deploy command — run every time, no exceptions:
+```bash
+cd "c:\ReactGitEC2\IS330\H.C Lombardo App"
+git add Dashboard/index.html
+git commit -m "Weekly update: Week N"
+git push origin master
+```
+`gh-pages` is now published by workflow: `.github/workflows/dashboard-pages-deploy.yml`
+
+Emergency fallback only (workflow unavailable):
+```bash
+cd "c:\ReactGitEC2\IS330\H.C Lombardo App"
+git fetch origin
+git worktree add .gh-pages-deploy-temp gh-pages
+cp Dashboard/index.html .gh-pages-deploy-temp/index.html
+git -C .gh-pages-deploy-temp add index.html
+git -C .gh-pages-deploy-temp commit -m "Deploy: Weekly update Week N"
+git -C .gh-pages-deploy-temp push origin gh-pages
+git worktree remove .gh-pages-deploy-temp --force
+```
+
+Do not use `git show ... > index.html` redirection for deployment.

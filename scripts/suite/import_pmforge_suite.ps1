@@ -39,13 +39,13 @@ $versionMeta = @{
 Set-Content -Path (Join-Path $targetDir "version.json") -Value $versionMeta -Encoding UTF8
 
 if ($shouldUpdateLegacyDashboard) {
-    $legacyTarget = Join-Path $hcRoot "Dashboard\index.html"
-    if (Test-Path $legacyTarget) {
-        Copy-Item $sourceIndex $legacyTarget -Force
-    }
+    $legacyTargetDir = Join-Path $hcRoot "backups\legacy_dashboard"
+    $legacyTarget = Join-Path $legacyTargetDir "index.html"
+    New-Item -ItemType Directory -Path $legacyTargetDir -Force | Out-Null
+    Copy-Item $sourceIndex $legacyTarget -Force
 }
 
 Write-Host "Imported PM Forge Suite $Version into $targetDir"
 if ($shouldUpdateLegacyDashboard) {
-    Write-Host "Updated legacy dashboard path: Dashboard/index.html"
+    Write-Host "Updated legacy dashboard path: backups/legacy_dashboard/index.html"
 }
