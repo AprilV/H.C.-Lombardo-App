@@ -19,7 +19,7 @@ Run the PM dashboard with repeatable operating discipline.
 - Define acceptance criteria before code changes.
 
 2. Implementation
-- Update `Dashboard/index.html` and relevant docs.
+- Update `pmforge_dashboard/index.html` and relevant docs.
 - Keep changes scoped to one intent per commit when possible.
 
 3. Verification
@@ -32,7 +32,7 @@ Run the PM dashboard with repeatable operating discipline.
 - Record ticket status transitions in `DASHBOARD_BACKLOG.md`.
 
 5. Publish
-- Deploy `Dashboard/index.html` to `gh-pages` mirror workflow.
+- Deploy `pmforge_dashboard/index.html` to `gh-pages` mirror workflow.
 - Validate live page after deployment.
 
 ## GitHub Branch Protection Setup (Required)

@@ -14,10 +14,10 @@ Defines ownership and source-of-truth for dashboard operational data.
 ## Data Domains
 
 1. Sprint task completion state
-- Source: `COMPLETED_TASKS`, `BLOCKED_TASKS` in `Dashboard/index.html`
+- Source: `COMPLETED_TASKS`, `BLOCKED_TASKS` in `pmforge_dashboard/index.html`
 
 2. Task resolution metadata
-- Source: `TASK_DETAILS` in `Dashboard/index.html`
+- Source: `TASK_DETAILS` in `pmforge_dashboard/index.html`
 - Required fields for completed subtasks:
   - `resolution`
   - `date`
@@ -25,7 +25,7 @@ Defines ownership and source-of-truth for dashboard operational data.
   - `updatedBy`
 
 3. Reporting inputs
-- Source: `HOURS_DATA`, risks array, decisions array in `Dashboard/index.html`
+- Source: `HOURS_DATA`, risks array, decisions array in `pmforge_dashboard/index.html`
 
 4. Dashboard governance artifacts
 - Source: files in `docs/dashboard_product/`

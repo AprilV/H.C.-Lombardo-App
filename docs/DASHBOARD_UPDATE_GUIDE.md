@@ -1,8 +1,9 @@
 # Dashboard Update Guide
 
-**File:** `Dashboard/index.html` (single file, ~4000+ lines, all data hardcoded)
+**Primary file:** `pmforge_dashboard/index.html` (single file, all dashboard runtime data hardcoded)
+**Legacy archive:** `backups/legacy_dashboard/index.html` (reference-only, not deployed)
 **Live URL:** https://aprilv.github.io/H.C.-Lombardo-App/
-**April does not edit this file directly — Claude owns all updates.**
+**April does not edit this file directly - Claude owns all updates.**
 
 ---
 
@@ -11,6 +12,50 @@
 April and Claude go through the dashboard together each session. April reports what happened (hours worked, tasks done, bugs found/fixed, decisions made, risks). Claude makes all the changes and deploys.
 
 **One session = one topic.** Don't stack multiple unrelated changes.
+
+---
+
+## Dashboard Truth Map (Read First)
+
+These are the exact data sources for the top strip and the 4 charts.
+
+### Overview metrics source-of-truth
+
+| Metric | Source of truth | What Claude must update |
+|---|---|---|
+| Current Sprint | `SPRINT_SCHEDULE` + `getCurrentSprint()` | Nothing unless sprint calendar changes |
+| Days Remaining | `SPRINT_SCHEDULE` date math | Nothing unless sprint dates change |
+| Sprint Tasks Done % / count | `syncDashMetrics()` reading active sprint board checkboxes seeded from `COMPLETED_TASKS` | Update `COMPLETED_TASKS` task IDs |
+| Open P1 Blockers | `computeLiveTaskCounts()` from `window.PB_ITEMS` where status=`Blocked` | Update PB item `status` fields |
+| Total Open Tasks | `computeLiveTaskCounts()` from `window.PB_ITEMS` where status!=`Done` | Update PB item `status` fields |
+| Target release countdown | JS date math to Jun 13, 2026 | Nothing unless target date changes |
+
+### Four charts source-of-truth
+
+All 4 charts are rendered from the active sprint's `SPRINT_ARCHIVE[N]` object:
+
+- Burndown: `SPRINT_ARCHIVE[N].burndown`
+- Burnup: `SPRINT_ARCHIVE[N].burnup`
+- Velocity: `SPRINT_ARCHIVE[N].velocity`
+- Severity donut: `SPRINT_ARCHIVE[N].severity`
+
+If these arrays are not updated, the chart will be stale even when tasks/backlog are current.
+
+---
+
+## Daily Update Order (Mandatory)
+
+1. Update completed subtasks in `COMPLETED_TASKS`.
+2. Add/refresh resolution entries in `TASK_DETAILS` (resolution, date, timestamp, updatedBy).
+3. Update Product Backlog item statuses (`Done`, `In Progress`, `Blocked`, `To Do`) in `PB_ITEMS`.
+4. Update active sprint archive (`SPRINT_ARCHIVE[N]`) for:
+	- `rag.msg` / `rag.detail`
+	- `metrics.taskPct` / `metrics.taskCount` narrative text
+	- `burndown`, `burnup`, `velocity`, `severity` arrays
+	- chart insight text fields (`burndownInsight`, `burnupInsight`, `velocityInsight`, `severityInsight`)
+5. Update Open Blockers list UI (`.blocker-list`) to match current risks.
+6. Reload dashboard and verify top strip + all four charts match the board/backlog state.
+7. Commit + push.
 
 ---
 
@@ -37,7 +82,7 @@ Reference set:
 ## Deploy Process — source push plus automated `gh-pages` publish
 
 ```bash
-git add Dashboard/index.html
+git add pmforge_dashboard/index.html pmforge_dashboard/version.json
 git commit -m "Dashboard: description of changes"
 git push origin master
 ```
@@ -49,14 +94,14 @@ Emergency fallback only (workflow unavailable):
 ```bash
 git fetch origin
 git worktree add .gh-pages-deploy-temp gh-pages
-cp Dashboard/index.html .gh-pages-deploy-temp/index.html
+cp pmforge_dashboard/index.html .gh-pages-deploy-temp/index.html
 git -C .gh-pages-deploy-temp add index.html
 git -C .gh-pages-deploy-temp commit -m "Deploy: description"
 git -C .gh-pages-deploy-temp push origin gh-pages
 git worktree remove .gh-pages-deploy-temp --force
 ```
 
-Never use `git show master:Dashboard/index.html > index.html` redirection for deployment.
+Never use `git show master:pmforge_dashboard/index.html > index.html` redirection for deployment.
 
 ---
 
@@ -70,13 +115,13 @@ Never use `git show master:Dashboard/index.html > index.html` redirection for de
 | **RAG banner** | `.rag-banner` div | Change class (green/amber/red), label, message, date |
 | **Days remaining** | `id="days-remaining"` | Auto-calculated by JS — no update needed |
 | **Target release countdown** | `id="release-days-sub"` | Auto-calculated by JS — no update needed |
-| **P1 blocker count** | `.pm-metric` strip | Update value + sub-text |
-| **Total open issues** | `.pm-metric` strip | Update value + sub-text |
-| **Sprint tasks done %** | Driven by `COMPLETED_TASKS` array | Add task IDs to array |
-| **Burndown actual data** | `chartInstances.burndown` data array | Update day-by-day remaining count |
-| **Burnup completed** | `chartInstances.burnup` completed dataset | Update S12 value at sprint close |
-| **Velocity bar** | `chartInstances.velocity` data array | Update current sprint bar (last value) |
-| **Severity donut** | `chartInstances.severity` data array | Update `[P1, P2, P3, P4]` counts |
+| **P1 blocker count** | `computeLiveTaskCounts()` from `PB_ITEMS` | Keep backlog statuses accurate (`Blocked`) |
+| **Total open issues** | `computeLiveTaskCounts()` from `PB_ITEMS` | Keep backlog statuses accurate (`Done` vs non-Done) |
+| **Sprint tasks done %** | `syncDashMetrics()` from active sprint board checkboxes | Add task IDs to `COMPLETED_TASKS` |
+| **Burndown actual data** | `SPRINT_ARCHIVE[N].burndown.actual` | Update day-by-day remaining count |
+| **Burnup completed** | `SPRINT_ARCHIVE[N].burnup.completed` | Update cumulative completed values |
+| **Velocity bar** | `SPRINT_ARCHIVE[N].velocity.data` | Update active sprint delivered TA count |
+| **Severity donut** | `SPRINT_ARCHIVE[N].severity` | Update `[P1, P2, P3, P4]` counts |
 | **Open blockers list** | `.blocker-list` div | Add/remove blocker-item divs |
 
 ### TAB 2: Architecture
@@ -106,12 +151,12 @@ Task detail requirements for each completed subtask:
 Use the Task Resolution modal manual fields:
 - Enter resolution text, completion date, timestamp, and who updated it.
 - `Apply In Memory` updates the page session only.
-- `Copy JS Snippet` then paste into `TASK_DETAILS` in `Dashboard/index.html`.
+- `Copy JS Snippet` then paste into `TASK_DETAILS` in `pmforge_dashboard/index.html`.
 - Commit/deploy to make the update visible to everyone.
 
 No local storage:
 - Dashboard task resolution edits do not use browser localStorage.
-- Entries are shared only through committed code in `Dashboard/index.html`.
+- Entries are shared only through committed code in `pmforge_dashboard/index.html`.
 
 ### TAB 4: Backlog
 
@@ -159,6 +204,7 @@ Auto-generates from `HOURS_DATA` + `COMPLETED_TASKS`. No manual update needed un
 - [ ] Flip sprint card: closing sprint → "Done", next sprint → "Active Now"
 - [ ] Update RAG banner for new sprint
 - [ ] Update metrics strip sprint number + sub-text
+- [ ] Verify PB item statuses are accurate (especially `Blocked` and `Done`)
 - [ ] Mark DoD items met/not-met
 - [ ] Add final burndown value for closing sprint
 - [ ] Update burnup S_N completed value
@@ -170,9 +216,20 @@ Auto-generates from `HOURS_DATA` + `COMPLETED_TASKS`. No manual update needed un
 - [ ] Replace placeholder board div with full task list
 - [ ] Update sprint selector default value
 - [ ] Update COMPLETED_TASKS comment header for new sprint
+- [ ] Confirm active sprint board checkboxes map to correct task IDs
 - [ ] Add week entries to HOURS_DATA for new sprint weeks
 - [ ] Update metrics: sprint name, task count, dates
 - [ ] Update RAG banner
+
+---
+
+## Drift Checks Before Push
+
+- `Sprint Tasks Done` top strip must match active sprint board checked count.
+- `Open P1 Blockers` and `Total Open Tasks` must match PB item status counts.
+- Burndown insight sentence must match current burndown array values.
+- Severity insight sentence must match current severity array values.
+- Blocker list text must match current active risks in sprint.
 
 ---
 

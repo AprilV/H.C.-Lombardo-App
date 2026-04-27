@@ -17,8 +17,8 @@ All dashboard enhancements must be logged as `DSH-` tickets in `DASHBOARD_BACKLO
 
 ## Source of Truth
 
-- Dashboard code: `Dashboard/index.html`
+- Dashboard code: `pmforge_dashboard/index.html`
+- Legacy archive: `backups/legacy_dashboard/index.html`
 - Public dashboard site: GitHub Pages from `gh-pages`
 - Operational update guides:
-  - `Dashboard/DASHBOARD_UPDATE_GUIDE.md`
   - `docs/DASHBOARD_UPDATE_GUIDE.md`
