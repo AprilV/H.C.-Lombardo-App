@@ -1,0 +1,15 @@
+Flask
+Flask-CORS
+psycopg2-binary
+python-dotenv
+requests
+pandas
+numpy
+scikit-learn
+joblib
+beautifulsoup4
+lxml
+gunicorn
+
+# Optional: currently excluded due compatibility issues in this environment.
+# nfl_data_py
