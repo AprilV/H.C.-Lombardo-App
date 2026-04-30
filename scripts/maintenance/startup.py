@@ -7,6 +7,9 @@ import time
 import os
 import sys
 from pathlib import Path
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Ensure both scripts/maintenance and project root are on the path
 _HERE = Path(__file__).parent

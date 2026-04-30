@@ -10,6 +10,9 @@ import logging
 import os
 from datetime import datetime
 from typing import Optional
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Configure logging
 logging.basicConfig(

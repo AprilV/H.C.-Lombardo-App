@@ -14,6 +14,10 @@ import os
 import psycopg2
 from psycopg2.extras import RealDictCursor
 import json
+from datetime import datetime
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Add ml directory to path
 sys.path.append(os.path.join(os.path.dirname(__file__), 'ml'))
@@ -50,6 +54,34 @@ def get_elo_tracker():
         elo_tracker = EloTracker()
         elo_tracker.load_current_ratings()
     return elo_tracker
+
+
+def get_latest_completed_season():
+    """Return the latest season with completed games, or current year on failure."""
+    fallback_season = datetime.now().year
+    conn = None
+    cur = None
+
+    try:
+        conn = psycopg2.connect(**get_predictor().db_config)
+        cur = conn.cursor()
+        cur.execute(
+            """
+            SELECT COALESCE(MAX(season), %s)
+            FROM hcl.games
+            WHERE home_score IS NOT NULL
+              AND away_score IS NOT NULL
+            """,
+            (fallback_season,)
+        )
+        return cur.fetchone()[0] or fallback_season
+    except Exception:
+        return fallback_season
+    finally:
+        if cur:
+            cur.close()
+        if conn:
+            conn.close()
 
 
 @ml_api.route('/api/ml/predict-week/<int:season>/<int:week>', methods=['GET'])
@@ -366,11 +398,13 @@ def get_model_performance():
     Tracks both win/loss classifier and point spread regressor accuracy
     
     Query params:
-        season: Filter by season (default: 2025)
+        season: Filter by season (default: latest completed season)
         week: Filter by specific week (optional)
     """
     try:
-        season = request.args.get('season', default=2025, type=int)
+        season = request.args.get('season', type=int)
+        if season is None:
+            season = get_latest_completed_season()
         week = request.args.get('week', type=int)
         
         conn = psycopg2.connect(**get_predictor().db_config)
@@ -766,11 +800,13 @@ def get_performance_stats():
     Returns win/loss accuracy and spread prediction accuracy
     
     Query params:
-        season: Filter by season (default: 2025)
+        season: Filter by season (default: latest completed season)
         week: Filter by week (optional)
     """
     try:
-        season = request.args.get('season', default=2025, type=int)
+        season = request.args.get('season', type=int)
+        if season is None:
+            season = get_latest_completed_season()
         week = request.args.get('week', type=int)
         
         conn = psycopg2.connect(**get_predictor().db_config)

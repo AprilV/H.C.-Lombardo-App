@@ -3,6 +3,9 @@
 import nfl_data_py as nfl
 import psycopg2
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 conn = psycopg2.connect(
     dbname=os.getenv('DB_NAME', 'nfl_analytics'),

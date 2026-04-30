@@ -9,6 +9,9 @@ import psycopg2
 import sys
 import os
 import logging
+from dotenv import load_dotenv
+
+load_dotenv()
 
 try:
     from logging_config import setup_logging
