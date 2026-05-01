@@ -10,6 +10,7 @@ This folder tracks the PM dashboard as a product, not just a file.
 4. `DASHBOARD_OPERATING_SOP.md`
 5. `DASHBOARD_DATA_OWNERSHIP.md`
 6. `DASHBOARD_METRICS.md`
+7. `DASHBOARD_AUTOMATION_PHASE0_KICKOFF.md`
 
 ## Required Rule
 
