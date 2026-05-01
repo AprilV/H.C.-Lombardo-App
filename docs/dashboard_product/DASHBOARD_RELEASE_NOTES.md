@@ -13,22 +13,54 @@ Format: `YYYY.MM.DD` (example: `2026.04.23`)
 1. Closed `DSH-012` Phase 2 gate with deterministic migration mapping, conflict rules, validation checks, and rollback strategy.
 2. Added Phase 2 artifact: `docs/dashboard_product/DASHBOARD_AUTOMATION_PHASE2_MIGRATION_VALIDATION.md`.
 3. Added baseline parity evidence file: `docs/dashboard_product/evidence/PHASE2_BASELINE_COUNTS_2026-05-01.txt`.
+4. Closed `DSH-012` Phase 3 gate with backend persistence API implementation and startup route wiring verification.
+5. Added Phase 3 artifact: `docs/dashboard_product/DASHBOARD_AUTOMATION_PHASE3_API_PERSISTENCE.md`.
+6. Added Phase 3 API smoke evidence file: `docs/dashboard_product/evidence/PHASE3_API_SMOKE_2026-05-01.txt`.
+7. Closed `DSH-012` Phase 4 gate with frontend persisted action wiring and rollback-safe handler updates.
+8. Added Phase 4 artifact: `docs/dashboard_product/DASHBOARD_AUTOMATION_PHASE4_FRONTEND_PERSISTED_WIRING.md`.
+9. Added Phase 4 frontend-flow smoke evidence file: `docs/dashboard_product/evidence/PHASE4_FRONTEND_PERSISTENCE_SMOKE_2026-05-01.txt`.
+10. Started `DSH-012` Phase 5 implementation with top-strip metric sync to persisted aggregate endpoints (fallback-safe overlay).
+11. Added Phase 5 artifact: `docs/dashboard_product/DASHBOARD_AUTOMATION_PHASE5_AUTOSYNC_METRICS_CHARTS.md`.
+12. Added Phase 5 top-strip aggregate smoke evidence file: `docs/dashboard_product/evidence/PHASE5_TOP_STRIP_AGGREGATE_SMOKE_2026-04-30.txt`.
+13. Completed Phase 5 blocker-list and RAG persisted sync subtask in dashboard overview rendering.
+14. Added Phase 5 blocker/RAG sync smoke evidence file: `docs/dashboard_product/evidence/PHASE5_RAG_BLOCKER_SYNC_SMOKE_2026-04-30.txt`.
+15. Completed Phase 5 persisted chart payload autosync subtask for burndown, burnup, velocity, and severity rendering overlays.
+16. Added Phase 5 chart payload sync smoke evidence file: `docs/dashboard_product/evidence/PHASE5_CHART_PAYLOAD_SYNC_SMOKE_2026-04-30.txt`.
+17. Completed Phase 5 cross-surface drift/mismatch check subtask for persisted top-strip and chart payload parity checks.
+18. Added Phase 5 drift/mismatch smoke evidence file: `docs/dashboard_product/evidence/PHASE5_DRIFT_MISMATCH_CHECK_SMOKE_2026-04-30.txt`.
+19. Marked `DSH-012` execution ticket as `DONE` after Phase 5 overall gate PASS closure.
 
 ### In Progress
 
-1. `DSH-012` remains active for later gated phases after Phase 2 PASS.
+1. `DSH-009` and `DSH-010` remain in progress; `DSH-012` is closed.
 
 ### Notes
 
 1. Phase 0 gate decision: PASS.
 2. Phase 1 gate decision: PASS.
 3. Phase 2 gate decision: PASS.
-4. Next gate: Phase 3 backend persistence and API surface implementation.
+4. Phase 3 gate decision: PASS.
+5. Phase 4 gate decision: PASS.
+6. Phase 5 subtask (top-strip aggregate sync) decision: PASS.
+7. Phase 5 subtask (blocker-list and RAG persisted sync) decision: PASS.
+8. Phase 5 subtask (chart payload persisted sync) decision: PASS.
+9. Phase 5 subtask (cross-surface drift/mismatch checks) decision: PASS.
+10. Phase 5 overall gate decision: PASS.
+11. Next gate: none (Phase 5 complete).
 
 ### Evidence
 
 1. `docs/dashboard_product/DASHBOARD_AUTOMATION_PHASE2_MIGRATION_VALIDATION.md`.
 2. `docs/dashboard_product/evidence/PHASE2_BASELINE_COUNTS_2026-05-01.txt`.
+3. `docs/dashboard_product/DASHBOARD_AUTOMATION_PHASE3_API_PERSISTENCE.md`.
+4. `docs/dashboard_product/evidence/PHASE3_API_SMOKE_2026-05-01.txt`.
+5. `docs/dashboard_product/DASHBOARD_AUTOMATION_PHASE4_FRONTEND_PERSISTED_WIRING.md`.
+6. `docs/dashboard_product/evidence/PHASE4_FRONTEND_PERSISTENCE_SMOKE_2026-05-01.txt`.
+7. `docs/dashboard_product/DASHBOARD_AUTOMATION_PHASE5_AUTOSYNC_METRICS_CHARTS.md`.
+8. `docs/dashboard_product/evidence/PHASE5_TOP_STRIP_AGGREGATE_SMOKE_2026-04-30.txt`.
+9. `docs/dashboard_product/evidence/PHASE5_RAG_BLOCKER_SYNC_SMOKE_2026-04-30.txt`.
+10. `docs/dashboard_product/evidence/PHASE5_CHART_PAYLOAD_SYNC_SMOKE_2026-04-30.txt`.
+11. `docs/dashboard_product/evidence/PHASE5_DRIFT_MISMATCH_CHECK_SMOKE_2026-04-30.txt`.
 
 ---
 

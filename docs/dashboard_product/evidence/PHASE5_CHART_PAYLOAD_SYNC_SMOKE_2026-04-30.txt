@@ -1,0 +1,44 @@
+Dashboard Automation Phase 5 Chart Payload Sync Smoke Evidence
+Date: 2026-04-30
+Ticket: DSH-012
+
+Purpose
+- Validate persisted API payloads used by Phase 5 chart autosync wiring (burndown, burnup, velocity, severity).
+
+Environment
+- Flask app import path: api_server.app
+- Dashboard source: pmforge_dashboard/index.html
+- Test runner: Flask test client via workspace Python environment
+
+Seed Scenario (run id: P5CHT001)
+- Created Sprint 13 done ticket and Sprint 13 in-progress ticket.
+- Created Sprint 14 done ticket (cross-sprint cumulative check).
+- Created two Sprint 13 subtasks (one done, one todo).
+- Created one open Sprint 13 critical blocker.
+
+API Checks
+- create_t13_done POST /api/dashboard/v1/tickets -> 201
+- create_t13_prog POST /api/dashboard/v1/tickets -> 201
+- create_t14_done POST /api/dashboard/v1/tickets -> 201
+- create_sub_done POST /api/dashboard/v1/subtasks -> 201
+- create_sub_todo POST /api/dashboard/v1/subtasks -> 201
+- create_blocker POST /api/dashboard/v1/blockers -> 201
+- tickets_list GET /api/dashboard/v1/tickets -> 200
+- subtasks_list GET /api/dashboard/v1/subtasks -> 200
+- blockers_open GET /api/dashboard/v1/blockers?status=open -> 200
+
+Payload Coverage Confirmed
+- Tickets payload includes fields required for burnup/velocity/severity synthesis: id, sprint_code, status, priority.
+- Subtasks payload includes fields required for sprint burndown synthesis: ticket_id, status.
+- Blockers payload includes fields required for blocker-aware chart insights: sprint_code, status, severity.
+
+Cleanup
+- delete_blocker DELETE /api/dashboard/v1/blockers/BLK-P5CHT001-S13 -> 200
+- delete_sub_done DELETE /api/dashboard/v1/subtasks/DSH-P5CHT001-S13-DONE-SUB1 -> 200
+- delete_sub_todo DELETE /api/dashboard/v1/subtasks/DSH-P5CHT001-S13-PROG-SUB1 -> 200
+- delete_t13_done DELETE /api/dashboard/v1/tickets/DSH-P5CHT001-S13-DONE -> 200
+- delete_t13_prog DELETE /api/dashboard/v1/tickets/DSH-P5CHT001-S13-PROG -> 200
+- delete_t14_done DELETE /api/dashboard/v1/tickets/DSH-P5CHT001-S14-DONE -> 200
+
+Result
+PASS - persisted chart payload dependencies returned expected 2xx/201 statuses and required fields for chart autosync derivation.

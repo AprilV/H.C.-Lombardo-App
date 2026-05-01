@@ -1,0 +1,39 @@
+Dashboard Automation Phase 5 Top-Strip Aggregate Smoke Evidence
+Date: 2026-04-30
+Ticket: DSH-012
+
+Purpose
+- Validate the persisted API dependencies used by Phase 5 top-strip auto-sync logic.
+
+Environment
+- Flask app import path: api_server.app
+- Dashboard source: pmforge_dashboard/index.html
+- Test runner: Flask test client via workspace Python environment
+
+Seed Scenario (run id: P5STRIP001)
+- Created sprint ticket in S13 and backlog ticket in S14.
+- Created sprint subtask marked done.
+- Created open critical blocker in S13.
+
+API Checks
+- create_s13_ticket POST /api/dashboard/v1/tickets -> 201
+- create_s14_ticket POST /api/dashboard/v1/tickets -> 201
+- create_subtask POST /api/dashboard/v1/subtasks -> 201
+- create_blocker POST /api/dashboard/v1/blockers -> 201
+- overview GET /api/dashboard/v1/aggregates/overview -> 200
+- sprint_s13 GET /api/dashboard/v1/aggregates/sprint/S13 -> 200
+- blockers_s13_open GET /api/dashboard/v1/blockers?sprint_code=S13&status=open -> 200
+
+Sample Payload Excerpts
+- overview included ticket and subtask status buckets and open_blockers.
+- sprint_s13 included sprint ticket/subtask buckets and blocker totals.
+- blockers_s13_open returned one open critical blocker row for S13.
+
+Cleanup
+- delete_blocker DELETE /api/dashboard/v1/blockers/BLK-P5STRIP001 -> 200
+- delete_subtask DELETE /api/dashboard/v1/subtasks/DSH-P5STRIP001-S13-SUB1 -> 200
+- delete_s13_ticket DELETE /api/dashboard/v1/tickets/DSH-P5STRIP001-S13 -> 200
+- delete_s14_ticket DELETE /api/dashboard/v1/tickets/DSH-P5STRIP001-S14 -> 200
+
+Result
+PASS - all persisted aggregate dependencies for top-strip sync returned expected success statuses.

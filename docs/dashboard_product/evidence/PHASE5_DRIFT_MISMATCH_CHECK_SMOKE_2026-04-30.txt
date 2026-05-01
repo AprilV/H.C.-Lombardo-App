@@ -1,0 +1,62 @@
+Dashboard Automation Phase 5 Drift/Mismatch Check Smoke Evidence
+Date: 2026-04-30
+Ticket: DSH-012
+
+Purpose
+- Validate cross-surface parity checks between persisted top-strip metrics and persisted chart payload synthesis inputs.
+- Confirm mismatch detection baseline returns zero mismatches for a controlled seeded sprint scenario.
+
+Environment
+- Flask app import path: api_server.app
+- Dashboard source: pmforge_dashboard/index.html
+- Test runner: Flask test client via workspace Python environment
+
+Seed Scenario (run id: P5DRIFT001)
+- Created Sprint 13 done ticket and Sprint 13 in-progress ticket.
+- Created one Sprint 14 done ticket (cross-sprint noise control).
+- Created two Sprint 13 subtasks (one done, one todo).
+- Created two Sprint 13 open blockers (critical + medium).
+
+API Checks
+- create_t_done POST /api/dashboard/v1/tickets -> 201
+- create_t_prog POST /api/dashboard/v1/tickets -> 201
+- create_t_other POST /api/dashboard/v1/tickets -> 201
+- create_sub_done POST /api/dashboard/v1/subtasks -> 201
+- create_sub_todo POST /api/dashboard/v1/subtasks -> 201
+- create_blk_critical POST /api/dashboard/v1/blockers -> 201
+- create_blk_medium POST /api/dashboard/v1/blockers -> 201
+- overview GET /api/dashboard/v1/aggregates/overview -> 200
+- sprint_agg GET /api/dashboard/v1/aggregates/sprint/S13 -> 200
+- blockers_open_sprint GET /api/dashboard/v1/blockers?sprint_code=S13&status=open -> 200
+- tickets GET /api/dashboard/v1/tickets -> 200
+- subtasks GET /api/dashboard/v1/subtasks -> 200
+- blockers_open_all GET /api/dashboard/v1/blockers?status=open -> 200
+
+Cross-Surface Drift Baseline Results
+- top_subtask_total: 2
+- chart_burndown_total: 2
+- top_subtask_done: 1
+- chart_subtask_done: 1
+- top_p1_count: 1
+- rows_p1_count: 1
+- mismatch_count: 0
+- mismatches: none
+
+Runtime Drift UI Functional Check (file-mode browser execution)
+- Confirmed `runDashboardDriftChecks` and `scheduleDashboardDriftCheck` are callable from runtime scope.
+- Injected synthetic mismatched payloads for S13 and executed `runDashboardDriftChecks(13)`.
+- Observed `mismatchCount: 2` with warning status reflected in dashboard UI: `Drift: DRIFT WARNING`.
+- Re-ran with synthetic payload values aligned to current S13 board counts (`total: 48`, `done: 47`).
+- Observed `mismatchCount: 0` with dashboard UI status `Drift: DRIFT OK` and parity note updated accordingly.
+
+Cleanup
+- delete_blk_critical DELETE /api/dashboard/v1/blockers/BLK-P5DRIFT001-CRIT -> 200
+- delete_blk_medium DELETE /api/dashboard/v1/blockers/BLK-P5DRIFT001-MED -> 200
+- delete_sub_done DELETE /api/dashboard/v1/subtasks/DSH-P5DRIFT001-S13-DONE-SUB1 -> 200
+- delete_sub_todo DELETE /api/dashboard/v1/subtasks/DSH-P5DRIFT001-S13-PROG-SUB1 -> 200
+- delete_t_done DELETE /api/dashboard/v1/tickets/DSH-P5DRIFT001-S13-DONE -> 200
+- delete_t_prog DELETE /api/dashboard/v1/tickets/DSH-P5DRIFT001-S13-PROG -> 200
+- delete_t_other DELETE /api/dashboard/v1/tickets/DSH-P5DRIFT001-S14-DONE -> 200
+
+Result
+PASS - cross-surface drift baseline checks returned zero mismatches for seeded persisted state and required endpoint payloads returned expected 2xx/201 statuses.

@@ -1,0 +1,50 @@
+Dashboard Automation Phase 3 API Smoke Evidence
+Date: 2026-05-01
+Ticket: DSH-012
+
+Environment
+- Flask app import path: api_server.app
+- Dashboard route module: dashboard_api.py (root, runtime)
+- Test runner: Flask test client via workspace Python environment
+
+Read Surface Smoke (GET)
+/api/dashboard/v1/health -> 200
+/api/dashboard/v1/tickets -> 200
+/api/dashboard/v1/subtasks -> 200
+/api/dashboard/v1/blockers -> 200
+/api/dashboard/v1/hours -> 200
+/api/dashboard/v1/risks -> 200
+/api/dashboard/v1/decisions -> 200
+/api/dashboard/v1/events -> 200
+/api/dashboard/v1/aggregates/overview -> 200
+/api/dashboard/v1/aggregates/sprint/TBD -> 200
+
+CRUD + Aggregate + Event Smoke (sample run id suffix: 611084)
+create_ticket POST /api/dashboard/v1/tickets -> 201
+update_ticket PUT /api/dashboard/v1/tickets/DSH-TST-611084 -> 200
+create_subtask POST /api/dashboard/v1/subtasks -> 201
+transition_subtask PUT /api/dashboard/v1/subtasks/DSH-TST-611084-S1/status -> 200
+upsert_task_detail PUT /api/dashboard/v1/task-details/DSH-TST-611084-S1 -> 200
+create_blocker POST /api/dashboard/v1/blockers -> 201
+update_blocker PUT /api/dashboard/v1/blockers/BLK-611084 -> 200
+upsert_retro PUT /api/dashboard/v1/retro/TBD -> 200
+create_dod POST /api/dashboard/v1/dod -> 201
+update_dod PUT /api/dashboard/v1/dod/DOD-611084 -> 200
+upsert_hours PUT /api/dashboard/v1/hours/98 -> 200
+create_risk POST /api/dashboard/v1/risks -> 201
+update_risk PUT /api/dashboard/v1/risks/RISK-611084 -> 200
+create_decision POST /api/dashboard/v1/decisions -> 201
+update_decision PUT /api/dashboard/v1/decisions/DEC-611084 -> 200
+overview GET /api/dashboard/v1/aggregates/overview -> 200
+sprint_rollup GET /api/dashboard/v1/aggregates/sprint/TBD -> 200
+events GET /api/dashboard/v1/events?limit=20 -> 200
+delete_decision DELETE /api/dashboard/v1/decisions/DEC-611084 -> 200
+delete_risk DELETE /api/dashboard/v1/risks/RISK-611084 -> 200
+delete_hours DELETE /api/dashboard/v1/hours/98 -> 200
+delete_dod DELETE /api/dashboard/v1/dod/DOD-611084 -> 200
+delete_blocker DELETE /api/dashboard/v1/blockers/BLK-611084 -> 200
+delete_subtask DELETE /api/dashboard/v1/subtasks/DSH-TST-611084-S1 -> 200
+delete_ticket DELETE /api/dashboard/v1/tickets/DSH-TST-611084 -> 200
+
+Result
+PASS - all targeted Phase 3 endpoints returned expected 2xx/201 responses in smoke verification.

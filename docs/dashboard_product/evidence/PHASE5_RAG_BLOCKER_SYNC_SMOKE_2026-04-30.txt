@@ -1,0 +1,37 @@
+Dashboard Automation Phase 5 RAG + Blocker Sync Smoke Evidence
+Date: 2026-04-30
+Ticket: DSH-012
+
+Purpose
+- Validate persisted API payloads required by Phase 5 blocker-list rendering and RAG status consistency sync.
+
+Environment
+- Flask app import path: api_server.app
+- Dashboard source: pmforge_dashboard/index.html
+- Test runner: Flask test client via workspace Python environment
+
+Seed Scenario (run id: P5RAG001)
+- Created one in-progress S13 ticket.
+- Created one done subtask under that S13 ticket.
+- Created two open blockers in S13 with mixed severity (`critical`, `medium`).
+
+API Checks
+- create_ticket POST /api/dashboard/v1/tickets -> 201
+- create_subtask POST /api/dashboard/v1/subtasks -> 201
+- create_blocker_critical POST /api/dashboard/v1/blockers -> 201
+- create_blocker_medium POST /api/dashboard/v1/blockers -> 201
+- sprint_aggregate GET /api/dashboard/v1/aggregates/sprint/S13 -> 200
+- blockers_open GET /api/dashboard/v1/blockers?sprint_code=S13&status=open -> 200
+
+Payload Coverage Confirmed
+- sprint aggregate includes blocker totals and subtask done/total buckets used for RAG message consistency.
+- blockers endpoint returns each blocker row with: id, summary, severity, sprint_code, ticket_id.
+
+Cleanup
+- delete_blocker_critical DELETE /api/dashboard/v1/blockers/BLK-P5RAG001-A -> 200
+- delete_blocker_medium DELETE /api/dashboard/v1/blockers/BLK-P5RAG001-B -> 200
+- delete_subtask DELETE /api/dashboard/v1/subtasks/DSH-P5RAG001-S13-SUB1 -> 200
+- delete_ticket DELETE /api/dashboard/v1/tickets/DSH-P5RAG001-S13 -> 200
+
+Result
+PASS - persisted blocker-list and RAG sync API dependencies returned expected 2xx/201 statuses and required payload fields.

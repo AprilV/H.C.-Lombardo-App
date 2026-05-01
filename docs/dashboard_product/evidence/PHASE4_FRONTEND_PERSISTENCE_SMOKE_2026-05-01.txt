@@ -1,0 +1,44 @@
+Dashboard Automation Phase 4 Frontend Persistence Smoke Evidence
+Date: 2026-05-01
+Ticket: DSH-012
+
+Environment
+- Flask app import path: api_server.app
+- Dashboard frontend source: pmforge_dashboard/index.html
+- Dashboard persistence API: /api/dashboard/v1/*
+- Test runner: Flask test client via workspace Python environment
+
+Static Diagnostics
+- pmforge_dashboard/index.html -> no errors
+- dashboard_api.py -> no errors
+
+Frontend-Wired Flow Smoke (sample run id suffix: P4SMK001)
+create_ticket POST /api/dashboard/v1/tickets -> 201
+update_ticket PUT /api/dashboard/v1/tickets/DSH-P4SMK001 -> 200
+comment_add POST /api/dashboard/v1/tickets/DSH-P4SMK001/comments -> 201
+comment_list GET /api/dashboard/v1/tickets/DSH-P4SMK001/comments -> 200
+subtask_create POST /api/dashboard/v1/subtasks -> 201
+subtask_status PUT /api/dashboard/v1/subtasks/DSH-P4SMK001-S1/status -> 200
+task_detail_upsert PUT /api/dashboard/v1/task-details/DSH-P4SMK001-S1 -> 200
+retro_put PUT /api/dashboard/v1/retro/S13 -> 200
+retro_get GET /api/dashboard/v1/retro/S13 -> 200
+dod_create POST /api/dashboard/v1/dod -> 201
+dod_list GET /api/dashboard/v1/dod?sprint_code=S13 -> 200
+dod_delete DELETE /api/dashboard/v1/dod/DOD-P4SMK001-01 -> 200
+hours_put PUT /api/dashboard/v1/hours/8 -> 200
+hours_get GET /api/dashboard/v1/hours -> 200
+hours_delete DELETE /api/dashboard/v1/hours/8 -> 200
+cleanup_subtask DELETE /api/dashboard/v1/subtasks/DSH-P4SMK001-S1 -> 200
+cleanup_ticket DELETE /api/dashboard/v1/tickets/DSH-P4SMK001 -> 200
+
+Additional Focused Check (comments + hours)
+create_ticket POST /api/dashboard/v1/tickets -> 201
+add_comment POST /api/dashboard/v1/tickets/DSH-P4HRS001/comments -> 201
+list_comments GET /api/dashboard/v1/tickets/DSH-P4HRS001/comments -> 200
+upsert_hours PUT /api/dashboard/v1/hours/7 -> 200
+list_hours GET /api/dashboard/v1/hours -> 200
+delete_hours DELETE /api/dashboard/v1/hours/7 -> 200
+delete_ticket DELETE /api/dashboard/v1/tickets/DSH-P4HRS001 -> 200
+
+Result
+PASS - all targeted Phase 4 persisted action routes returned expected 2xx/201 statuses.

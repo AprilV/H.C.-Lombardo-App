@@ -31,7 +31,7 @@ Priority values:
 | DSH-009 | P2 | IN PROGRESS | Feature | Add configurable dashboard branding + methodology workspace controls | Header/about/report/export text can be edited from in-page controls, methodology label/status updates consistently, and default H.C. Lombardo context remains available without data loss |
 | DSH-010 | P1 | IN PROGRESS | Architecture | Define suite-scale auto-computed metrics and extensible chart/layout architecture | Architecture draft defines target users, canonical data model, event-driven auto-update flow, chart registry, user-selectable layouts, methodology packs (Agile/Hybrid/Predictive), and rollout phases |
 | DSH-011 | P2 | DONE | Docs | Align PM4 source-of-truth docs after dashboard transition | Dashboard docs reference `pmforge_dashboard/index.html` as active source, legacy path references point to `backups/legacy_dashboard/index.html`, and release notes capture transition evidence (`c2056abd`) |
-| DSH-012 | P1 | IN PROGRESS | Execution | Start dashboard automation implementation with phase-gated delivery and evidence checkpoints | Phase 0 baseline contract is PASS, Phase 1 coverage/canonical model is PASS, Phase 2 deterministic migration mapping and parity checks are PASS, and release/index traceability is updated before Phase 3 backend API persistence work begins |
+| DSH-012 | P1 | DONE | Execution | Start dashboard automation implementation with phase-gated delivery and evidence checkpoints | Phase 0 through Phase 5 gates are PASS with evidence artifacts recorded; persisted backend/frontend wiring, metric autosync, and cross-surface drift/mismatch checks are complete and release/index traceability is updated |
 
 ## Notes
 
