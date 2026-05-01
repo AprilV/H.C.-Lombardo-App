@@ -8,15 +8,27 @@ Format: `YYYY.MM.DD` (example: `2026.04.23`)
 
 ## 2026.04.30 (Draft / In Progress)
 
+### Completed
+
+1. Closed `DSH-012` Phase 0 gate with baseline contract and required traceability evidence.
+2. Added Phase 1 coverage/model artifact: `docs/dashboard_product/DASHBOARD_AUTOMATION_PHASE1_COVERAGE_MODEL.md`.
+3. Documented complete dashboard surface ownership matrix, canonical entities, enum mappings, and audit field requirements for migration planning.
+
 ### In Progress
 
-1. Started `DSH-012`: dashboard automation implementation kickoff with Phase 0 baseline freeze.
-2. Added phase kickoff and handoff runbook doc: `docs/dashboard_product/DASHBOARD_AUTOMATION_PHASE0_KICKOFF.md`.
-3. Added explicit next-chat execution template so implementation can continue in a separate chat without ambiguity.
+1. `DSH-012` remains in execution for later gated phases after Phase 1 PASS.
 
 ### Notes
 
-1. Phase 1 is gated and must not begin until Phase 0 done criteria are verified.
+1. Phase 0 gate decision: PASS.
+2. Phase 1 gate decision: PASS.
+3. Next gate: Phase 2 deterministic migration plan (no implementation cutover yet).
+
+### Evidence
+
+1. Commit `40100148` - "dashboard: close Phase 0 gate for DSH-012".
+2. `docs/dashboard_product/DASHBOARD_AUTOMATION_PHASE0_KICKOFF.md`.
+3. `docs/dashboard_product/DASHBOARD_AUTOMATION_PHASE1_COVERAGE_MODEL.md`.
 
 ---
 

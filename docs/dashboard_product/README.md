@@ -11,6 +11,7 @@ This folder tracks the PM dashboard as a product, not just a file.
 5. `DASHBOARD_DATA_OWNERSHIP.md`
 6. `DASHBOARD_METRICS.md`
 7. `DASHBOARD_AUTOMATION_PHASE0_KICKOFF.md`
+8. `DASHBOARD_AUTOMATION_PHASE1_COVERAGE_MODEL.md`
 
 ## Required Rule
 
