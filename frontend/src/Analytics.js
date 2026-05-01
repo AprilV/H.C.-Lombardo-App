@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import './Analytics.css';
+import { getDefaultSeason, getRecentSeasons } from './utils/season';
 
 const API_URL = process.env.REACT_APP_API_URL || 'https://api.aprilsykes.dev';
 
 function Analytics() {
+  const defaultSeason = getDefaultSeason();
+  const seasonOptions = getRecentSeasons(4, 1999, defaultSeason);
+
   const [activeTab, setActiveTab] = useState('summary');
-  const [season, setSeason] = useState(2025);
+  const [season, setSeason] = useState(defaultSeason);
   const [loading, setLoading] = useState(false);
   
   // Data states
@@ -670,10 +674,9 @@ function Analytics() {
         <div className="season-selector">
           <label>Season:</label>
           <select value={season} onChange={(e) => setSeason(Number(e.target.value))}>
-            <option value={2025}>2025</option>
-            <option value={2024}>2024</option>
-            <option value={2023}>2023</option>
-            <option value={2022}>2022</option>
+            {seasonOptions.map((optionSeason) => (
+              <option key={optionSeason} value={optionSeason}>{optionSeason}</option>
+            ))}
           </select>
         </div>
       </div>

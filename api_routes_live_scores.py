@@ -8,20 +8,11 @@ import psycopg2
 import os
 import logging
 from dotenv import load_dotenv
+from team_abbreviations import to_hcl_abbr
 
 logger = logging.getLogger(__name__)
 
 load_dotenv()
-
-# Team abbreviation mapping (ESPN to Database)
-TEAM_ABBR_MAP = {
-    'LAR': 'LA',  # ESPN uses LAR, database uses LA for Rams
-    'WSH': 'WAS', # ESPN uses WSH, database uses WAS for Washington
-}
-
-def normalize_team_abbr(abbr):
-    """Convert ESPN team abbreviation to database format"""
-    return TEAM_ABBR_MAP.get(abbr, abbr)
 
 def get_db_connection():
     """Connect to database"""
@@ -38,9 +29,40 @@ live_scores_api = Blueprint('live_scores_api', __name__)
 
 ESPN_SCOREBOARD_URL = "http://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard"
 
-def get_predictions_for_week(week, season=2025):
+
+def get_latest_completed_season():
+    """Return the latest season with completed games, or current year on failure."""
+    fallback_season = datetime.now().year
+    conn = None
+    cur = None
+
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute(
+            """
+            SELECT COALESCE(MAX(season), %s)
+            FROM hcl.games
+            WHERE home_score IS NOT NULL
+              AND away_score IS NOT NULL
+            """,
+            (fallback_season,)
+        )
+        return cur.fetchone()[0] or fallback_season
+    except Exception:
+        return fallback_season
+    finally:
+        if cur:
+            cur.close()
+        if conn:
+            conn.close()
+
+def get_predictions_for_week(week, season=None):
     """Fetch AI, ELO, and Vegas predictions"""
     try:
+        if season is None:
+            season = get_latest_completed_season()
+
         # Import the ML predictor directly instead of making HTTP call
         from ml.predict_week import WeeklyPredictor
         
@@ -127,7 +149,7 @@ def get_live_scores():
         if 'week' in data and 'number' in data['week']:
             week_info = {
                 'week': data['week']['number'],
-                'season': data.get('season', {}).get('year', 2025)
+                'season': data.get('season', {}).get('year', get_latest_completed_season())
             }
         
         # Fetch predictions if we have week info
@@ -211,15 +233,22 @@ def get_live_scores():
                     'game_id': event.get('id', ''),
                 }
                 
-                # Add AI prediction and Vegas data if available
-                # Normalize team abbreviations for database lookup
-                home_db = normalize_team_abbr(game_data['home_team'])
-                away_db = normalize_team_abbr(game_data['away_team'])
-                matchup_key = f"{away_db}@{home_db}"
-                
-                
-                if matchup_key in predictions:
-                    pred = predictions[matchup_key]
+                # Add AI prediction and Vegas data if available.
+                # Try hcl-normalized key first, then raw ESPN key as fallback.
+                home_hcl = to_hcl_abbr(game_data['home_team'])
+                away_hcl = to_hcl_abbr(game_data['away_team'])
+                matchup_keys = [
+                    f"{away_hcl}@{home_hcl}",
+                    f"{game_data['away_team']}@{game_data['home_team']}",
+                ]
+
+                pred = None
+                for matchup_key in matchup_keys:
+                    if matchup_key in predictions:
+                        pred = predictions[matchup_key]
+                        break
+
+                if pred:
                     game_data['ai_prediction'] = pred.get('ai_predicted_winner')
                     game_data['ai_spread'] = pred.get('ai_spread')
                     game_data['elo_prediction'] = pred.get('elo_predicted_winner')
@@ -230,9 +259,9 @@ def get_live_scores():
                     # Determine if AI prediction was correct (only for final games)
                     if game_status == 'final':
                         if game_data['home_score'] > game_data['away_score']:
-                            actual_winner = home_db
+                            actual_winner = home_hcl
                         elif game_data['away_score'] > game_data['home_score']:
-                            actual_winner = away_db
+                            actual_winner = away_hcl
                         else:
                             actual_winner = 'TIE'
                         
@@ -302,7 +331,6 @@ def get_live_scores():
                     game_data['elo_correct'] = None
                     game_data['ai_spread_covered'] = None
                     game_data['elo_spread_covered'] = None
-                    game_data['ai_spread_covered'] = None
                 
                 games.append(game_data)
                 

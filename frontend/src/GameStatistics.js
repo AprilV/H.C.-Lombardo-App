@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './GameStatistics.css';
+import { getDefaultSeason, MIN_NFL_SEASON } from './utils/season';
 
 const API_URL = process.env.REACT_APP_API_URL || 'https://api.aprilsykes.dev';
 
@@ -73,14 +74,16 @@ const STAT_CATEGORIES = {
 };
 
 function GameStatistics() {
+  const currentSeason = getDefaultSeason();
+
   // Team A state
-  const [seasonA, setSeasonA] = useState('2025');
+  const [seasonA, setSeasonA] = useState(String(currentSeason));
   const [teamAList, setTeamAList] = useState([]);
   const [selectedTeamA, setSelectedTeamA] = useState('');
   const [teamAData, setTeamAData] = useState(null);
   
   // Team B state
-  const [seasonB, setSeasonB] = useState('2025');
+  const [seasonB, setSeasonB] = useState(String(currentSeason));
   const [teamBList, setTeamBList] = useState([]);
   const [selectedTeamB, setSelectedTeamB] = useState('');
   const [teamBData, setTeamBData] = useState(null);
@@ -106,9 +109,9 @@ function GameStatistics() {
   
   const navigate = useNavigate();
 
-  // Generate season years (1999-2025)
+  // Generate season years from oldest supported season through current default season.
   const seasons = [];
-  for (let year = 2025; year >= 1999; year--) {
+  for (let year = currentSeason; year >= MIN_NFL_SEASON; year--) {
     seasons.push(year);
   }
 
@@ -357,7 +360,7 @@ function GameStatistics() {
       {/* Header */}
       <div className="stats-header">
         <h1>📊 Historical Stats - À La Carte</h1>
-        <p className="subtitle">Pick your stats, compare any teams from any seasons (1999-2025)</p>
+        <p className="subtitle">Pick your stats, compare any teams from any seasons ({MIN_NFL_SEASON}-{currentSeason})</p>
       </div>
 
       {error && (

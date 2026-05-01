@@ -37,7 +37,7 @@ The dashboard must show:
 
 ## Constraints
 
-1. Single-file runtime (`Dashboard/index.html`) is current implementation.
+1. Single-file runtime (`pmforge_dashboard/index.html`) is current implementation.
 2. Public output is served by `gh-pages` deployment.
 3. Hardcoded arrays remain the active source for dashboard runtime data.
 

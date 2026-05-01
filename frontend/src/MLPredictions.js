@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import './MLPredictions.css';
+import { getDefaultSeason, getRecentSeasons } from './utils/season';
 
 const API_URL = process.env.REACT_APP_API_URL || 'https://api.aprilsykes.dev';
 
 function MLPredictions() {
+  const defaultSeason = getDefaultSeason();
+  const seasonOptions = getRecentSeasons(3, 1999, defaultSeason);
+
   const [activeTab, setActiveTab] = useState('predictions');
   const [predictionModel, setPredictionModel] = useState('xgb'); // 'xgb', 'elo', 'combined'
-  const [season, setSeason] = useState(2025);
+  const [season, setSeason] = useState(defaultSeason);
   const [week, setWeek] = useState(null);
   const [loading, setLoading] = useState(false);
   const [predictions, setPredictions] = useState([]);
@@ -748,7 +752,7 @@ function MLPredictions() {
                 <p><strong>What it is:</strong> AI-predicted final scores for both teams using neural network regression model.</p>
                 <p><strong>How it works:</strong> Analyzes team performance, recent form, EPA trends, and Vegas total line to predict exact scores.</p>
                 <p><strong>Example:</strong> "BUF: 18.7 - HOU: 24.8" means AI predicts Houston wins 24.8 to 18.7.</p>
-                <p><strong>Accuracy:</strong> Mean Absolute Error (MAE) of 10.35 points on 2025 games. Competitive with Vegas spreads (~10.5 MAE).</p>
+                <p><strong>Accuracy:</strong> Mean Absolute Error (MAE) of 10.35 points on {defaultSeason} games. Competitive with Vegas spreads (~10.5 MAE).</p>
               </div>
             </div>
 
@@ -903,7 +907,7 @@ function MLPredictions() {
                 <p><strong>Primary Source:</strong> ESPN Bet (formerly Caesars Sportsbook)</p>
                 <p><strong>Aggregation:</strong> ESPN aggregates odds from multiple sportsbooks including DraftKings, FanDuel, Caesars, and BetMGM.</p>
                 <p><strong>Update frequency:</strong> Lines update throughout the week as teams/market conditions change.</p>
-                <p><strong>Coverage:</strong> Currently 60.3% of 2025 games have complete betting line data.</p>
+                <p><strong>Coverage:</strong> Currently 60.3% of {defaultSeason} games have complete betting line data.</p>
               </div>
             </div>
 
@@ -912,7 +916,7 @@ function MLPredictions() {
               <div className="legend-definition">
                 <p><strong>Source:</strong> nflverse via nfl_data_py (open-source NFL data)</p>
                 <p><strong>Includes:</strong> Play-by-play data, advanced stats (EPA, success rate), game results</p>
-                <p><strong>Historical range:</strong> 1999-2025 (14,312 games used for training)</p>
+                <p><strong>Historical range:</strong> 1999-{defaultSeason} (14,312 games used for training)</p>
               </div>
             </div>
           </div>
@@ -957,7 +961,7 @@ function MLPredictions() {
             <div className="legend-item">
               <div className="legend-term">Training Data</div>
               <div className="legend-definition">
-                <p><strong>Games analyzed:</strong> 14,312 NFL games (1999-2025)</p>
+                <p><strong>Games analyzed:</strong> 14,312 NFL games (1999-{defaultSeason})</p>
                 <p><strong>Features per game:</strong> 41 statistical inputs</p>
                 <p><strong>Model type:</strong> Multi-layer neural network (128→64→32 neurons)</p>
               </div>
@@ -1003,12 +1007,12 @@ function MLPredictions() {
                 <span className="metric-value">Win Probability (0-100%)</span>
               </div>
               <div className="metric">
-                <span className="metric-label">Test Accuracy (2025)</span>
+                <span className="metric-label">Test Accuracy ({defaultSeason})</span>
                 <span className="metric-value">65.55%</span>
               </div>
               <div className="metric">
                 <span className="metric-label">Training Games</span>
-                <span className="metric-value">14,312 games (1999-2025)</span>
+                <span className="metric-value">14,312 games (1999-{defaultSeason})</span>
               </div>
               <div className="metric">
                 <span className="metric-label">Features</span>
@@ -1035,7 +1039,7 @@ function MLPredictions() {
                 <span className="metric-value">Point Differential (-30 to +30)</span>
               </div>
               <div className="metric">
-                <span className="metric-label">Test MAE (2025)</span>
+                <span className="metric-label">Test MAE ({defaultSeason})</span>
                 <span className="metric-value">10.35 points</span>
               </div>
               <div className="metric">
@@ -1098,14 +1102,14 @@ function MLPredictions() {
                 <ul>
                   <li>1999-2010 games: 0.5x weight (older NFL era)</li>
                   <li>2011-2018 games: 1.0x weight (transition era)</li>
-                  <li>2019-2025 games: 2.0x weight (modern NFL - rule changes, offense evolution)</li>
+                  <li>2019-{defaultSeason} games: 2.0x weight (modern NFL - rule changes, offense evolution)</li>
                 </ul>
                 
                 <p><strong>Validation Splits:</strong></p>
                 <ul>
                   <li>Training: Games through 2023 season</li>
                   <li>Validation: 2024 season (269 games)</li>
-                  <li>Test: 2025 season (148 games so far)</li>
+                  <li>Test: {defaultSeason} season (148 games so far)</li>
                 </ul>
               </div>
             </div>
@@ -1129,7 +1133,7 @@ function MLPredictions() {
         </div>
 
         <div className="legend-footer">
-          <p><strong>🔬 Model Validation:</strong> Both models tested on unseen 2025 games. No data leakage detected (validated using historical splits). Performance competitive with professional sports betting analytics.</p>
+          <p><strong>🔬 Model Validation:</strong> Both models tested on unseen {defaultSeason} games. No data leakage detected (validated using historical splits). Performance competitive with professional sports betting analytics.</p>
         </div>
       </div>
     );
@@ -1348,7 +1352,7 @@ function MLPredictions() {
               <ul>
                 <li>Trained on 1999-2023 games</li>
                 <li>Validated on unseen 2024 games</li>
-                <li>Tested on unseen 2025 games (current season)</li>
+                <li>Tested on unseen {defaultSeason} games (current season)</li>
                 <li>No data leakage - predictions use only pre-game information</li>
               </ul>
             </div>
@@ -1378,9 +1382,9 @@ function MLPredictions() {
           <div className="season-selector">
             <label>Season:</label>
             <select value={season} onChange={(e) => setSeason(Number(e.target.value))}>
-              <option value={2025}>2025</option>
-              <option value={2024}>2024</option>
-              <option value={2023}>2023</option>
+              {seasonOptions.map((optionSeason) => (
+                <option key={optionSeason} value={optionSeason}>{optionSeason}</option>
+              ))}
             </select>
           </div>
           <div className="week-selector">

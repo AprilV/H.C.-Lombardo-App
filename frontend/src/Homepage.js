@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTheme } from './contexts/ThemeContext';
 import './Homepage.css';
 import LiveGamesTicker from './LiveGamesTicker';
+import { getDefaultSeason } from './utils/season';
 
 const API_URL = process.env.REACT_APP_API_URL || 'https://api.aprilsykes.dev';
 
@@ -35,6 +36,7 @@ const NFL_STRUCTURE = {
 };
 
 function Homepage() {
+  const defaultSeason = getDefaultSeason();
   const [teams, setTeams] = useState([]);
   const [predictions, setPredictions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -49,7 +51,7 @@ function Homepage() {
   const fetchTeams = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${API_URL}/api/hcl/teams?season=2025`);
+      const response = await fetch(`${API_URL}/api/hcl/teams?season=${defaultSeason}`);
       const data = await response.json();
       setTeams(data.teams || []);
     } catch (err) {
@@ -156,7 +158,7 @@ function Homepage() {
           <div className="method-card">
             <div className="method-icon">⚡</div>
             <div className="method-title">XGBoost ML Model</div>
-            <div className="method-desc">Gradient boosting trained on 2020-2025 NFL data analyzing 50+ statistical features including offensive efficiency, defensive metrics, and situational performance.</div>
+            <div className="method-desc">Gradient boosting trained on 2020-{defaultSeason} NFL data analyzing 50+ statistical features including offensive efficiency, defensive metrics, and situational performance.</div>
           </div>
           <div className="method-card">
             <div className="method-icon">🎰</div>
@@ -169,7 +171,7 @@ function Homepage() {
       {/* Standings Section Header */}
       <div className="homepage-header">
         <h1>NFL Season Standings</h1>
-        <h2>2025</h2>
+        <h2>{defaultSeason}</h2>
         <p className="season-subtitle">Click any team to view detailed statistics and analysis</p>
       </div>
 

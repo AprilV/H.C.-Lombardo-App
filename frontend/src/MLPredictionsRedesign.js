@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import './MLPredictionsRedesign.css';
+import { getDefaultSeason, getRecentSeasons } from './utils/season';
 
 const API_URL = process.env.REACT_APP_API_URL || 'https://api.aprilsykes.dev';
 
 function MLPredictionsRedesign() {
-  const [season, setSeason] = useState(2025);
+  const defaultSeason = getDefaultSeason();
+  const seasonOptions = getRecentSeasons(6, 2020, defaultSeason);
+
+  const [season, setSeason] = useState(defaultSeason);
   const [week, setWeek] = useState(null);
   const [availableWeeks, setAvailableWeeks] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -332,12 +336,9 @@ function MLPredictionsRedesign() {
         <div className="week-selector-redesign">
           <label>Season:</label>
           <select value={season} onChange={(e) => setSeason(Number(e.target.value))}>
-            <option value={2025}>2025</option>
-            <option value={2024}>2024</option>
-            <option value={2023}>2023</option>
-            <option value={2022}>2022</option>
-            <option value={2021}>2021</option>
-            <option value={2020}>2020</option>
+            {seasonOptions.map((optionSeason) => (
+              <option key={optionSeason} value={optionSeason}>{optionSeason}</option>
+            ))}
           </select>
         </div>
 

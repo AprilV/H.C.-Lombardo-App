@@ -28,6 +28,9 @@ Priority values:
 | DSH-006 | P3 | TODO | Refactor | Reduce single-file risk by extracting data blocks | Static data sections can be maintained in separated files with build/import step |
 | DSH-007 | P3 | TODO | Quality | Add dashboard smoke test checklist | Standard verification list exists and is run before push |
 | DSH-008 | P1 | TODO | Security | Enforce branch protection and deploy guardrails | `master` requires PR + review + checks, `gh-pages` is automation-only push path, and branch protection settings are documented in the repo |
+| DSH-009 | P2 | IN PROGRESS | Feature | Add configurable dashboard branding + methodology workspace controls | Header/about/report/export text can be edited from in-page controls, methodology label/status updates consistently, and default H.C. Lombardo context remains available without data loss |
+| DSH-010 | P1 | IN PROGRESS | Architecture | Define suite-scale auto-computed metrics and extensible chart/layout architecture | Architecture draft defines target users, canonical data model, event-driven auto-update flow, chart registry, user-selectable layouts, methodology packs (Agile/Hybrid/Predictive), and rollout phases |
+| DSH-011 | P2 | DONE | Docs | Align PM4 source-of-truth docs after dashboard transition | Dashboard docs reference `pmforge_dashboard/index.html` as active source, legacy path references point to `backups/legacy_dashboard/index.html`, and release notes capture transition evidence (`c2056abd`) |
 
 ## Notes
 

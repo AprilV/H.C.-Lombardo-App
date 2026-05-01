@@ -39,9 +39,9 @@ Status: **OPEN** | **IN SPRINT** | **DONE**
 | DAT-2 | Load 2025 games into hcl.games (18 weeks regular season + playoffs) | P1 | L | OPEN |
 | DAT-3 | Load 2025 team_game_stats (all 60+ columns per game) | P1 | L | OPEN |
 | DAT-4 | Verify EPA columns are populated for 2025 games | P1 | M | OPEN |
-| DAT-5 | Update public.teams with 2025 final standings | P1 | M | OPEN |
-| DAT-6 | Verify data integrity: row counts, missing values, team abbreviations | P1 | M | OPEN |
-| DAT-7 | Update all backend defaults from season=2025 to season=2024/2025 logic | P1 | M | OPEN |
+| DAT-5 | Update public.teams with 2025 final standings | P1 | M | DONE |
+| DAT-6 | Verify data integrity: row counts, missing values, team abbreviations | P1 | M | DONE |
+| DAT-7 | Update backend season defaults from hardcoded 2025 to dynamic current/latest-season logic | P1 | M | DONE |
 | DAT-8 | Verify all 4 analytics views still return data with 2025 loaded | P1 | M | OPEN |
 
 ---
@@ -51,13 +51,13 @@ Status: **OPEN** | **IN SPRINT** | **DONE**
 
 | ID | Story | Priority | Size | Status |
 |----|-------|----------|------|--------|
-| BUG-1 | Fix App.js: /game-statistics routes to TeamComparison (wrong component) | P1 | S | OPEN |
-| BUG-2 | Fix App.js: /matchup-analyzer routes to TeamComparison (wrong component) | P1 | S | OPEN |
-| BUG-3 | Remove hardcoded password 'aprilv120' fallback from api_server.py, api_routes_hcl.py, api_routes_live_scores.py | P1 | S | OPEN |
-| BUG-4 | Remove 7+ print(f"DEBUG:...") statements from api_routes_live_scores.py | P1 | S | OPEN |
-| BUG-5 | Fix background_updater.py: imports MultiSourceDataFetcher which doesn't exist | P1 | M | OPEN |
-| BUG-6 | Fix season default logic (hardcoded 2025 throughout) — needs dynamic current-season logic | P1 | M | OPEN |
-| BUG-7 | Fix team abbreviation mismatches between ESPN (LAR, WSH) and database (LA, WAS) — audit all locations | P2 | M | OPEN |
+| BUG-1 | Fix App.js: /game-statistics routes to TeamComparison (wrong component) | P1 | S | DONE |
+| BUG-2 | Fix App.js: /matchup-analyzer routes to TeamComparison (wrong component) | P1 | S | DONE |
+| BUG-3 | Remove hardcoded password 'aprilv120' fallback from api_server.py, api_routes_hcl.py, api_routes_live_scores.py | P1 | S | DONE |
+| BUG-4 | Remove 7+ print(f"DEBUG:...") statements from api_routes_live_scores.py | P1 | S | DONE |
+| BUG-5 | Fix background_updater.py: imports MultiSourceDataFetcher which doesn't exist | P1 | M | DONE |
+| BUG-6 | Fix season default logic (hardcoded 2025 throughout) — implement dynamic current-season logic | P1 | M | DONE |
+| BUG-7 | Fix team abbreviation mismatches between ESPN (LAR, WSH) and database (LA, WAS) — audit all locations | P2 | M | DONE |
 | BUG-8 | Fix background_updater_service.py: hardcoded Linux path breaks Windows dev | P2 | S | OPEN |
 
 ---
@@ -67,7 +67,7 @@ Status: **OPEN** | **IN SPRINT** | **DONE**
 
 | ID | Story | Priority | Size | Status |
 |----|-------|----------|------|--------|
-| CLN-1 | Delete MLPredictionsRedesign.backup.js | P1 | S | OPEN |
+| CLN-1 | Delete MLPredictionsRedesign.backup.js | P1 | S | DONE |
 | CLN-2 | Evaluate MLPredictions.js (old) vs MLPredictionsRedesign.js (new) — keep one, remove other | P1 | M | OPEN |
 | CLN-3 | Evaluate GameStatistics.js vs HistoricalData.js — near duplicates, consolidate | P2 | L | OPEN |
 | CLN-4 | Remove legacy ML models: nfl_neural_network.pkl, nfl_neural_network_v2.pkl | P2 | S | OPEN |
@@ -162,6 +162,6 @@ Status: **OPEN** | **IN SPRINT** | **DONE**
 
 ---
 
-*Last updated: April 3, 2026*
+*Last updated: April 27, 2026*
 *Owner: April V. Sykes*
 *Course: IS330 — Olympic College*

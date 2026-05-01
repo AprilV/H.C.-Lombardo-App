@@ -97,23 +97,23 @@
 
 ## SECTION 5 — KNOWN BUGS (Pre-Sprint 12)
 
-These are confirmed issues from code review before discovery. Verify they still exist.
+These were confirmed issues from earlier code review. Status below reflects verification as of Apr 27, 2026.
 
 | # | Issue | File | Line | Severity | Status | Sprint |
 |---|-------|------|------|----------|--------|--------|
-| BUG-001 | /game-statistics routes to wrong component | frontend/src/App.js | ~58 | P2 | OPEN | S13 |
-| BUG-002 | /matchup-analyzer routes to wrong component | frontend/src/App.js | ~59 | P2 | OPEN | S13 |
-| BUG-003 | Hardcoded password 'aprilv120' fallback | api_server.py | ~77 | P1 | OPEN | S13 |
-| BUG-004 | Hardcoded password 'aprilv120' fallback | api_routes_hcl.py | ~22 | P1 | OPEN | S13 |
-| BUG-005 | Hardcoded password 'aprilv120' fallback | api_routes_live_scores.py | ~29 | P1 | OPEN | S13 |
-| BUG-006 | 7+ DEBUG print statements in production | api_routes_live_scores.py | various | P3 | OPEN | S13 |
-| BUG-007 | background_updater.py missing import | background_updater.py | — | P2 | OPEN | S13 |
+| BUG-001 | /game-statistics routes to wrong component | frontend/src/App.js | ~58 | P2 | FIXED | S12 |
+| BUG-002 | /matchup-analyzer routes to wrong component | frontend/src/App.js | ~59 | P2 | FIXED | S12 |
+| BUG-003 | Hardcoded password 'aprilv120' fallback | api_server.py | ~77 | P1 | FIXED | S12 |
+| BUG-004 | Hardcoded password 'aprilv120' fallback | api_routes_hcl.py | ~22 | P1 | FIXED | S12 |
+| BUG-005 | Hardcoded password 'aprilv120' fallback | api_routes_live_scores.py | ~29 | P1 | FIXED | S12 |
+| BUG-006 | 7+ DEBUG print statements in production | api_routes_live_scores.py | various | P3 | FIXED | S12 |
+| BUG-007 | background_updater.py missing import | background_updater.py | — | P2 | FIXED | S12 |
 | BUG-008 | train_xgb_winner.py uses hcl_test schema | ml/train_xgb_winner.py | 255 | P2 | OPEN | S14 |
 | BUG-009 | Broken SQL WINDOW clause in spread training | ml/train_xgb_spread.py | 95-116 | P2 | OPEN | S14 |
 | BUG-010 | EPA features loaded in SQL but not used in model | ml/train_xgb_spread.py | 174-181 | P3 | OPEN | S14 |
 | BUG-011 | predict_ensemble.py TODO at line 338 (incomplete) | ml/predict_ensemble.py | 338 | P2 | OPEN | S14 |
-| BUG-012 | Default season hardcoded as 2025 throughout backend | various | — | P2 | OPEN | S13 |
-| BUG-013 | MLPredictionsRedesign.backup.js still in src/ | frontend/src/ | — | P4 | OPEN | S13 |
+| BUG-012 | Default season hardcoded as 2025 throughout backend | various | — | P2 | FIXED | S13 |
+| BUG-013 | MLPredictionsRedesign.backup.js still in src/ | frontend/src/ | — | P4 | FIXED | S12 |
 
 ---
 
@@ -131,7 +131,12 @@ These are confirmed issues from code review before discovery. Verify they still 
 
 | # | Area | Issue Description | Severity | Status | Sprint | Notes |
 |---|------|-------------------|----------|--------|--------|-------|
-| NEW-001 | | | | | | |
+| NEW-001 | Data | 2025 games are incomplete (272 loaded; target with playoffs is ~285) | P1 | OPEN | S13 | Query result: MAX(season)=2025, season=2025 count=272 |
+| NEW-002 | Data | 2025 team_game_stats incomplete for completed games | P1 | OPEN | S13 | DAT-6 rerun (Apr 27): completed games=272 -> expected rows=544, actual=468, missing=76 (all weeks now scored) |
+| NEW-003 | Data Quality | 80 season-2025 team_game_stats rows have NULL epa_per_play | P2 | OPEN | S13 | DAT-6 audit: NULL EPA rows all on completed games (80) - blocks DAT-4 |
+| NEW-004 | Data | public.teams is empty (0 rows) and standings sync target not populated | P1 | FIXED | S13 | Fixed Apr 27, 2026 in active DB (nfl_analytics): seeded via insert_teams.sql and synced standings via scripts/data_loading/update_public_teams_from_games.py; rows_updated=32 |
+| NEW-005 | Data Quality | 34 season-2025 games had missing final scores | P2 | FIXED | S13 | Fixed Apr 27 via scripts/data_loading/backfill_missing_scores_from_espn.py (updates_applied=34); DAT-6 now reports games_missing_scores=0 |
+| NEW-006 | Data Quality | Team abbreviation mismatch between sources (`LA` vs `LAR`) breaks strict joins | P2 | FIXED | S13 | Apr 27: centralized normalization in team_abbreviations.py and applied to core HCL/live-scores routes + standings/audit scripts. DAT-6 canonical checks now empty; API verifies LAR externally while querying LA-backed hcl data. |
 
 ---
 
@@ -142,7 +147,7 @@ These are confirmed issues from code review before discovery. Verify they still 
 | Sprint | Issues Assigned |
 |--------|----------------|
 | Sprint 12 (immediate) | |
-| Sprint 13 (Data & Clean) | BUG-001 through BUG-013 + new |
+| Sprint 13 (Data & Clean) | NEW-001 through NEW-003 |
 | Sprint 14 (ML Retrain) | BUG-008, BUG-009, BUG-010, BUG-011 |
 | Sprint 15 (UI Polish) | All UI-* issues |
 | Sprint 16 (Hardening) | Security, perf, monitoring |
@@ -153,10 +158,10 @@ These are confirmed issues from code review before discovery. Verify they still 
 
 | Metric | Count |
 |--------|-------|
-| Total issues logged | 0 |
-| P1 issues | 0 |
-| P2 issues | 0 |
-| P3 issues | 0 |
+| Total issues logged | 19 |
+| P1 issues | 3 |
+| P2 issues | 7 |
+| P3 issues | 1 |
 | P4 issues | 0 |
 | API endpoints passing | 0 / 22 |
 | Frontend pages loading | 0 / 14 |
@@ -165,5 +170,5 @@ These are confirmed issues from code review before discovery. Verify they still 
 
 ---
 
-*Last updated: April 3, 2026*  
+*Last updated: April 27, 2026*  
 *This is a living document — update it continuously during Sprint 12*

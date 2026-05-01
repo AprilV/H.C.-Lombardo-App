@@ -21,6 +21,7 @@ import argparse
 from datetime import datetime
 from dotenv import load_dotenv
 from elo_ratings import EloRatingSystem
+from team_abbreviations import to_canonical_abbr
 
 load_dotenv()
 
@@ -34,14 +35,6 @@ class EloTracker:
         'LAC', 'LAR', 'LV', 'MIA', 'MIN', 'NE', 'NO', 'NYG',
         'NYJ', 'PHI', 'PIT', 'SEA', 'SF', 'TB', 'TEN', 'WAS'
     ]
-    
-    # Team abbreviation mapping (handle variations)
-    TEAM_MAPPING = {
-        'LA': 'LAR',      # LA Rams
-        'OAK': 'LV',      # Oakland -> Las Vegas
-        'SD': 'LAC',      # San Diego -> LA Chargers
-        'STL': 'LAR',     # St. Louis -> LA Rams
-    }
     
     def __init__(self):
         self.db_config = {
@@ -57,8 +50,7 @@ class EloTracker:
         
     def normalize_team(self, team: str) -> str:
         """Normalize team abbreviation"""
-        team = team.upper().strip()
-        return self.TEAM_MAPPING.get(team, team)
+        return to_canonical_abbr(team)
     
     def initialize_all_teams(self):
         """Initialize Elo ratings for all NFL teams"""

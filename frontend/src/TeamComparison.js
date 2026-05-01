@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './TeamComparison.css';
+import { getDefaultSeason, MIN_NFL_SEASON } from './utils/season';
 
 const API_URL = process.env.REACT_APP_API_URL || 'https://api.aprilsykes.dev';
 
@@ -73,18 +74,20 @@ const STAT_CATEGORIES = {
 };
 
 function TeamComparison() {
+  const currentSeason = getDefaultSeason();
+
   // View Mode
   const [viewMode, setViewMode] = useState('comparison'); // 'comparison', 'schedule', 'head-to-head'
   
   // Team A state
-  const [seasonA, setSeasonA] = useState('2025');
+  const [seasonA, setSeasonA] = useState(String(currentSeason));
   const [teamAList, setTeamAList] = useState([]);
   const [selectedTeamA, setSelectedTeamA] = useState('');
   const [teamAData, setTeamAData] = useState(null);
   const [teamASchedule, setTeamASchedule] = useState([]);
   
   // Team B state
-  const [seasonB, setSeasonB] = useState('2025');
+  const [seasonB, setSeasonB] = useState(String(currentSeason));
   const [teamBList, setTeamBList] = useState([]);
   const [selectedTeamB, setSelectedTeamB] = useState('');
   const [teamBData, setTeamBData] = useState(null);
@@ -103,9 +106,9 @@ function TeamComparison() {
   
   const navigate = useNavigate();
 
-  // Generate season years (1999-2025)
+  // Generate season years from oldest supported season through current default season.
   const seasons = [];
-  for (let year = 2025; year >= 1999; year--) {
+  for (let year = currentSeason; year >= MIN_NFL_SEASON; year--) {
     seasons.push(year);
   }
 
@@ -270,7 +273,7 @@ function TeamComparison() {
       {/* Header */}
       <div className="comparison-header">
         <h1>📊 Team Comparison & Analysis</h1>
-        <p className="subtitle">Compare teams across any season (1999-2025) • Historical stats • Head-to-head matchups • Weekly schedules</p>
+        <p className="subtitle">Compare teams across any season ({MIN_NFL_SEASON}-{currentSeason}) • Historical stats • Head-to-head matchups • Weekly schedules</p>
       </div>
 
       {error && (

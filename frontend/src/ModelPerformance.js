@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import './ModelPerformance.css';
+import { getDefaultSeason, getRecentSeasons } from './utils/season';
 
 const API_URL = process.env.REACT_APP_API_URL || 'https://api.aprilsykes.dev';
 
 function ModelPerformance() {
+  const defaultSeason = getDefaultSeason();
+  const seasonOptions = getRecentSeasons(3, 1999, defaultSeason);
+
   const [performanceData, setPerformanceData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedSeason, setSelectedSeason] = useState(2025);
+  const [selectedSeason, setSelectedSeason] = useState(defaultSeason);
 
   useEffect(() => {
     fetchPerformance();
@@ -63,7 +67,7 @@ function ModelPerformance() {
         <div className="no-data-message">
           <span className="info-icon">📊</span>
           <h3>No Performance Data Yet</h3>
-          <p>Performance stats will appear once 2025 games are predicted and results are recorded.</p>
+          <p>Performance stats will appear once {selectedSeason} games are predicted and results are recorded.</p>
           <p className="hint">Visit the ML Predictions page to generate predictions for upcoming games.</p>
         </div>
       </div>
@@ -96,24 +100,15 @@ function ModelPerformance() {
       <div className="season-selector-container">
         <h2 className="page-title">📊 AI Model Performance Tracking</h2>
         <div className="season-selector">
-          <button 
-            className={`season-btn ${selectedSeason === 2025 ? 'active' : ''}`}
-            onClick={() => setSelectedSeason(2025)}
-          >
-            2025 Season
-          </button>
-          <button 
-            className={`season-btn ${selectedSeason === 2024 ? 'active' : ''}`}
-            onClick={() => setSelectedSeason(2024)}
-          >
-            2024 Season
-          </button>
-          <button 
-            className={`season-btn ${selectedSeason === 2023 ? 'active' : ''}`}
-            onClick={() => setSelectedSeason(2023)}
-          >
-            2023 Season
-          </button>
+          {seasonOptions.map((season) => (
+            <button
+              key={season}
+              className={`season-btn ${selectedSeason === season ? 'active' : ''}`}
+              onClick={() => setSelectedSeason(season)}
+            >
+              {season} Season
+            </button>
+          ))}
         </div>
       </div>
 
@@ -173,7 +168,7 @@ function ModelPerformance() {
         <div className="quick-stat">
           <div className="stat-icon-big">📅</div>
           <div className="stat-value-big">Wk {overall.first_week}-{overall.latest_week}</div>
-          <div className="stat-label-small">2025 Season</div>
+          <div className="stat-label-small">{selectedSeason} Season</div>
         </div>
       </div>
 

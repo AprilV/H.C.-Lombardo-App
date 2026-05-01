@@ -9,6 +9,7 @@ from psycopg2.extras import RealDictCursor
 import os
 from datetime import datetime
 from dotenv import load_dotenv
+from team_abbreviations import to_canonical_abbr, to_hcl_abbr, sql_to_canonical_case
 
 load_dotenv()
 
@@ -28,27 +29,57 @@ def get_db_connection():
 # Create blueprint
 hcl_bp = Blueprint('hcl', __name__, url_prefix='/api/hcl')
 
+
+def get_latest_completed_season(cur):
+    """Return latest season with completed games, fallback to current year."""
+    try:
+        cur.execute(
+            """
+            SELECT COALESCE(MAX(season), EXTRACT(YEAR FROM NOW())::int) AS season
+            FROM hcl.games
+            WHERE home_score IS NOT NULL
+              AND away_score IS NOT NULL
+            """
+        )
+        row = cur.fetchone()
+        if not row:
+            return datetime.now().year
+        if isinstance(row, dict):
+            return row.get('season') or datetime.now().year
+        return row[0] or datetime.now().year
+    except Exception:
+        return datetime.now().year
+
+
+def resolve_request_season(cur):
+    """Use explicit query param season when provided, else latest completed season."""
+    season = request.args.get('season', type=int)
+    if season is not None:
+        return season
+    return get_latest_completed_season(cur)
+
 @hcl_bp.route('/teams', methods=['GET'])
 def get_teams():
     """
     Get list of all NFL teams with basic season stats
     
     Query params:
-        season: Season year (default: current year)
+        season: Season year (default: latest completed season)
     
     Returns:
         JSON array of teams with abbreviation, name, wins, losses, PPG, yards
     """
     try:
-        season = request.args.get('season', default=datetime.now().year, type=int)
-        
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=RealDictCursor)
+        season = resolve_request_season(cur)
+
+        team_key_sql = sql_to_canonical_case('tgs.team')
         
         # Aggregate stats from team_game_stats table with team names
-        query = """
+        query = f"""
             SELECT 
-                tgs.team,
+            {team_key_sql} as team,
                 t.name as team_name,
                 COUNT(*) as games_played,
                 SUM(CASE WHEN tgs.result = 'W' THEN 1 ELSE 0 END) as wins,
@@ -60,9 +91,9 @@ def get_teams():
                 ROUND(AVG(tgs.completion_pct)::numeric, 1) as completion_pct,
                 SUM(tgs.turnovers) as total_turnovers
             FROM hcl.team_game_stats tgs
-            LEFT JOIN public.teams t ON tgs.team = t.abbreviation
+            LEFT JOIN public.teams t ON {team_key_sql} = t.abbreviation
             WHERE tgs.season = %s
-            GROUP BY tgs.team, t.name
+            GROUP BY {team_key_sql}, t.name
             ORDER BY wins DESC, ppg DESC
         """
         
@@ -95,17 +126,17 @@ def get_team_details(team_abbr):
         team_abbr: Team abbreviation (e.g. 'BAL', 'KC')
     
     Query params:
-        season: Filter by season (default: current/latest)
+        season: Filter by season (default: latest completed season)
     
     Returns:
         JSON with team stats, home/away splits, recent form
     """
     try:
-        team_abbr = team_abbr.upper()
-        season = request.args.get('season', default=datetime.now().year, type=int)
-        
+        requested_team_abbr = to_canonical_abbr(team_abbr)
+        db_team_abbr = to_hcl_abbr(requested_team_abbr)
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=RealDictCursor)
+        season = resolve_request_season(cur)
         
         # Get season stats from team_game_stats - ALL AVAILABLE STATS
         query = """
@@ -190,7 +221,7 @@ def get_team_details(team_abbr):
             GROUP BY team, season
         """
         
-        cur.execute(query, (team_abbr, season))
+        cur.execute(query, (db_team_abbr, season))
         team_stats = cur.fetchone()
         
         if not team_stats:
@@ -198,8 +229,10 @@ def get_team_details(team_abbr):
             conn.close()
             return jsonify({
                 'success': False,
-                'error': f'Team {team_abbr} not found for season {season}'
+                'error': f'Team {requested_team_abbr} not found for season {season}'
             }), 404
+
+        team_stats['team'] = to_canonical_abbr(team_stats['team'])
         
         cur.close()
         conn.close()
@@ -225,19 +258,20 @@ def get_team_games(team_abbr):
         team_abbr: Team abbreviation (e.g. 'BAL', 'KC')
     
     Query params:
-        season: Filter by season (default: current year)
+        season: Filter by season (default: latest completed season)
         limit: Max games to return (default: 20)
     
     Returns:
         JSON array of games with stats for completed games, schedule info for upcoming
     """
     try:
-        team_abbr = team_abbr.upper()
-        season = request.args.get('season', default=datetime.now().year, type=int)
+        requested_team_abbr = to_canonical_abbr(team_abbr)
+        db_team_abbr = to_hcl_abbr(requested_team_abbr)
         limit = request.args.get('limit', default=18, type=int)  # Changed default to 18 for full season
         
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=RealDictCursor)
+        season = resolve_request_season(cur)
         
         # Query to get all scheduled games (from hcl.games) and join with stats where available
         query = """
@@ -289,8 +323,26 @@ def get_team_games(team_abbr):
             LIMIT %s
         """
         
-        cur.execute(query, (team_abbr, team_abbr, team_abbr, team_abbr, team_abbr, team_abbr, team_abbr, team_abbr, season, limit))
+        cur.execute(
+            query,
+            (
+                db_team_abbr,
+                db_team_abbr,
+                db_team_abbr,
+                db_team_abbr,
+                db_team_abbr,
+                db_team_abbr,
+                db_team_abbr,
+                db_team_abbr,
+                season,
+                limit,
+            ),
+        )
         games = cur.fetchall()
+
+        for game in games:
+            game['team'] = to_canonical_abbr(game['team'])
+            game['opponent'] = to_canonical_abbr(game['opponent'])
         
         cur.close()
         conn.close()
@@ -298,13 +350,13 @@ def get_team_games(team_abbr):
         if not games:
             return jsonify({
                 'success': False,
-                'error': f'No games found for team {team_abbr} in season {season}'
+                'error': f'No games found for team {requested_team_abbr} in season {season}'
             }), 404
         
         return jsonify({
             'success': True,
             'count': len(games),
-            'team': team_abbr,
+            'team': requested_team_abbr,
             'season': season,
             'games': games
         })
@@ -402,6 +454,11 @@ def get_game_details(game_id):
         """, (game_id,))
         
         team_stats = cur.fetchall()
+
+        game['home_team'] = to_canonical_abbr(game['home_team'])
+        game['away_team'] = to_canonical_abbr(game['away_team'])
+        for stat_row in team_stats:
+            stat_row['team'] = to_canonical_abbr(stat_row['team'])
         
         cur.close()
         conn.close()
@@ -461,6 +518,10 @@ def get_week_games(season, week):
         
         cur.execute(query, (season, week))
         games = cur.fetchall()
+
+        for game in games:
+            game['home_team'] = to_canonical_abbr(game['home_team'])
+            game['away_team'] = to_canonical_abbr(game['away_team'])
         
         cur.close()
         conn.close()
@@ -490,18 +551,18 @@ def get_betting_performance():
     Get team betting performance (ATS records, O/U trends)
     
     Query params:
-        season: Filter by season (default: current year)
+        season: Filter by season (default: latest completed season)
         team: Filter by specific team (optional)
     
     Returns:
         JSON with ATS records, over/under performance, favorite/underdog splits
     """
     try:
-        season = request.args.get('season', default=datetime.now().year, type=int)
         team = request.args.get('team', type=str)
         
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=RealDictCursor)
+        season = resolve_request_season(cur)
         
         query = """
             SELECT 
@@ -528,12 +589,15 @@ def get_betting_performance():
         
         if team:
             query += " AND team = %s"
-            params.append(team.upper())
+            params.append(to_hcl_abbr(team))
         
         query += " ORDER BY ats_win_pct DESC"
         
         cur.execute(query, params)
         results = cur.fetchall()
+
+        for row in results:
+            row['team'] = to_canonical_abbr(row['team'])
         
         cur.close()
         conn.close()
@@ -645,16 +709,15 @@ def get_rest_advantage():
     Get team performance by days of rest
     
     Query params:
-        season: Filter by season (default: current year)
+        season: Filter by season (default: latest completed season)
     
     Returns:
         JSON with win rates and performance by rest days
     """
     try:
-        season = request.args.get('season', default=datetime.now().year, type=int)
-        
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=RealDictCursor)
+        season = resolve_request_season(cur)
         
         query = """
             SELECT 
@@ -713,18 +776,18 @@ def get_referee_tendencies():
     Get referee officiating patterns and tendencies
     
     Query params:
-        season: Filter by season (default: current year)
+        season: Filter by season (default: latest completed season)
         referee: Filter by specific referee name (optional)
     
     Returns:
         JSON with referee stats, home bias, scoring averages
     """
     try:
-        season = request.args.get('season', default=datetime.now().year, type=int)
         referee = request.args.get('referee', type=str)
         
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=RealDictCursor)
+        season = resolve_request_season(cur)
         
         query = """
             SELECT 
@@ -792,16 +855,15 @@ def get_analytics_summary():
     Get summary statistics from all analytical views
     
     Query params:
-        season: Filter by season (default: current year)
+        season: Filter by season (default: latest completed season)
     
     Returns:
         JSON with key insights from betting, weather, rest, and referee data
     """
     try:
-        season = request.args.get('season', default=datetime.now().year, type=int)
-        
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=RealDictCursor)
+        season = resolve_request_season(cur)
         
         # Best ATS team
         cur.execute("""
@@ -812,6 +874,8 @@ def get_analytics_summary():
             LIMIT 1
         """, (season,))
         best_ats = cur.fetchone()
+        if best_ats:
+            best_ats['team'] = to_canonical_abbr(best_ats['team'])
         
         # Weather impact summary
         cur.execute("""

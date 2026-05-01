@@ -13,6 +13,7 @@ import {
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import './TeamDetail.css';
+import { getDefaultSeason } from './utils/season';
 
 ChartJS.register(
   CategoryScale,
@@ -66,6 +67,7 @@ const TEAM_COLORS = {
 function TeamDetail() {
   const { teamAbbr } = useParams();
   const navigate = useNavigate();
+  const season = getDefaultSeason();
   const [teamData, setTeamData] = useState(null);
   const [teamName, setTeamName] = useState('');
   const [games, setGames] = useState([]);
@@ -88,7 +90,7 @@ function TeamDetail() {
       setTeamName(team?.name || teamAbbr);
       
       // Load team details
-      const detailsResponse = await fetch(`${API_URL}/api/hcl/teams/${teamAbbr}?season=2025`);
+      const detailsResponse = await fetch(`${API_URL}/api/hcl/teams/${teamAbbr}?season=${season}`);
       const detailsData = await detailsResponse.json();
       
       if (!detailsData.success) {
@@ -96,7 +98,7 @@ function TeamDetail() {
       }
       
       // Load games
-      const gamesResponse = await fetch(`${API_URL}/api/hcl/teams/${teamAbbr}/games?season=2025`);
+      const gamesResponse = await fetch(`${API_URL}/api/hcl/teams/${teamAbbr}/games?season=${season}`);
       const gamesData = await gamesResponse.json();
       
       if (!gamesData.success) {
@@ -232,7 +234,7 @@ function TeamDetail() {
           <div>
             <h1 className="team-name">{teamName}</h1>
           </div>
-          <span className="badge">2025 SEASON</span>
+          <span className="badge">{season} SEASON</span>
         </div>
       </div>
 

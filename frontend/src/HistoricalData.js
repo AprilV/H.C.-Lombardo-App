@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './HistoricalData.css';
+import { getDefaultSeason, MIN_NFL_SEASON } from './utils/season';
 
 const API_URL = process.env.REACT_APP_API_URL || 'https://api.aprilsykes.dev';
 
@@ -72,18 +73,20 @@ const ALL_STATS = [
 ];
 
 function HistoricalData() {
+  const currentSeason = getDefaultSeason();
+
   const [allTeams, setAllTeams] = useState([]);
   const [selectedTeam, setSelectedTeam] = useState('');
-  const [selectedSeason, setSelectedSeason] = useState('2024'); // Default to 2024 (most recent with stats)
+  const [selectedSeason, setSelectedSeason] = useState(String(currentSeason));
   const [teamStats, setTeamStats] = useState(null);
   const [selectedStats, setSelectedStats] = useState(['ppg', 'total_yards_per_game', 'passing_yards_per_game', 'rushing_yards_per_game']); // Default 4 stats
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  // Generate season years (1999-2025)
+  // Generate season years from oldest supported season through current default season.
   const seasons = [];
-  for (let year = 2025; year >= 1999; year--) {
+  for (let year = currentSeason; year >= MIN_NFL_SEASON; year--) {
     seasons.push(year);
   }
 
@@ -210,7 +213,7 @@ function HistoricalData() {
       <div className="instructions-box">
         <h3>📋 How to Use:</h3>
         <ol>
-          <li><strong>Step 1:</strong> Select a <strong>Season</strong> (1999-2025)</li>
+          <li><strong>Step 1:</strong> Select a <strong>Season</strong> ({MIN_NFL_SEASON}-{currentSeason})</li>
           <li><strong>Step 2:</strong> Choose a <strong>Team</strong> from the dropdown</li>
           <li><strong>Step 3:</strong> Select up to <strong>8 statistics</strong> you want to view using the dropdown boxes</li>
           <li><strong>Step 4:</strong> Click <strong>"+ Add Stat Column"</strong> to add more stats (max 8 total)</li>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './MatchupAnalyzer.css';
+import { getDefaultSeason } from './utils/season';
 
 const API_URL = process.env.REACT_APP_API_URL || 'https://api.aprilsykes.dev';
 
@@ -93,7 +94,7 @@ function MatchupAnalyzer() {
   });
   
   const navigate = useNavigate();
-  const season = 2025; // Current season only for matchup analysis
+  const season = getDefaultSeason();
 
   // Load teams on mount
   useEffect(() => {
@@ -219,7 +220,7 @@ function MatchupAnalyzer() {
       {/* Header */}
       <div className="matchup-header">
         <h1>🎯 Matchup Analyzer</h1>
-        <p className="subtitle">Head-to-head comparison • 2025 Season • Statistical edge analysis</p>
+        <p className="subtitle">Head-to-head comparison • {season} Season • Statistical edge analysis</p>
       </div>
 
       {error && (
@@ -270,7 +271,7 @@ function MatchupAnalyzer() {
               
               <div className="team-record-badge">
                 {teamAData.wins}-{teamAData.losses}{(teamAData.ties || 0) > 0 ? `-${teamAData.ties}` : ''}
-                <span className="record-label">2025 Record</span>
+                <span className="record-label">{season} Record</span>
               </div>
 
               {/* Stats Categories */}
@@ -391,7 +392,7 @@ function MatchupAnalyzer() {
               
               <div className="team-record-badge">
                 {teamBData.wins}-{teamBData.losses}{(teamBData.ties || 0) > 0 ? `-${teamBData.ties}` : ''}
-                <span className="record-label">2025 Record</span>
+                <span className="record-label">{season} Record</span>
               </div>
 
               {/* Stats Categories */}
