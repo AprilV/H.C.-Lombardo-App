@@ -1,0 +1,11 @@
+Phase 2 baseline cardinality evidence
+Date: 2026-05-01
+Source: pmforge_dashboard/index.html (active runtime data blocks)
+
+run1={"completed_tasks":131,"blocked_tasks":2,"overlap_tasks":0,"unique_status_tasks":133,"task_details":133,"hours_entries":10,"backlog_items":72,"retro_blocks":5,"dod_lists":5}
+run2={"completed_tasks":131,"blocked_tasks":2,"overlap_tasks":0,"unique_status_tasks":133,"task_details":133,"hours_entries":10,"backlog_items":72,"retro_blocks":5,"dod_lists":5}
+deterministic=True
+
+Notes:
+- overlap_tasks=0 means no task id appears in both COMPLETED_TASKS and BLOCKED_TASKS.
+- unique_status_tasks=133 equals task_details=133, satisfying status-detail parity baseline.
