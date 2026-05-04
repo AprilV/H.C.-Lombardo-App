@@ -76,6 +76,10 @@ Reference set:
 - `docs/dashboard_product/DASHBOARD_OPERATING_SOP.md`
 - `docs/dashboard_product/DASHBOARD_DATA_OWNERSHIP.md`
 - `docs/dashboard_product/DASHBOARD_METRICS.md`
+- `docs/dashboard_product/DASHBOARD_SPRINT_ROLLOVER_AUTOMATION_RUNBOOK.md`
+
+Mandatory rollover quality gate:
+- Run the exact checks in `docs/dashboard_product/DASHBOARD_SPRINT_ROLLOVER_AUTOMATION_RUNBOOK.md` before declaring sprint rollover automation complete.
 
 ---
 
