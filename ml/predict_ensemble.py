@@ -281,6 +281,33 @@ class EnsemblePredictor:
         print(f"{'='*70}\n")
         
         return predictions
+
+    def predict_upcoming(self):
+        """Predict the next week that still has unplayed games."""
+        conn = psycopg2.connect(**self.db_config)
+
+        query = """
+        SELECT season, week, COUNT(*) AS game_count
+        FROM hcl.games
+        WHERE home_score IS NULL
+          AND game_date >= CURRENT_DATE - INTERVAL '7 days'
+        GROUP BY season, week
+        ORDER BY season DESC, week ASC
+        LIMIT 1
+        """
+
+        df = pd.read_sql(query, conn)
+        conn.close()
+
+        if len(df) == 0:
+            print("❌ No upcoming games found")
+            return []
+
+        season = int(df.iloc[0]['season'])
+        week = int(df.iloc[0]['week'])
+        print(f"📅 Predicting upcoming games: Season {season}, Week {week}")
+
+        return self.predict_week(season, week)
     
     def _display_prediction(self, pred: dict):
         """Display a single ensemble prediction"""
@@ -334,15 +361,14 @@ def main():
     predictor = EnsemblePredictor(weights=weights)
     
     if args.upcoming:
-        # Find next week with unplayed games
-        # TODO: Implement upcoming week detection
-        print("❌ --upcoming not yet implemented")
+        predictor.predict_upcoming()
     elif args.season and args.week:
         predictor.predict_week(args.season, args.week)
     else:
         print("Usage:")
         print("  python ml/predict_ensemble.py --season 2025 --week 16")
         print("  python ml/predict_ensemble.py --season 2025 --week 16 --elo-weight 0.5 --xgb-weight 0.25 --vegas-weight 0.25")
+        print("  python ml/predict_ensemble.py --upcoming")
 
 
 if __name__ == '__main__':
