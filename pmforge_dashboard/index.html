@@ -6042,6 +6042,23 @@ function getDoneTicketsForSprint(items, sprintNum) {
     }).length;
 }
 
+function getCommittedSprintTicketCounts(items, sprintNum) {
+    var sprintTag = 'S' + sprintNum;
+    var committed = (items || []).filter(function(item) {
+        return String(item.sprint || '').trim().toUpperCase() === sprintTag;
+    });
+    var done = committed.filter(function(item) { return isDoneBacklogStatus(item.status); }).length;
+    var total = committed.length;
+    var remaining = Math.max(0, total - done);
+    var pct = total > 0 ? Math.round((done / total) * 100) : 0;
+    return { total: total, done: done, remaining: remaining, pct: pct };
+}
+
+function parseSprintNumberFromLabel(label) {
+    var match = String(label || '').trim().match(/^S(\d+)/i);
+    return match ? parseInt(match[1], 10) : NaN;
+}
+
 function isWeekendDate(date) {
     var day = date.getDay();
     return day === 0 || day === 6;
@@ -6180,6 +6197,9 @@ function buildActiveSprintSnapshot(sprintNum, archiveSnapshot) {
     var items = window.PB_ITEMS || [];
     var counts = computeLiveTaskCounts(sprintNum);
     var board = getBoardCompletionCounts(sprintNum);
+    var ticketCounts = getCommittedSprintTicketCounts(items, sprintNum);
+    var useTicketFallback = board.total === 0 && ticketCounts.total > 0;
+    var progress = useTicketFallback ? ticketCounts : board;
     var dayCtx = getSprintDayContext(sprintNum);
     var doneTickets = getDoneTicketsForSprint(items, sprintNum);
     var severity = getOpenSeverityCounts(items);
@@ -6197,9 +6217,11 @@ function buildActiveSprintSnapshot(sprintNum, archiveSnapshot) {
     snapshot.openCount = counts.openCount;
     snapshot.openSub = counts.openSub;
 
-    if (board.total > 0) {
-        snapshot.metrics.taskPct = board.pct + '%';
-        snapshot.metrics.taskCount = board.done + ' of ' + board.total + ' subtasks complete';
+    if (progress.total > 0) {
+        snapshot.metrics.taskPct = progress.pct + '%';
+        snapshot.metrics.taskCount = useTicketFallback
+            ? (progress.done + ' of ' + progress.total + ' sprint tickets complete (auto from backlog until board subtasks are added)')
+            : (progress.done + ' of ' + progress.total + ' subtasks complete');
     }
 
     if (dayCtx) {
@@ -6224,15 +6246,15 @@ function buildActiveSprintSnapshot(sprintNum, archiveSnapshot) {
         }
     }
 
-    if (board.total > 0) {
+    if (progress.total > 0) {
         var dayIndex = Math.max(0, Math.min(idealLen - 1, (dayCtx ? dayCtx.dayNum : 1) - 1));
-        actual[dayIndex] = board.remaining;
+        actual[dayIndex] = progress.remaining;
         for (var j = dayIndex + 1; j < idealLen; j++) actual[j] = null;
-        snapshot.burndown.ideal = buildIdealBurndownSeries(board.total, idealLen);
+        snapshot.burndown.ideal = buildIdealBurndownSeries(progress.total, idealLen);
     }
 
     snapshot.burndown.actual = actual;
-    snapshot.burndown.max = Math.max(snapshot.burndown.max || 0, board.total || 0, 10);
+    snapshot.burndown.max = Math.max(snapshot.burndown.max || 0, progress.total || 0, 10);
 
     var burnupIndex = snapshot.burnup.labels.length
         ? snapshot.burnup.labels.length - 1
@@ -6252,14 +6274,28 @@ function buildActiveSprintSnapshot(sprintNum, archiveSnapshot) {
         snapshot.velocity.activeIndex = velocityIndex;
     }
 
+    // Keep prior sprint bars aligned with live backlog completion so historical bars
+    // do not drop to zero when current sprint snapshots still carry stale defaults.
+    if (Array.isArray(snapshot.velocity.labels) && Array.isArray(snapshot.velocity.data)) {
+        snapshot.velocity.labels.forEach(function(label, idx) {
+            var labelSprint = parseSprintNumberFromLabel(label);
+            if (isNaN(labelSprint) || labelSprint >= sprintNum) return;
+            var historicalDone = getDoneTicketsForSprint(items, labelSprint);
+            if (historicalDone > 0) {
+                while (snapshot.velocity.data.length <= idx) snapshot.velocity.data.push(0);
+                snapshot.velocity.data[idx] = historicalDone;
+            }
+        });
+    }
+
     snapshot.severity = severity;
 
     var dayLabel = dayCtx ? ('Workday ' + dayCtx.dayNum + ' of ' + dayCtx.totalDays) : 'in progress';
-    snapshot.rag.msg = 'Sprint ' + sprintNum + ' active · ' + dayLabel + ' · ' + board.done + ' of ' + board.total + ' subtasks complete · ' + counts.p1Count + ' blocked · ' + counts.openCount + ' open';
+    snapshot.rag.msg = 'Sprint ' + sprintNum + ' active · ' + dayLabel + ' · ' + progress.done + ' of ' + progress.total + (useTicketFallback ? ' sprint tickets complete' : ' subtasks complete') + ' · ' + counts.p1Count + ' blocked · ' + counts.openCount + ' open';
     snapshot.rag.detail = 'Updated from live board/backlog state';
 
-    snapshot.burndownInsight = '<strong>S' + sprintNum + ' status:</strong> ' + dayLabel + '. ' + board.done + ' of ' + board.total + ' subtasks complete. ' + board.remaining + ' remaining.';
-    snapshot.burnupInsight = '<strong>S' + sprintNum + ' scope:</strong> ' + board.total + ' sprint subtasks tracked on board. ' + doneTickets + ' PB tickets currently marked Done in S' + sprintNum + '.';
+    snapshot.burndownInsight = '<strong>S' + sprintNum + ' status:</strong> ' + dayLabel + '. ' + progress.done + ' of ' + progress.total + (useTicketFallback ? ' sprint tickets complete (board subtasks not populated yet).' : ' subtasks complete.') + ' ' + progress.remaining + ' remaining.';
+    snapshot.burnupInsight = '<strong>S' + sprintNum + ' scope:</strong> ' + progress.total + (useTicketFallback ? ' committed sprint tickets are currently assigned in Product Backlog.' : ' sprint subtasks tracked on board.') + ' ' + doneTickets + ' PB tickets currently marked Done in S' + sprintNum + '.';
     snapshot.velocityInsight = '<strong>S' + sprintNum + ' velocity:</strong> ' + doneTickets + ' PB tickets currently marked Done in S' + sprintNum + '.';
     snapshot.severityInsight = '<strong>S' + sprintNum + ' severity mix:</strong> Open backlog by priority is P1 ' + severity[0] + ', P2 ' + severity[1] + ', P3 ' + severity[2] + ', P4 ' + severity[3] + '.';
 
@@ -8132,7 +8168,7 @@ function showSprintView(view, btn) {
         var mappedSprint = String(mapped.sprintTag || '').trim().toUpperCase();
         var prevSprintTag = String(item.sprint || '').trim().toUpperCase();
         var currentSprint = String(currentSprintTag() || '').trim().toUpperCase();
-        if (prevSprintTag && prevSprintTag !== 'TBD' && prevSprintTag !== mappedSprint && prevSprintTag !== currentSprint) {
+        if (prevSprintTag && prevSprintTag !== 'TBD' && prevSprintTag !== mappedSprint) {
             return false;
         }
 
