@@ -2956,7 +2956,7 @@
     <!-- Sprint 14 placeholder -->
     <div id="sprint-board-14" style="display:none;">
         <div class="pm-panel">
-            <div class="pm-header"><div><h2>Sprint 14 — ML Retrain</h2><p>Starts May 4, 2026. Board activates at sprint kickoff.</p></div><div class="sprint-meta"><span class="meta-pill">May 4 – May 16, 2026</span><span class="meta-pill">Upcoming</span></div></div>
+            <div class="pm-header"><div><h2>Sprint 14 — ML Retrain</h2><p>Sprint 14 is active. Use Delivery Workspace backlog tickets for execution and status tracking.</p></div><div class="sprint-meta"><span class="meta-pill">May 4 – May 16, 2026</span><span class="meta-pill" style="color:#10b981; border-color:#10b981;">Active</span></div></div>
         </div>
     </div>
 
@@ -7064,14 +7064,14 @@ initTasks();
         { id:'TA-015', feature:'Fix background_updater.py missing import',        cat:'Backend',        pri:'High',     effort:'S', sprint:'TBD', status:'Backlog'   },
         { id:'TA-016', feature:'Confirm background updater running in production', cat:'Infrastructure', pri:'High',     effort:'S', sprint:'TBD', status:'Backlog'   },
         { id:'TA-017', feature:'Audit git history for exposed secrets',           cat:'Security',       pri:'High',     effort:'M', sprint:'TBD', status:'Backlog'   },
-        { id:'TA-018', feature:'Retrain XGBoost winner classifier on 2025 data', cat:'ML',             pri:'Critical', effort:'L', sprint:'TBD', status:'Backlog'   },
-        { id:'TA-019', feature:'Retrain spread regressor — document MAE',         cat:'ML',             pri:'Critical', effort:'L', sprint:'TBD', status:'Backlog'   },
-        { id:'TA-020', feature:'Recalculate Elo ratings through 2025 season',     cat:'ML',             pri:'High',     effort:'M', sprint:'TBD', status:'Backlog'   },
-        { id:'TA-021', feature:'Fix ML training schema (hcl_test → hcl) — duplicate of TA-057, consolidated there', cat:'ML', pri:'Critical', effort:'S', sprint:'TBD', status:'Backlog' },
-        { id:'TA-022', feature:'Fix broken SQL in train_xgb_spread.py — duplicate of TA-058, consolidated there',   cat:'ML', pri:'High',     effort:'S', sprint:'TBD', status:'Backlog' },
-        { id:'TA-023', feature:'Verify no data leakage in feature pipeline',      cat:'ML',             pri:'High',     effort:'M', sprint:'TBD', status:'Backlog'   },
-        { id:'TA-024', feature:'ML Predictions page showing live results in prod', cat:'Frontend',       pri:'High',     effort:'M', sprint:'TBD', status:'Backlog'   },
-        { id:'TA-025', feature:'Record model accuracy metrics in ModelPerformance', cat:'ML',            pri:'Medium',   effort:'S', sprint:'TBD', status:'Backlog'   },
+        { id:'TA-018', feature:'Retrain XGBoost winner classifier on 2025 data', cat:'ML',             pri:'Critical', effort:'L', sprint:'S14', status:'In Sprint' },
+        { id:'TA-019', feature:'Retrain spread regressor — document MAE',         cat:'ML',             pri:'Critical', effort:'L', sprint:'S14', status:'In Sprint' },
+        { id:'TA-020', feature:'Recalculate Elo ratings through 2025 season',     cat:'ML',             pri:'High',     effort:'M', sprint:'S14', status:'In Sprint' },
+        { id:'TA-021', feature:'Fix ML training schema (hcl_test → hcl) — duplicate of TA-057, consolidated there', cat:'ML', pri:'Critical', effort:'S', sprint:'S14', status:'In Sprint' },
+        { id:'TA-022', feature:'Fix broken SQL in train_xgb_spread.py — duplicate of TA-058, consolidated there',   cat:'ML', pri:'High',     effort:'S', sprint:'S14', status:'In Sprint' },
+        { id:'TA-023', feature:'Verify no data leakage in feature pipeline',      cat:'ML',             pri:'High',     effort:'M', sprint:'S14', status:'In Sprint' },
+        { id:'TA-024', feature:'ML Predictions page showing live results in prod', cat:'Frontend',       pri:'High',     effort:'M', sprint:'S14', status:'In Sprint' },
+        { id:'TA-025', feature:'Record model accuracy metrics in ModelPerformance', cat:'ML',            pri:'Medium',   effort:'S', sprint:'S14', status:'In Sprint' },
         { id:'TA-026', feature:'Mobile-responsive pass — all pages at 375px',     cat:'Frontend',       pri:'High',     effort:'L', sprint:'TBD', status:'Backlog'   },
         { id:'TA-027', feature:'Fix all broken layouts and overflow problems',       cat:'Frontend',       pri:'High',     effort:'M', sprint:'TBD', status:'Backlog'   },
         { id:'TA-028', feature:'Loading states and error states on all pages',     cat:'Frontend',       pri:'Medium',   effort:'M', sprint:'TBD', status:'Backlog'   },
@@ -7106,9 +7106,9 @@ initTasks();
         { id:'TA-057', feature:'Fix train_xgb_winner.py schema — change hcl_test to hcl (line 255) so model trains on production data', cat:'ML', pri:'Critical', effort:'S', sprint:'S13', status:'Done' },
         { id:'TA-058', feature:'Fix broken SQL WINDOW clause in train_xgb_spread.py (lines 95-116) — missing closing paren causes duplicate OVER definitions, SQL fails on execution', cat:'ML', pri:'Critical', effort:'S', sprint:'S13', status:'Done' },
         { id:'TA-059', feature:'Fix hardcoded default season 2025 across all backend routes — api_routes_hcl.py (7 endpoints), api_routes_ml.py, api_routes_live_scores.py — update for 2026 season', cat:'Backend', pri:'High', effort:'S', sprint:'S13', status:'Done' },
-        { id:'TA-060', feature:'Implement upcoming week detection in predict_ensemble.py (line 338) — currently a TODO stub, --upcoming flag prints error and exits', cat:'ML', pri:'Medium', effort:'M', sprint:'TBD', status:'Backlog' },
-        { id:'TA-061', feature:'Retrain XGBoost winner model with corrected data pipeline — depends on TA-057 and TA-058 being resolved first', cat:'ML', pri:'Critical', effort:'L', sprint:'TBD', status:'Backlog' },
-        { id:'TA-062', feature:'Retrain XGBoost spread model with corrected data pipeline — depends on TA-057 and TA-058 being resolved first', cat:'ML', pri:'Critical', effort:'L', sprint:'TBD', status:'Backlog' },
+        { id:'TA-060', feature:'Implement upcoming week detection in predict_ensemble.py (line 338) — currently a TODO stub, --upcoming flag prints error and exits', cat:'ML', pri:'Medium', effort:'M', sprint:'S14', status:'In Sprint' },
+        { id:'TA-061', feature:'Retrain XGBoost winner model with corrected data pipeline — depends on TA-057 and TA-058 being resolved first', cat:'ML', pri:'Critical', effort:'L', sprint:'S14', status:'In Sprint' },
+        { id:'TA-062', feature:'Retrain XGBoost spread model with corrected data pipeline — depends on TA-057 and TA-058 being resolved first', cat:'ML', pri:'Critical', effort:'L', sprint:'S14', status:'In Sprint' },
         { id:'TA-063', feature:'EC2 disk cleanup — remove logs, tmp files, old builds to free space; disk at 90% (6.0G/6.8G) as of Apr 21, server will crash if full', cat:'Infrastructure', pri:'Critical', effort:'S', sprint:'S14', status:'Backlog' },
         { id:'TA-064', feature:'Evaluate managed database to replace EC2 PostgreSQL — research AWS RDS, Railway, or Render to eliminate disk management and reduce single point of failure', cat:'Infrastructure', pri:'Low', effort:'M', sprint:'TBD', status:'Backlog' },
         { id:'TA-065', feature:'Build sprint selector dropdown on Dashboard home page — SPRINT_ARCHIVE data object + loadSprintDashboard() function; switches charts and metrics by sprint', cat:'Dashboard', pri:'Medium', effort:'M', sprint:'TBD', status:'Backlog' },
@@ -7116,8 +7116,9 @@ initTasks();
         { id:'TA-067', feature:'Project Logbook system — real-time developer log with git history viewer (372 commits, 17K lines), live file watcher (log_watcher.py, port 8765), daily archive calendar, and split-screen embed in Dashboard §13. Files: gen_devlog.py, log_watcher.py, embed_devlog.py, START-DEV.bat.', cat:'Dashboard', pri:'Medium', effort:'L', sprint:'S13', status:'Done' },
         { id:'TA-068', feature:'Create missing ml/elo_ratings.py — implement EloRatingSystem class (base_elo, k_factor, home_advantage, mean_reversion). Both elo_tracker.py and predict_elo.py import this file which does not exist; this single missing file causes the entire ML API blueprint to fail to load, returning 404 on all /api/ml/ and /api/elo/ routes.', cat:'ML', pri:'Critical', effort:'S', sprint:'S13', status:'Done' },
         { id:'TA-069', feature:'Fix early return bug in ml/predict_week.py line 171 — return statement placed before NaN/inf handling and ppg/success/ypp differential feature computation, leaving ~20% of features uncalculated. Also fix variable name mismatch: dead code references home_ppg_season but dict uses home_ppg.', cat:'ML', pri:'High', effort:'S', sprint:'S13', status:'Done' },
-        { id:'TA-070', feature:'ML prediction accuracy audit — winner predictions, point spreads, and over/under totals are producing incorrect/unrealistic results. Audit actual 2024–2025 predictions vs outcomes, identify whether root cause is overfitting, data leakage, schema mismatch (hcl_test vs hcl), or feature engineering errors. Must complete after TA-057/068/069 infrastructure fixes.', cat:'ML', pri:'High', effort:'L', sprint:'S14', status:'Backlog' },
+        { id:'TA-070', feature:'ML prediction accuracy audit — winner predictions, point spreads, and over/under totals are producing incorrect/unrealistic results. Audit actual 2024–2025 predictions vs outcomes, identify whether root cause is overfitting, data leakage, schema mismatch (hcl_test vs hcl), or feature engineering errors. Must complete after TA-057/068/069 infrastructure fixes.', cat:'ML', pri:'High', effort:'L', sprint:'S14', status:'In Sprint' },
         { id:'TA-071', feature:'Monitoring stack research ticket (future sprint) — define phased observability plan: Phase 1 baseline with AWS CloudWatch + CloudWatch Alarms for EC2 health (CPU, memory, disk), Flask API uptime/latency, error-rate alerts, and deployment event visibility; Phase 2 evaluate Grafana dashboards (CloudWatch datasource) for unified app + dashboard + infrastructure views; Phase 3 evaluate ELK/OpenSearch only if log volume/search needs justify added ops overhead. Deliverable: recommendation matrix (cost, setup complexity, alert quality, maintenance load) and implementation trigger criteria for each phase.', cat:'Infrastructure', pri:'Medium', effort:'M', sprint:'TBD', status:'Backlog' },
+        { id:'TA-072', feature:'Create a new AWS account for EC2 continuity and migrate runtime access/deployment operations so Sprint 14 ML execution is not blocked by current AWS account lockout constraints.', cat:'Infrastructure', pri:'Critical', effort:'M', sprint:'S14', status:'In Sprint' },
         { id:'DSH-011', feature:'PM4 dashboard source-of-truth transition complete — publish path moved to pmforge_dashboard/index.html, legacy Dashboard/index.html archived, and PM4 docs/release/backlog alignment verified', cat:'Dashboard', pri:'High', effort:'M', sprint:'S13', status:'Done' },
     ];
 
@@ -7305,7 +7306,9 @@ function showSprintView(view, btn) {
             'Validate data integrity — row counts and spot checks (TA-013)',
         ],
         'Sprint 14 — ML Retrain': [
-            'TA-063 EC2 disk cleanup carry-over from Sprint 13 backlog (resume after AWS access recovery)',
+            'Sprint 14 execution focus: all active ML backlog tickets moved into this sprint (TA-018, TA-019, TA-020, TA-021, TA-022, TA-023, TA-024, TA-025, TA-060, TA-061, TA-062, TA-070)',
+            'TA-072 create a new AWS account for EC2 continuity and deployment/SSH recovery path',
+            'TA-063 EC2 disk cleanup remains in Sprint 14 backlog and is dependency-tracked against account/access recovery',
         ],
         'Sprint 15 — UI & UX Polish': [
             'Goals TBD — assigned at sprint planning after Sprint 14 closes',

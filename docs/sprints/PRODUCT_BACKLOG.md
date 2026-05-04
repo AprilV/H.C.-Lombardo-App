@@ -2,7 +2,7 @@
 **Term:** Spring 2026 (April 6 – June 13, 2026)
 **Goal:** Public-release-ready application
 **Continuing from:** Sprint 11 (completed Nov 20, 2025)
-**Next sprint:** Sprint 12
+**Next sprint:** Sprint 14
 
 ---
 
@@ -27,6 +27,7 @@ Status: **OPEN** | **IN SPRINT** | **DONE**
 | PRD-6 | Create a "Production Issue Log" listing every broken thing with screenshots | P1 | M | OPEN |
 | PRD-7 | Fix any CORS errors preventing frontend from reaching backend | P1 | M | OPEN |
 | PRD-8 | Verify PostgreSQL is running and accessible on EC2 | P1 | S | OPEN |
+| PRD-9 | Create a new AWS account for EC2 continuity and migrate required runtime/deploy access so active work is not blocked by current account lockout constraints | P1 | M | IN SPRINT |
 
 ---
 
@@ -82,18 +83,18 @@ Status: **OPEN** | **IN SPRINT** | **DONE**
 
 | ID | Story | Priority | Size | Status |
 |----|-------|----------|------|--------|
-| ML-1 | Retrain xgb_winner.pkl on 2025 data | P1 | M | OPEN |
-| ML-2 | Retrain xgb_spread.pkl on 2025 data | P1 | M | OPEN |
-| ML-3 | Validate retrained models: no data leakage, MAE in expected range | P1 | M | OPEN |
-| ML-4 | Rebuild Elo ratings with 2025 games | P1 | M | OPEN |
-| ML-5 | Complete predict_ensemble.py: implement upcoming week detection (TODO at line 338) | P2 | L | OPEN |
-| ML-6 | Automate ELO predictions: generate and save to ml_predictions_elo at season start | P2 | M | OPEN |
-| ML-7 | Add model accuracy dashboard: show season-long AI vs Vegas win rate | P2 | M | OPEN |
-| ML-8 | Investigate whether 65.55% accuracy is real or inflated (validate methodology) | P2 | L | OPEN |
-| ML-9 | Feature importance visualization: which stats matter most to predictions | P3 | M | OPEN |
-| ML-10 | Confidence intervals on score predictions (+/- range) | P3 | M | OPEN |
-| ML-11 | Automated weekly retraining pipeline (after each game week) | P3 | L | OPEN |
-| ML-12 | Betting ROI tracker: if you followed AI picks, what's your record/profit? | P3 | L | OPEN |
+| ML-1 | Retrain xgb_winner.pkl on 2025 data | P1 | M | IN SPRINT |
+| ML-2 | Retrain xgb_spread.pkl on 2025 data | P1 | M | IN SPRINT |
+| ML-3 | Validate retrained models: no data leakage, MAE in expected range | P1 | M | IN SPRINT |
+| ML-4 | Rebuild Elo ratings with 2025 games | P1 | M | IN SPRINT |
+| ML-5 | Complete predict_ensemble.py: implement upcoming week detection (TODO at line 338) | P2 | L | IN SPRINT |
+| ML-6 | Automate ELO predictions: generate and save to ml_predictions_elo at season start | P2 | M | IN SPRINT |
+| ML-7 | Add model accuracy dashboard: show season-long AI vs Vegas win rate | P2 | M | IN SPRINT |
+| ML-8 | Investigate whether 65.55% accuracy is real or inflated (validate methodology) | P2 | L | IN SPRINT |
+| ML-9 | Feature importance visualization: which stats matter most to predictions | P3 | M | IN SPRINT |
+| ML-10 | Confidence intervals on score predictions (+/- range) | P3 | M | IN SPRINT |
+| ML-11 | Automated weekly retraining pipeline (after each game week) | P3 | L | IN SPRINT |
+| ML-12 | Betting ROI tracker: if you followed AI picks, what's your record/profit? | P3 | L | IN SPRINT |
 
 ---
 
@@ -150,7 +151,7 @@ Status: **OPEN** | **IN SPRINT** | **DONE**
 
 | Epic | Items | P1 | P2 | P3 |
 |------|-------|----|----|-----|
-| Production Restoration | 8 | 8 | 0 | 0 |
+| Production Restoration | 9 | 9 | 0 | 0 |
 | New Season Data | 8 | 8 | 0 | 0 |
 | Critical Bug Fixes | 8 | 6 | 2 | 0 |
 | Dead Code Cleanup | 7 | 2 | 5 | 0 |
@@ -158,10 +159,10 @@ Status: **OPEN** | **IN SPRINT** | **DONE**
 | UI/UX Improvements | 10 | 2 | 8 | 0 |
 | Production Hardening | 10 | 2 | 5 | 3 |
 | Documentation | 5 | 3 | 1 | 1 |
-| **TOTAL** | **68** | **35** | **25** | **8** |
+| **TOTAL** | **69** | **36** | **25** | **8** |
 
 ---
 
-*Last updated: April 27, 2026*
+*Last updated: May 4, 2026*
 *Owner: April V. Sykes*
 *Course: IS330 — Olympic College*
