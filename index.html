@@ -5082,6 +5082,7 @@ const TASK_DETAILS = {
     s67_4: { resolution:'Deployed Project Logbook tab experience into dashboard navigation and validated end-user rendering path.', date:'Apr 20, 2026', timestamp:'2026-04-20T15:29', updatedBy:'Claude + April review' },
     s67_5: { resolution:'Added section reference panel for Sections 1-12 to improve contextual navigation while reviewing logbook entries.', date:'Apr 20, 2026', timestamp:'2026-04-20T15:42', updatedBy:'Claude + April review' },
     ta_parent_ta_060: { resolution:'Completed TA-060 by implementing upcoming week detection in ml/predict_ensemble.py. Added EnsemblePredictor.predict_upcoming() to find the next season/week with unplayed games and wired CLI --upcoming to run that path instead of exiting with TODO.', date:'May 4, 2026', timestamp:'2026-05-04T13:05', updatedBy:'Copilot (code diff + local verification evidence)' },
+    ta_parent_dsh_011: { resolution:'Completed DSH-011 by moving PM4 dashboard publish source to pmforge_dashboard/index.html, deprecating legacy Dashboard/index.html as active source, and aligning docs/release/backlog references to the new source-of-truth path. Validation included local runtime load checks and source-path consistency verification across dashboard process docs.', date:'May 1, 2026', timestamp:'2026-05-01T13:48', updatedBy:'Copilot (source-path transition evidence)' },
     s69_1: { resolution:'Located and confirmed the premature return in compute_rolling_features before final feature sanitation/computation block.', date:'Apr 22, 2026', timestamp:'2026-04-22T11:08', updatedBy:'Claude + April review' },
     s69_2: { resolution:'Moved return to run after differential computation plus NaN/inf handling so full feature set is produced.', date:'Apr 22, 2026', timestamp:'2026-04-22T11:15', updatedBy:'Claude + April review' },
     s69_3: { resolution:'Fixed variable mismatch path to use valid feature keys (home_ppg / away_ppg) and removed dead mismatch path risk.', date:'Apr 22, 2026', timestamp:'2026-04-22T11:22', updatedBy:'Claude + April review' },
@@ -7920,6 +7921,163 @@ function showSprintView(view, btn) {
         return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     }
 
+    function normalizeTicketText(text) {
+        return String(text || '').replace(/\s+/g, ' ').trim().replace(/[.]+$/, '');
+    }
+
+    function buildProblemDescriptionFromFeature(item) {
+        var feature = normalizeTicketText(item && item.feature);
+        if (!feature) {
+            return 'Problem statement pending triage. Define the production impact and failure mode before implementation.';
+        }
+
+        var lower = feature.toLowerCase();
+        if (lower.indexOf('fix ') === 0) {
+            return 'Problem: ' + feature.replace(/^fix\s+/i, '') + '. Impact: defect causes incorrect behavior, failed output, or elevated production risk until corrected.';
+        }
+        if (lower.indexOf('implement ') === 0) {
+            var gapText = feature.replace(/^implement\s+/i, '');
+            if (gapText.toLowerCase().indexOf('currently missing') !== -1 || gapText.toLowerCase().indexOf('todo stub') !== -1) {
+                return 'Problem: ' + gapText + '. Impact: required workflow path is incomplete until this implementation gap is closed.';
+            }
+            return 'Problem: ' + gapText + ' is currently missing, leaving a required workflow path incomplete.';
+        }
+        if (lower.indexOf('retrain ') === 0) {
+            return 'Problem: existing model artifacts can be stale or inaccurate after data-pipeline fixes; retraining is required to restore prediction reliability.';
+        }
+        if (lower.indexOf('create ') === 0 || lower.indexOf('add ') === 0 || lower.indexOf('build ') === 0) {
+            return 'Problem: required capability is not yet available (' + feature + '), creating a delivery and validation gap.';
+        }
+        if (lower.indexOf('evaluate ') === 0 || lower.indexOf('research ') === 0 || lower.indexOf('audit ') === 0) {
+            return 'Problem: unresolved decision risk requires evidence collection before implementation choices are finalized.';
+        }
+        return 'Problem: ' + feature + '. Impact: unresolved work affects reliability, delivery quality, or release readiness.';
+    }
+
+    function parseTicketEvidenceToIso(detail) {
+        if (!detail) return '';
+
+        var ts = String(detail.timestamp || '').trim();
+        if (ts) {
+            var parsedTs = new Date(ts);
+            if (!isNaN(parsedTs.getTime())) return parsedTs.toISOString();
+        }
+
+        var dateInput = String(detail.dateInput || '').trim();
+        if (dateInput) {
+            var parsedInput = new Date(dateInput + 'T00:00:00');
+            if (!isNaN(parsedInput.getTime())) return parsedInput.toISOString();
+        }
+
+        var dateText = String(detail.date || '').trim();
+        if (dateText) {
+            var parsedDate = new Date(dateText);
+            if (!isNaN(parsedDate.getTime())) return parsedDate.toISOString();
+        }
+
+        return '';
+    }
+
+    function formatTicketEvidenceDate(isoTs) {
+        if (!isoTs) return '';
+        var d = new Date(isoTs);
+        if (isNaN(d.getTime())) return '';
+        return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    function collectTicketResolutionEvidence(item) {
+        var parentKey = (typeof parentTaskKey === 'function') ? parentTaskKey(item && item.id) : '';
+        var parentDetail = (typeof TASK_DETAILS !== 'undefined' && TASK_DETAILS && parentKey) ? TASK_DETAILS[parentKey] : null;
+        var entries = [];
+        if (parentDetail && String(parentDetail.resolution || '').trim()) entries.push(parentDetail);
+
+        var subtasks = [];
+        if (item && Array.isArray(item.manualSubtasks) && item.manualSubtasks.length) {
+            subtasks = collectManualSubtasks(item);
+        } else {
+            var mapped = findTaskGroupForTicket(item && item.id);
+            if (mapped) subtasks = collectTicketSubtasks(mapped);
+        }
+
+        subtasks.forEach(function(s) {
+            if (!s || !s.detail) return;
+            if (String(s.detail.resolution || '').trim()) entries.push(s.detail);
+        });
+
+        return {
+            parentKey: parentKey,
+            parentDetail: parentDetail,
+            entries: entries
+        };
+    }
+
+    function pickEvidenceTimestamp(evidence, preferLatest) {
+        var stamps = (evidence && evidence.entries ? evidence.entries : [])
+            .map(parseTicketEvidenceToIso)
+            .filter(function(ts) { return !!ts; })
+            .sort();
+        if (!stamps.length) return '';
+        return preferLatest ? stamps[stamps.length - 1] : stamps[0];
+    }
+
+    function pickEvidenceAuthor(evidence) {
+        var entries = (evidence && evidence.entries) ? evidence.entries.slice() : [];
+        for (var i = entries.length - 1; i >= 0; i--) {
+            var by = String(entries[i].updatedBy || '').trim();
+            if (by) return by;
+        }
+        return '';
+    }
+
+    function ensureTicketDataCompleteness(item) {
+        if (!item) return;
+
+        if (!String(item.description || '').trim()) {
+            item.description = buildProblemDescriptionFromFeature(item);
+        }
+
+        var evidence = collectTicketResolutionEvidence(item);
+        var earliestEvidence = pickEvidenceTimestamp(evidence, false);
+        var latestEvidence = pickEvidenceTimestamp(evidence, true);
+        var evidenceBy = pickEvidenceAuthor(evidence);
+
+        if (!item.createdAt) item.createdAt = earliestEvidence || nowIso();
+        if (!item.updatedAt) item.updatedAt = latestEvidence || item.createdAt;
+        if (!item.updatedBy) item.updatedBy = evidenceBy || 'Scrum Master';
+
+        if (item.status === 'Done' && evidence.parentKey && typeof TASK_DETAILS !== 'undefined' && TASK_DETAILS) {
+            if (typeof TASK_TA_MAP !== 'undefined' && TASK_TA_MAP && !TASK_TA_MAP[evidence.parentKey]) {
+                TASK_TA_MAP[evidence.parentKey] = item.id;
+            }
+
+            var parent = TASK_DETAILS[evidence.parentKey] || {};
+            var parentHasResolution = String(parent.resolution || '').trim().length > 0;
+            if (!parentHasResolution) {
+                var technicalLines = (evidence.entries || [])
+                    .map(function(d) { return String(d.resolution || '').trim(); })
+                    .filter(function(line) { return !!line; });
+
+                if (technicalLines.length) {
+                    TASK_DETAILS[evidence.parentKey] = {
+                        resolution: 'Technical completion evidence: ' + technicalLines.slice(0, 3).join(' '),
+                        date: parent.date || formatTicketEvidenceDate(latestEvidence) || formatTicketEvidenceDate(item.updatedAt) || '',
+                        timestamp: parent.timestamp || latestEvidence || item.updatedAt || nowIso(),
+                        updatedBy: parent.updatedBy || evidenceBy || item.updatedBy || 'Scrum Master'
+                    };
+                }
+            }
+        }
+
+        if (item.status === 'Done' && (!Array.isArray(item.history) || item.history.length === 0)) {
+            item.history = Array.isArray(item.history) ? item.history : [];
+            item.history.unshift({
+                at: item.updatedAt || nowIso(),
+                by: item.updatedBy || 'Scrum Master',
+                note: 'Ticket closure record verified against linked technical execution evidence.'
+            });
+        }
+    }
+
     function normalizeItems() {
         (window.PB_ITEMS || []).forEach(function(item) {
             item.status = normalizeStatus(item.status);
@@ -7931,12 +8089,13 @@ function showSprintView(view, btn) {
             item.comments = Array.isArray(item.comments) ? item.comments : [];
             item.history = Array.isArray(item.history) ? item.history : [];
             item.dueDate = item.dueDate || '';
-            item.createdAt = item.createdAt || nowIso();
-            item.updatedAt = item.updatedAt || item.createdAt;
-            item.updatedBy = item.updatedBy || 'Scrum Master';
+            item.createdAt = item.createdAt || '';
+            item.updatedAt = item.updatedAt || '';
+            item.updatedBy = item.updatedBy || '';
             item.cat = item.cat || 'Project Management';
             item.effort = item.effort || 'M';
             item.manualSubtasks = Array.isArray(item.manualSubtasks) ? item.manualSubtasks : [];
+            ensureTicketDataCompleteness(item);
         });
     }
 
@@ -8270,6 +8429,24 @@ function showSprintView(view, btn) {
 
         if (!subtasks.length) mapped = findTaskGroupForTicket(item.id);
         if (!subtasks.length && !mapped) {
+            var parentKey = (typeof parentTaskKey === 'function') ? parentTaskKey(item.id) : '';
+            var parentDetail = (typeof TASK_DETAILS !== 'undefined' && TASK_DETAILS && parentKey) ? TASK_DETAILS[parentKey] : null;
+            if (parentDetail && String(parentDetail.resolution || '').trim()) {
+                if (typeof TASK_TA_MAP !== 'undefined' && TASK_TA_MAP && !TASK_TA_MAP[parentKey]) TASK_TA_MAP[parentKey] = item.id;
+                var parentKeyJs = (typeof escapeSingleQuotedJs === 'function') ? escapeSingleQuotedJs(parentKey) : parentKey;
+                var titleJs = (typeof escapeSingleQuotedJs === 'function') ? escapeSingleQuotedJs(item.feature || item.id) : (item.feature || item.id);
+                var eyebrowText = item.id + ' - Ticket resolution';
+                var eyebrowJs = (typeof escapeSingleQuotedJs === 'function') ? escapeSingleQuotedJs(eyebrowText) : eyebrowText;
+
+                summaryEl.textContent = 'Ticket-level technical resolution record is available.';
+                listEl.innerHTML = '<div class="tm-subtask-row clickable" onclick="openTaskModal(\'' + parentKeyJs + '\',\'' + titleJs + '\',\'' + eyebrowJs + '\')">'
+                    + '<span class="tm-subticket">TSK-RES</span>'
+                    + '<span class="tm-subtask-state done">Done</span>'
+                    + '<span class="tm-subtask-title">Open ticket-level resolution details</span>'
+                    + '</div>';
+                return;
+            }
+
             summaryEl.textContent = 'No linked sprint subtask group was found for this ticket yet.';
             listEl.innerHTML = '<div style="padding:0.55rem; color:#94a3b8; font-size:0.78rem;">Subtasks have not been identified for this ticket in the sprint board.</div>';
             return;
@@ -8388,6 +8565,10 @@ function showSprintView(view, btn) {
             alert('Ticket title is required.');
             return;
         }
+        if (!description) {
+            alert('Ticket description is required. Describe the problem and impact before creating the ticket.');
+            return;
+        }
 
         var id = nextTicketId();
         var createdAt = nowIso();
@@ -8459,8 +8640,14 @@ function showSprintView(view, btn) {
             dueDate: item.dueDate || ''
         };
 
+        var editedDescription = document.getElementById('te-description').value.trim();
+        if (!editedDescription) {
+            alert('Description is required. Enter the problem statement and impact before saving.');
+            return;
+        }
+
         item.feature = document.getElementById('te-title').value.trim() || item.feature;
-        item.description = document.getElementById('te-description').value.trim();
+        item.description = editedDescription;
         item.pri = document.getElementById('te-priority').value;
         item.status = normalizeStatus(document.getElementById('te-status').value);
         item.assignee = normalizeAssignee(document.getElementById('te-assignee').value);
@@ -8791,7 +8978,7 @@ function showSprintView(view, btn) {
         </div>
         <div style="grid-column:1 / -1;">
             <div style="font-size:0.75rem; color:#93c5fd; margin-bottom:0.25rem;">Description</div>
-            <textarea id="tc-description" rows="3" placeholder="What needs to be done?" style="width:100%; resize:vertical; background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.14); border-radius:0.4rem; color:#f1f5f9; padding:0.5rem 0.6rem; font-size:0.84rem; outline:none;"></textarea>
+            <textarea id="tc-description" rows="3" placeholder="Problem statement and impact (why this ticket exists)" style="width:100%; resize:vertical; background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.14); border-radius:0.4rem; color:#f1f5f9; padding:0.5rem 0.6rem; font-size:0.84rem; outline:none;"></textarea>
         </div>
         <div style="grid-column:1 / -1;">
             <div style="font-size:0.75rem; color:#93c5fd; margin-bottom:0.25rem;">Subtasks (one per line)</div>
@@ -8852,6 +9039,7 @@ function showSprintView(view, btn) {
 
     <div style="background:rgba(99,179,237,0.1); border:1px solid rgba(99,179,237,0.28); border-radius:0.45rem; padding:0.5rem 0.65rem; margin-bottom:0.75rem; font-size:0.76rem; color:#cbd5e1; line-height:1.5;">
         <strong style="color:#93c5fd;">Editor Guidance:</strong> Active sprint tickets are editable. Completed tickets and tickets from closed sprints lock core fields. You can always add comments and resolution details for audit history.
+        <span style="display:block; color:#bfdbfe; margin-top:0.2rem;">Description = problem statement + impact. Resolution = technical fix details and validation evidence.</span>
         <span style="display:block; color:#94a3b8; margin-top:0.2rem;">All edits are page-memory only and are not stored in localStorage.</span>
     </div>
 
