@@ -5770,6 +5770,7 @@ var SPRINT_SCHEDULE = [
 ];
 
 var DASH_SPRINT_STORAGE_KEY = 'pmforge_dashboard_selected_sprint_v1';
+var DASH_SPRINT_FOLLOW_CURRENT_KEY = 'pmforge_dashboard_follow_current_sprint_v1';
 
 function getCurrentSprint() {
     var today = new Date();
@@ -5797,9 +5798,32 @@ function normalizeDashSprintSelection(value) {
     return exists ? parsed : fallback;
 }
 
+function readFollowCurrentSprintPreference() {
+    try {
+        if (!window.localStorage) return true;
+        var raw = localStorage.getItem(DASH_SPRINT_FOLLOW_CURRENT_KEY);
+        if (raw === null || typeof raw === 'undefined' || raw === '') return true;
+        return raw === '1' || raw === 'true';
+    } catch (e) {
+        return true;
+    }
+}
+
+function persistFollowCurrentSprintPreference(shouldFollow) {
+    try {
+        if (!window.localStorage) return;
+        localStorage.setItem(DASH_SPRINT_FOLLOW_CURRENT_KEY, shouldFollow ? '1' : '0');
+    } catch (e) {
+        // Keep dashboard functional if storage is unavailable.
+    }
+}
+
 function readPersistedDashSprint() {
     try {
-        if (!window.localStorage) return getCurrentSprint();
+        var fallback = getCurrentSprint();
+        if (!window.localStorage) return fallback;
+        // Default behavior is to follow the current sprint unless user explicitly pins another sprint.
+        if (readFollowCurrentSprintPreference()) return fallback;
         var raw = localStorage.getItem(DASH_SPRINT_STORAGE_KEY);
         return normalizeDashSprintSelection(raw);
     } catch (e) {
@@ -6282,14 +6306,13 @@ function watchSprintDateRollover() {
     var nowSprint = getCurrentSprint();
     if (nowSprint === LAST_KNOWN_SPRINT) return;
 
-    var previousCurrentSprint = LAST_KNOWN_SPRINT;
     var selectedSprint = normalizeDashSprintSelection(CURRENT_DASH_SPRINT);
-    var wasFollowingCurrent = selectedSprint === previousCurrentSprint;
+    var shouldFollowCurrent = readFollowCurrentSprintPreference();
 
     LAST_KNOWN_SPRINT = nowSprint;
 
-    // Only auto-advance dashboard selection when it was tracking the current sprint.
-    if (wasFollowingCurrent) {
+    // Auto-advance dashboard selection when follow-current mode is enabled.
+    if (shouldFollowCurrent) {
         CURRENT_DASH_SPRINT = nowSprint;
         persistDashSprintSelection(nowSprint);
     } else {
@@ -6504,12 +6527,20 @@ function initRecentUpdatesTicker() {
     }, RECENT_UPDATES_INTERVAL_MS);
 }
 
-function loadSprintDashboard(num) {
+function loadSprintDashboard(num, options) {
+    options = options || {};
     var sprintNum = parseInt(num, 10);
     if (isNaN(sprintNum)) sprintNum = getCurrentSprint();
     sprintNum = normalizeDashSprintSelection(sprintNum);
+
+    var followCurrent = typeof options.followCurrent === 'boolean'
+        ? options.followCurrent
+        : readFollowCurrentSprintPreference();
+
     CURRENT_DASH_SPRINT = sprintNum;
     persistDashSprintSelection(sprintNum);
+    persistFollowCurrentSprintPreference(!!followCurrent);
+
     var s = getEffectiveSprintSnapshot(sprintNum);
     if (!s) return;
 
@@ -6620,7 +6651,9 @@ function toggleDashSprintDropdown() {
 function selectDashSprint(num, label) {
     document.getElementById('dash-sprint-list').style.display = 'none';
     document.getElementById('dash-sprint-arrow').style.transform = '';
-    loadSprintDashboard(num);
+    var selectedSprint = normalizeDashSprintSelection(num);
+    var followCurrent = selectedSprint === getCurrentSprint();
+    loadSprintDashboard(selectedSprint, { followCurrent: followCurrent });
 }
 
 document.addEventListener('click', function(e) {
