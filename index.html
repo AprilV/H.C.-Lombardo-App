@@ -2366,7 +2366,7 @@
 
     <!-- ── OPEN BLOCKERS ── -->
     <div class="dash-section-label">Open Blockers &amp; Top Tasks</div>
-    <div class="blocker-list">
+    <div class="blocker-list" id="dash-blocker-list">
         <div class="blocker-item sev-p2">
             <div><div class="blocker-badge p2">P2</div><div class="blocker-desc">TA-068 route validation completed Apr 27. /api/ml/* and /api/elo/* endpoints now return 200 in local endpoint verification.</div><div class="blocker-file">Flask test-client verification (s68_6)</div></div>
             <div class="blocker-sprint">S13</div>
@@ -2391,14 +2391,14 @@
 
         <div class="chart-card">
             <div class="chart-card-title" id="burndown-chart-title">Burndown — Sprint 12</div>
-            <div class="chart-card-subtitle">Tracks remaining tasks vs. ideal pace. The red line should follow the gold dashed line. If it stays flat, the sprint is stalled.</div>
+            <div class="chart-card-subtitle">Tracks remaining effort points vs. ideal pace. The red line should trend toward the gold dashed line as sprint work is completed.</div>
             <canvas id="burndown-chart" height="180"></canvas>
             <div class="chart-card-insight" id="burndown-chart-insight"><strong>S12 status:</strong> 84 of 85 tasks complete. 1 task blocked (TA-008 — awaiting AWS console access). Sprint closes Apr 18.</div>
         </div>
 
         <div class="chart-card">
             <div class="chart-card-title">Burnup — Scope vs. Completion</div>
-            <div class="chart-card-subtitle">Shows total work added to the project (scope) vs. work completed across all 12 sprints. A healthy project keeps the gap closing.</div>
+            <div class="chart-card-subtitle">Shows committed scope versus completed effort points by sprint. A healthy trend keeps completion climbing toward planned scope.</div>
             <canvas id="burnup-chart" height="180"></canvas>
             <div class="chart-card-insight" id="burnup-chart-insight"><strong>S12 progress:</strong> 8 backlog items delivered this sprint (TA-001, TA-002, TA-003, TA-004, TA-005, TA-006, TA-007, TA-009). Cumulative completed: 83 of 83. TA-008 blocked — carries to S13.</div>
         </div>
@@ -2409,15 +2409,15 @@
     <div class="chart-grid-2" style="margin-bottom:1.5rem;">
 
         <div class="chart-card">
-            <div class="chart-card-title">Velocity — TA Items Delivered Per Sprint</div>
-            <div class="chart-card-subtitle">How many backlog tasks (TA items) were completed each sprint. Consistent bars = predictable team. Drops = scope creep or blockers. Average velocity informs sprint planning.</div>
+            <div class="chart-card-title">Velocity — Effort Points Delivered Per Sprint</div>
+            <div class="chart-card-subtitle">How many effort points were completed each sprint. Consistent bars support reliable planning; sharp drops usually indicate blockers or carryover.</div>
             <canvas id="velocity-chart" height="180"></canvas>
             <div class="chart-card-insight" id="velocity-chart-insight"><strong>Avg velocity:</strong> ~6.8 TA items/sprint across S1–S11. S12 delivered 8 TA items (TA-001, TA-002, TA-003, TA-004, TA-005, TA-006, TA-007, TA-009). TA-008 blocked, carries to S13.</div>
         </div>
 
         <div class="chart-card">
             <div class="chart-card-title">Backlog by Severity</div>
-            <div class="chart-card-subtitle">Current task distribution across tracked backlog tasks by severity. P1 = production blockers that must be fixed before anything else ships. P4 = polish only.</div>
+            <div class="chart-card-subtitle">Current open backlog distribution by priority. P1 indicates blockers, P2 high urgency, P3 medium priority, and P4 polish/low-risk work.</div>
             <canvas id="severity-chart" height="180"></canvas>
             <div class="chart-card-insight" id="severity-chart-insight"><strong>S13 focus:</strong> TA-069 resolved Apr 22, TA-057 verified done, TA-058 SQL execution verified Apr 27, TA-059 closed Apr 27, and TA-068 route validation is complete. TA-063 is deferred to Sprint 14 backlog due AWS access constraints; TA-010, TA-012, and TA-013 are complete, and TA-011 remains partially blocked at s11_2 pending EC2 recovery.</div>
         </div>
@@ -2953,10 +2953,125 @@
         </div>
     </div>
 
-    <!-- Sprint 14 placeholder -->
+    <!-- Sprint 14 board -->
     <div id="sprint-board-14" style="display:none;">
         <div class="pm-panel">
-            <div class="pm-header"><div><h2>Sprint 14 — ML Retrain</h2><p>Sprint 14 is active. Use Delivery Workspace backlog tickets for execution and status tracking.</p></div><div class="sprint-meta"><span class="meta-pill">May 4 – May 16, 2026</span><span class="meta-pill" style="color:#10b981; border-color:#10b981;">Active</span></div></div>
+            <div class="pm-header"><div><h2>Sprint 14 — ML Retrain</h2><p>Sprint 14 is active. Execute the committed Sprint 14 ticket plan and track progress here.</p></div><div class="sprint-meta"><span class="meta-pill">May 4 – May 16, 2026</span><span class="meta-pill" style="color:#10b981; border-color:#10b981;">Active</span></div></div>
+
+            <div style="max-width:940px; margin:0 0 1rem;">
+                <div class="progress-label"><span>Sprint 14 Progress</span><span id="s14-pct">0%</span></div>
+                <div class="progress-bar-wrap"><div class="progress-bar-fill" id="s14-fill" style="width:0%"></div></div>
+                <div style="font-size:0.75rem;color:var(--muted);margin-top:0.4rem;" id="s14-count">0 of 52 Sprint 14 subtasks complete</div>
+            </div>
+
+            <div class="area-grid" id="sprint14-board">
+
+                <!-- ML Retrain + Pipeline Corrections -->
+                <div class="area-card">
+                    <div class="area-header" onclick="toggleArea('s14-ml')">
+                        <div class="area-title">🤖 ML Retrain &amp; Pipeline Corrections <span class="area-count" id="count-s14-ml">0/26</span></div>
+                        <span id="arrow-s14-ml">▾</span>
+                    </div>
+                    <div class="area-body" id="s14-ml">
+                        <div class="task-group-label">TA-018 — Retrain winner classifier on corrected 2025 data</div>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="s18_1" onchange="updateS14Progress()"><span class="task-text">Validate winner-training dataset coverage and schema alignment before retrain run</span></label>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="s18_2" onchange="updateS14Progress()"><span class="task-text">Execute winner retrain pipeline and capture run logs/artifact timestamp</span></label>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="s18_3" onchange="updateS14Progress()"><span class="task-text">Persist updated winner model + feature metadata to expected artifact paths</span></label>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="s18_4" onchange="updateS14Progress()"><span class="task-text">Smoke-test winner prediction endpoint with the new model artifact loaded</span></label>
+
+                        <div class="task-group-label">TA-019 — Retrain spread regressor and record MAE</div>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="s19_1" onchange="updateS14Progress()"><span class="task-text">Validate spread training query/data extraction returns complete expected rows</span></label>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="s19_2" onchange="updateS14Progress()"><span class="task-text">Run spread retrain pipeline and save the refreshed model artifact</span></label>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="s19_3" onchange="updateS14Progress()"><span class="task-text">Compute MAE on validation/test split and capture metric evidence</span></label>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="s19_4" onchange="updateS14Progress()"><span class="task-text">Log MAE result in sprint evidence notes and task resolution details</span></label>
+
+                        <div class="task-group-label">TA-020 — Recalculate Elo ratings through 2025 season</div>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="s20_1" onchange="updateS14Progress()"><span class="task-text">Rebuild Elo ratings across full historical set through end of 2025 season</span></label>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="s20_2" onchange="updateS14Progress()"><span class="task-text">Persist refreshed Elo outputs used by tracker/predictor workflows</span></label>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="s20_3" onchange="updateS14Progress()"><span class="task-text">Verify Elo API routes return 200 and consume updated rating data</span></label>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="s20_4" onchange="updateS14Progress()"><span class="task-text">Record top-team rating snapshot for audit traceability</span></label>
+
+                        <div class="task-group-label">TA-021 — Consolidate duplicate scope from TA-057 <span class="task-sub">duplicate tracking cleanup</span></div>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="s21_1" onchange="updateS14Progress()"><span class="task-text">Confirm TA-057 schema fix covers TA-021 technical scope</span></label>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="s21_2" onchange="updateS14Progress()"><span class="task-text">Verify no remaining winner-training schema mismatches exist</span></label>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="s21_3" onchange="updateS14Progress()"><span class="task-text">Document TA-021 closure as duplicate consolidated into TA-057 evidence</span></label>
+
+                        <div class="task-group-label">TA-022 — Consolidate duplicate scope from TA-058 <span class="task-sub">duplicate tracking cleanup</span></div>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="s22_1" onchange="updateS14Progress()"><span class="task-text">Confirm TA-058 SQL WINDOW fix satisfies TA-022 technical scope</span></label>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="s22_2" onchange="updateS14Progress()"><span class="task-text">Run a spread-training data load dry run with no SQL syntax errors</span></label>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="s22_3" onchange="updateS14Progress()"><span class="task-text">Document TA-022 closure as duplicate consolidated into TA-058 evidence</span></label>
+
+                        <div class="task-group-label">TA-061 — Retrain XGBoost winner model with corrected pipeline</div>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="s61_1" onchange="updateS14Progress()"><span class="task-text">Execute corrected winner retraining script against production-aligned schema</span></label>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="s61_2" onchange="updateS14Progress()"><span class="task-text">Compare new winner accuracy versus prior baseline and capture delta</span></label>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="s61_3" onchange="updateS14Progress()"><span class="task-text">Validate artifact integrity (model load + feature ordering compatibility)</span></label>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="s61_4" onchange="updateS14Progress()"><span class="task-text">Run winner API smoke checks using refreshed corrected model</span></label>
+
+                        <div class="task-group-label">TA-062 — Retrain XGBoost spread model with corrected pipeline</div>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="s62_1" onchange="updateS14Progress()"><span class="task-text">Execute corrected spread retraining script against production-aligned data</span></label>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="s62_2" onchange="updateS14Progress()"><span class="task-text">Compute MAE/RMSE and compare performance against prior spread baseline</span></label>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="s62_3" onchange="updateS14Progress()"><span class="task-text">Validate spread artifact + metadata compatibility for inference pipeline</span></label>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="s62_4" onchange="updateS14Progress()"><span class="task-text">Run spread API smoke checks and store representative sample outputs</span></label>
+                    </div>
+                </div>
+
+                <!-- Quality + Product Validation -->
+                <div class="area-card">
+                    <div class="area-header" onclick="toggleArea('s14-quality')">
+                        <div class="area-title">📊 Quality &amp; Product Validation <span class="area-count" id="count-s14-quality">0/16</span></div>
+                        <span id="arrow-s14-quality">▾</span>
+                    </div>
+                    <div class="area-body" id="s14-quality">
+                        <div class="task-group-label">TA-023 — Verify no data leakage in feature pipeline</div>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="s23_1" onchange="updateS14Progress()"><span class="task-text">Audit feature builders to ensure only prior-game data feeds each prediction row</span></label>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="s23_2" onchange="updateS14Progress()"><span class="task-text">Run leakage checks for same-game stats and label leakage indicators</span></label>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="s23_3" onchange="updateS14Progress()"><span class="task-text">Validate chronological split boundaries across train/validation/test datasets</span></label>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="s23_4" onchange="updateS14Progress()"><span class="task-text">Publish leakage audit summary with pass/fail criteria and evidence</span></label>
+
+                        <div class="task-group-label">TA-024 — ML Predictions page shows live results in production</div>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="s24_1" onchange="updateS14Progress()"><span class="task-text">Validate production prediction endpoints return complete current-season payloads</span></label>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="s24_2" onchange="updateS14Progress()"><span class="task-text">Verify frontend ML Predictions views render winner/spread outputs cleanly</span></label>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="s24_3" onchange="updateS14Progress()"><span class="task-text">Fix and retest any API-to-UI payload shape mismatches discovered</span></label>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="s24_4" onchange="updateS14Progress()"><span class="task-text">Capture production validation evidence for live-results acceptance</span></label>
+
+                        <div class="task-group-label">TA-025 — Record model accuracy metrics in ModelPerformance</div>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="s25_1" onchange="updateS14Progress()"><span class="task-text">Verify performance endpoint returns expected winner/spread metric payload</span></label>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="s25_2" onchange="updateS14Progress()"><span class="task-text">Confirm ModelPerformance page handles both empty and populated states</span></label>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="s25_3" onchange="updateS14Progress()"><span class="task-text">Validate weekly trend and benchmark delta displays against known samples</span></label>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="s25_4" onchange="updateS14Progress()"><span class="task-text">Record acceptance screenshot/data evidence for completed metrics flow</span></label>
+
+                        <div class="task-group-label">TA-070 — ML prediction accuracy audit</div>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="s70_1" onchange="updateS14Progress()"><span class="task-text">Extract prediction-vs-actual datasets for winner/spread/total outcomes</span></label>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="s70_2" onchange="updateS14Progress()"><span class="task-text">Compute season/week accuracy, MAE, and coverage metrics for audit report</span></label>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="s70_3" onchange="updateS14Progress()"><span class="task-text">Perform root-cause analysis on accuracy gaps (data drift/leakage/features)</span></label>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="s70_4" onchange="updateS14Progress()"><span class="task-text">Publish audit summary with prioritized corrective actions</span></label>
+                    </div>
+                </div>
+
+                <!-- Platform + Deployment Continuity -->
+                <div class="area-card">
+                    <div class="area-header" onclick="toggleArea('s14-platform')">
+                        <div class="area-title">🖥️ Platform &amp; Deployment Continuity <span class="area-count" id="count-s14-platform">0/10</span></div>
+                        <span id="arrow-s14-platform">▾</span>
+                    </div>
+                    <div class="area-body" id="s14-platform">
+                        <div class="task-group-label">TA-063 — EC2 disk cleanup after access recovery <span class="task-sub">carryover from deferred S13 scope</span></div>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="s63_7" onchange="updateS14Progress()"><span class="task-text">Recover AWS/EC2 access path and confirm admin-level SSH readiness</span></label>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="s63_8" onchange="updateS14Progress()"><span class="task-text">Capture pre-cleanup disk usage baseline with df -h and directory sizing</span></label>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="s63_9" onchange="updateS14Progress()"><span class="task-text">Remove safe-to-delete logs/cache/tmp artifacts per cleanup runbook</span></label>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="s63_10" onchange="updateS14Progress()"><span class="task-text">Restart/validate key services to confirm no regressions after cleanup</span></label>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="s63_11" onchange="updateS14Progress()"><span class="task-text">Capture post-cleanup disk usage and verify utilization target is met</span></label>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="s63_12" onchange="updateS14Progress()"><span class="task-text">Document cleanup commands, outcomes, and rollback notes in evidence log</span></label>
+
+                        <div class="task-group-label">TA-072 — Establish new AWS account continuity path</div>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="s72_1" onchange="updateS14Progress()"><span class="task-text">Provision and secure new AWS account access (MFA/billing validated)</span></label>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="s72_2" onchange="updateS14Progress()"><span class="task-text">Stand up or recover EC2 runtime with required network/security configuration</span></label>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="s72_3" onchange="updateS14Progress()"><span class="task-text">Update deployment credentials/workflow and verify pull + restart path</span></label>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="s72_4" onchange="updateS14Progress()"><span class="task-text">Validate app health and capture evidence from post-cutover environment</span></label>
+                    </div>
+                </div>
+
+            </div>
         </div>
     </div>
 
@@ -3255,7 +3370,14 @@
                     <span style="margin-left:auto; color:var(--muted); font-size:0.8rem;">May 4 – May 16</span>
                 </summary>
                 <div data-dod-list="14" style="padding:0 1.25rem 1rem; display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:0.4rem; margin-top:0.25rem;">
-                    <div class="dod-item">No DoD criteria entered yet. Use PM Definition of Done Entry above.</div>
+                    <div class="dod-item">TA-075 research completed with verifiable options matrix (Option A/B/C) and data-source mapping</div>
+                    <div class="dod-item">PM decision recorded: Option A effort-point model selected as canonical stakeholder metric</div>
+                    <div class="dod-item">Burndown now uses effort points as the unit (not raw subtask count)</div>
+                    <div class="dod-item">Burnup and velocity are both sourced from completed effort points by sprint</div>
+                    <div class="dod-item">Sprint timing is capacity-adjusted: weekends plus planned no-work days are excluded from burndown workday math</div>
+                    <div class="dod-item">Decision Log, backlog ticket history, and dashboard metric text all align on the same unit definition</div>
+                    <div class="dod-item">Budget and hours remain out of scope for delivery charts per stakeholder direction</div>
+                    <div class="dod-item">Dashboard loads and charts render without JavaScript errors after metric model update</div>
                 </div>
             </details>
 
@@ -4262,7 +4384,7 @@ function syncSprintViewStatuses() {
     }
     if (s14Text) {
         if (s14Status === 'active') {
-            s14Text.textContent = 'Sprint 14 is active. Define sprint scope and tasks for a clean-slate kickoff.';
+            s14Text.textContent = 'Sprint 14 is active. Execute committed ML retrain, validation, and platform continuity tickets.';
         } else if (s14Status === 'completed') {
             s14Text.textContent = 'Sprint 14 completed. Board is retained as archive history.';
         } else {
@@ -4355,18 +4477,23 @@ document.addEventListener('click', function(e) {
 
 /* ── SYNC DASHBOARD METRICS FROM CURRENT SPRINT TASKS ── */
 function syncDashMetrics() {
-    const metrics = getBoardCompletionCounts(CURRENT_DASH_SPRINT);
-    if (!metrics.total && !metrics.excluded) return;
-    const done = metrics.done;
-    const total = metrics.total;
-    const pct = metrics.pct;
+    const items = window.PB_ITEMS || [];
+    const pointMetrics = getCommittedSprintTicketCounts(items, CURRENT_DASH_SPRINT);
+    const boardMetrics = getBoardCompletionCounts(CURRENT_DASH_SPRINT);
+    const usePoints = pointMetrics.totalPoints > 0;
+
+    const done = usePoints ? pointMetrics.donePoints : boardMetrics.done;
+    const total = usePoints ? pointMetrics.totalPoints : boardMetrics.total;
+    const pct = usePoints ? pointMetrics.pctPoints : boardMetrics.pct;
     const pctEl = document.getElementById('dash-task-pct');
     const countEl = document.getElementById('dash-task-count');
     if (pctEl) pctEl.textContent = pct + '%';
     if (countEl) {
         if (total > 0) {
-            countEl.textContent = done + ' of ' + total + ' subtasks complete';
-        } else if (metrics.excluded > 0) {
+            countEl.textContent = usePoints
+                ? (done + ' of ' + total + ' effort points complete')
+                : (done + ' of ' + total + ' subtasks complete');
+        } else if (boardMetrics.excluded > 0) {
             countEl.textContent = '0 actionable subtasks (all deferred to backlog)';
         } else {
             countEl.textContent = 'Sprint Active';
@@ -4390,7 +4517,7 @@ function syncDashMetrics() {
 
 })();
 
-// Update days remaining dynamically — uses sprint workdays (Mon–Fri)
+// Update days remaining dynamically — uses sprint workdays with configured no-work date exclusions
 (function() {
     var today = new Date(); today.setHours(0,0,0,0);
     var releaseDate = new Date('2026-06-13');
@@ -4905,6 +5032,10 @@ const COMPLETED_TASKS = [
     's13_1', 's13_2', 's13_3', 's13_4', 's13_5',
     // TA-067 — Project Logbook system (Apr 20, complete)
     's67_1', 's67_2', 's67_3', 's67_4', 's67_5',
+    // TA-018 — winner retrain validation, execution, persistence, and smoke test (May 5)
+    's18_1', 's18_2', 's18_3', 's18_4',
+    // TA-070 — audit extraction through published corrective-action plan (May 4-5)
+    's70_1', 's70_2', 's70_3', 's70_4',
 ];
 const BLOCKED_TASKS = [
     's11_2', // TA-011 EC2 .env update blocked on SSH access
@@ -5049,6 +5180,20 @@ const TASK_DETAILS = {
     s58_1: { resolution:'Located broken SQL WINDOW clause in train_xgb_spread.py around the rolling feature window definitions.', date:'Apr 21, 2026', timestamp:'2026-04-21T18:36', updatedBy:'Claude + April review' },
     s58_2: { resolution:'Fixed missing closing parenthesis and duplicate OVER definition structure so SQL compiles through window feature section.', date:'Apr 21, 2026', timestamp:'2026-04-21T18:51', updatedBy:'Claude + April review' },
     s58_3: { resolution:'Executed ml/train_xgb_spread.load_data(schema=\'hcl\') against local database to validate the corrected SQL end-to-end; query executed without syntax errors and loaded 1,519 games.', date:'Apr 27, 2026', timestamp:'2026-04-27T19:15', updatedBy:'Copilot (local SQL execution evidence)' },
+    s21_1: { resolution:'Validated TA-021 duplicate scope closure against TA-057 evidence: winner training schema target was corrected from hcl_test to hcl (see s57_1).', date:'May 4, 2026', updatedBy:'Copilot (evidence mapping from TA-057)' },
+    s21_2: { resolution:'Confirmed no remaining active hcl_test mismatch in winner training execution path based on TA-057 verification evidence (see s57_2 and s57_3).', date:'May 4, 2026', updatedBy:'Copilot (evidence mapping from TA-057)' },
+    s21_3: { resolution:'Documented TA-021 as duplicate scope consolidated into completed TA-057 remediation trail.', date:'May 4, 2026', updatedBy:'Copilot (duplicate-consolidation evidence)' },
+    s22_1: { resolution:'Validated TA-022 duplicate scope closure against TA-058 evidence: broken SQL WINDOW clause was located and fixed (see s58_1 and s58_2).', date:'May 4, 2026', updatedBy:'Copilot (evidence mapping from TA-058)' },
+    s22_2: { resolution:'Confirmed spread-training dry-run SQL executes cleanly with no syntax errors based on TA-058 execution evidence (see s58_3).', date:'May 4, 2026', updatedBy:'Copilot (evidence mapping from TA-058)' },
+    s22_3: { resolution:'Documented TA-022 as duplicate scope consolidated into completed TA-058 remediation trail.', date:'May 4, 2026', updatedBy:'Copilot (duplicate-consolidation evidence)' },
+    s18_1: { resolution:'Executed scripts/verification/ta018_validate_winner_training_dataset.py --schema hcl and generated readiness artifacts (docs/sprints/ta018_winner_retrain/ta018_s18_1_20260505_005035_summary.json, docs/sprints/ta018_winner_retrain/ta018_s18_1_20260505_005035_report.md). Validation passed ready_for_retrain=True with schema alignment checks true (uses hcl, no hcl_test, required columns present) and non-zero split coverage: train<=2023=1,059, validation2024=269, test2025=256; dataset total=1,584 rows.', date:'May 5, 2026', timestamp:'2026-05-05T00:50', updatedBy:'Copilot (local TA-018 preflight evidence)' },
+    s18_2: { resolution:'Executed winner retrain pipeline via ml/train_xgb_winner.py with final timestamped run log capture (docs/sprints/ta018_winner_retrain/ta018_s18_2_20260504_175539_train_log.txt, includes python_exit_code=0). Published execution evidence artifacts (docs/sprints/ta018_winner_retrain/ta018_s18_2_20260504_175539_summary.json, docs/sprints/ta018_winner_retrain/ta018_s18_2_20260504_175539_report.md) with train accuracy 75.83%, validation accuracy 64.31%, test accuracy 62.89%, and refreshed model artifact timestamps for ml/models/xgb_winner.pkl and ml/models/xgb_winner_features.txt.', date:'May 5, 2026', timestamp:'2026-05-05T00:55', updatedBy:'Copilot (local TA-018 retrain execution evidence)' },
+    s18_3: { resolution:'Validated persisted winner artifacts at expected paths (ml/models/xgb_winner.pkl, ml/models/xgb_winner_features.txt) and published TA-018 s18_3 evidence artifacts (docs/sprints/ta018_winner_retrain/ta018_s18_3_20260504_183259_summary.json, docs/sprints/ta018_winner_retrain/ta018_s18_3_20260504_183259_report.md). Captured model metadata: size 225,661 bytes, modified 2026-05-04T17:55:42.159946, SHA256 abfbd796356f4da214dbe2c10ccc52f7f7ead23d1e45fea7515168e49363a35b. Captured feature metadata: size 271 bytes, feature_count=16, modified 2026-05-04T17:55:42.161445, SHA256 683a7276a0efd1d8342f04c5c9c2420a6c5a6cc992fe8f650cbf4e688cde9511. Validation checks passed (paths exist, non-empty files, non-zero feature count).', date:'May 4, 2026', timestamp:'2026-05-04T18:32', updatedBy:'Copilot (local TA-018 artifact-persistence evidence)' },
+    s18_4: { resolution:'Executed winner endpoint smoke test via Flask test client against /api/ml/predict-week/<season>/<week> with predictor lazy-load reset to validate refreshed artifact usage. Published TA-018 s18_4 evidence artifacts (docs/sprints/ta018_winner_retrain/ta018_s18_4_20260504_184635_summary.json, docs/sprints/ta018_winner_retrain/ta018_s18_4_20260504_184635_report.md). Selected smoke-test request season=2025 week=1 returned HTTP 200 with 16 predictions; predictor_loaded=true, loaded win model class XGBClassifier, loaded winner feature count=16. Winner artifact references matched persisted files: ml/models/xgb_winner.pkl SHA256 abfbd796356f4da214dbe2c10ccc52f7f7ead23d1e45fea7515168e49363a35b and ml/models/xgb_winner_features.txt SHA256 683a7276a0efd1d8342f04c5c9c2420a6c5a6cc992fe8f650cbf4e688cde9511.', date:'May 4, 2026', timestamp:'2026-05-04T18:46', updatedBy:'Copilot (local TA-018 endpoint smoke-test evidence)' },
+    s70_1: { resolution:'Executed scripts/verification/ta070_extract_prediction_actuals.py for seasons 2024-2025 against hcl schema and exported winner/spread/total datasets plus summary manifest under docs/sprints/ta070_audit_data (ta070_s70_1_20260504_225654_* artifacts). Extraction returned 272 completed-game rows (2024: 272, 2025: 0 in current ml_predictions snapshot).', date:'May 4, 2026', timestamp:'2026-05-04T22:56', updatedBy:'Copilot (local extraction evidence)' },
+    s70_2: { resolution:'Executed scripts/verification/ta070_compute_audit_metrics.py against docs/sprints/ta070_audit_data/ta070_s70_1_20260504_225654_combined.csv and generated season/week audit metrics artifacts (ta070_s70_2_20260504_230454_by_season.csv, ta070_s70_2_20260504_230454_by_week.csv, ta070_s70_2_20260504_230454_summary.json). Overall metrics from summary: winner accuracy 53.31% (145/272), spread accuracy 67.9% (184/271), margin MAE 12.084, total MAE 9.723 with predicted-score coverage 94.12% (256/272). Total pick accuracy coverage is 0.0% (0 evaluable rows) because current predicted total outcomes resolve to non-evaluable pushes in this snapshot.', date:'May 4, 2026', timestamp:'2026-05-04T23:04', updatedBy:'Copilot (local metric-computation evidence)' },
+    s70_3: { resolution:'Executed scripts/verification/ta070_root_cause_analysis.py against docs/sprints/ta070_audit_data/ta070_s70_1_20260504_225654_combined.csv and generated root-cause artifacts (ta070_s70_3_20260504_233539_summary.json, ta070_s70_3_20260504_233539_root_cause.md). Findings: F1 feature-engineering issue (predicted_total equals vegas_total for 256/256 rows; 0 evaluable total-pick rows), F2 leakage-validity risk (predicted_at > game_date for 256/272 rows, 94.12%), F3 label-consistency issue (negative actual_margin rows=0 despite 129 away wins in games table), and F4 high weekly volatility without directional drift (winner accuracy range 28.57%-81.25%, stddev 14.683; weeks 1-9 53.62% vs weeks 10-18 52.99%).', date:'May 4, 2026', timestamp:'2026-05-04T23:35', updatedBy:'Copilot (local root-cause evidence)' },
+    s70_4: { resolution:'Executed scripts/verification/ta070_publish_audit_summary.py and published final TA-070 audit summary with prioritized corrective actions: ta070_s70_4_20260505_002350_summary.json and ta070_s70_4_20260505_002350_audit_summary.md. Publication includes baseline metrics (winner 53.31%, spread 67.9%, margin MAE 12.084, total MAE 9.723, total evaluable coverage 0.0%) and prioritized remediation plan A1-A5 (P0 leakage-safe evaluation windows + prediction provenance, P0 total-model decoupling from vegas_total, P1 signed-margin label standardization, P1 automated TA-070 guardrails, P2 week-volatility stabilization diagnostics).', date:'May 4, 2026', timestamp:'2026-05-05T00:23', updatedBy:'Copilot (local summary-publication evidence)' },
     s59_1: { resolution:'Removed hardcoded season=2025 defaults from api_routes_hcl.py route logic and shifted to dynamic season handling path.', date:'Apr 21, 2026', timestamp:'2026-04-21T19:18', updatedBy:'Claude + April review' },
     s59_2: { resolution:'Updated api_routes_ml.py defaults to avoid fixed 2025 and resolve season from explicit query param or latest completed season from hcl.games.', date:'Apr 27, 2026', timestamp:'2026-04-27T13:03', updatedBy:'Claude (local diff evidence)' },
     s59_3: { resolution:'Updated api_routes_live_scores.py prediction and scoreboard season handling to remove fixed 2025 fallback and resolve dynamically via latest completed season.', date:'Apr 27, 2026', timestamp:'2026-04-27T12:44', updatedBy:'Claude (local diff evidence)' },
@@ -5082,6 +5227,8 @@ const TASK_DETAILS = {
     s67_4: { resolution:'Deployed Project Logbook tab experience into dashboard navigation and validated end-user rendering path.', date:'Apr 20, 2026', timestamp:'2026-04-20T15:29', updatedBy:'Claude + April review' },
     s67_5: { resolution:'Added section reference panel for Sections 1-12 to improve contextual navigation while reviewing logbook entries.', date:'Apr 20, 2026', timestamp:'2026-04-20T15:42', updatedBy:'Claude + April review' },
     ta_parent_ta_060: { resolution:'Completed TA-060 by implementing upcoming week detection in ml/predict_ensemble.py. Added EnsemblePredictor.predict_upcoming() to find the next season/week with unplayed games and wired CLI --upcoming to run that path instead of exiting with TODO.', date:'May 4, 2026', timestamp:'2026-05-04T13:05', updatedBy:'Copilot (code diff + local verification evidence)' },
+    ta_parent_ta_021: { resolution:'Closed as duplicate scope of TA-057. TA-057 evidence confirms winner-training schema mismatch (hcl_test -> hcl) was fixed and verified.', date:'May 4, 2026', updatedBy:'Copilot (parent-ticket consolidation evidence)' },
+    ta_parent_ta_022: { resolution:'Closed as duplicate scope of TA-058. TA-058 evidence confirms broken spread-training SQL WINDOW clause was fixed and execution validated.', date:'May 4, 2026', updatedBy:'Copilot (parent-ticket consolidation evidence)' },
     ta_parent_dsh_011: { resolution:'Completed DSH-011 by moving PM4 dashboard publish source to pmforge_dashboard/index.html, deprecating legacy Dashboard/index.html as active source, and aligning docs/release/backlog references to the new source-of-truth path. Validation included local runtime load checks and source-path consistency verification across dashboard process docs.', date:'May 1, 2026', timestamp:'2026-05-01T13:48', updatedBy:'Copilot (source-path transition evidence)' },
     s69_1: { resolution:'Located and confirmed the premature return in compute_rolling_features before final feature sanitation/computation block.', date:'Apr 22, 2026', timestamp:'2026-04-22T11:08', updatedBy:'Claude + April review' },
     s69_2: { resolution:'Moved return to run after differential computation plus NaN/inf handling so full feature set is produced.', date:'Apr 22, 2026', timestamp:'2026-04-22T11:15', updatedBy:'Claude + April review' },
@@ -5108,29 +5255,76 @@ function updateProgress() {
 }
 
 function updateS13Progress() {
+    updateSprintBoardProgress(13);
+}
+
+function updateS14Progress() {
+    updateSprintBoardProgress(14);
+}
+
+function updateSprintBoardProgress(sprintNum, options) {
+    options = options || {};
+    var n = parseInt(sprintNum, 10);
+    if (isNaN(n)) return;
+
     if (!window.__TASK_STATE_SYNC_ACTIVE && typeof syncTaskStatesFromData === 'function') {
         syncTaskStatesFromData();
         return;
     }
 
-    var metrics = getBoardCompletionCounts(13);
+    var metrics = getBoardCompletionCounts(n);
     var done = metrics.done;
     var total = metrics.total;
     var pct = metrics.pct;
-    var fill = document.getElementById('s13-fill');
-    var pctEl = document.getElementById('s13-pct');
-    var countEl = document.getElementById('s13-count');
+    var fill = document.getElementById('s' + n + '-fill');
+    var pctEl = document.getElementById('s' + n + '-pct');
+    var countEl = document.getElementById('s' + n + '-count');
+
+    if (!fill && !pctEl && !countEl) return;
+
     if (fill) fill.style.width = pct + '%';
     if (pctEl) pctEl.textContent = pct + '%';
+
     if (countEl) {
         if (metrics.excluded > 0) {
-            countEl.textContent = done + ' of ' + total + ' Sprint 13 subtasks complete (' + metrics.excluded + ' deferred to backlog)';
+            countEl.textContent = done + ' of ' + total + ' Sprint ' + n + ' subtasks complete (' + metrics.excluded + ' deferred to backlog)';
         } else {
-            countEl.textContent = done + ' of ' + total + ' Sprint 13 subtasks complete';
+            countEl.textContent = done + ' of ' + total + ' Sprint ' + n + ' subtasks complete';
         }
     }
-    syncDashMetrics();
-    if (!window.__TASK_STATE_SYNC_ACTIVE && typeof window.renderTaskTracker === 'function') window.renderTaskTracker();
+
+    if (!options.skipMetrics) syncDashMetrics();
+    if (!options.skipTracker && !window.__TASK_STATE_SYNC_ACTIVE && typeof window.renderTaskTracker === 'function') {
+        window.renderTaskTracker();
+    }
+}
+
+function getSprintNumsWithProgressWidgets() {
+    var seen = new Set();
+    if (Array.isArray(SPRINT_SCHEDULE)) {
+        SPRINT_SCHEDULE.forEach(function(s) {
+            if (s && typeof s.num !== 'undefined') seen.add(parseInt(s.num, 10));
+        });
+    }
+
+    document.querySelectorAll('[id^="s"][id$="-fill"], [id^="s"][id$="-pct"], [id^="s"][id$="-count"]').forEach(function(el) {
+        var match = String(el.id || '').match(/^s(\d+)-(fill|pct|count)$/);
+        if (match) seen.add(parseInt(match[1], 10));
+    });
+
+    return Array.from(seen).filter(function(n) { return !isNaN(n); }).sort(function(a, b) { return a - b; });
+}
+
+function updateAllSprintBoardProgress(options) {
+    options = options || {};
+    getSprintNumsWithProgressWidgets().forEach(function(n) {
+        updateSprintBoardProgress(n, { skipMetrics: true, skipTracker: true });
+    });
+
+    if (!options.skipMetrics) syncDashMetrics();
+    if (!options.skipTracker && !window.__TASK_STATE_SYNC_ACTIVE && typeof window.renderTaskTracker === 'function') {
+        window.renderTaskTracker();
+    }
 }
 
 function normalizeBacklogStatus(status) {
@@ -5149,7 +5343,7 @@ function hasActiveBlockedMarker(detailText) {
 }
 
 function hydrateTaskTaMapFromBoards() {
-    document.querySelectorAll('#sprint13-board .task-group-label').forEach(function(groupEl) {
+    document.querySelectorAll('[id^="sprint"][id$="-board"] .task-group-label').forEach(function(groupEl) {
         var taMatch = String(groupEl.textContent || '').match(/TA-\d+/i);
         if (!taMatch) return;
         var taId = taMatch[0].toUpperCase();
@@ -5188,7 +5382,7 @@ function computeRuntimeTaskState() {
     hydrateTaskTaMapFromBoards();
     var doneSet = new Set();
     var blockedSet = new Set();
-    var cbs = document.querySelectorAll('#sprint12-board input[type="checkbox"], #sprint13-board input[type="checkbox"]');
+    var cbs = document.querySelectorAll('[id^="sprint"][id$="-board"] input[type="checkbox"]');
 
     cbs.forEach(function(cb) {
         var taskId = cb.id;
@@ -5230,7 +5424,7 @@ function computeRuntimeTaskState() {
 }
 
 function applyTaskStateToBoards() {
-    document.querySelectorAll('#sprint12-board .task-item, #sprint13-board .task-item').forEach(function(item) {
+    document.querySelectorAll('[id^="sprint"][id$="-board"] .task-item').forEach(function(item) {
         var cb = item.querySelector('input[type="checkbox"]');
         if (!cb || !cb.id) return;
 
@@ -5272,8 +5466,8 @@ function syncTaskStatesFromData(options) {
 
         if (!options.skipProgress) {
             updateProgress();
-            updateS13Progress();
-            Object.keys(AREA_TOTALS).forEach(updateAreaCount);
+            updateAllSprintBoardProgress({ skipMetrics: true, skipTracker: true });
+            updateAllAreaCounts();
             syncDashMetrics();
         }
         if (!options.skipTracker && typeof window.renderTaskTracker === 'function') {
@@ -5290,10 +5484,18 @@ function syncTaskStatesFromData(options) {
 function updateAreaCount(areaId) {
     const area = document.getElementById(areaId);
     if (!area) return;
-    const total = AREA_TOTALS[areaId] || 0;
+    const configuredTotal = AREA_TOTALS[areaId];
+    const discoveredTotal = area.querySelectorAll('input[type="checkbox"]').length;
+    const total = typeof configuredTotal === 'number' ? configuredTotal : discoveredTotal;
     const done = area.querySelectorAll('input[type="checkbox"]:checked').length;
     const countEl = document.getElementById('count-' + areaId);
     if (countEl) countEl.textContent = done + '/' + total;
+}
+
+function updateAllAreaCounts() {
+    document.querySelectorAll('.area-body[id]').forEach(function(area) {
+        updateAreaCount(area.id);
+    });
 }
 
 function toggleArea(areaId) {
@@ -5639,15 +5841,37 @@ function wireParentTaskGroups(boardId, sprintLabel) {
     });
 }
 
+function getSprintTaskBoardIds() {
+    var ids = [];
+    document.querySelectorAll('[id^="sprint"][id$="-board"]').forEach(function(el) {
+        if (!el || !el.id) return;
+        if (/^sprint\d+-board$/.test(el.id)) ids.push(el.id);
+    });
+
+    ids.sort(function(a, b) {
+        var aMatch = a.match(/^sprint(\d+)-board$/);
+        var bMatch = b.match(/^sprint(\d+)-board$/);
+        var aNum = aMatch ? parseInt(aMatch[1], 10) : Number.MAX_SAFE_INTEGER;
+        var bNum = bMatch ? parseInt(bMatch[1], 10) : Number.MAX_SAFE_INTEGER;
+        return aNum - bNum;
+    });
+
+    return ids;
+}
+
 function initTasks() {
-    wireTaskBoard('sprint12-board', 'Sprint 12');
-    wireTaskBoard('sprint13-board', 'Sprint 13');
-    wireParentTaskGroups('sprint13-board', 'Sprint 13');
+    getSprintTaskBoardIds().forEach(function(boardId) {
+        var match = boardId.match(/^sprint(\d+)-board$/);
+        var sprintLabel = match ? ('Sprint ' + match[1]) : boardId;
+        wireTaskBoard(boardId, sprintLabel);
+        wireParentTaskGroups(boardId, sprintLabel);
+    });
+
     if (typeof syncTaskStatesFromData === 'function') syncTaskStatesFromData({ skipTracker: true });
     else {
         updateProgress();
-        updateS13Progress();
-        Object.keys(AREA_TOTALS).forEach(updateAreaCount);
+        updateAllSprintBoardProgress({ skipMetrics: true, skipTracker: true });
+        updateAllAreaCounts();
         syncDashMetrics();
     }
     if (typeof loadSprintDashboard === 'function') loadSprintDashboard(CURRENT_DASH_SPRINT);
@@ -5975,17 +6199,156 @@ function computeLiveTaskCounts(sprintNum) {
     };
 }
 
+function getPriorityRank(priority) {
+    var p = String(priority || '').trim().toLowerCase();
+    if (p === 'critical') return 0;
+    if (p === 'high') return 1;
+    if (p === 'medium') return 2;
+    if (p === 'low') return 3;
+    return 4;
+}
+
+function getStatusRank(status) {
+    var s = normalizeBacklogStatus(status);
+    if (s === 'blocked') return 0;
+    if (s === 'in sprint') return 1;
+    if (s === 'backlog') return 2;
+    return 3;
+}
+
+function isBlockedBacklogStatus(status) {
+    return normalizeBacklogStatus(status) === 'blocked';
+}
+
+function getBlockerVisualPriority(item) {
+    var pri = String(item && item.pri || '').trim().toLowerCase();
+    if (isBlockedBacklogStatus(item && item.status) || pri === 'critical') {
+        return { badgeLabel: 'P1', badgeClass: 'p1', rowClass: 'sev-p1' };
+    }
+    if (pri === 'high') {
+        return { badgeLabel: 'P2', badgeClass: 'p2', rowClass: 'sev-p2' };
+    }
+    if (pri === 'medium') {
+        return { badgeLabel: 'P3', badgeClass: 'p2', rowClass: 'sev-p2' };
+    }
+    return { badgeLabel: 'P4', badgeClass: 'p2', rowClass: 'sev-p2' };
+}
+
+function compactText(str, maxLen) {
+    var text = String(str || '').replace(/\s+/g, ' ').trim();
+    if (!maxLen || text.length <= maxLen) return text;
+    return text.slice(0, Math.max(0, maxLen - 1)).replace(/\s+$/, '') + '…';
+}
+
+function formatIsoDateShort(value) {
+    var raw = String(value || '').trim();
+    if (!raw) return '';
+    var d = new Date(raw);
+    if (!isNaN(d.getTime())) {
+        return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    }
+    if (raw.length >= 10) return raw.slice(0, 10);
+    return raw;
+}
+
+function sortBlockerCandidates(list, sprintTag) {
+    return (list || []).slice().sort(function(a, b) {
+        var aSprint = String(a && a.sprint || '').trim().toUpperCase();
+        var bSprint = String(b && b.sprint || '').trim().toUpperCase();
+        var aCurrent = aSprint === sprintTag ? 0 : 1;
+        var bCurrent = bSprint === sprintTag ? 0 : 1;
+        if (aCurrent !== bCurrent) return aCurrent - bCurrent;
+
+        var aStatus = getStatusRank(a && a.status);
+        var bStatus = getStatusRank(b && b.status);
+        if (aStatus !== bStatus) return aStatus - bStatus;
+
+        var aPri = getPriorityRank(a && a.pri);
+        var bPri = getPriorityRank(b && b.pri);
+        if (aPri !== bPri) return aPri - bPri;
+
+        return String(a && a.id || '').localeCompare(String(b && b.id || ''));
+    });
+}
+
+function getBlockerCardsForSprint(sprintNum, maxCards) {
+    var selectedSprint = parseInt(sprintNum, 10);
+    if (isNaN(selectedSprint)) selectedSprint = parseInt(CURRENT_DASH_SPRINT, 10) || getCurrentSprint();
+    var sprintTag = 'S' + selectedSprint;
+    var items = (window.PB_ITEMS || []).filter(function(item) {
+        return !isDoneBacklogStatus(item && item.status)
+            && String(item && item.sprint || '').trim().toUpperCase() === sprintTag;
+    });
+    if (!items.length) return [];
+
+    var blocked = sortBlockerCandidates(items.filter(function(item) {
+        return isBlockedBacklogStatus(item && item.status);
+    }), sprintTag);
+
+    var inSprintTop = sortBlockerCandidates(items.filter(function(item) {
+        return String(item && item.sprint || '').trim().toUpperCase() === sprintTag
+            && !isBlockedBacklogStatus(item && item.status);
+    }), sprintTag);
+
+    var limit = Math.max(1, Number(maxCards) || 4);
+    var result = [];
+    var seen = new Set();
+
+    [blocked, inSprintTop].forEach(function(group) {
+        group.forEach(function(item) {
+            var id = String(item && item.id || '').toUpperCase();
+            if (!id || seen.has(id) || result.length >= limit) return;
+            seen.add(id);
+            result.push(item);
+        });
+    });
+
+    return result;
+}
+
+function refreshOpenBlockersList(sprintNum) {
+    var host = document.getElementById('dash-blocker-list');
+    if (!host) return;
+
+    var cards = getBlockerCardsForSprint(sprintNum, 4);
+    if (!cards.length) {
+        host.innerHTML = '<div class="blocker-item sev-p2"><div><div class="blocker-badge p2">P2</div><div class="blocker-desc">No open blockers or top tasks are available for the selected sprint yet.</div><div class="blocker-file">Cards will populate automatically from Product Backlog data.</div></div><div class="blocker-sprint">S' + String(sprintNum || CURRENT_DASH_SPRINT || '') + '</div></div>';
+        return;
+    }
+
+    host.innerHTML = cards.map(function(item) {
+        var ui = getBlockerVisualPriority(item);
+        var sprintLabel = String(item && item.sprint || 'TBD').trim().toUpperCase() || 'TBD';
+        var statusLabel = String(item && item.status || 'Backlog').trim() || 'Backlog';
+        var updatedShort = formatIsoDateShort(item && item.updatedAt);
+        var detailLine = compactText((item && item.id ? item.id + ' ' : '') + String(item && item.feature || ''), 220);
+        var meta = 'Status: ' + statusLabel;
+        if (item && item.cat) meta += ' · ' + String(item.cat);
+        if (updatedShort) meta += ' · Updated ' + updatedShort;
+
+        return '<div class="blocker-item ' + ui.rowClass + '">'
+            + '<div><div class="blocker-badge ' + ui.badgeClass + '">' + ui.badgeLabel + '</div>'
+            + '<div class="blocker-desc">' + escHtml(detailLine) + '</div>'
+            + '<div class="blocker-file">' + escHtml(meta) + '</div></div>'
+            + '<div class="blocker-sprint">' + escHtml(sprintLabel) + '</div>'
+            + '</div>';
+    }).join('');
+}
+
 // Override p1/open counts after PB_ITEMS is populated
 function refreshBlockerCounts(skipDashboardRefresh) {
+    var selectedSprint = parseInt(CURRENT_DASH_SPRINT, 10);
+    if (isNaN(selectedSprint)) selectedSprint = getCurrentSprint();
+
     var counts = computeLiveTaskCounts();
     var el;
     el = document.getElementById('dash-p1-count'); if (el) el.textContent = counts.p1Count;
     el = document.getElementById('dash-p1-sub');   if (el) el.textContent = counts.p1Sub;
     el = document.getElementById('dash-open-count'); if (el) el.textContent = counts.openCount;
     el = document.getElementById('dash-open-sub');   if (el) el.textContent = counts.openSub;
+    refreshOpenBlockersList(selectedSprint);
 
     if (skipDashboardRefresh) return;
-    var selectedSprint = parseInt(CURRENT_DASH_SPRINT, 10);
     if (!isNaN(selectedSprint) && selectedSprint === getCurrentSprint() && typeof loadSprintDashboard === 'function') {
         loadSprintDashboard(selectedSprint);
     }
@@ -6024,6 +6387,23 @@ function isDoneBacklogStatus(status) {
     return String(status || '').trim().toLowerCase() === 'done';
 }
 
+var EFFORT_POINT_MAP = {
+    XS: 1,
+    S: 2,
+    M: 3,
+    L: 5,
+    XL: 8
+};
+
+function getEffortPoints(effort) {
+    var key = String(effort || '').trim().toUpperCase();
+    if (Object.prototype.hasOwnProperty.call(EFFORT_POINT_MAP, key)) {
+        return EFFORT_POINT_MAP[key];
+    }
+    var parsed = Number(key);
+    return isNaN(parsed) || parsed < 0 ? 0 : parsed;
+}
+
 function getOpenSeverityCounts(items) {
     var counts = [0, 0, 0, 0];
     (items || []).forEach(function(item) {
@@ -6037,13 +6417,6 @@ function getOpenSeverityCounts(items) {
     return counts;
 }
 
-function getDoneTicketsForSprint(items, sprintNum) {
-    var sprintTag = 'S' + sprintNum;
-    return (items || []).filter(function(item) {
-        return String(item.sprint || '').trim().toUpperCase() === sprintTag && isDoneBacklogStatus(item.status);
-    }).length;
-}
-
 function getCommittedSprintTicketCounts(items, sprintNum) {
     var sprintTag = 'S' + sprintNum;
     var committed = (items || []).filter(function(item) {
@@ -6051,9 +6424,79 @@ function getCommittedSprintTicketCounts(items, sprintNum) {
     });
     var done = committed.filter(function(item) { return isDoneBacklogStatus(item.status); }).length;
     var total = committed.length;
+    var totalPoints = 0;
+    var donePoints = 0;
+
+    committed.forEach(function(item) {
+        var points = getEffortPoints(item.effort);
+        totalPoints += points;
+        if (isDoneBacklogStatus(item.status)) donePoints += points;
+    });
+
     var remaining = Math.max(0, total - done);
+    var remainingPoints = Math.max(0, totalPoints - donePoints);
     var pct = total > 0 ? Math.round((done / total) * 100) : 0;
-    return { total: total, done: done, remaining: remaining, pct: pct };
+    var pctPoints = totalPoints > 0 ? Math.round((donePoints / totalPoints) * 100) : 0;
+    return {
+        total: total,
+        done: done,
+        remaining: remaining,
+        pct: pct,
+        totalPoints: totalPoints,
+        donePoints: donePoints,
+        remainingPoints: remainingPoints,
+        pctPoints: pctPoints
+    };
+}
+
+function recomputeBurnupSeriesFromBacklog(snapshot, items) {
+    if (!snapshot || !snapshot.burnup || !Array.isArray(snapshot.burnup.labels)) return;
+
+    var labels = snapshot.burnup.labels;
+    if (!labels.length) return;
+
+    var scope = Array.isArray(snapshot.burnup.scope) ? snapshot.burnup.scope.slice() : [];
+    var completed = Array.isArray(snapshot.burnup.completed) ? snapshot.burnup.completed.slice() : [];
+
+    for (var idx = 0; idx < labels.length; idx++) {
+        var prevScope = idx > 0 ? Number(scope[idx - 1] || 0) : 0;
+        var prevCompleted = idx > 0 ? Number(completed[idx - 1] || 0) : 0;
+
+        while (scope.length <= idx) scope.push(prevScope);
+        while (completed.length <= idx) completed.push(prevCompleted);
+
+        var labelSprint = parseSprintNumberFromLabel(labels[idx]);
+        if (isNaN(labelSprint)) continue;
+
+        var liveCounts = getCommittedSprintTicketCounts(items, labelSprint);
+        if (liveCounts.totalPoints <= 0) continue;
+
+        scope[idx] = prevScope + liveCounts.totalPoints;
+        completed[idx] = prevCompleted + liveCounts.donePoints;
+    }
+
+    snapshot.burnup.scope = scope;
+    snapshot.burnup.completed = completed;
+}
+
+function syncVelocitySeriesFromBacklog(snapshot, items, upToSprint) {
+    if (!snapshot || !snapshot.velocity || !Array.isArray(snapshot.velocity.labels)) return;
+
+    var data = Array.isArray(snapshot.velocity.data) ? snapshot.velocity.data.slice() : [];
+
+    snapshot.velocity.labels.forEach(function(label, idx) {
+        var labelSprint = parseSprintNumberFromLabel(label);
+        if (isNaN(labelSprint)) return;
+        if (typeof upToSprint === 'number' && labelSprint > upToSprint) return;
+
+        var liveCounts = getCommittedSprintTicketCounts(items, labelSprint);
+        if (liveCounts.totalPoints <= 0) return;
+
+        while (data.length <= idx) data.push(0);
+        data[idx] = liveCounts.donePoints;
+    });
+
+    snapshot.velocity.data = data;
 }
 
 function parseSprintNumberFromLabel(label) {
@@ -6064,6 +6507,27 @@ function parseSprintNumberFromLabel(label) {
 function isWeekendDate(date) {
     var day = date.getDay();
     return day === 0 || day === 6;
+}
+
+// Sprint-specific non-work dates (in addition to weekends) so solo-student capacity
+// is represented honestly in burndown timing.
+var SPRINT_NON_WORK_DATES = {
+    14: ['2026-05-08']
+};
+
+function toLocalIsoDate(dateObj) {
+    var d = new Date(dateObj);
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+
+function getSprintNonWorkDateSet(sprintNum) {
+    var n = parseInt(sprintNum, 10);
+    if (isNaN(n)) return new Set();
+    return new Set((SPRINT_NON_WORK_DATES[n] || []).map(function(ds) { return String(ds).trim(); }));
+}
+
+function isSprintNonWorkDate(sprintNum, dateObj) {
+    return getSprintNonWorkDateSet(sprintNum).has(toLocalIsoDate(dateObj));
 }
 
 function getWorkdayDatesInRange(startDate, endDate) {
@@ -6102,7 +6566,13 @@ function getSprintDayContext(sprintNum, referenceDate) {
     var today = referenceDate ? new Date(referenceDate) : new Date();
     today.setHours(0,0,0,0);
 
-    var workdayDates = getWorkdayDatesInRange(start, end);
+    var allWorkdayDates = getWorkdayDatesInRange(start, end);
+    var excludedWorkdayDates = allWorkdayDates.filter(function(d) {
+        return isSprintNonWorkDate(sprintNum, d);
+    });
+    var workdayDates = allWorkdayDates.filter(function(d) {
+        return !isSprintNonWorkDate(sprintNum, d);
+    });
     var totalDays = Math.max(1, workdayDates.length);
     var elapsedDays = workdayDates.filter(function(d) { return d <= today; }).length;
     var dayNum = Math.min(totalDays, Math.max(1, elapsedDays));
@@ -6113,6 +6583,8 @@ function getSprintDayContext(sprintNum, referenceDate) {
         startDate: start,
         endDate: end,
         workdayDates: workdayDates,
+        excludedWorkdayDates: excludedWorkdayDates,
+        excludedWorkdayCount: excludedWorkdayDates.length,
         elapsedDays: elapsedDays,
         totalDays: totalDays,
         dayNum: dayNum,
@@ -6201,9 +6673,17 @@ function buildActiveSprintSnapshot(sprintNum, archiveSnapshot) {
     var board = getBoardCompletionCounts(sprintNum);
     var ticketCounts = getCommittedSprintTicketCounts(items, sprintNum);
     var useTicketFallback = board.total === 0 && ticketCounts.total > 0;
-    var progress = useTicketFallback ? ticketCounts : board;
+    var progressBySubtasks = useTicketFallback ? ticketCounts : board;
+    var pointProgress = {
+        total: ticketCounts.totalPoints,
+        done: ticketCounts.donePoints,
+        remaining: ticketCounts.remainingPoints,
+        pct: ticketCounts.pctPoints
+    };
+    var usePointBurndown = pointProgress.total > 0;
+    var burndownProgress = usePointBurndown ? pointProgress : progressBySubtasks;
     var dayCtx = getSprintDayContext(sprintNum);
-    var doneTickets = getDoneTicketsForSprint(items, sprintNum);
+    var doneEffortPoints = ticketCounts.donePoints;
     var severity = getOpenSeverityCounts(items);
 
     var sprintMeta = (SPRINT_SCHEDULE || []).find(function(sp) { return sp.num === sprintNum; }) || null;
@@ -6212,24 +6692,31 @@ function buildActiveSprintSnapshot(sprintNum, archiveSnapshot) {
     snapshot.status = 'active';
     snapshot.metrics.sprintNum = String(sprintNum);
     snapshot.metrics.sprintSub = 'of ' + SPRINT_SCHEDULE.length + ' total · ' + sprintTheme;
-    snapshot.burndownTitle = 'Burndown — Sprint ' + sprintNum;
+    snapshot.burndownTitle = usePointBurndown
+        ? ('Burndown (Effort Points) — Sprint ' + sprintNum)
+        : ('Burndown — Sprint ' + sprintNum);
 
     snapshot.p1Count = counts.p1Count;
     snapshot.p1Sub = counts.p1Sub;
     snapshot.openCount = counts.openCount;
     snapshot.openSub = counts.openSub;
 
-    if (progress.total > 0) {
-        snapshot.metrics.taskPct = progress.pct + '%';
-        snapshot.metrics.taskCount = useTicketFallback
-            ? (progress.done + ' of ' + progress.total + ' sprint tickets complete (auto from backlog until board subtasks are added)')
-            : (progress.done + ' of ' + progress.total + ' subtasks complete');
+    if (burndownProgress.total > 0) {
+        snapshot.metrics.taskPct = burndownProgress.pct + '%';
+        snapshot.metrics.taskCount = usePointBurndown
+            ? (burndownProgress.done + ' of ' + burndownProgress.total + ' effort points complete')
+            : (progressBySubtasks.done + ' of ' + progressBySubtasks.total + (useTicketFallback
+                ? ' sprint tickets complete (auto from backlog until board subtasks are added)'
+                : ' subtasks complete'));
     }
 
     if (dayCtx) {
         var endLabel = dayCtx.endDate.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+        var noWorkSuffix = dayCtx.excludedWorkdayCount > 0
+            ? (' · ' + dayCtx.excludedWorkdayCount + ' planned no-work day' + (dayCtx.excludedWorkdayCount === 1 ? '' : 's') + ' excluded')
+            : '';
         snapshot.metrics.daysVal = String(dayCtx.remainingDays);
-        snapshot.metrics.daysSub = 'Sprint ends ' + endLabel + ' · weekends excluded';
+        snapshot.metrics.daysSub = 'Sprint ends ' + endLabel + ' · weekends excluded' + noWorkSuffix;
     }
 
     var legacyActual = Array.isArray(snapshot.burndown.actual) ? snapshot.burndown.actual : [];
@@ -6248,57 +6735,69 @@ function buildActiveSprintSnapshot(sprintNum, archiveSnapshot) {
         }
     }
 
-    if (progress.total > 0) {
+    var startAnchorActive = false;
+    if (burndownProgress.total > 0) {
         var dayIndex = Math.max(0, Math.min(idealLen - 1, (dayCtx ? dayCtx.dayNum : 1) - 1));
-        actual[dayIndex] = progress.remaining;
-        for (var j = dayIndex + 1; j < idealLen; j++) actual[j] = null;
-        snapshot.burndown.ideal = buildIdealBurndownSeries(progress.total, idealLen);
+
+        // Add a start anchor when early-sprint actuals are sparse so the chart
+        // renders a visible trend line instead of a lone point.
+        if (dayIndex === 0 && idealLen > 1) {
+            actual[0] = burndownProgress.total;
+            actual[1] = burndownProgress.remaining;
+            for (var j = 2; j < idealLen; j++) actual[j] = null;
+            startAnchorActive = true;
+        } else {
+            var hasPriorActual = actual.slice(0, dayIndex).some(function(v) { return typeof v === 'number'; });
+            if (!hasPriorActual && idealLen > 0) {
+                actual[0] = burndownProgress.total;
+                startAnchorActive = true;
+            }
+            actual[dayIndex] = burndownProgress.remaining;
+            for (var k = dayIndex + 1; k < idealLen; k++) actual[k] = null;
+        }
+
+        snapshot.burndown.ideal = buildIdealBurndownSeries(burndownProgress.total, idealLen);
     }
 
     snapshot.burndown.actual = actual;
-    snapshot.burndown.max = Math.max(snapshot.burndown.max || 0, progress.total || 0, 10);
+    snapshot.burndown.max = Math.max(snapshot.burndown.max || 0, burndownProgress.total || 0, 10);
 
-    var burnupIndex = snapshot.burnup.labels.length
-        ? snapshot.burnup.labels.length - 1
-        : Math.max(0, snapshot.burnup.completed.length - 1);
-    if (burnupIndex >= 0) {
-        var burnupPrev = burnupIndex > 0 ? Number(snapshot.burnup.completed[burnupIndex - 1] || 0) : 0;
-        while (snapshot.burnup.completed.length <= burnupIndex) snapshot.burnup.completed.push(burnupPrev);
-        snapshot.burnup.completed[burnupIndex] = burnupPrev + doneTickets;
-    }
+    recomputeBurnupSeriesFromBacklog(snapshot, items);
 
     var velocityIndex = typeof snapshot.velocity.activeIndex === 'number'
         ? snapshot.velocity.activeIndex
         : (snapshot.velocity.data.length ? snapshot.velocity.data.length - 1 : 0);
     if (velocityIndex >= 0) {
         while (snapshot.velocity.data.length <= velocityIndex) snapshot.velocity.data.push(0);
-        snapshot.velocity.data[velocityIndex] = doneTickets;
+        snapshot.velocity.data[velocityIndex] = doneEffortPoints;
         snapshot.velocity.activeIndex = velocityIndex;
     }
 
-    // Keep prior sprint bars aligned with live backlog completion so historical bars
-    // do not drop to zero when current sprint snapshots still carry stale defaults.
-    if (Array.isArray(snapshot.velocity.labels) && Array.isArray(snapshot.velocity.data)) {
-        snapshot.velocity.labels.forEach(function(label, idx) {
-            var labelSprint = parseSprintNumberFromLabel(label);
-            if (isNaN(labelSprint) || labelSprint >= sprintNum) return;
-            var historicalDone = getDoneTicketsForSprint(items, labelSprint);
-            if (historicalDone > 0) {
-                while (snapshot.velocity.data.length <= idx) snapshot.velocity.data.push(0);
-                snapshot.velocity.data[idx] = historicalDone;
-            }
-        });
-    }
+    syncVelocitySeriesFromBacklog(snapshot, items, sprintNum);
 
     snapshot.severity = severity;
 
     var dayLabel = dayCtx ? ('Workday ' + dayCtx.dayNum + ' of ' + dayCtx.totalDays) : 'in progress';
-    snapshot.rag.msg = 'Sprint ' + sprintNum + ' active · ' + dayLabel + ' · ' + progress.done + ' of ' + progress.total + (useTicketFallback ? ' sprint tickets complete' : ' subtasks complete') + ' · ' + counts.p1Count + ' blocked · ' + counts.openCount + ' open';
+    var completionSummary = usePointBurndown
+        ? (pointProgress.done + ' of ' + pointProgress.total + ' effort points complete')
+        : (progressBySubtasks.done + ' of ' + progressBySubtasks.total + (useTicketFallback ? ' sprint tickets complete' : ' subtasks complete'));
+    snapshot.rag.msg = 'Sprint ' + sprintNum + ' active · ' + dayLabel + ' · ' + completionSummary + ' · ' + counts.p1Count + ' blocked · ' + counts.openCount + ' open';
     snapshot.rag.detail = 'Updated from live board/backlog state';
 
-    snapshot.burndownInsight = '<strong>S' + sprintNum + ' status:</strong> ' + dayLabel + '. ' + progress.done + ' of ' + progress.total + (useTicketFallback ? ' sprint tickets complete (board subtasks not populated yet).' : ' subtasks complete.') + ' ' + progress.remaining + ' remaining.';
-    snapshot.burnupInsight = '<strong>S' + sprintNum + ' scope:</strong> ' + progress.total + (useTicketFallback ? ' committed sprint tickets are currently assigned in Product Backlog.' : ' sprint subtasks tracked on board.') + ' ' + doneTickets + ' PB tickets currently marked Done in S' + sprintNum + '.';
-    snapshot.velocityInsight = '<strong>S' + sprintNum + ' velocity:</strong> ' + doneTickets + ' PB tickets currently marked Done in S' + sprintNum + '.';
+    var capacityDetail = (dayCtx && dayCtx.excludedWorkdayCount > 0)
+        ? (' Capacity adjusted by excluding ' + dayCtx.excludedWorkdayCount + ' planned no-work day' + (dayCtx.excludedWorkdayCount === 1 ? '' : 's') + '.')
+        : '';
+    if (usePointBurndown) {
+        snapshot.burndownInsight = '<strong>S' + sprintNum + ' burndown unit:</strong> Effort points. ' + pointProgress.done + ' of ' + pointProgress.total + ' points complete, ' + pointProgress.remaining + ' remaining.' + capacityDetail + (startAnchorActive ? ' Start-to-current anchor is shown so the burndown trace is visible early in the sprint.' : '');
+    } else {
+        snapshot.burndownInsight = '<strong>S' + sprintNum + ' status:</strong> ' + dayLabel + '. ' + progressBySubtasks.done + ' of ' + progressBySubtasks.total + (useTicketFallback ? ' sprint tickets complete (board subtasks not populated yet).' : ' subtasks complete.') + ' ' + progressBySubtasks.remaining + ' remaining.' + capacityDetail + (startAnchorActive ? ' Start-to-current anchor is shown so the burndown trace is visible early in the sprint.' : '');
+    }
+    if (ticketCounts.totalPoints > 0) {
+        snapshot.burnupInsight = '<strong>S' + sprintNum + ' burnup unit:</strong> Effort points (XS=1, S=2, M=3, L=5, XL=8). ' + doneEffortPoints + ' of ' + ticketCounts.totalPoints + ' points are currently Done in S' + sprintNum + '. Cumulative line = prior total + done effort points per sprint.';
+    } else {
+        snapshot.burnupInsight = '<strong>S' + sprintNum + ' burnup unit:</strong> Effort points. No sprint effort points are currently assigned to S' + sprintNum + '.';
+    }
+    snapshot.velocityInsight = '<strong>S' + sprintNum + ' velocity:</strong> ' + doneEffortPoints + ' effort points currently marked Done in S' + sprintNum + '.';
     snapshot.severityInsight = '<strong>S' + sprintNum + ' severity mix:</strong> Open backlog by priority is P1 ' + severity[0] + ', P2 ' + severity[1] + ', P3 ' + severity[2] + ', P4 ' + severity[3] + '.';
 
     return snapshot;
@@ -6310,6 +6809,7 @@ function getEffectiveSprintSnapshot(sprintNum) {
     var archiveSnapshot = SPRINT_ARCHIVE[n];
     if (n !== getCurrentSprint()) {
         var archived = cloneSprintSnapshot(archiveSnapshot) || createRuntimeSprintSnapshot(n);
+        var liveItems = window.PB_ITEMS || [];
         var status = getSprintStatusByDate(n);
         var sprintMeta = (SPRINT_SCHEDULE || []).find(function(sp) { return sp.num === n; }) || null;
         var endLabel = sprintMeta ? new Date(sprintMeta.end).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' }) : '';
@@ -6333,6 +6833,16 @@ function getEffectiveSprintSnapshot(sprintNum) {
             archived.rag.detail = startLabel ? ('Starts: ' + startLabel) : 'Starts next';
             archived.metrics.daysVal = '—';
         }
+
+        recomputeBurnupSeriesFromBacklog(archived, liveItems);
+        syncVelocitySeriesFromBacklog(archived, liveItems, n);
+
+        var archivedCounts = getCommittedSprintTicketCounts(liveItems, n);
+        if (archivedCounts.totalPoints > 0) {
+            archived.burnupInsight = '<strong>S' + n + ' burnup unit:</strong> Effort points (XS=1, S=2, M=3, L=5, XL=8). ' + archivedCounts.donePoints + ' of ' + archivedCounts.totalPoints + ' points were marked Done in S' + n + '.';
+            archived.velocityInsight = '<strong>S' + n + ' velocity:</strong> ' + archivedCounts.donePoints + ' effort points were marked Done in S' + n + '.';
+        }
+
         return archived;
     }
     return buildActiveSprintSnapshot(n, archiveSnapshot);
@@ -6659,6 +7169,8 @@ function loadSprintDashboard(num, options) {
     el = document.getElementById('velocity-chart-insight'); if (el) el.innerHTML = s.velocityInsight;
     el = document.getElementById('severity-chart-insight'); if (el) el.innerHTML = s.severityInsight;
 
+    refreshOpenBlockersList(sprintNum);
+
     if (sprintNum === getCurrentSprint()) syncDashMetrics();
 
     // Auto-populate "Dashboard last updated" bar
@@ -6775,7 +7287,7 @@ function rebuildCharts() {
             labels: burndownView.labels,
             datasets: [
                 {
-                    label: 'Ideal Burndown',
+                    label: 'Ideal Remaining (Effort Points)',
                     data: burndownView.ideal,
                     borderColor: c.idealLine,
                     borderDash: [5,4],
@@ -6784,10 +7296,11 @@ function rebuildCharts() {
                     pointRadius: 0
                 },
                 {
-                    label: 'Actual Remaining',
+                    label: 'Actual Remaining (Effort Points)',
                     data: burndownView.actual,
                     borderColor: c.actualLine,
                     backgroundColor: c.actualFill,
+                    spanGaps: true,
                     tension: 0.2,
                     fill: true,
                     borderWidth: 2,
@@ -6813,7 +7326,7 @@ function rebuildCharts() {
             labels: sd.burnup.labels,
             datasets: [
                 {
-                    label: 'Scope (Total Stories)',
+                    label: 'Scope (Total Effort Points)',
                     data: sd.burnup.scope,
                     borderColor: c.idealLine,
                     backgroundColor: c.idealFill,
@@ -6824,7 +7337,7 @@ function rebuildCharts() {
                     pointRadius: 3
                 },
                 {
-                    label: 'Completed',
+                    label: 'Completed (Effort Points)',
                     data: sd.burnup.completed,
                     borderColor: c.actualLine,
                     backgroundColor: c.actualFill,
@@ -6856,7 +7369,7 @@ function rebuildCharts() {
         data: {
             labels: sd.velocity.labels,
             datasets: [{
-                label: 'Tasks Delivered',
+                label: 'Effort Points Delivered',
                 data: sd.velocity.data,
                 backgroundColor: barColors,
                 borderColor: borderColors,
@@ -6997,14 +7510,13 @@ initTasks();
     var todayPct = Math.min(Math.max(((today - TERM_START) / 86400000) / TERM_DAYS * 100, 0), 100);
 
     // Sprint completion from board checkboxes
-    var allCbs = document.querySelectorAll('#sprint12-board input[type="checkbox"]');
-    var checkedCount = 0;
-    allCbs.forEach(function(cb){ if (cb.checked) checkedCount++; });
-    var s12pct = allCbs.length ? Math.round(checkedCount / allCbs.length * 100) : 0;
-    var s13Cbs = document.querySelectorAll('#sprint13-board input[type="checkbox"]');
-    var s13Done = 0;
-    s13Cbs.forEach(function(cb){ if (cb.checked) s13Done++; });
-    var s13pct = s13Cbs.length ? Math.round(s13Done / s13Cbs.length * 100) : 0;
+    var sprintCompletionPct = {};
+    sprints.forEach(function(s) {
+        var boardCbs = document.querySelectorAll('#sprint' + s.num + '-board input[type="checkbox"]');
+        var doneCount = 0;
+        boardCbs.forEach(function(cb){ if (cb.checked) doneCount++; });
+        sprintCompletionPct[s.num] = boardCbs.length ? Math.round(doneCount / boardCbs.length * 100) : 0;
+    });
 
     // Week labels (10 weeks)
     var headerHTML = '<div class="gantt-header">';
@@ -7026,9 +7538,7 @@ initTasks();
 
         var leftPct  = ((sStart - TERM_START) / 86400000) / TERM_DAYS * 100;
         var widthPct = ((sEnd   - sStart)     / 86400000 + 1) / TERM_DAYS * 100;
-        var completionPct = 0;
-        if (s.num === 12) completionPct = s12pct;
-        if (s.num === 13) completionPct = s13pct;
+        var completionPct = sprintCompletionPct[s.num] || 0;
 
         // Completion fill for done/active sprints
         var fillBar = '';
@@ -7157,6 +7667,45 @@ initTasks();
         { id:'TA-070', feature:'ML prediction accuracy audit — winner predictions, point spreads, and over/under totals are producing incorrect/unrealistic results. Audit actual 2024–2025 predictions vs outcomes, identify whether root cause is overfitting, data leakage, schema mismatch (hcl_test vs hcl), or feature engineering errors. Must complete after TA-057/068/069 infrastructure fixes.', cat:'ML', pri:'High', effort:'L', sprint:'S14', status:'In Sprint' },
         { id:'TA-071', feature:'Monitoring stack research ticket (future sprint) — define phased observability plan: Phase 1 baseline with AWS CloudWatch + CloudWatch Alarms for EC2 health (CPU, memory, disk), Flask API uptime/latency, error-rate alerts, and deployment event visibility; Phase 2 evaluate Grafana dashboards (CloudWatch datasource) for unified app + dashboard + infrastructure views; Phase 3 evaluate ELK/OpenSearch only if log volume/search needs justify added ops overhead. Deliverable: recommendation matrix (cost, setup complexity, alert quality, maintenance load) and implementation trigger criteria for each phase.', cat:'Infrastructure', pri:'Medium', effort:'M', sprint:'TBD', status:'Backlog' },
         { id:'TA-072', feature:'Create a new AWS account for EC2 continuity and migrate runtime access/deployment operations so Sprint 14 ML execution is not blocked by current AWS account lockout constraints.', cat:'Infrastructure', pri:'Critical', effort:'M', sprint:'S14', status:'In Sprint' },
+        { id:'TA-073', feature:'Fix live_data_updater.py fetcher path mismatch — updater checks root multi_source_data_fetcher.py but file is not present there, causing continuous update loop errors and skipped refresh runs.', cat:'Backend', pri:'High', effort:'S', sprint:'TBD', status:'Backlog' },
+        { id:'TA-074', feature:'Fix log_watcher.py self-recursive archive events — watcher logs its own docs/devlog/archive writes, floods MODIFIED events, and can crash thread on archive/index.json write (Errno 22).', cat:'Dashboard', pri:'High', effort:'S', sprint:'TBD', status:'Backlog' },
+        {
+            id:'TA-075',
+            feature:'Stakeholder chart metric model completed: Option A effort-point implementation',
+            cat:'Dashboard',
+            pri:'Critical',
+            effort:'M',
+            sprint:'S14',
+            status:'Done',
+            assignee:'GitHub Copilot (Developer)',
+            description:'Research and implementation ticket completed. Final decision selected Option A as canonical dashboard metric model. Delivery charts now use effort points as the workload unit (burndown, burnup, velocity), with sprint-day calculations adjusted for solo capacity by excluding weekends plus planned no-work dates. Decision Log and Sprint 14 Definition of Done were updated in the same pass. Budget and hours remain explicitly out of scope for delivery charts.',
+            dueDate:'2026-05-04',
+            createdAt:'2026-05-04T19:40:00',
+            updatedAt:'2026-05-04T20:58:00',
+            updatedBy:'GitHub Copilot (Developer)',
+            manualSubtasks:[
+                { id:'m_ta_075_1', title:'Define measurement options matrix with formulas for A B C models' },
+                { id:'m_ta_075_2', title:'Map required inputs to current dashboard data and identify gaps' },
+                { id:'m_ta_075_3', title:'Run task-splitting bias check across options on S12 S13 S14' },
+                { id:'m_ta_075_4', title:'Backtest each option for comparability and stakeholder readability' },
+                { id:'m_ta_075_5', title:'Draft recommendation with primary metric model and fallback model' },
+                { id:'m_ta_075_6', title:'Prepare PM approval packet and implementation gate criteria' },
+                { id:'m_ta_075_7', title:'Implement Option A effort-point burndown behavior in dashboard runtime' },
+                { id:'m_ta_075_8', title:'Update Decision Log and Sprint 14 DoD to capture model decision and acceptance criteria' }
+            ],
+            comments:[],
+            history:[
+                { at:'2026-05-04T19:38:00', by:'Scrum Master', note:'Ticket opened in Product Backlog for chart-metrics research and process reset.' },
+                { at:'2026-05-04T19:39:00', by:'Scrum Master', note:'Ticket assigned to Sprint 14 backlog with Critical priority for immediate planning cycle.' },
+                { at:'2026-05-04T19:40:00', by:'Scrum Master', note:'Research plan embedded in ticket. Implementation is blocked pending PM discussion and approval.' },
+                { at:'2026-05-04T19:48:00', by:'Scrum Master', note:'Updated ticket with concrete 4-chart recommendation, canonical workload unit, and budget-data constraints for review discussion.' },
+                { at:'2026-05-04T20:10:00', by:'Scrum Master', note:'Refocused ticket to options-based mathematical research beyond ticket and subtask counting. Budget and hours tracking removed from scope.' },
+                { at:'2026-05-04T20:42:00', by:'Scrum Master', note:'PM selected Option A as primary metric model for stakeholder charts.' },
+                { at:'2026-05-04T20:53:00', by:'GitHub Copilot (Developer)', note:'Implemented Option A in dashboard runtime: burndown now uses effort points and sprint workdays exclude configured no-work dates for capacity realism.' },
+                { at:'2026-05-04T20:56:00', by:'GitHub Copilot (Developer)', note:'Updated Decision Log and Sprint 14 Definition of Done to record metric-model decision, acceptance criteria, and delivery evidence.' },
+                { at:'2026-05-04T20:58:00', by:'GitHub Copilot (Developer)', note:'Ticket closed as Done after research, PM decision, implementation, and governance artifact updates were completed in one pass.' }
+            ]
+        },
         { id:'DSH-011', feature:'PM4 dashboard source-of-truth transition complete — publish path moved to pmforge_dashboard/index.html, legacy Dashboard/index.html archived, and PM4 docs/release/backlog alignment verified', cat:'Dashboard', pri:'High', effort:'M', sprint:'S13', status:'Done' },
     ];
 
@@ -7291,6 +7840,13 @@ function showSprintView(view, btn) {
             chosen: 'XGBoost (gradient boosted trees) — no change',
             considered: 'PyTorch, TensorFlow (deep learning frameworks)',
             why: 'Raised in class by instructor. With 7,269 rows of tabular NFL game data, deep learning frameworks offer no accuracy advantage and add significant complexity. XGBoost consistently outperforms neural nets on small structured datasets. PyTorch/TensorFlow would be appropriate if modeling play-by-play sequences (100k+ rows) or using image/video data.',
+        },
+        {
+            id: 'D-08', date: 'May 2026', sprint: 'S14',
+            title: 'Stakeholder sprint delivery metric standardized to Option A',
+            chosen: 'Option A — effort-point delivery model with capacity-adjusted burndown workdays',
+            considered: 'Option B flow-time model, Option C deliverable-value model',
+            why: 'For a solo student workflow with uneven daily availability, effort points provide the most accurate and comparable unit across sprints. This avoids distortion from variable subtask splitting and does not require budget or hours tracking. Burndown timing excludes weekends and planned no-work days so schedule views reflect real capacity rather than a fictional full-time team cadence.',
         },
     ];
 
@@ -8264,7 +8820,7 @@ function showSprintView(view, btn) {
     function findTaskGroupForTicket(ticketId) {
         var id = String(ticketId || '').toUpperCase();
         if (!id) return null;
-        var groups = document.querySelectorAll('#sprint12-board .area-title, #sprint12-board .task-group-label, #sprint13-board .task-group-label');
+        var groups = document.querySelectorAll('#sprint12-board .area-title, #sprint12-board .task-group-label, [id^="sprint"][id$="-board"] .task-group-label');
         for (var i = 0; i < groups.length; i++) {
             var group = groups[i];
             if (String(group.textContent || '').toUpperCase().indexOf(id) === -1) continue;
