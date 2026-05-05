@@ -3422,7 +3422,7 @@
     <div class="pm-header">
         <div>
             <h2>📋 Product Backlog Tracker</h2>
-            <p style="color:var(--muted); font-size:0.85rem; margin-top:0.35rem; line-height:1.6;">Use <strong>Create Ticket</strong> for manual intake. Then filter by Sprint, Status, Priority, and Assignee to manage work. Ticket edits, comments, and history stay in page memory until this file is committed and deployed.</p>
+            <p style="color:var(--muted); font-size:0.85rem; margin-top:0.35rem; line-height:1.6;">Use <strong>Create Ticket</strong> for manual intake. Then filter by Sprint, Status, Priority, and Assignee to manage work. Ticket edits, comments, and history now auto-save to the dashboard API.</p>
             <div style="margin-top:0.55rem; background:rgba(99,179,237,0.1); border:1px solid rgba(99,179,237,0.25); border-radius:0.45rem; padding:0.5rem 0.65rem; font-size:0.78rem; color:#cbd5e1; line-height:1.45;">
                 <strong style="color:#93c5fd;">How to use:</strong> Click any <strong>ID</strong>, <strong>Feature/Task</strong>, or <strong>Open</strong> button to open the ticket editor. In that editor, click any subtask row to open resolution details (status, resolution, date, timestamp, updated by).
             </div>
@@ -3631,7 +3631,8 @@
             <div id="hours-rows"></div>
         </div>
 
-        <p style="color:var(--muted); font-size:0.78rem; margin-top:0.75rem;">Hours save automatically. Data is stored locally in your browser.</p>
+        <p style="color:var(--muted); font-size:0.78rem; margin-top:0.75rem;">Hours save automatically to the dashboard API.</p>
+        <div id="hours-sync-status" style="color:#94a3b8; font-size:0.74rem; margin-top:0.35rem;"></div>
 
     </div>
 </div>
@@ -3674,7 +3675,8 @@
 <div style="max-width:1100px; margin:2rem auto; padding:0 2rem;">
 
     <h2 style="font-size:1.4rem; font-weight:700; color:#f1f5f9; margin-bottom:0.25rem;">Risk Register</h2>
-    <p style="color:var(--muted); font-size:0.88rem; margin-bottom:1.5rem;">Identified project risks — likelihood, impact, and mitigation plan. Updated each sprint.</p>
+    <p style="color:var(--muted); font-size:0.88rem; margin-bottom:0.5rem;">Identified project risks — likelihood, impact, and mitigation plan. Updated each sprint.</p>
+    <div id="risk-sync-status" style="color:#94a3b8; font-size:0.74rem; margin-bottom:1rem;"></div>
 
     <div style="overflow-x:auto;">
     <table style="width:100%; border-collapse:collapse; font-size:0.84rem;">
@@ -3704,7 +3706,8 @@
 <div style="max-width:1000px; margin:2rem auto; padding:0 2rem;">
 
     <h2 style="font-size:1.4rem; font-weight:700; color:#f1f5f9; margin-bottom:0.25rem;">Decision Log</h2>
-    <p style="color:var(--muted); font-size:0.88rem; margin-bottom:1.5rem;">Key architectural and technical decisions — what was chosen, what was considered, and why.</p>
+    <p style="color:var(--muted); font-size:0.88rem; margin-bottom:0.5rem;">Key architectural and technical decisions — what was chosen, what was considered, and why.</p>
+    <div id="decision-sync-status" style="color:#94a3b8; font-size:0.74rem; margin-bottom:1rem;"></div>
 
     <div id="decision-list" style="display:flex; flex-direction:column; gap:1rem;"></div>
 
@@ -4133,6 +4136,118 @@ function renderRetroParagraphs(rawText) {
     }).join('');
 }
 
+var RETRO_API_LOAD_SEQ = 0;
+var DOD_API_LOAD_SEQ = 0;
+
+function normalizeSprintKey(sprintNum) {
+    var raw = String(sprintNum || getCurrentSprint()).trim();
+    return raw.replace(/^S/i, '') || String(getCurrentSprint());
+}
+
+function normalizeSprintCodeForApi(sprintNum) {
+    var key = String(sprintNum || '').trim().toUpperCase();
+    if (!key) return 'S' + String(getCurrentSprint());
+    if (/^S\d+$/.test(key)) return key;
+    if (/^\d+$/.test(key)) return 'S' + key;
+    return key;
+}
+
+function renderDodListHost(listHost, lines) {
+    var normalizedLines = (lines || []).map(function(line) {
+        return String(line || '').trim();
+    }).filter(function(line) {
+        return !!line;
+    });
+
+    if (!normalizedLines.length) {
+        listHost.innerHTML = '<div class="dod-item">No DoD criteria entered yet. Use PM Definition of Done Entry above.</div>';
+        return;
+    }
+
+    listHost.innerHTML = normalizedLines.map(function(line) {
+        return '<div class="dod-item">' + escapeHtmlLite(line) + '</div>';
+    }).join('');
+}
+
+function loadRetroFromApiIntoView(sprintNum) {
+    var key = normalizeSprintKey(sprintNum);
+    var requestSeq = ++RETRO_API_LOAD_SEQ;
+    var status = document.getElementById('retro-editor-status');
+
+    if (typeof window.dashboardApiLoadRetro !== 'function') {
+        return Promise.resolve();
+    }
+
+    if (status) status.textContent = 'Loading retrospective notes from dashboard API for Sprint ' + key + '...';
+
+    return window.dashboardApiLoadRetro(key).then(function(data) {
+        if (requestSeq !== RETRO_API_LOAD_SEQ) return;
+
+        var row = data || {};
+        var wentWell = String(row.went_well || '').trim();
+        var didNotGoWell = String(row.did_not_go_well || '').trim();
+        var improvements = String(row.improvements || '').trim();
+        var hasPersisted = !!wentWell || !!didNotGoWell || !!improvements;
+
+        if (!hasPersisted) {
+            syncRetroEditorFromView(key);
+            return;
+        }
+
+        var block = document.getElementById('retro-content-' + key);
+        if (!block) return;
+
+        var cards = block.querySelectorAll('.retro-text');
+        if (cards[0]) cards[0].innerHTML = renderRetroParagraphs(wentWell);
+        if (cards[1]) cards[1].innerHTML = renderRetroParagraphs(didNotGoWell);
+        if (cards[2]) cards[2].innerHTML = renderRetroParagraphs(improvements);
+
+        syncRetroEditorFromView(key);
+        if (status) status.textContent = 'Loaded retrospective notes from dashboard API for Sprint ' + key + '.';
+    }).catch(function(err) {
+        if (requestSeq !== RETRO_API_LOAD_SEQ) return;
+        if (status) {
+            status.textContent = 'Using local retrospective notes for Sprint ' + key + ' (API load failed: ' + (err && err.message ? err.message : 'unknown error') + ').';
+        }
+    });
+}
+
+function loadDodFromApiIntoView(sprintNum) {
+    var key = normalizeSprintKey(sprintNum);
+    var requestSeq = ++DOD_API_LOAD_SEQ;
+    var status = document.getElementById('dod-editor-status');
+    var listHost = document.querySelector('[data-dod-list="' + key + '"]');
+
+    if (!listHost || typeof window.dashboardApiLoadDod !== 'function') {
+        return Promise.resolve();
+    }
+
+    if (status) status.textContent = 'Loading Definition of Done from dashboard API for Sprint ' + key + '...';
+
+    return window.dashboardApiLoadDod(key).then(function(items) {
+        if (requestSeq !== DOD_API_LOAD_SEQ) return;
+        var criteria = (items || []).map(function(item) {
+            return String(item && item.criterion || '').trim();
+        }).filter(function(line) {
+            return !!line;
+        });
+
+        if (!criteria.length) {
+            syncDodEditorFromView(key);
+            return;
+        }
+
+        renderDodListHost(listHost, criteria);
+        syncDodEditorFromView(key);
+        if (status) status.textContent = 'Loaded Definition of Done from dashboard API for Sprint ' + key + '.';
+    }).catch(function(err) {
+        if (requestSeq !== DOD_API_LOAD_SEQ) return;
+        if (status) {
+            status.textContent = 'Using local Definition of Done for Sprint ' + key + ' (API load failed: ' + (err && err.message ? err.message : 'unknown error') + ').';
+        }
+    });
+}
+
 function syncRetroEditorFromView(sprintNum) {
     var key = String(sprintNum || getCurrentSprint());
     var block = document.getElementById('retro-content-' + key);
@@ -4166,7 +4281,23 @@ window.applyRetroEditorChanges = function() {
     if (cards[2]) cards[2].innerHTML = renderRetroParagraphs(improve ? improve.value : '');
 
     var status = document.getElementById('retro-editor-status');
-    if (status) status.textContent = 'Retrospective notes applied for Sprint ' + key + ' (in page memory).';
+    if (status) status.textContent = 'Saving retrospective notes to dashboard API for Sprint ' + key + '...';
+
+    if (typeof window.dashboardApiSaveRetro === 'function') {
+        window.dashboardApiSaveRetro(key, {
+            went_well: good ? good.value : '',
+            did_not_go_well: bad ? bad.value : '',
+            improvements: improve ? improve.value : ''
+        }).then(function() {
+            if (status) status.textContent = 'Retrospective notes saved to dashboard API for Sprint ' + key + '.';
+        }).catch(function(err) {
+            if (status) {
+                status.textContent = 'Retrospective notes updated on page, but API save failed: ' + (err && err.message ? err.message : 'unknown error');
+            }
+        });
+    } else if (status) {
+        status.textContent = 'Retrospective notes updated on page. Dashboard API adapter unavailable.';
+    }
 };
 
 window.autofillRetroFromTickets = function() {
@@ -4236,16 +4367,22 @@ window.applyDodEditorChanges = function() {
         .map(function(line) { return line.trim(); })
         .filter(function(line) { return !!line; });
 
-    if (!lines.length) {
-        listHost.innerHTML = '<div class="dod-item">No DoD criteria entered yet. Use PM Definition of Done Entry above.</div>';
-    } else {
-        listHost.innerHTML = lines.map(function(line) {
-            return '<div class="dod-item">' + escapeHtmlLite(line) + '</div>';
-        }).join('');
-    }
+    renderDodListHost(listHost, lines);
 
     var status = document.getElementById('dod-editor-status');
-    if (status) status.textContent = 'Definition of Done updated for Sprint ' + key + ' (in page memory).';
+    if (status) status.textContent = 'Saving Definition of Done to dashboard API for Sprint ' + key + '...';
+
+    if (typeof window.dashboardApiSaveDod === 'function') {
+        window.dashboardApiSaveDod(key, lines).then(function() {
+            if (status) status.textContent = 'Definition of Done saved to dashboard API for Sprint ' + key + '.';
+        }).catch(function(err) {
+            if (status) {
+                status.textContent = 'Definition of Done updated on page, but API save failed: ' + (err && err.message ? err.message : 'unknown error');
+            }
+        });
+    } else if (status) {
+        status.textContent = 'Definition of Done updated on page. Dashboard API adapter unavailable.';
+    }
 };
 
 window.autofillDodFromTickets = function() {
@@ -4278,7 +4415,7 @@ window.autofillDodFromTickets = function() {
 };
 
 function selectRetroSprint(sprintNum) {
-    var key = String(sprintNum || getCurrentSprint());
+    var key = normalizeSprintKey(sprintNum);
     var meta = {
         '12': {
             title: 'Sprint 12 — Retrospective',
@@ -4323,10 +4460,11 @@ function selectRetroSprint(sprintNum) {
     var select = document.getElementById('retro-sprint-select');
     if (select && select.value !== key) select.value = key;
     syncRetroEditorFromView(key);
+    loadRetroFromApiIntoView(key);
 }
 
 function selectDodSprint(sprintNum) {
-    var key = String(sprintNum || getCurrentSprint());
+    var key = normalizeSprintKey(sprintNum);
     ['12', '13', '14', '15', '16'].forEach(function(k) {
         var block = document.getElementById('dod-sprint-' + k);
         if (!block) return;
@@ -4337,6 +4475,7 @@ function selectDodSprint(sprintNum) {
     var select = document.getElementById('dod-sprint-select');
     if (select && select.value !== key) select.value = key;
     syncDodEditorFromView(key);
+    loadDodFromApiIntoView(key);
 }
 
 function syncSprintViewStatuses() {
@@ -5034,6 +5173,12 @@ const COMPLETED_TASKS = [
     's67_1', 's67_2', 's67_3', 's67_4', 's67_5',
     // TA-018 — winner retrain validation, execution, persistence, and smoke test (May 5)
     's18_1', 's18_2', 's18_3', 's18_4',
+    // TA-019 — spread retrain preflight data extraction validation (May 5)
+    's19_1',
+    // TA-021 — duplicate scope consolidated into TA-057 evidence (May 4)
+    's21_1', 's21_2', 's21_3',
+    // TA-022 — duplicate scope consolidated into TA-058 evidence (May 4)
+    's22_1', 's22_2', 's22_3',
     // TA-070 — audit extraction through published corrective-action plan (May 4-5)
     's70_1', 's70_2', 's70_3', 's70_4',
 ];
@@ -5045,10 +5190,13 @@ const BLOCKED_TASKS = [
 const LEGACY_COMPLETED_TASKS = COMPLETED_TASKS.slice();
 const LEGACY_BLOCKED_TASKS = BLOCKED_TASKS.slice();
 
-function toggleTask() {
+function toggleTask(taskId) {
     if (window.__TASK_STATE_SYNC_ACTIVE) return;
     if (typeof syncTaskStatesFromData === 'function') {
-        syncTaskStatesFromData();
+        syncTaskStatesFromData({
+            persistToApi: true,
+            persistTaskIds: taskId ? [String(taskId)] : []
+        });
     }
 }
 
@@ -5190,6 +5338,7 @@ const TASK_DETAILS = {
     s18_2: { resolution:'Executed winner retrain pipeline via ml/train_xgb_winner.py with final timestamped run log capture (docs/sprints/ta018_winner_retrain/ta018_s18_2_20260504_175539_train_log.txt, includes python_exit_code=0). Published execution evidence artifacts (docs/sprints/ta018_winner_retrain/ta018_s18_2_20260504_175539_summary.json, docs/sprints/ta018_winner_retrain/ta018_s18_2_20260504_175539_report.md) with train accuracy 75.83%, validation accuracy 64.31%, test accuracy 62.89%, and refreshed model artifact timestamps for ml/models/xgb_winner.pkl and ml/models/xgb_winner_features.txt.', date:'May 5, 2026', timestamp:'2026-05-05T00:55', updatedBy:'Copilot (local TA-018 retrain execution evidence)' },
     s18_3: { resolution:'Validated persisted winner artifacts at expected paths (ml/models/xgb_winner.pkl, ml/models/xgb_winner_features.txt) and published TA-018 s18_3 evidence artifacts (docs/sprints/ta018_winner_retrain/ta018_s18_3_20260504_183259_summary.json, docs/sprints/ta018_winner_retrain/ta018_s18_3_20260504_183259_report.md). Captured model metadata: size 225,661 bytes, modified 2026-05-04T17:55:42.159946, SHA256 abfbd796356f4da214dbe2c10ccc52f7f7ead23d1e45fea7515168e49363a35b. Captured feature metadata: size 271 bytes, feature_count=16, modified 2026-05-04T17:55:42.161445, SHA256 683a7276a0efd1d8342f04c5c9c2420a6c5a6cc992fe8f650cbf4e688cde9511. Validation checks passed (paths exist, non-empty files, non-zero feature count).', date:'May 4, 2026', timestamp:'2026-05-04T18:32', updatedBy:'Copilot (local TA-018 artifact-persistence evidence)' },
     s18_4: { resolution:'Executed winner endpoint smoke test via Flask test client against /api/ml/predict-week/<season>/<week> with predictor lazy-load reset to validate refreshed artifact usage. Published TA-018 s18_4 evidence artifacts (docs/sprints/ta018_winner_retrain/ta018_s18_4_20260504_184635_summary.json, docs/sprints/ta018_winner_retrain/ta018_s18_4_20260504_184635_report.md). Selected smoke-test request season=2025 week=1 returned HTTP 200 with 16 predictions; predictor_loaded=true, loaded win model class XGBClassifier, loaded winner feature count=16. Winner artifact references matched persisted files: ml/models/xgb_winner.pkl SHA256 abfbd796356f4da214dbe2c10ccc52f7f7ead23d1e45fea7515168e49363a35b and ml/models/xgb_winner_features.txt SHA256 683a7276a0efd1d8342f04c5c9c2420a6c5a6cc992fe8f650cbf4e688cde9511.', date:'May 4, 2026', timestamp:'2026-05-04T18:46', updatedBy:'Copilot (local TA-018 endpoint smoke-test evidence)' },
+    s19_1: { resolution:'Executed scripts/verification/ta019_validate_spread_training_dataset.py --schema hcl and generated readiness artifacts (docs/sprints/ta019_spread_retrain/ta019_s19_1_20260505_124042_summary.json, docs/sprints/ta019_spread_retrain/ta019_s19_1_20260505_124042_report.md). Validation passed ready_for_retrain=True with complete extraction coverage: expected/extracted rows 1,519/1,519, unique game_ids 1,519/1,519, missing IDs 0, extra IDs 0, duplicate extraction rows 0, and null feature cells 0.', date:'May 5, 2026', timestamp:'2026-05-05T12:40', updatedBy:'Copilot (local TA-019 spread-query completeness evidence)' },
     s70_1: { resolution:'Executed scripts/verification/ta070_extract_prediction_actuals.py for seasons 2024-2025 against hcl schema and exported winner/spread/total datasets plus summary manifest under docs/sprints/ta070_audit_data (ta070_s70_1_20260504_225654_* artifacts). Extraction returned 272 completed-game rows (2024: 272, 2025: 0 in current ml_predictions snapshot).', date:'May 4, 2026', timestamp:'2026-05-04T22:56', updatedBy:'Copilot (local extraction evidence)' },
     s70_2: { resolution:'Executed scripts/verification/ta070_compute_audit_metrics.py against docs/sprints/ta070_audit_data/ta070_s70_1_20260504_225654_combined.csv and generated season/week audit metrics artifacts (ta070_s70_2_20260504_230454_by_season.csv, ta070_s70_2_20260504_230454_by_week.csv, ta070_s70_2_20260504_230454_summary.json). Overall metrics from summary: winner accuracy 53.31% (145/272), spread accuracy 67.9% (184/271), margin MAE 12.084, total MAE 9.723 with predicted-score coverage 94.12% (256/272). Total pick accuracy coverage is 0.0% (0 evaluable rows) because current predicted total outcomes resolve to non-evaluable pushes in this snapshot.', date:'May 4, 2026', timestamp:'2026-05-04T23:04', updatedBy:'Copilot (local metric-computation evidence)' },
     s70_3: { resolution:'Executed scripts/verification/ta070_root_cause_analysis.py against docs/sprints/ta070_audit_data/ta070_s70_1_20260504_225654_combined.csv and generated root-cause artifacts (ta070_s70_3_20260504_233539_summary.json, ta070_s70_3_20260504_233539_root_cause.md). Findings: F1 feature-engineering issue (predicted_total equals vegas_total for 256/256 rows; 0 evaluable total-pick rows), F2 leakage-validity risk (predicted_at > game_date for 256/272 rows, 94.12%), F3 label-consistency issue (negative actual_margin rows=0 despite 129 away wins in games table), and F4 high weekly volatility without directional drift (winner accuracy range 28.57%-81.25%, stddev 14.683; weeks 1-9 53.62% vs weeks 10-18 52.99%).', date:'May 4, 2026', timestamp:'2026-05-04T23:35', updatedBy:'Copilot (local root-cause evidence)' },
@@ -5254,12 +5403,26 @@ function updateProgress() {
     if (!window.__TASK_STATE_SYNC_ACTIVE && typeof window.renderTaskTracker === 'function') window.renderTaskTracker();
 }
 
-function updateS13Progress() {
-    updateSprintBoardProgress(13);
+function getTaskIdFromChangeEvent() {
+    var evt = window.event;
+    if (!evt || !evt.target || !evt.target.id) return '';
+    return String(evt.target.id);
 }
 
-function updateS14Progress() {
-    updateSprintBoardProgress(14);
+function updateS13Progress(taskId) {
+    var changedTaskId = taskId || getTaskIdFromChangeEvent();
+    updateSprintBoardProgress(13, {
+        persistToApi: !!changedTaskId,
+        persistTaskIds: changedTaskId ? [changedTaskId] : []
+    });
+}
+
+function updateS14Progress(taskId) {
+    var changedTaskId = taskId || getTaskIdFromChangeEvent();
+    updateSprintBoardProgress(14, {
+        persistToApi: !!changedTaskId,
+        persistTaskIds: changedTaskId ? [changedTaskId] : []
+    });
 }
 
 function updateSprintBoardProgress(sprintNum, options) {
@@ -5268,7 +5431,11 @@ function updateSprintBoardProgress(sprintNum, options) {
     if (isNaN(n)) return;
 
     if (!window.__TASK_STATE_SYNC_ACTIVE && typeof syncTaskStatesFromData === 'function') {
-        syncTaskStatesFromData();
+        syncTaskStatesFromData({
+            persistToApi: !!options.persistToApi,
+            persistTaskIds: options.persistTaskIds || [],
+            persistDetails: !!options.persistDetails
+        });
         return;
     }
 
@@ -5378,6 +5545,927 @@ function getBacklogTicketById(ticketId) {
     return null;
 }
 
+var DASHBOARD_API_SYNC_QUEUE = Promise.resolve();
+var DASHBOARD_API_LAST_ERROR_TS = 0;
+
+function getDashboardApiBase() {
+    if (window.DASHBOARD_API_BASE) {
+        return String(window.DASHBOARD_API_BASE).replace(/\/+$/, '');
+    }
+    if (window.location && window.location.protocol === 'file:') {
+        return 'http://127.0.0.1:5000/api/dashboard/v1';
+    }
+    return '/api/dashboard/v1';
+}
+
+function buildDashboardApiUrl(path) {
+    return getDashboardApiBase() + path;
+}
+
+function logDashboardApiError(err) {
+    var now = Date.now();
+    if (now - DASHBOARD_API_LAST_ERROR_TS < 15000) return;
+    DASHBOARD_API_LAST_ERROR_TS = now;
+    console.warn('[dashboard-api]', err && err.message ? err.message : err);
+}
+
+async function dashboardApiRequest(method, path, payload, options) {
+    options = options || {};
+    var allowStatuses = Array.isArray(options.allowStatuses) ? options.allowStatuses : [];
+    var req = {
+        method: method,
+        headers: { 'Accept': 'application/json' }
+    };
+    if (payload !== undefined && payload !== null) {
+        req.headers['Content-Type'] = 'application/json';
+        req.body = JSON.stringify(payload);
+    }
+
+    var response;
+    try {
+        response = await fetch(buildDashboardApiUrl(path), req);
+    } catch (networkErr) {
+        throw new Error('Dashboard API unreachable at ' + getDashboardApiBase());
+    }
+
+    var body = null;
+    try {
+        body = await response.json();
+    } catch (ignored) {
+        body = null;
+    }
+
+    if (!response.ok && allowStatuses.indexOf(response.status) === -1) {
+        var apiMessage = body && (body.error || body.message);
+        throw new Error(apiMessage || ('Dashboard API request failed (' + response.status + ')'));
+    }
+
+    return { status: response.status, body: body };
+}
+
+function mapUiStatusToApi(status) {
+    var normalized = String(status || '').trim().toLowerCase();
+    if (normalized === 'done') return 'done';
+    if (normalized === 'blocked') return 'blocked';
+    if (normalized === 'in progress' || normalized === 'in sprint' || normalized === 'in_progress') return 'in_progress';
+    return 'todo';
+}
+
+function mapApiStatusToUi(status) {
+    var normalized = String(status || '').trim().toLowerCase();
+    if (normalized === 'done') return 'Done';
+    if (normalized === 'blocked') return 'Blocked';
+    if (normalized === 'in_progress') return 'In Progress';
+    return 'To Do';
+}
+
+function uniqueStringList(values) {
+    var seen = new Set();
+    (values || []).forEach(function(value) {
+        var cleaned = String(value || '').trim();
+        if (!cleaned || seen.has(cleaned)) return;
+        seen.add(cleaned);
+    });
+    return Array.from(seen);
+}
+
+function findManualSubtaskRecord(taskId) {
+    var target = String(taskId || '').trim();
+    if (!target) return null;
+    var items = window.PB_ITEMS || [];
+    for (var i = 0; i < items.length; i++) {
+        var item = items[i];
+        if (!item || !Array.isArray(item.manualSubtasks)) continue;
+        for (var j = 0; j < item.manualSubtasks.length; j++) {
+            var subtask = item.manualSubtasks[j] || {};
+            var fallbackId = 'm_' + String(item.id || 'tk').toLowerCase().replace(/[^a-z0-9]+/g, '_') + '_' + String(j + 1);
+            var sid = String(subtask.id || fallbackId);
+            if (sid === target) {
+                return { ticket: item, subtask: subtask, index: j };
+            }
+        }
+    }
+    return null;
+}
+
+function getTaskTitleForApi(taskId) {
+    var id = String(taskId || '').trim();
+    if (!id) return '';
+
+    var cb = document.getElementById(id);
+    if (cb) {
+        var row = cb.closest('.task-item');
+        var txt = row ? row.querySelector('.task-text') : null;
+        if (txt) return txt.textContent.trim();
+    }
+
+    if (id.indexOf('ta_parent_') === 0) {
+        var ticketId = getTaForTaskId(id);
+        var ticket = getBacklogTicketById(ticketId);
+        if (ticket && ticket.feature) return String(ticket.feature) + ' (Parent Ticket)';
+    }
+
+    var manual = findManualSubtaskRecord(id);
+    if (manual && manual.subtask && manual.subtask.title) return String(manual.subtask.title).trim();
+
+    return id;
+}
+
+function getTaskSequenceForApi(taskId) {
+    var id = String(taskId || '').trim();
+    if (!id) return 0;
+
+    var manual = findManualSubtaskRecord(id);
+    if (manual) return manual.index + 1;
+
+    var ticketId = getTaForTaskId(id);
+    if (!ticketId) return 0;
+
+    var idx = 0;
+    var seq = 0;
+    document.querySelectorAll('[id^="sprint"][id$="-board"] input[type="checkbox"]').forEach(function(cb) {
+        if (getTaForTaskId(cb.id) !== ticketId) return;
+        idx += 1;
+        if (cb.id === id) seq = idx;
+    });
+    return seq || 0;
+}
+
+function getTaskSourceTypeForApi(taskId) {
+    var id = String(taskId || '').trim().toLowerCase();
+    if (id.indexOf('ta_parent_') === 0) return 'parent';
+    if (id.indexOf('m_') === 0) return 'manual';
+    return 'board';
+}
+
+function buildTicketPayloadForApi(ticketId, statusOverride, actor) {
+    var ticket = getBacklogTicketById(ticketId);
+    if (!ticket) return null;
+    return {
+        id: ticket.id,
+        title: ticket.feature || ticket.id,
+        description: ticket.description || '',
+        category: ticket.cat || 'Project Management',
+        priority: String(ticket.pri || 'medium').toLowerCase(),
+        effort: String(ticket.effort || 'm').toLowerCase(),
+        status: statusOverride || mapUiStatusToApi(ticket.status),
+        assignee: ticket.assignee || 'Unassigned',
+        sprint: ticket.sprint || 'TBD',
+        dueDate: ticket.dueDate || null,
+        actor: actor || 'Dashboard UI',
+        source: 'ui'
+    };
+}
+
+function getTicketTaskIds(ticketId) {
+    var id = String(ticketId || '').toUpperCase();
+    if (!id) return [];
+    var ids = [];
+
+    document.querySelectorAll('[id^="sprint"][id$="-board"] input[type="checkbox"]').forEach(function(cb) {
+        if (String(getTaForTaskId(cb.id) || '').toUpperCase() === id) ids.push(cb.id);
+    });
+
+    var ticket = getBacklogTicketById(id);
+    if (ticket && Array.isArray(ticket.manualSubtasks)) {
+        ticket.manualSubtasks.forEach(function(subtask, idx) {
+            var fallbackId = 'm_' + id.toLowerCase().replace(/[^a-z0-9]+/g, '_') + '_' + String(idx + 1);
+            var sid = String((subtask && subtask.id) || fallbackId);
+            ids.push(sid);
+        });
+    }
+
+    return uniqueStringList(ids);
+}
+
+function deriveApiTicketStatus(ticketId) {
+    var ids = getTicketTaskIds(ticketId);
+    if (!ids.length) {
+        var existing = getBacklogTicketById(ticketId);
+        return mapUiStatusToApi(existing && existing.status);
+    }
+
+    var done = 0;
+    var blocked = 0;
+    ids.forEach(function(id) {
+        if (BLOCKED_TASKS.indexOf(id) !== -1) {
+            blocked += 1;
+            return;
+        }
+        if (COMPLETED_TASKS.indexOf(id) !== -1) done += 1;
+    });
+
+    if (done === ids.length) return 'done';
+    if (blocked > 0) return 'blocked';
+    if (done > 0) return 'in_progress';
+
+    var fallback = getBacklogTicketById(ticketId);
+    if (mapUiStatusToApi(fallback && fallback.status) === 'in_progress') return 'in_progress';
+    return 'todo';
+}
+
+function syncLocalTicketStatus(ticketId, apiStatus) {
+    var ticket = getBacklogTicketById(ticketId);
+    if (!ticket) return;
+    var current = String(ticket.status || '').trim().toLowerCase();
+    if (apiStatus === 'todo' && (current === 'backlog' || current === 'tbd')) return;
+    ticket.status = mapApiStatusToUi(apiStatus);
+}
+
+function getApiStatusForTask(taskId) {
+    var id = String(taskId || '').trim();
+    if (!id) return 'todo';
+    if (id.indexOf('ta_parent_') === 0) {
+        var parentTicketId = getTaForTaskId(id);
+        return deriveApiTicketStatus(parentTicketId);
+    }
+    if (BLOCKED_TASKS.indexOf(id) !== -1) return 'blocked';
+    if (COMPLETED_TASKS.indexOf(id) !== -1) return 'done';
+    return 'todo';
+}
+
+async function ensureTicketForApi(ticketId, statusOverride, actor) {
+    var payload = buildTicketPayloadForApi(ticketId, statusOverride, actor);
+    if (!payload) return;
+    await dashboardApiRequest('POST', '/tickets', payload, { allowStatuses: [409] });
+    await dashboardApiRequest('PUT', '/tickets/' + encodeURIComponent(String(ticketId)), payload);
+}
+
+async function ensureSubtaskForApi(taskId, statusOverride, actor) {
+    var id = String(taskId || '').trim();
+    if (!id) return '';
+    var ticketId = getTaForTaskId(id);
+    if (!ticketId) return '';
+
+    await ensureTicketForApi(ticketId, deriveApiTicketStatus(ticketId), actor);
+
+    var payload = {
+        id: id,
+        ticket_id: ticketId,
+        title: getTaskTitleForApi(id) || id,
+        status: statusOverride || getApiStatusForTask(id),
+        source_type: getTaskSourceTypeForApi(id),
+        sequence: getTaskSequenceForApi(id),
+        actor: actor || 'Dashboard UI',
+        source: 'ui'
+    };
+    await dashboardApiRequest('POST', '/subtasks', payload, { allowStatuses: [409] });
+    return ticketId;
+}
+
+async function persistTaskToApi(taskId, options) {
+    options = options || {};
+    var id = String(taskId || '').trim();
+    if (!id) return;
+
+    var actor = options.actor || 'Dashboard UI';
+    var status = options.statusOverride || getApiStatusForTask(id);
+    var ticketId = await ensureSubtaskForApi(id, status, actor);
+    if (!ticketId) return;
+
+    await dashboardApiRequest('PUT', '/subtasks/' + encodeURIComponent(id) + '/status', {
+        status: status,
+        actor: actor,
+        source: 'ui'
+    });
+
+    if (options.includeDetail) {
+        var detail = TASK_DETAILS[id] || {};
+        var hasDetail = !!String(detail.resolution || '').trim() || !!detail.date || !!detail.dateInput || !!detail.timestamp || !!detail.updatedBy;
+        if (hasDetail) {
+            await dashboardApiRequest('PUT', '/task-details/' + encodeURIComponent(id), {
+                resolution: detail.resolution || '',
+                detail_date: detail.dateInput || detail.date || null,
+                detail_timestamp: detail.timestamp || null,
+                status_override: status,
+                actor: detail.updatedBy || actor,
+                source: 'ui'
+            });
+        }
+    }
+
+    var parentStatus = deriveApiTicketStatus(ticketId);
+    await ensureTicketForApi(ticketId, parentStatus, actor);
+    syncLocalTicketStatus(ticketId, parentStatus);
+}
+
+function queueDashboardTaskPersistence(taskIds, options) {
+    options = options || {};
+    var ids = uniqueStringList(taskIds || []);
+    if (!ids.length) return Promise.resolve();
+
+    var run = DASHBOARD_API_SYNC_QUEUE.then(async function() {
+        for (var i = 0; i < ids.length; i++) {
+            if (options.silent) {
+                try {
+                    await persistTaskToApi(ids[i], options);
+                } catch (err) {
+                    logDashboardApiError(err);
+                }
+            } else {
+                await persistTaskToApi(ids[i], options);
+            }
+        }
+    });
+
+    DASHBOARD_API_SYNC_QUEUE = run.catch(function(err) {
+        logDashboardApiError(err);
+    });
+
+    return run;
+}
+
+function queueDashboardTicketPersistence(ticketIds, options) {
+    options = options || {};
+    var ids = uniqueStringList(ticketIds || []).map(function(id) { return String(id).toUpperCase(); });
+    if (!ids.length) return Promise.resolve();
+
+    var run = DASHBOARD_API_SYNC_QUEUE.then(async function() {
+        for (var i = 0; i < ids.length; i++) {
+            var id = ids[i];
+            var status = deriveApiTicketStatus(id);
+            if (options.silent) {
+                try {
+                    await ensureTicketForApi(id, status, options.actor || 'Dashboard UI');
+                    syncLocalTicketStatus(id, status);
+                } catch (err) {
+                    logDashboardApiError(err);
+                }
+            } else {
+                await ensureTicketForApi(id, status, options.actor || 'Dashboard UI');
+                syncLocalTicketStatus(id, status);
+            }
+        }
+    });
+
+    DASHBOARD_API_SYNC_QUEUE = run.catch(function(err) {
+        logDashboardApiError(err);
+    });
+
+    return run;
+}
+
+function queueDashboardCommentPersistence(ticketId, commentText, actor) {
+    var id = String(ticketId || '').toUpperCase();
+    var text = String(commentText || '').trim();
+    if (!id || !text) return Promise.resolve();
+
+    var run = DASHBOARD_API_SYNC_QUEUE.then(async function() {
+        await ensureTicketForApi(id, deriveApiTicketStatus(id), actor || 'Dashboard UI');
+        await dashboardApiRequest('POST', '/tickets/' + encodeURIComponent(id) + '/comments', {
+            comment_text: text,
+            actor: actor || 'Dashboard UI',
+            source: 'ui'
+        });
+    });
+
+    DASHBOARD_API_SYNC_QUEUE = run.catch(function(err) {
+        logDashboardApiError(err);
+    });
+
+    return run;
+}
+
+function buildDodCriterionId(sprintCode, sequence) {
+    return 'dod_' + String(sprintCode || 'S0').toLowerCase().replace(/[^a-z0-9]+/g, '_') + '_' + String(sequence).padStart(2, '0');
+}
+
+function extractDodItems(responseBody) {
+    if (!responseBody || !responseBody.data || !Array.isArray(responseBody.data.items)) return [];
+    return responseBody.data.items.slice().sort(function(a, b) {
+        var aSeq = Number(a && a.sequence) || 0;
+        var bSeq = Number(b && b.sequence) || 0;
+        if (aSeq !== bSeq) return aSeq - bSeq;
+        return String(a && a.id || '').localeCompare(String(b && b.id || ''));
+    });
+}
+
+function queueDashboardRetroPersistence(sprintNum, payload, options) {
+    options = options || {};
+    var sprintCode = normalizeSprintCodeForApi(sprintNum);
+    var actor = options.actor || 'Dashboard UI';
+    var retroPayload = payload || {};
+
+    var run = DASHBOARD_API_SYNC_QUEUE.then(async function() {
+        await dashboardApiRequest('PUT', '/retro/' + encodeURIComponent(sprintCode), {
+            went_well: String(retroPayload.went_well || ''),
+            did_not_go_well: String(retroPayload.did_not_go_well || ''),
+            improvements: String(retroPayload.improvements || ''),
+            actor: actor,
+            source: 'ui'
+        });
+    });
+
+    DASHBOARD_API_SYNC_QUEUE = run.catch(function(err) {
+        logDashboardApiError(err);
+    });
+
+    return run;
+}
+
+function queueDashboardDodPersistence(sprintNum, lines, options) {
+    options = options || {};
+    var sprintCode = normalizeSprintCodeForApi(sprintNum);
+    var actor = options.actor || 'Dashboard UI';
+    var criteria = (lines || []).map(function(line) {
+        return String(line || '').trim();
+    }).filter(function(line) {
+        return !!line;
+    });
+
+    var run = DASHBOARD_API_SYNC_QUEUE.then(async function() {
+        var existingResp = await dashboardApiRequest('GET', '/dod?sprint_code=' + encodeURIComponent(sprintCode));
+        var existingItems = extractDodItems(existingResp && existingResp.body);
+
+        for (var i = 0; i < criteria.length; i++) {
+            var sequence = i + 1;
+            var line = criteria[i];
+            var existing = existingItems[i];
+            var criterionId = existing && existing.id ? String(existing.id) : buildDodCriterionId(sprintCode, sequence);
+            var criterionPayload = {
+                sprint_code: sprintCode,
+                criterion: line,
+                status: 'done',
+                sequence: sequence,
+                actor: actor,
+                source: 'ui'
+            };
+
+            if (existing && existing.id) {
+                await dashboardApiRequest('PUT', '/dod/' + encodeURIComponent(criterionId), criterionPayload);
+            } else {
+                var created = await dashboardApiRequest('POST', '/dod', Object.assign({ id: criterionId }, criterionPayload), {
+                    allowStatuses: [409]
+                });
+                if (created && created.status === 409) {
+                    await dashboardApiRequest('PUT', '/dod/' + encodeURIComponent(criterionId), criterionPayload);
+                }
+            }
+        }
+
+        for (var j = criteria.length; j < existingItems.length; j++) {
+            var stale = existingItems[j];
+            if (!stale || !stale.id) continue;
+            await dashboardApiRequest('DELETE', '/dod/' + encodeURIComponent(String(stale.id)));
+        }
+    });
+
+    DASHBOARD_API_SYNC_QUEUE = run.catch(function(err) {
+        logDashboardApiError(err);
+    });
+
+    return run;
+}
+
+window.dashboardApiSyncTask = function(taskId, includeDetail) {
+    return queueDashboardTaskPersistence([taskId], { includeDetail: !!includeDetail, actor: 'Dashboard UI' });
+};
+
+window.dashboardApiSyncTasks = function(taskIds, includeDetail) {
+    return queueDashboardTaskPersistence(taskIds, { includeDetail: !!includeDetail, actor: 'Dashboard UI', silent: true });
+};
+
+window.dashboardApiSyncTicket = function(ticketId) {
+    return queueDashboardTicketPersistence([ticketId], { actor: 'Dashboard UI' });
+};
+
+window.dashboardApiSyncTickets = function(ticketIds) {
+    return queueDashboardTicketPersistence(ticketIds, { actor: 'Dashboard UI', silent: true });
+};
+
+window.dashboardApiAddComment = function(ticketId, commentText, actor) {
+    return queueDashboardCommentPersistence(ticketId, commentText, actor || 'Dashboard UI');
+};
+
+window.dashboardApiLoadRetro = function(sprintNum) {
+    var sprintCode = normalizeSprintCodeForApi(sprintNum);
+    return dashboardApiRequest('GET', '/retro/' + encodeURIComponent(sprintCode)).then(function(resp) {
+        return resp && resp.body ? resp.body.data : null;
+    });
+};
+
+window.dashboardApiSaveRetro = function(sprintNum, payload) {
+    return queueDashboardRetroPersistence(sprintNum, payload, { actor: 'Dashboard UI' });
+};
+
+window.dashboardApiLoadDod = function(sprintNum) {
+    var sprintCode = normalizeSprintCodeForApi(sprintNum);
+    return dashboardApiRequest('GET', '/dod?sprint_code=' + encodeURIComponent(sprintCode)).then(function(resp) {
+        return extractDodItems(resp && resp.body);
+    });
+};
+
+window.dashboardApiSaveDod = function(sprintNum, lines) {
+    return queueDashboardDodPersistence(sprintNum, lines, { actor: 'Dashboard UI' });
+};
+
+function mapApiPriorityToUi(priority) {
+    var normalized = String(priority || '').trim().toLowerCase();
+    if (normalized === 'critical') return 'Critical';
+    if (normalized === 'high') return 'High';
+    if (normalized === 'low') return 'Low';
+    return 'Medium';
+}
+
+function mapApiEffortToUi(effort) {
+    var normalized = String(effort || '').trim().toLowerCase();
+    if (!normalized) return 'M';
+    return normalized.toUpperCase();
+}
+
+function normalizeApiSprintToUi(sprintCode, fallback) {
+    var raw = String(sprintCode || fallback || '').trim().toUpperCase();
+    if (!raw || raw === 'NONE' || raw === 'NULL') return 'TBD';
+    if (raw === 'TBD' || raw === 'BACKLOG') return 'TBD';
+    if (/^S\d+$/.test(raw)) return raw;
+    if (/^\d+$/.test(raw)) return 'S' + raw;
+    return raw;
+}
+
+function upsertLocalTicketFromApi(apiTicket) {
+    if (!apiTicket || !apiTicket.id) return null;
+    var ticketId = String(apiTicket.id).toUpperCase();
+    var items = window.PB_ITEMS || [];
+    var item = null;
+
+    for (var i = 0; i < items.length; i++) {
+        if (String(items[i].id || '').toUpperCase() === ticketId) {
+            item = items[i];
+            break;
+        }
+    }
+
+    if (!item) {
+        item = {
+            id: ticketId,
+            feature: ticketId,
+            description: '',
+            cat: 'Project Management',
+            pri: 'Medium',
+            effort: 'M',
+            sprint: 'TBD',
+            status: 'To Do',
+            assignee: 'Unassigned',
+            dueDate: '',
+            manualSubtasks: [],
+            comments: [],
+            history: [],
+            createdAt: '',
+            updatedAt: '',
+            updatedBy: ''
+        };
+        items.unshift(item);
+    }
+
+    var currentStatus = String(item.status || '').trim().toLowerCase();
+    var mappedStatus = mapApiStatusToUi(apiTicket.status);
+
+    item.id = ticketId;
+    item.feature = String(apiTicket.title || item.feature || ticketId);
+    item.description = String(apiTicket.description || item.description || '');
+    item.cat = String(apiTicket.category || item.cat || 'Project Management');
+    item.pri = mapApiPriorityToUi(apiTicket.priority || item.pri);
+    item.effort = mapApiEffortToUi(apiTicket.effort || item.effort);
+    item.sprint = normalizeApiSprintToUi(apiTicket.sprint_code || apiTicket.sprint, item.sprint);
+    item.assignee = String(apiTicket.assignee || item.assignee || 'Unassigned');
+    item.dueDate = String(apiTicket.due_date || apiTicket.dueDate || item.dueDate || '');
+    item.createdAt = String(apiTicket.created_at || item.createdAt || '');
+    item.updatedAt = String(apiTicket.updated_at || item.updatedAt || '');
+    item.updatedBy = String(apiTicket.updated_by || item.updatedBy || '');
+    item.comments = Array.isArray(item.comments) ? item.comments : [];
+    item.history = Array.isArray(item.history) ? item.history : [];
+    item.manualSubtasks = Array.isArray(item.manualSubtasks) ? item.manualSubtasks : [];
+
+    if (mappedStatus === 'To Do' && (currentStatus === 'backlog' || currentStatus === 'tbd')) {
+        // Preserve explicit backlog/TBD semantics when API status is generic todo.
+    } else {
+        item.status = mappedStatus;
+    }
+
+    return item;
+}
+
+function upsertManualSubtaskFromApi(subtask) {
+    if (!subtask || !subtask.ticket_id) return;
+    var ticket = upsertLocalTicketFromApi({ id: subtask.ticket_id });
+    if (!ticket) return;
+
+    ticket.manualSubtasks = Array.isArray(ticket.manualSubtasks) ? ticket.manualSubtasks : [];
+    var sid = String(subtask.id || '').trim();
+    if (!sid) return;
+
+    var existing = null;
+    for (var i = 0; i < ticket.manualSubtasks.length; i++) {
+        if (String(ticket.manualSubtasks[i].id || '') === sid) {
+            existing = ticket.manualSubtasks[i];
+            break;
+        }
+    }
+
+    if (!existing) {
+        existing = { id: sid, title: String(subtask.title || sid) };
+        ticket.manualSubtasks.push(existing);
+    }
+
+    existing.id = sid;
+    existing.title = String(subtask.title || existing.title || sid);
+}
+
+function applyApiSubtaskOverlay(apiSubtasks) {
+    var doneSet = new Set(COMPLETED_TASKS.slice());
+    var blockedSet = new Set(BLOCKED_TASKS.slice());
+
+    (apiSubtasks || []).forEach(function(subtask) {
+        if (!subtask || !subtask.id) return;
+        var sid = String(subtask.id).trim();
+        if (!sid) return;
+
+        doneSet.delete(sid);
+        blockedSet.delete(sid);
+
+        var status = String(subtask.status || '').trim().toLowerCase();
+        if (status === 'done') {
+            doneSet.add(sid);
+        } else if (status === 'blocked') {
+            blockedSet.add(sid);
+        }
+
+        var cb = document.getElementById(sid);
+        if (cb && cb.type === 'checkbox') {
+            cb.checked = status === 'done';
+        }
+
+        if (String(subtask.source_type || '').trim().toLowerCase() === 'manual') {
+            upsertManualSubtaskFromApi(subtask);
+        }
+
+        if (subtask.ticket_id && typeof TASK_TA_MAP !== 'undefined' && TASK_TA_MAP) {
+            TASK_TA_MAP[sid] = String(subtask.ticket_id).toUpperCase();
+        }
+    });
+
+    COMPLETED_TASKS.length = 0;
+    doneSet.forEach(function(taskId) {
+        COMPLETED_TASKS.push(taskId);
+    });
+
+    BLOCKED_TASKS.length = 0;
+    blockedSet.forEach(function(taskId) {
+        BLOCKED_TASKS.push(taskId);
+    });
+}
+
+function applyApiCommentsToTicket(ticketId, comments) {
+    var targetId = String(ticketId || '').toUpperCase();
+    if (!targetId) return;
+    var items = window.PB_ITEMS || [];
+    var target = null;
+
+    for (var i = 0; i < items.length; i++) {
+        if (String(items[i].id || '').toUpperCase() === targetId) {
+            target = items[i];
+            break;
+        }
+    }
+    if (!target) return;
+
+    target.comments = (comments || []).map(function(comment) {
+        return {
+            at: String(comment && comment.created_at || ''),
+            by: String(comment && comment.actor || 'Dashboard UI'),
+            text: String(comment && comment.comment_text || '')
+        };
+    });
+}
+
+function queueDashboardHoursPersistence(weekNum, entry, options) {
+    options = options || {};
+    var week = parseInt(weekNum, 10);
+    if (isNaN(week) || week < 1) return Promise.resolve();
+    var payload = entry || {};
+    var actor = options.actor || 'Dashboard UI';
+
+    var run = DASHBOARD_API_SYNC_QUEUE.then(function() {
+        return dashboardApiRequest('PUT', '/hours/' + week, {
+            date_range_label: String(payload.dates || payload.date_range_label || ''),
+            sprint_code: normalizeApiSprintToUi(payload.sprint || payload.sprint_code, 'TBD'),
+            hours: Number(payload.hours || 0) || 0,
+            notes: String(payload.notes || ''),
+            actor: actor,
+            source: 'ui'
+        });
+    });
+
+    DASHBOARD_API_SYNC_QUEUE = run.catch(function(err) {
+        logDashboardApiError(err);
+    });
+    return run;
+}
+
+function queueDashboardRiskPersistence(risks, options) {
+    options = options || {};
+    var entries = Array.isArray(risks) ? risks : [];
+    if (!entries.length) return Promise.resolve();
+    var actor = options.actor || 'Dashboard UI';
+
+    var run = DASHBOARD_API_SYNC_QUEUE.then(async function() {
+        for (var i = 0; i < entries.length; i++) {
+            var risk = entries[i] || {};
+            var riskId = String(risk.id || '').trim();
+            var riskText = String(risk.risk || '').trim();
+            if (!riskId || !riskText) continue;
+
+            var payload = {
+                id: riskId,
+                risk: riskText,
+                likelihood: String(risk.like || risk.likelihood || 'M').toUpperCase(),
+                impact: String(risk.impact || 'M').toUpperCase(),
+                mitigation: String(risk.mitigation || ''),
+                sprint_code: normalizeApiSprintToUi(risk.sprint || risk.sprint_code, 'TBD'),
+                status: String(risk.status || 'open').toLowerCase(),
+                actor: actor,
+                source: 'ui'
+            };
+
+            var created = await dashboardApiRequest('POST', '/risks', payload, { allowStatuses: [409] });
+            if (created && created.status === 409) {
+                await dashboardApiRequest('PUT', '/risks/' + encodeURIComponent(riskId), payload);
+            }
+        }
+    });
+
+    DASHBOARD_API_SYNC_QUEUE = run.catch(function(err) {
+        logDashboardApiError(err);
+    });
+    return run;
+}
+
+function queueDashboardDecisionPersistence(decisions, options) {
+    options = options || {};
+    var entries = Array.isArray(decisions) ? decisions : [];
+    if (!entries.length) return Promise.resolve();
+    var actor = options.actor || 'Dashboard UI';
+
+    var run = DASHBOARD_API_SYNC_QUEUE.then(async function() {
+        for (var i = 0; i < entries.length; i++) {
+            var decision = entries[i] || {};
+            var decisionId = String(decision.id || '').trim();
+            var title = String(decision.title || '').trim();
+            if (!decisionId || !title) continue;
+
+            var payload = {
+                id: decisionId,
+                date_label: String(decision.date || decision.date_label || ''),
+                sprint_code: normalizeApiSprintToUi(decision.sprint || decision.sprint_code, 'TBD'),
+                title: title,
+                chosen: String(decision.chosen || ''),
+                considered: String(decision.considered || ''),
+                rationale: String(decision.why || decision.rationale || ''),
+                actor: actor,
+                source: 'ui'
+            };
+
+            var created = await dashboardApiRequest('POST', '/decisions', payload, { allowStatuses: [409] });
+            if (created && created.status === 409) {
+                await dashboardApiRequest('PUT', '/decisions/' + encodeURIComponent(decisionId), payload);
+            }
+        }
+    });
+
+    DASHBOARD_API_SYNC_QUEUE = run.catch(function(err) {
+        logDashboardApiError(err);
+    });
+    return run;
+}
+
+window.dashboardApiLoadHours = function() {
+    return dashboardApiRequest('GET', '/hours').then(function(resp) {
+        if (!resp || !resp.body || !resp.body.data || !Array.isArray(resp.body.data.items)) return [];
+        return resp.body.data.items;
+    });
+};
+
+window.dashboardApiSaveHoursEntry = function(weekNum, entry) {
+    return queueDashboardHoursPersistence(weekNum, entry, { actor: 'Dashboard UI' });
+};
+
+window.dashboardApiSeedHours = function(entries) {
+    var rows = Array.isArray(entries) ? entries : [];
+    if (!rows.length) return Promise.resolve();
+
+    var run = DASHBOARD_API_SYNC_QUEUE.then(async function() {
+        for (var i = 0; i < rows.length; i++) {
+            var row = rows[i] || {};
+            if (!row.num) continue;
+            await dashboardApiRequest('PUT', '/hours/' + parseInt(row.num, 10), {
+                date_range_label: String(row.dates || ''),
+                sprint_code: normalizeApiSprintToUi(row.sprint, 'TBD'),
+                hours: Number(row.hours || 0) || 0,
+                notes: String(row.notes || ''),
+                actor: 'Dashboard Seed',
+                source: 'seed'
+            });
+        }
+    });
+
+    DASHBOARD_API_SYNC_QUEUE = run.catch(function(err) {
+        logDashboardApiError(err);
+    });
+    return run;
+};
+
+window.dashboardApiLoadRisks = function() {
+    return dashboardApiRequest('GET', '/risks').then(function(resp) {
+        if (!resp || !resp.body || !resp.body.data || !Array.isArray(resp.body.data.items)) return [];
+        return resp.body.data.items;
+    });
+};
+
+window.dashboardApiSeedRisks = function(risks) {
+    return queueDashboardRiskPersistence(risks, { actor: 'Dashboard Seed' });
+};
+
+window.dashboardApiLoadDecisions = function() {
+    return dashboardApiRequest('GET', '/decisions').then(function(resp) {
+        if (!resp || !resp.body || !resp.body.data || !Array.isArray(resp.body.data.items)) return [];
+        return resp.body.data.items;
+    });
+};
+
+window.dashboardApiSeedDecisions = function(decisions) {
+    return queueDashboardDecisionPersistence(decisions, { actor: 'Dashboard Seed' });
+};
+
+window.dashboardApiLoadTicketComments = function(ticketId) {
+    var id = String(ticketId || '').toUpperCase();
+    if (!id) return Promise.resolve([]);
+    return dashboardApiRequest('GET', '/tickets/' + encodeURIComponent(id) + '/comments').then(function(resp) {
+        if (!resp || !resp.body || !resp.body.data || !Array.isArray(resp.body.data.items)) return [];
+        return resp.body.data.items;
+    });
+};
+
+var DASHBOARD_API_BOOTSTRAP_PROMISE = null;
+
+window.dashboardApiBootstrapWorkspace = function() {
+    if (DASHBOARD_API_BOOTSTRAP_PROMISE) return DASHBOARD_API_BOOTSTRAP_PROMISE;
+
+    var run = DASHBOARD_API_SYNC_QUEUE.then(async function() {
+        var ticketResp = await dashboardApiRequest('GET', '/tickets');
+        var apiTickets = (ticketResp && ticketResp.body && ticketResp.body.data && Array.isArray(ticketResp.body.data.items))
+            ? ticketResp.body.data.items
+            : [];
+
+        if (!apiTickets.length) {
+            return { tickets: 0, subtasks: 0, comments: 0 };
+        }
+
+        for (var i = 0; i < apiTickets.length; i++) {
+            upsertLocalTicketFromApi(apiTickets[i]);
+        }
+
+        var subtaskResp = await dashboardApiRequest('GET', '/subtasks');
+        var apiSubtasks = (subtaskResp && subtaskResp.body && subtaskResp.body.data && Array.isArray(subtaskResp.body.data.items))
+            ? subtaskResp.body.data.items
+            : [];
+        if (apiSubtasks.length) {
+            applyApiSubtaskOverlay(apiSubtasks);
+        }
+
+        var commentCount = 0;
+        for (var j = 0; j < apiTickets.length; j++) {
+            var ticketId = String(apiTickets[j] && apiTickets[j].id || '').toUpperCase();
+            if (!ticketId) continue;
+            try {
+                var commentsResp = await dashboardApiRequest('GET', '/tickets/' + encodeURIComponent(ticketId) + '/comments');
+                var comments = (commentsResp && commentsResp.body && commentsResp.body.data && Array.isArray(commentsResp.body.data.items))
+                    ? commentsResp.body.data.items
+                    : [];
+                applyApiCommentsToTicket(ticketId, comments);
+                commentCount += comments.length;
+            } catch (commentErr) {
+                logDashboardApiError(commentErr);
+            }
+        }
+
+        return {
+            tickets: apiTickets.length,
+            subtasks: apiSubtasks.length,
+            comments: commentCount
+        };
+    });
+
+    DASHBOARD_API_SYNC_QUEUE = run.catch(function(err) {
+        logDashboardApiError(err);
+    });
+
+    DASHBOARD_API_BOOTSTRAP_PROMISE = run.finally(function() {
+        DASHBOARD_API_BOOTSTRAP_PROMISE = null;
+    });
+
+    return DASHBOARD_API_BOOTSTRAP_PROMISE;
+};
+
 function computeRuntimeTaskState() {
     hydrateTaskTaMapFromBoards();
     var doneSet = new Set();
@@ -5455,9 +6543,35 @@ function applyTaskStateToBoards() {
 function syncTaskStatesFromData(options) {
     options = options || {};
     if (window.__TASK_STATE_SYNC_ACTIVE) return;
+    var persistPromise = null;
     window.__TASK_STATE_SYNC_ACTIVE = true;
     try {
+        var prevDoneSet = new Set(COMPLETED_TASKS.slice());
+        var prevBlockedSet = new Set(BLOCKED_TASKS.slice());
         var runtime = computeRuntimeTaskState();
+        var nextDoneSet = new Set(runtime.doneIds);
+        var nextBlockedSet = new Set(runtime.blockedIds);
+
+        var changedTaskSet = new Set();
+        nextDoneSet.forEach(function(taskId) {
+            if (!prevDoneSet.has(taskId)) changedTaskSet.add(taskId);
+        });
+        nextBlockedSet.forEach(function(taskId) {
+            if (!prevBlockedSet.has(taskId)) changedTaskSet.add(taskId);
+        });
+        prevDoneSet.forEach(function(taskId) {
+            if (!nextDoneSet.has(taskId)) changedTaskSet.add(taskId);
+        });
+        prevBlockedSet.forEach(function(taskId) {
+            if (!nextBlockedSet.has(taskId)) changedTaskSet.add(taskId);
+        });
+        if (Array.isArray(options.persistTaskIds)) {
+            options.persistTaskIds.forEach(function(taskId) {
+                var cleaned = String(taskId || '').trim();
+                if (cleaned) changedTaskSet.add(cleaned);
+            });
+        }
+
         COMPLETED_TASKS.length = 0;
         BLOCKED_TASKS.length = 0;
         Array.prototype.push.apply(COMPLETED_TASKS, runtime.doneIds);
@@ -5476,9 +6590,20 @@ function syncTaskStatesFromData(options) {
         if (!options.skipDashboard && typeof loadSprintDashboard === 'function') {
             loadSprintDashboard(CURRENT_DASH_SPRINT);
         }
+
+        if (options.persistToApi && changedTaskSet.size && typeof queueDashboardTaskPersistence === 'function') {
+            var silentApiFailures = options.silentApiFailures;
+            if (typeof silentApiFailures === 'undefined') silentApiFailures = true;
+            persistPromise = queueDashboardTaskPersistence(Array.from(changedTaskSet), {
+                includeDetail: !!options.persistDetails,
+                actor: options.persistActor || 'Dashboard UI',
+                silent: !!silentApiFailures
+            });
+        }
     } finally {
         window.__TASK_STATE_SYNC_ACTIVE = false;
     }
+    return persistPromise;
 }
 
 function updateAreaCount(areaId) {
@@ -5651,8 +6776,28 @@ function applyTaskResolutionUpdate() {
     if (byInput) detail.updatedBy = byInput;
 
     updateTaskModalRenderedValues(detail);
-    if (typeof syncTaskStatesFromData === 'function') syncTaskStatesFromData();
-    document.getElementById('tm-save-status').textContent = 'Updated in page memory only. Nothing is stored in localStorage, and no one else sees this until Dashboard/index.html is committed and deployed.';
+    var saveStatus = document.getElementById('tm-save-status');
+    saveStatus.textContent = 'Saving to dashboard API...';
+
+    var persistPromise = null;
+    if (typeof syncTaskStatesFromData === 'function') {
+        persistPromise = syncTaskStatesFromData({
+            persistToApi: true,
+            persistTaskIds: [ACTIVE_TASK_MODAL_ID],
+            persistDetails: true,
+            silentApiFailures: false
+        });
+    }
+
+    if (persistPromise && typeof persistPromise.then === 'function') {
+        persistPromise.then(function() {
+            saveStatus.textContent = 'Saved to dashboard API.';
+        }).catch(function(err) {
+            saveStatus.textContent = 'Saved in this page, but dashboard API sync failed: ' + (err && err.message ? err.message : 'unknown error');
+        });
+    } else {
+        saveStatus.textContent = 'Saved in this page. Dashboard API sync adapter is unavailable.';
+    }
 }
 
 function copyTaskResolutionSnippet() {
@@ -5673,7 +6818,7 @@ function copyTaskResolutionSnippet() {
 
     if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(snippet).then(function() {
-            status.textContent = 'Code snippet copied. Paste it into TASK_DETAILS in Dashboard/index.html and commit to publish it for everyone.';
+            status.textContent = 'JS snapshot copied for backup/audit use.';
         }).catch(function() {
             status.textContent = 'Could not auto-copy. Select and copy manually: ' + snippet;
         });
@@ -5704,7 +6849,7 @@ function openTaskModal(taskId, titleText, eyebrow) {
     document.getElementById('tm-date-input').value = detail.dateInput || (detail.timestamp && detail.timestamp.length >= 10 ? detail.timestamp.slice(0, 10) : '');
     document.getElementById('tm-timestamp-input').value = detail.timestamp || '';
     document.getElementById('tm-updatedby-input').value = detail.updatedBy || '';
-    document.getElementById('tm-save-status').textContent = 'Manual entry is enabled. Nothing here is stored in localStorage. It becomes visible to everyone only after a commit/deploy.';
+    document.getElementById('tm-save-status').textContent = 'Manual entry is enabled. Saving writes to the dashboard API automatically.';
 
     document.getElementById('task-modal-overlay').style.display = 'block';
     document.getElementById('task-modal').style.display = 'block';
@@ -5717,6 +6862,7 @@ function openParentTaskModal(taId, groupEl, sprintLabel) {
     var done = subtasks.filter(function(s) { return s.done; }).length;
     var blocked = subtasks.filter(function(s) { return s.blocked; }).length;
     var parentKey = parentTaskKey(taId);
+    TASK_TA_MAP[parentKey] = taId;
 
     if (!TASK_DETAILS[parentKey]) TASK_DETAILS[parentKey] = { taId: taId };
     var detail = TASK_DETAILS[parentKey];
@@ -5745,7 +6891,7 @@ function openParentTaskModal(taId, groupEl, sprintLabel) {
     document.getElementById('tm-date-input').value = detail.dateInput || (detail.timestamp && detail.timestamp.length >= 10 ? detail.timestamp.slice(0, 10) : '');
     document.getElementById('tm-timestamp-input').value = detail.timestamp || '';
     document.getElementById('tm-updatedby-input').value = detail.updatedBy || '';
-    document.getElementById('tm-save-status').textContent = 'You are editing the parent TA ticket entry. Changes remain in page memory until Dashboard/index.html is committed/deployed.';
+    document.getElementById('tm-save-status').textContent = 'You are editing the parent TA ticket entry. Saving writes to the dashboard API automatically.';
 
     document.getElementById('task-modal-overlay').style.display = 'block';
     document.getElementById('task-modal').style.display = 'block';
@@ -7425,8 +8571,6 @@ initTasks();
 
 /* ── HOURS LOG ── */
 (function initHoursLog() {
-    // ── HARDCODED HOURS DATA — Claude updates this each week ──
-    // To update: change hours and notes for each week. Leave future weeks at 0/''.
     const HOURS_DATA = [
         { num:1,  dates:'Apr 6 – Apr 12',  sprint:'S12', hours:15,   notes:'Sprint 12 kickoff. PM dashboard built (Gantt, Risk Register, Decision Log, Hours Log, Weekly Report, Retrospective, DoD, Sprint board, burndown/burnup/velocity). Resolved 8 issues: routing, hardcoded credentials, debug prints, broken import, dead file. Dashboard nav restructured. Apr 10: EC2 found stopped — restarted via CLI (AWS console locked, root MFA lost). Full code analysis — discovered disk 88% critical, inverted spread math, and 6 additional issues. Game count verified 7,269. Area 4 audit: Amplify confirmed live at production URL; all 14 frontend pages operational after EC2 restore.' },
         { num:2,  dates:'Apr 13 – Apr 19', sprint:'S12', hours:17,  notes:'Sprint 12 close + inter-sprint planning. Verified EC2, PostgreSQL, and frontend walkthrough complete. Published project to Handshake AI Showcase. Fixed production meta description. Sprint board audit — TA-001, TA-002, TA-004, TA-009 confirmed done. Apr 19: PM dashboard — Product Backlog Tracker redesign, sprint filter automation, print/download export, sprint selector, S13 pre-planning and backlog cleanup.' },
@@ -7440,12 +8584,84 @@ initTasks();
         { num:10, dates:'Jun 8 – Jun 13',  sprint:'S16', hours:0,   notes:'' },
     ];
 
+    var hoursSaveTimers = {};
+
     // Determine current week index (0-based) by date
     const TERM_START = new Date('2026-04-06');
     const today = new Date();
     today.setHours(0,0,0,0);
     const daysSinceStart = Math.floor((today - TERM_START) / 86400000);
     const currentWeekIdx = Math.min(Math.max(Math.floor(daysSinceStart / 7), 0), 9);
+
+    function setHoursSyncStatus(message, isError) {
+        var statusEl = document.getElementById('hours-sync-status');
+        if (!statusEl) return;
+        statusEl.textContent = message || '';
+        statusEl.style.color = isError ? '#fca5a5' : '#94a3b8';
+    }
+
+    function findHoursWeek(weekNum) {
+        for (var i = 0; i < HOURS_DATA.length; i++) {
+            if (parseInt(HOURS_DATA[i].num, 10) === parseInt(weekNum, 10)) return HOURS_DATA[i];
+        }
+        return null;
+    }
+
+    function renderSummary() {
+        var total = 0;
+        var weeksLogged = 0;
+        HOURS_DATA.forEach(function(w) {
+            var h = Number(w.hours || 0);
+            if (h > 0) {
+                total += h;
+                weeksLogged += 1;
+            }
+        });
+
+        var avg = weeksLogged > 0 ? (total / weeksLogged).toFixed(1) : '0';
+        var weeksLeft = Math.max(0, 10 - currentWeekIdx - 1);
+        var el = function(id) { return document.getElementById(id); };
+        if (el('hours-total')) el('hours-total').textContent = total || '0';
+        if (el('hours-avg')) el('hours-avg').textContent = avg;
+        if (el('hours-weeks-logged')) el('hours-weeks-logged').textContent = weeksLogged;
+        if (el('hours-weeks-left')) el('hours-weeks-left').textContent = weeksLeft;
+    }
+
+    function queueHoursSave(week) {
+        if (!week || !week.num) return;
+        var timerKey = String(week.num);
+        if (hoursSaveTimers[timerKey]) {
+            clearTimeout(hoursSaveTimers[timerKey]);
+            hoursSaveTimers[timerKey] = null;
+        }
+
+        setHoursSyncStatus('Saving Week ' + week.num + ' to dashboard API...');
+
+        hoursSaveTimers[timerKey] = setTimeout(function() {
+            hoursSaveTimers[timerKey] = null;
+            if (typeof window.dashboardApiSaveHoursEntry !== 'function') {
+                setHoursSyncStatus('Dashboard API adapter unavailable for hours saves.', true);
+                return;
+            }
+
+            window.dashboardApiSaveHoursEntry(week.num, week).then(function() {
+                setHoursSyncStatus('Hours updated in dashboard API (Week ' + week.num + ').');
+            }).catch(function(err) {
+                setHoursSyncStatus('Hours updated on page, but API save failed: ' + (err && err.message ? err.message : 'unknown error'), true);
+            });
+        }, 450);
+    }
+
+    function applyHoursApiRows(rows) {
+        (rows || []).forEach(function(row) {
+            var target = findHoursWeek(row.week_num);
+            if (!target) return;
+            target.dates = String(row.date_range_label || target.dates || '');
+            target.sprint = normalizeApiSprintToUi(row.sprint_code, target.sprint || 'TBD');
+            target.hours = Number(row.hours || 0) || 0;
+            target.notes = String(row.notes || '');
+        });
+    }
 
     function render() {
         const container = document.getElementById('hours-rows');
@@ -7463,26 +8679,72 @@ initTasks();
                     '<span style="display:block;font-size:0.75rem;margin-top:0.1rem;">' + w.dates + '</span>' +
                 '</div>' +
                 '<div class="hours-sprint-badge">' + w.sprint + '</div>' +
-                '<div style="text-align:center;"><span style="font-size:1rem;font-weight:700;color:' + (w.hours > 0 ? '#FFD700' : 'rgba(255,255,255,0.2)') + ';">' + (w.hours > 0 ? w.hours : '—') + '</span></div>' +
-                '<div style="font-size:0.8rem;color:var(--muted);padding-left:0.75rem;">' + (w.notes || '<span style="color:rgba(255,255,255,0.2);">—</span>') + '</div>';
+                '<div style="text-align:center; padding:0 0.35rem;"><input class="hours-input" type="number" min="0" max="80" step="0.5" aria-label="Week ' + w.num + ' hours"></div>' +
+                '<div style="padding-left:0.75rem;"><textarea class="hours-notes" rows="2" aria-label="Week ' + w.num + ' notes" placeholder="Weekly summary notes"></textarea></div>';
+
+            var hoursInput = row.querySelector('.hours-input');
+            var notesInput = row.querySelector('.hours-notes');
+            if (hoursInput) hoursInput.value = Number(w.hours || 0) > 0 ? String(w.hours) : '';
+            if (notesInput) notesInput.value = String(w.notes || '');
+
+            if (hoursInput) {
+                hoursInput.addEventListener('input', function() {
+                    var next = Number(hoursInput.value || 0);
+                    if (isNaN(next) || next < 0) next = 0;
+                    w.hours = next;
+                    renderSummary();
+                    queueHoursSave(w);
+                });
+            }
+
+            if (notesInput) {
+                notesInput.addEventListener('input', function() {
+                    w.notes = notesInput.value || '';
+                    queueHoursSave(w);
+                });
+            }
+
             container.appendChild(row);
         });
 
-        // Summary
-        var total = 0, weeksLogged = 0;
-        HOURS_DATA.forEach(function(w) { if (w.hours > 0) { total += w.hours; weeksLogged++; } });
-        const avg = weeksLogged > 0 ? (total / weeksLogged).toFixed(1) : '0';
-        const weeksLeft = Math.max(0, 10 - currentWeekIdx - 1);
-        const el = function(id) { return document.getElementById(id); };
-        if (el('hours-total'))        el('hours-total').textContent        = total || '0';
-        if (el('hours-avg'))          el('hours-avg').textContent          = avg;
-        if (el('hours-weeks-logged')) el('hours-weeks-logged').textContent = weeksLogged;
-        if (el('hours-weeks-left'))   el('hours-weeks-left').textContent   = weeksLeft;
+        renderSummary();
     }
 
-    window.HOURS_DATA = HOURS_DATA; // expose for report generator
+    function hydrateHoursFromApi() {
+        if (typeof window.dashboardApiLoadHours !== 'function') {
+            setHoursSyncStatus('Dashboard API adapter unavailable. Showing local baseline hours.', true);
+            return;
+        }
+
+        setHoursSyncStatus('Loading hours from dashboard API...');
+        window.dashboardApiLoadHours().then(function(rows) {
+            if (rows && rows.length) {
+                applyHoursApiRows(rows);
+                render();
+                setHoursSyncStatus('Hours loaded from dashboard API.');
+                return;
+            }
+
+            if (typeof window.dashboardApiSeedHours !== 'function') {
+                setHoursSyncStatus('No persisted hours found. Using baseline hours in page.', true);
+                return;
+            }
+
+            setHoursSyncStatus('No persisted hours found. Seeding dashboard API baseline...');
+            window.dashboardApiSeedHours(HOURS_DATA).then(function() {
+                setHoursSyncStatus('Hours baseline seeded to dashboard API.');
+            }).catch(function(err) {
+                setHoursSyncStatus('Could not seed hours baseline: ' + (err && err.message ? err.message : 'unknown error'), true);
+            });
+        }).catch(function(err) {
+            setHoursSyncStatus('Using local baseline hours (API load failed: ' + (err && err.message ? err.message : 'unknown error') + ').', true);
+        });
+    }
+
+    window.HOURS_DATA = HOURS_DATA;
     window.initHoursLog = render;
     render();
+    hydrateHoursFromApi();
 })();
 
 /* ── GANTT CHART ── */
@@ -7612,11 +8874,11 @@ initTasks();
         { id:'TA-015', feature:'Fix background_updater.py missing import',        cat:'Backend',        pri:'High',     effort:'S', sprint:'TBD', status:'Backlog'   },
         { id:'TA-016', feature:'Confirm background updater running in production', cat:'Infrastructure', pri:'High',     effort:'S', sprint:'TBD', status:'Backlog'   },
         { id:'TA-017', feature:'Audit git history for exposed secrets',           cat:'Security',       pri:'High',     effort:'M', sprint:'TBD', status:'Backlog'   },
-        { id:'TA-018', feature:'Retrain XGBoost winner classifier on 2025 data', cat:'ML',             pri:'Critical', effort:'L', sprint:'S14', status:'In Sprint' },
+        { id:'TA-018', feature:'Retrain XGBoost winner classifier on 2025 data', cat:'ML',             pri:'Critical', effort:'L', sprint:'S14', status:'Done' },
         { id:'TA-019', feature:'Retrain spread regressor — document MAE',         cat:'ML',             pri:'Critical', effort:'L', sprint:'S14', status:'In Sprint' },
         { id:'TA-020', feature:'Recalculate Elo ratings through 2025 season',     cat:'ML',             pri:'High',     effort:'M', sprint:'S14', status:'In Sprint' },
-        { id:'TA-021', feature:'Fix ML training schema (hcl_test → hcl) — duplicate of TA-057, consolidated there', cat:'ML', pri:'Critical', effort:'S', sprint:'S14', status:'In Sprint' },
-        { id:'TA-022', feature:'Fix broken SQL in train_xgb_spread.py — duplicate of TA-058, consolidated there',   cat:'ML', pri:'High',     effort:'S', sprint:'S14', status:'In Sprint' },
+        { id:'TA-021', feature:'Fix ML training schema (hcl_test → hcl) — duplicate of TA-057, consolidated there', cat:'ML', pri:'Critical', effort:'S', sprint:'S14', status:'Done' },
+        { id:'TA-022', feature:'Fix broken SQL in train_xgb_spread.py — duplicate of TA-058, consolidated there',   cat:'ML', pri:'High',     effort:'S', sprint:'S14', status:'Done' },
         { id:'TA-023', feature:'Verify no data leakage in feature pipeline',      cat:'ML',             pri:'High',     effort:'M', sprint:'S14', status:'In Sprint' },
         { id:'TA-024', feature:'ML Predictions page showing live results in prod', cat:'Frontend',       pri:'High',     effort:'M', sprint:'S14', status:'In Sprint' },
         { id:'TA-025', feature:'Record model accuracy metrics in ModelPerformance', cat:'ML',            pri:'Medium',   effort:'S', sprint:'S14', status:'In Sprint' },
@@ -7664,7 +8926,7 @@ initTasks();
         { id:'TA-067', feature:'Project Logbook system — real-time developer log with git history viewer (372 commits, 17K lines), live file watcher (log_watcher.py, port 8765), daily archive calendar, and split-screen embed in Dashboard §13. Files: gen_devlog.py, log_watcher.py, embed_devlog.py, START-DEV.bat.', cat:'Dashboard', pri:'Medium', effort:'L', sprint:'S13', status:'Done' },
         { id:'TA-068', feature:'Create missing ml/elo_ratings.py — implement EloRatingSystem class (base_elo, k_factor, home_advantage, mean_reversion). Both elo_tracker.py and predict_elo.py import this file which does not exist; this single missing file causes the entire ML API blueprint to fail to load, returning 404 on all /api/ml/ and /api/elo/ routes.', cat:'ML', pri:'Critical', effort:'S', sprint:'S13', status:'Done' },
         { id:'TA-069', feature:'Fix early return bug in ml/predict_week.py line 171 — return statement placed before NaN/inf handling and ppg/success/ypp differential feature computation, leaving ~20% of features uncalculated. Also fix variable name mismatch: dead code references home_ppg_season but dict uses home_ppg.', cat:'ML', pri:'High', effort:'S', sprint:'S13', status:'Done' },
-        { id:'TA-070', feature:'ML prediction accuracy audit — winner predictions, point spreads, and over/under totals are producing incorrect/unrealistic results. Audit actual 2024–2025 predictions vs outcomes, identify whether root cause is overfitting, data leakage, schema mismatch (hcl_test vs hcl), or feature engineering errors. Must complete after TA-057/068/069 infrastructure fixes.', cat:'ML', pri:'High', effort:'L', sprint:'S14', status:'In Sprint' },
+        { id:'TA-070', feature:'ML prediction accuracy audit — winner predictions, point spreads, and over/under totals are producing incorrect/unrealistic results. Audit actual 2024–2025 predictions vs outcomes, identify whether root cause is overfitting, data leakage, schema mismatch (hcl_test vs hcl), or feature engineering errors. Must complete after TA-057/068/069 infrastructure fixes.', cat:'ML', pri:'High', effort:'L', sprint:'S14', status:'Done' },
         { id:'TA-071', feature:'Monitoring stack research ticket (future sprint) — define phased observability plan: Phase 1 baseline with AWS CloudWatch + CloudWatch Alarms for EC2 health (CPU, memory, disk), Flask API uptime/latency, error-rate alerts, and deployment event visibility; Phase 2 evaluate Grafana dashboards (CloudWatch datasource) for unified app + dashboard + infrastructure views; Phase 3 evaluate ELK/OpenSearch only if log volume/search needs justify added ops overhead. Deliverable: recommendation matrix (cost, setup complexity, alert quality, maintenance load) and implementation trigger criteria for each phase.', cat:'Infrastructure', pri:'Medium', effort:'M', sprint:'TBD', status:'Backlog' },
         { id:'TA-072', feature:'Create a new AWS account for EC2 continuity and migrate runtime access/deployment operations so Sprint 14 ML execution is not blocked by current AWS account lockout constraints.', cat:'Infrastructure', pri:'Critical', effort:'M', sprint:'S14', status:'In Sprint' },
         { id:'TA-073', feature:'Fix live_data_updater.py fetcher path mismatch — updater checks root multi_source_data_fetcher.py but file is not present there, causing continuous update loop errors and skipped refresh runs.', cat:'Backend', pri:'High', effort:'S', sprint:'TBD', status:'Backlog' },
@@ -7756,7 +9018,7 @@ function showSprintView(view, btn) {
 
 /* ── RISK REGISTER ── */
 (function buildRiskRegister() {
-    var risks = [
+    var DEFAULT_RISKS = [
         { id:'R-01', risk:'EC2 instance inaccessible / Flask service down',           like:'H', impact:'H', mitigation:'SSH in immediately; systemctl restart hc-lombardo.service. Health-check endpoint monitors uptime.', sprint:'S12', status:'open' },
         { id:'R-02', risk:'Hardcoded credentials exposed in GitHub',                   like:'L', impact:'H', mitigation:'Fixed S12 — all hardcoded passwords removed from api_server.py, api_routes_hcl.py, api_routes_live_scores.py. Moved to environment variables.',          sprint:'S12', status:'resolved' },
         { id:'R-03', risk:'2025 NFL data missing or malformed in NFLverse',            like:'M', impact:'H', mitigation:'Validate row counts and spot-check game data after ingest. Fall back to ESPN API if needed.',          sprint:'S13', status:'open' },
@@ -7769,29 +9031,85 @@ function showSprintView(view, btn) {
         { id:'R-10', risk:'AWS console inaccessible — root MFA device lost',          like:'H', impact:'M', mitigation:'EC2 managed via CLI workaround. Call AWS support 1-800-879-2747 to reset root MFA. Do not create new resources until resolved.', sprint:'S12', status:'open' },
         { id:'R-11', risk:'AI delivery failure from prior assistant created repeated errors, cost increase, and scope slippage in dashboard automation work', like:'H', impact:'H', mitigation:'Risk response implemented Apr 22, 2026: prior assistant was terminated and replaced with GPT-5.3-Codex. Controls now in effect: contract-first execution, no-assumption rule, per-task chat isolation, mandatory review before deploy, and explicit verification against requirements. Incident reference: dashboard navbar/logbook automation failure consumed ~16 hours and required ~2.5 days to recover, taking time away from core app delivery.', sprint:'All', status:'implemented' },
     ];
+    var risks = DEFAULT_RISKS.map(function(r) { return Object.assign({}, r); });
 
     var statusStyle = { open: 'background:rgba(251,191,36,0.15);color:#fbbf24;border:1px solid rgba(251,191,36,0.3);', implemented: 'background:rgba(59,130,246,0.15);color:#93c5fd;border:1px solid rgba(59,130,246,0.35);', resolved: 'background:rgba(16,185,129,0.15);color:#10b981;border:1px solid rgba(16,185,129,0.3);', accepted: 'background:rgba(148,163,184,0.1);color:#94a3b8;border:1px solid rgba(148,163,184,0.2);' };
     var likeStyle  = { H: 'color:#f87171;font-weight:700;', M: 'color:#fbbf24;font-weight:700;', L: 'color:#10b981;font-weight:700;' };
 
     var tbody = document.getElementById('risk-tbody');
+    var statusEl = document.getElementById('risk-sync-status');
     if (!tbody) return;
-    tbody.innerHTML = risks.map(function(r, i) {
-        var bg = i % 2 === 0 ? 'background:rgba(255,255,255,0.03);' : '';
-        return '<tr style="border-bottom:1px solid var(--border-subtle);' + bg + '">' +
-            '<td style="padding:0.7rem 0.75rem; color:var(--muted); white-space:nowrap;">' + r.id + '</td>' +
-            '<td style="padding:0.7rem 0.75rem; color:#f1f5f9;">' + r.risk + '</td>' +
-            '<td style="padding:0.7rem 0.75rem; text-align:center;' + (likeStyle[r.like]||'') + '">' + r.like + '</td>' +
-            '<td style="padding:0.7rem 0.75rem; text-align:center;' + (likeStyle[r.impact]||'') + '">' + r.impact + '</td>' +
-            '<td style="padding:0.7rem 0.75rem; color:var(--muted);">' + r.mitigation + '</td>' +
-            '<td style="padding:0.7rem 0.75rem; text-align:center; color:var(--muted);">' + r.sprint + '</td>' +
-            '<td style="padding:0.7rem 0.75rem; text-align:center;"><span style="padding:0.15rem 0.6rem; border-radius:9999px; font-size:0.72rem; font-weight:700;' + (statusStyle[r.status]||'') + '">' + r.status + '</span></td>' +
-        '</tr>';
-    }).join('');
+
+    function setRiskSyncStatus(message, isError) {
+        if (!statusEl) return;
+        statusEl.textContent = message || '';
+        statusEl.style.color = isError ? '#fca5a5' : '#94a3b8';
+    }
+
+    function normalizeRiskEntry(entry) {
+        return {
+            id: String(entry && entry.id || ''),
+            risk: String(entry && entry.risk || ''),
+            like: String(entry && (entry.likelihood || entry.like) || 'M').toUpperCase(),
+            impact: String(entry && entry.impact || 'M').toUpperCase(),
+            mitigation: String(entry && entry.mitigation || ''),
+            sprint: normalizeApiSprintToUi(entry && (entry.sprint_code || entry.sprint), 'TBD'),
+            status: String(entry && entry.status || 'open').toLowerCase()
+        };
+    }
+
+    function renderRiskRows(rows) {
+        tbody.innerHTML = (rows || []).map(function(r, i) {
+            var bg = i % 2 === 0 ? 'background:rgba(255,255,255,0.03);' : '';
+            return '<tr style="border-bottom:1px solid var(--border-subtle);' + bg + '">' +
+                '<td style="padding:0.7rem 0.75rem; color:var(--muted); white-space:nowrap;">' + escapeHtmlLite(r.id) + '</td>' +
+                '<td style="padding:0.7rem 0.75rem; color:#f1f5f9;">' + escapeHtmlLite(r.risk) + '</td>' +
+                '<td style="padding:0.7rem 0.75rem; text-align:center;' + (likeStyle[r.like]||'') + '">' + escapeHtmlLite(r.like) + '</td>' +
+                '<td style="padding:0.7rem 0.75rem; text-align:center;' + (likeStyle[r.impact]||'') + '">' + escapeHtmlLite(r.impact) + '</td>' +
+                '<td style="padding:0.7rem 0.75rem; color:var(--muted);">' + escapeHtmlLite(r.mitigation) + '</td>' +
+                '<td style="padding:0.7rem 0.75rem; text-align:center; color:var(--muted);">' + escapeHtmlLite(r.sprint) + '</td>' +
+                '<td style="padding:0.7rem 0.75rem; text-align:center;"><span style="padding:0.15rem 0.6rem; border-radius:9999px; font-size:0.72rem; font-weight:700;' + (statusStyle[r.status]||'') + '">' + escapeHtmlLite(r.status) + '</span></td>' +
+            '</tr>';
+        }).join('');
+    }
+
+    window.RISK_DATA = risks;
+    renderRiskRows(risks);
+
+    if (typeof window.dashboardApiLoadRisks !== 'function') {
+        setRiskSyncStatus('Dashboard API adapter unavailable. Showing local baseline risks.', true);
+        return;
+    }
+
+    setRiskSyncStatus('Loading risks from dashboard API...');
+    window.dashboardApiLoadRisks().then(function(items) {
+        if (items && items.length) {
+            risks = items.map(normalizeRiskEntry);
+            window.RISK_DATA = risks;
+            renderRiskRows(risks);
+            setRiskSyncStatus('Risk register loaded from dashboard API.');
+            return;
+        }
+
+        if (typeof window.dashboardApiSeedRisks !== 'function') {
+            setRiskSyncStatus('No persisted risks found. Showing baseline risk register.', true);
+            return;
+        }
+
+        setRiskSyncStatus('No persisted risks found. Seeding dashboard API baseline...');
+        window.dashboardApiSeedRisks(risks).then(function() {
+            setRiskSyncStatus('Risk baseline seeded to dashboard API.');
+        }).catch(function(err) {
+            setRiskSyncStatus('Could not seed risk baseline: ' + (err && err.message ? err.message : 'unknown error'), true);
+        });
+    }).catch(function(err) {
+        setRiskSyncStatus('Using local baseline risks (API load failed: ' + (err && err.message ? err.message : 'unknown error') + ').', true);
+    });
 })();
 
 /* ── DECISION LOG ── */
 (function buildDecisionLog() {
-    var decisions = [
+    var DEFAULT_DECISIONS = [
         {
             id: 'D-01', date: 'Sep 2025', sprint: 'Pre-S1',
             title: 'PostgreSQL over MongoDB',
@@ -7849,23 +9167,79 @@ function showSprintView(view, btn) {
             why: 'For a solo student workflow with uneven daily availability, effort points provide the most accurate and comparable unit across sprints. This avoids distortion from variable subtask splitting and does not require budget or hours tracking. Burndown timing excludes weekends and planned no-work days so schedule views reflect real capacity rather than a fictional full-time team cadence.',
         },
     ];
+    var decisions = DEFAULT_DECISIONS.map(function(d) { return Object.assign({}, d); });
 
     var container = document.getElementById('decision-list');
+    var statusEl = document.getElementById('decision-sync-status');
     if (!container) return;
-    container.innerHTML = decisions.map(function(d) {
-        return '<div style="background:var(--card); border:1px solid var(--border); border-radius:0.75rem; padding:1.25rem 1.5rem;">' +
-            '<div style="display:flex; align-items:baseline; gap:1rem; flex-wrap:wrap; margin-bottom:0.6rem;">' +
-                '<span style="font-size:0.7rem; color:var(--muted); background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:9999px; padding:0.1rem 0.6rem;">' + d.id + '</span>' +
-                '<h3 style="font-size:1rem; font-weight:700; color:#f1f5f9; margin:0;">' + d.title + '</h3>' +
-                '<span style="margin-left:auto; font-size:0.75rem; color:var(--muted);">' + d.date + ' &nbsp;·&nbsp; ' + d.sprint + '</span>' +
-            '</div>' +
-            '<div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem 1.5rem; margin-bottom:0.75rem;">' +
-                '<div><span style="font-size:0.7rem; text-transform:uppercase; letter-spacing:0.08em; color:#10b981; font-weight:700;">Chosen</span><div style="font-size:0.84rem; color:#f1f5f9; margin-top:0.15rem;">' + d.chosen + '</div></div>' +
-                '<div><span style="font-size:0.7rem; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted); font-weight:700;">Also Considered</span><div style="font-size:0.84rem; color:var(--muted); margin-top:0.15rem;">' + d.considered + '</div></div>' +
-            '</div>' +
-            '<div style="font-size:0.83rem; color:var(--muted); line-height:1.6; padding-top:0.6rem; border-top:1px solid var(--border-subtle);"><strong style="color:#FFD700;">Why:</strong> ' + d.why + '</div>' +
-        '</div>';
-    }).join('');
+
+    function setDecisionSyncStatus(message, isError) {
+        if (!statusEl) return;
+        statusEl.textContent = message || '';
+        statusEl.style.color = isError ? '#fca5a5' : '#94a3b8';
+    }
+
+    function normalizeDecisionEntry(entry) {
+        return {
+            id: String(entry && entry.id || ''),
+            date: String(entry && (entry.date_label || entry.date) || ''),
+            sprint: normalizeApiSprintToUi(entry && (entry.sprint_code || entry.sprint), 'TBD'),
+            title: String(entry && entry.title || ''),
+            chosen: String(entry && entry.chosen || ''),
+            considered: String(entry && entry.considered || ''),
+            why: String(entry && (entry.rationale || entry.why) || '')
+        };
+    }
+
+    function renderDecisionRows(rows) {
+        container.innerHTML = (rows || []).map(function(d) {
+            return '<div style="background:var(--card); border:1px solid var(--border); border-radius:0.75rem; padding:1.25rem 1.5rem;">' +
+                '<div style="display:flex; align-items:baseline; gap:1rem; flex-wrap:wrap; margin-bottom:0.6rem;">' +
+                    '<span style="font-size:0.7rem; color:var(--muted); background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:9999px; padding:0.1rem 0.6rem;">' + escapeHtmlLite(d.id) + '</span>' +
+                    '<h3 style="font-size:1rem; font-weight:700; color:#f1f5f9; margin:0;">' + escapeHtmlLite(d.title) + '</h3>' +
+                    '<span style="margin-left:auto; font-size:0.75rem; color:var(--muted);">' + escapeHtmlLite(d.date) + ' &nbsp;·&nbsp; ' + escapeHtmlLite(d.sprint) + '</span>' +
+                '</div>' +
+                '<div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem 1.5rem; margin-bottom:0.75rem;">' +
+                    '<div><span style="font-size:0.7rem; text-transform:uppercase; letter-spacing:0.08em; color:#10b981; font-weight:700;">Chosen</span><div style="font-size:0.84rem; color:#f1f5f9; margin-top:0.15rem;">' + escapeHtmlLite(d.chosen) + '</div></div>' +
+                    '<div><span style="font-size:0.7rem; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted); font-weight:700;">Also Considered</span><div style="font-size:0.84rem; color:var(--muted); margin-top:0.15rem;">' + escapeHtmlLite(d.considered) + '</div></div>' +
+                '</div>' +
+                '<div style="font-size:0.83rem; color:var(--muted); line-height:1.6; padding-top:0.6rem; border-top:1px solid var(--border-subtle);"><strong style="color:#FFD700;">Why:</strong> ' + escapeHtmlLite(d.why) + '</div>' +
+            '</div>';
+        }).join('');
+    }
+
+    window.DECISION_DATA = decisions;
+    renderDecisionRows(decisions);
+
+    if (typeof window.dashboardApiLoadDecisions !== 'function') {
+        setDecisionSyncStatus('Dashboard API adapter unavailable. Showing local baseline decisions.', true);
+        return;
+    }
+
+    setDecisionSyncStatus('Loading decisions from dashboard API...');
+    window.dashboardApiLoadDecisions().then(function(items) {
+        if (items && items.length) {
+            decisions = items.map(normalizeDecisionEntry);
+            window.DECISION_DATA = decisions;
+            renderDecisionRows(decisions);
+            setDecisionSyncStatus('Decision log loaded from dashboard API.');
+            return;
+        }
+
+        if (typeof window.dashboardApiSeedDecisions !== 'function') {
+            setDecisionSyncStatus('No persisted decisions found. Showing baseline decision log.', true);
+            return;
+        }
+
+        setDecisionSyncStatus('No persisted decisions found. Seeding dashboard API baseline...');
+        window.dashboardApiSeedDecisions(decisions).then(function() {
+            setDecisionSyncStatus('Decision baseline seeded to dashboard API.');
+        }).catch(function(err) {
+            setDecisionSyncStatus('Could not seed decision baseline: ' + (err && err.message ? err.message : 'unknown error'), true);
+        });
+    }).catch(function(err) {
+        setDecisionSyncStatus('Using local baseline decisions (API load failed: ' + (err && err.message ? err.message : 'unknown error') + ').', true);
+    });
 })();
 
 /* ── WEEKLY REPORT GENERATOR ── */
@@ -8006,22 +9380,8 @@ function showSprintView(view, btn) {
         return Math.min(Math.max(Math.floor(days / 7) + 1, 1), 10);
     }
 
-    // ── HARDCODED ISSUES DATA — Claude updates this each week with April's input ──
-    var ISSUES_DATA = {
-        w1:  {
-            issues:     'EC2 instance found completely stopped on Apr 10 — no prior warning. Disk at 88% (5.9G/6.8G), 871MB free; server will crash if full. AWS console inaccessible because root MFA device was lost, blocking all console-based management.',
-            prevention: 'EC2 restarted via CLI workaround (aws ec2 start-instances). CLI credentials confirmed working with root access keys in ~/.aws/credentials. AWS support number documented (1-800-879-2747) to reset root MFA. Disk cleanup added as P1 blocker for Sprint 12.'
-        },
-        w2:  { issues: '', prevention: '' },
-        w3:  { issues: '', prevention: '' },
-        w4:  { issues: '', prevention: '' },
-        w5:  { issues: '', prevention: '' },
-        w6:  { issues: '', prevention: '' },
-        w7:  { issues: '', prevention: '' },
-        w8:  { issues: '', prevention: '' },
-        w9:  { issues: '', prevention: '' },
-        w10: { issues: '', prevention: '' },
-    };
+    // Optional per-week overrides can be provided via window.REPORT_ISSUES_OVERRIDES.
+    var ISSUES_DATA = window.REPORT_ISSUES_OVERRIDES || {};
 
     // Per-week expected progress text (hardcoded where specific; falls back to sprint goals)
     var EXPECTED_THIS_WEEK = {
@@ -8056,7 +9416,7 @@ function showSprintView(view, btn) {
         var nextMeta  = WEEK_META[Math.min(weekNum, 9)];
         var nextGoals = NEXT_SPRINT_GOALS[nextMeta.sprint] || [];
         var nextIsTBD = nextGoals.length === 1 && nextGoals[0].indexOf('TBD') !== -1;
-        // Manual notes override; fallback to auto summary from sprint ticket state
+        // Optional week-specific override; default to auto summary from sprint ticket state.
         var taskSummary = getSprintTicketSummary(meta.sprintKey);
         var issuesData = ISSUES_DATA[weekKey] || {};
         var issues     = issuesData.issues     || taskSummary.issues || '';
@@ -8914,9 +10274,16 @@ function showSprintView(view, btn) {
 
     function syncMappedTicketStates() {
         var changed = false;
+        var changedIds = [];
         (window.PB_ITEMS || []).forEach(function(item) {
-            if (syncTicketStatusFromSprint(item)) changed = true;
+            if (syncTicketStatusFromSprint(item)) {
+                changed = true;
+                changedIds.push(item.id);
+            }
         });
+        if (changedIds.length && typeof window.dashboardApiSyncTickets === 'function') {
+            window.dashboardApiSyncTickets(changedIds);
+        }
         return changed;
     }
 
@@ -9148,6 +10515,10 @@ function showSprintView(view, btn) {
             updatedBy: 'Scrum Master'
         };
 
+        manualSubtasks.forEach(function(subtask) {
+            if (subtask && subtask.id) TASK_TA_MAP[subtask.id] = id;
+        });
+
         addHistory(item, 'Ticket created', 'Scrum Master');
         if (manualSubtasks.length) addHistory(item, 'Added ' + manualSubtasks.length + ' manual subtasks', 'Scrum Master');
         window.PB_ITEMS.unshift(item);
@@ -9156,6 +10527,15 @@ function showSprintView(view, btn) {
         closeCreateTicketModal();
         window.renderTaskTracker();
         window.openTicketEditor(id);
+
+        if (typeof window.dashboardApiSyncTicket === 'function') {
+            window.dashboardApiSyncTicket(id).catch(function(err) {
+                logDashboardApiError(err);
+            });
+        }
+        if (manualSubtasks.length && typeof window.dashboardApiSyncTasks === 'function') {
+            window.dashboardApiSyncTasks(manualSubtasks.map(function(subtask) { return subtask.id; }), false);
+        }
     };
 
     window.openTicketEditor = function(ticketId) {
@@ -9167,6 +10547,23 @@ function showSprintView(view, btn) {
         document.getElementById('ticket-editor-overlay').style.display = 'block';
         document.getElementById('ticket-editor-modal').style.display = 'block';
         document.body.style.overflow = 'hidden';
+
+        if (typeof window.dashboardApiLoadTicketComments === 'function') {
+            window.dashboardApiLoadTicketComments(ticketId).then(function(comments) {
+                var fresh = (comments || []).map(function(c) {
+                    return {
+                        at: String(c && c.created_at || ''),
+                        by: String(c && c.actor || 'Dashboard UI'),
+                        text: String(c && c.comment_text || '')
+                    };
+                });
+
+                item.comments = fresh;
+                if (activeTicketId === ticketId) renderEditor(item);
+            }).catch(function(err) {
+                logDashboardApiError(err);
+            });
+        }
     };
 
     window.closeTicketEditor = function() {
@@ -9224,6 +10621,12 @@ function showSprintView(view, btn) {
         if (typeof refreshBlockerCounts === 'function') refreshBlockerCounts();
         renderEditor(item);
         window.renderTaskTracker();
+
+        if (typeof window.dashboardApiSyncTicket === 'function') {
+            window.dashboardApiSyncTicket(item.id).catch(function(err) {
+                logDashboardApiError(err);
+            });
+        }
     };
 
     window.addTicketComment = function() {
@@ -9238,6 +10641,12 @@ function showSprintView(view, btn) {
         input.value = '';
         renderEditor(item);
         window.renderTaskTracker();
+
+        if (typeof window.dashboardApiAddComment === 'function') {
+            window.dashboardApiAddComment(item.id, text, 'Scrum Master').catch(function(err) {
+                logDashboardApiError(err);
+            });
+        }
     };
 
     window.assignTicketOwner = function(ticketId) {
@@ -9266,6 +10675,12 @@ function showSprintView(view, btn) {
 
         if (activeTicketId === ticketId) renderEditor(item);
         window.renderTaskTracker();
+
+        if (typeof window.dashboardApiSyncTicket === 'function') {
+            window.dashboardApiSyncTicket(item.id).catch(function(err) {
+                logDashboardApiError(err);
+            });
+        }
     };
 
     window.renderTaskTracker = function() {
@@ -9454,6 +10869,22 @@ function showSprintView(view, btn) {
     normalizeItems();
     initTicketWorkspaceTab();
     window.renderTaskTracker();
+
+    if (typeof window.dashboardApiBootstrapWorkspace === 'function') {
+        window.dashboardApiBootstrapWorkspace().then(function() {
+            normalizeItems();
+            if (typeof syncTaskStatesFromData === 'function') syncTaskStatesFromData({ skipTracker: true });
+            if (typeof refreshBlockerCounts === 'function') refreshBlockerCounts(true);
+            window.renderTaskTracker();
+
+            if (activeTicketId) {
+                var activeItem = findItem(activeTicketId);
+                if (activeItem) renderEditor(activeItem);
+            }
+        }).catch(function(err) {
+            logDashboardApiError(err);
+        });
+    }
 })();
 </script>
 <!-- ── TASK RESOLUTION MODAL ── -->
@@ -9491,8 +10922,8 @@ function showSprintView(view, btn) {
     <div class="tm-section" id="tm-manual-entry-section">
         <div class="tm-label">Manual Resolution Entry</div>
         <div class="tm-value" style="margin-bottom:0.5rem; color:#93c5fd;">
-            Enter/edit details below. These edits stay in page memory only. No localStorage is used.
-            They are shared with everyone only after Dashboard/index.html is committed and deployed.
+            Enter/edit details below. Clicking save writes updates to the dashboard API automatically.
+            Local page state updates immediately, and no localStorage is used for these records.
         </div>
         <textarea id="tm-resolution-input" class="tm-textarea" placeholder="Type resolution details..."></textarea>
         <div class="tm-form-grid">
@@ -9510,7 +10941,7 @@ function showSprintView(view, btn) {
             </div>
         </div>
         <div class="tm-actions">
-            <button class="tm-btn primary" type="button" onclick="applyTaskResolutionUpdate()">Apply In Memory</button>
+            <button class="tm-btn primary" type="button" onclick="applyTaskResolutionUpdate()">Save Resolution</button>
             <button class="tm-btn" type="button" onclick="copyTaskResolutionSnippet()">Copy JS Snippet</button>
         </div>
         <div class="tm-save-status" id="tm-save-status"></div>
@@ -9596,7 +11027,7 @@ function showSprintView(view, btn) {
     <div style="background:rgba(99,179,237,0.1); border:1px solid rgba(99,179,237,0.28); border-radius:0.45rem; padding:0.5rem 0.65rem; margin-bottom:0.75rem; font-size:0.76rem; color:#cbd5e1; line-height:1.5;">
         <strong style="color:#93c5fd;">Editor Guidance:</strong> Active sprint tickets are editable. Completed tickets and tickets from closed sprints lock core fields. You can always add comments and resolution details for audit history.
         <span style="display:block; color:#bfdbfe; margin-top:0.2rem;">Description = problem statement + impact. Resolution = technical fix details and validation evidence.</span>
-        <span style="display:block; color:#94a3b8; margin-top:0.2rem;">All edits are page-memory only and are not stored in localStorage.</span>
+        <span style="display:block; color:#94a3b8; margin-top:0.2rem;">Ticket edits save to the dashboard API automatically. localStorage is not used for these records.</span>
     </div>
 
     <div style="display:grid; grid-template-columns:1.1fr 0.9fr; gap:0.95rem; align-items:start;">

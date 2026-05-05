@@ -9,6 +9,7 @@ import psycopg2
 import sys
 import os
 import logging
+import datetime as dt
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -96,6 +97,49 @@ def get_db_connection():
         logger.error(f"Database connection error: {e}")
         raise
 
+
+def get_latest_completed_season(cursor):
+    """Return latest season with completed games; fallback to current year."""
+    try:
+        cursor.execute(
+            """
+            SELECT COALESCE(MAX(season), EXTRACT(YEAR FROM NOW())::int)
+            FROM hcl.games
+            WHERE home_score IS NOT NULL
+              AND away_score IS NOT NULL
+            """
+        )
+        row = cursor.fetchone()
+        if not row:
+            return dt.datetime.now().year
+        return int(row[0])
+    except Exception:
+        return dt.datetime.now().year
+
+
+def fetch_team_stats_fallback(cursor, season=None):
+    """Fallback team stats from HCL schema when legacy teams table is empty."""
+    target_season = int(season or get_latest_completed_season(cursor))
+    cursor.execute(
+        """
+        SELECT
+            team AS abbreviation,
+            team AS name,
+            SUM(CASE WHEN result = 'W' THEN 1 ELSE 0 END) AS wins,
+            SUM(CASE WHEN result = 'L' THEN 1 ELSE 0 END) AS losses,
+            SUM(CASE WHEN result = 'T' THEN 1 ELSE 0 END) AS ties,
+            ROUND(AVG(points)::numeric, 1) AS ppg,
+            COUNT(*) AS games_played
+        FROM hcl.team_game_stats
+        WHERE season = %s
+        GROUP BY team
+        ORDER BY team
+        """,
+        (target_season,)
+    )
+    rows = cursor.fetchall()
+    return rows, target_season
+
 # API Routes (these must come before the React catch-all route)
 
 @app.route('/health')
@@ -134,29 +178,59 @@ def get_teams():
             ORDER BY name
         """)
         teams = cursor.fetchall()
+
+        using_fallback = False
+        fallback_season = None
+        if not teams:
+            using_fallback = True
+            teams, fallback_season = fetch_team_stats_fallback(cursor)
+
         cursor.close()
         conn.close()
         
-        teams_list = [
-            {
-                "name": team[0],
-                "abbreviation": team[1],
-                "wins": team[2],
-                "losses": team[3],
-                "ties": team[4],
-                "ppg": float(team[5]) if team[5] is not None else None,
-                "pa": float(team[6]) if team[6] is not None else None,
-                "games_played": team[7],
-                "last_updated": team[8].isoformat() if team[8] else None
-            }
-            for team in teams
-        ]
+        if using_fallback:
+            teams_list = [
+                {
+                    "name": team[1],
+                    "abbreviation": team[0],
+                    "wins": team[2],
+                    "losses": team[3],
+                    "ties": team[4],
+                    "ppg": float(team[5]) if team[5] is not None else None,
+                    "pa": None,
+                    "games_played": team[6],
+                    "last_updated": None
+                }
+                for team in teams
+            ]
+        else:
+            teams_list = [
+                {
+                    "name": team[0],
+                    "abbreviation": team[1],
+                    "wins": team[2],
+                    "losses": team[3],
+                    "ties": team[4],
+                    "ppg": float(team[5]) if team[5] is not None else None,
+                    "pa": float(team[6]) if team[6] is not None else None,
+                    "games_played": team[7],
+                    "last_updated": team[8].isoformat() if team[8] else None
+                }
+                for team in teams
+            ]
         
         logger.info(f"Retrieved {len(teams_list)} teams")
-        return jsonify({
+        payload = {
             "count": len(teams_list),
             "teams": teams_list
-        })
+        }
+        if using_fallback:
+            payload["source"] = "hcl.team_game_stats"
+            payload["season"] = fallback_season
+        else:
+            payload["source"] = "teams"
+
+        return jsonify(payload)
     except Exception as e:
         logger.error(f"Failed to fetch teams: {e}")
         return jsonify({
@@ -172,15 +246,35 @@ def get_teams_count():
         cursor = conn.cursor()
         cursor.execute("SELECT COUNT(*) FROM teams")
         count = cursor.fetchone()[0]
+
+        source = "teams"
+        season = None
+        if count == 0:
+            season = get_latest_completed_season(cursor)
+            cursor.execute(
+                """
+                SELECT COUNT(DISTINCT team)
+                FROM hcl.team_game_stats
+                WHERE season = %s
+                """,
+                (season,)
+            )
+            count = cursor.fetchone()[0]
+            source = "hcl.team_game_stats"
+
         cursor.close()
         conn.close()
         
         logger.info(f"Team count: {count}")
-        return jsonify({
+        payload = {
             "count": count,
             "expected": 32,
             "status": "correct" if count == 32 else "warning"
-        })
+        }
+        payload["source"] = source
+        if season is not None:
+            payload["season"] = season
+        return jsonify(payload)
     except Exception as e:
         logger.error(f"Failed to get team count: {e}")
         return jsonify({
@@ -199,11 +293,51 @@ def get_team_by_abbr(abbreviation):
             WHERE UPPER(abbreviation) = UPPER(%s)
         """, (abbreviation,))
         team = cursor.fetchone()
+
+        using_fallback = False
+        fallback_season = None
+        if not team:
+            fallback_season = get_latest_completed_season(cursor)
+            cursor.execute(
+                """
+                SELECT
+                    team AS abbreviation,
+                    team AS name,
+                    SUM(CASE WHEN result = 'W' THEN 1 ELSE 0 END) AS wins,
+                    SUM(CASE WHEN result = 'L' THEN 1 ELSE 0 END) AS losses,
+                    SUM(CASE WHEN result = 'T' THEN 1 ELSE 0 END) AS ties,
+                    ROUND(AVG(points)::numeric, 1) AS ppg,
+                    COUNT(*) AS games_played
+                FROM hcl.team_game_stats
+                WHERE season = %s
+                  AND UPPER(team) = UPPER(%s)
+                GROUP BY team
+                """,
+                (fallback_season, abbreviation)
+            )
+            team = cursor.fetchone()
+            using_fallback = team is not None
+
         cursor.close()
         conn.close()
         
         if team:
             logger.info(f"Retrieved team: {abbreviation}")
+            if using_fallback:
+                return jsonify({
+                    "name": team[1],
+                    "abbreviation": team[0],
+                    "wins": team[2],
+                    "losses": team[3],
+                    "ties": team[4],
+                    "ppg": float(team[5]) if team[5] is not None else None,
+                    "pa": None,
+                    "games_played": team[6],
+                    "last_updated": None,
+                    "source": "hcl.team_game_stats",
+                    "season": fallback_season
+                })
+
             return jsonify({
                 "name": team[0],
                 "abbreviation": team[1],
@@ -213,7 +347,8 @@ def get_team_by_abbr(abbreviation):
                 "ppg": float(team[5]) if team[5] is not None else None,
                 "pa": float(team[6]) if team[6] is not None else None,
                 "games_played": team[7],
-                "last_updated": team[8].isoformat() if team[8] else None
+                "last_updated": team[8].isoformat() if team[8] else None,
+                "source": "teams"
             })
         else:
             logger.warning(f"Team not found: {abbreviation}")

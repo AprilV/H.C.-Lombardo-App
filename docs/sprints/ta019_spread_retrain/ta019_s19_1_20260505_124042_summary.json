@@ -1,0 +1,34 @@
+{
+  "subtask": "s19_1",
+  "ticket": "TA-019",
+  "objective": "Validate spread training query/data extraction returns complete expected rows",
+  "generated_at": "2026-05-05T12:40:42",
+  "schema": "hcl",
+  "checks": {
+    "expected_total_rows": 1519,
+    "extracted_total_rows": 1519,
+    "expected_unique_game_ids": 1519,
+    "extracted_unique_game_ids": 1519,
+    "expected_by_season": {
+      "2020": 240,
+      "2021": 256,
+      "2022": 255,
+      "2023": 256,
+      "2024": 256,
+      "2025": 256
+    },
+    "extracted_by_season": {
+      "2020": 240,
+      "2021": 256,
+      "2022": 255,
+      "2023": 256,
+      "2024": 256,
+      "2025": 256
+    },
+    "duplicate_rows_in_extraction": 0,
+    "missing_expected_game_ids_count": 0,
+    "extra_game_ids_count": 0,
+    "null_feature_cells": 0
+  },
+  "ready_for_retrain": true
+}

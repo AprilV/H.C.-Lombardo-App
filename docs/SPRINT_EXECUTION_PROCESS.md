@@ -14,8 +14,29 @@ Execute whatever the task requires — curl an endpoint, SSH the server, open th
 **Step 2: Log any issues found**
 If a problem is discovered, add it to the Product Backlog immediately as a new TA item (next available TA-xxx ID) in `BACKLOG_DATA` inside `pmforge_dashboard/index.html`. Do NOT fix it during this sprint. Fixing goes in a future sprint.
 
-**Step 3: Mark the subtasks done**
-Add the completed task IDs to `COMPLETED_TASKS` and resolutions to `TASK_DETAILS` in `pmforge_dashboard/index.html` right now - not at the end.
+**Step 3: Mark the subtasks done (automation-first)**
+Use one command to write dashboard bookkeeping and run the closure receipt:
+
+```powershell
+./scripts/maintenance/dashboard_complete_subtask.ps1 -Sprint <active_sprint_num> -Subtask <task_id> -Resolution "<what was completed>"
+```
+
+What this command does automatically:
+- Adds subtask to `COMPLETED_TASKS`
+- Removes subtask from `BLOCKED_TASKS` (if present)
+- Upserts `TASK_DETAILS` (resolution/date/timestamp/updatedBy)
+- Updates parent PB item status (`In Sprint` or `Done` based on sibling completion)
+- Creates timestamped pre-write backup snapshots under `backups/dashboard_automation`
+- Emits backup evidence (`backup_path`, `backup_sha256`, `dashboard_sha256_after`)
+- Runs `dashboard_closure_receipt.ps1` fail-closed validation
+
+If rollback is needed, restore from a snapshot with:
+
+```powershell
+./scripts/maintenance/dashboard_restore_backup.ps1 -BackupFile <backup_path>
+```
+
+Use manual edits only for exceptional recovery scenarios.
 
 **Step 4: Update ALL charts and metrics — every time, no exceptions**
 - Determine active sprint (`CURRENT_DASH_SPRINT`) and use that sprint's board totals.
@@ -35,6 +56,12 @@ Add the completed task IDs to `COMPLETED_TASKS` and resolutions to `TASK_DETAILS
 - Update "Dashboard last updated" line/date context.
 - At sprint kickoff, generate the new sprint board from assignments with: `python scripts/maintenance/dashboard_sprint_rollover.py apply --sprint <next_sprint_num>`.
 - Run rollover verification gate in `docs/dashboard_product/DASHBOARD_SPRINT_ROLLOVER_AUTOMATION_RUNBOOK.md` before declaring chart automation complete.
+- Run closure gate before any completion claim:
+	- `python scripts/maintenance/dashboard_closure_gate.py check --sprint <active_sprint_num>`
+	- `python scripts/maintenance/dashboard_closure_gate.py subtask --sprint <active_sprint_num> --subtask <task_id>`
+	- One-command receipt (recommended): `./scripts/maintenance/dashboard_closure_receipt.ps1 -Sprint <active_sprint_num> -Subtask <task_id>`
+- Preferred: use the automation command in Step 3, which already runs the one-command receipt for the same subtask.
+- If closure gate fails, fix dashboard bookkeeping first. Do not proceed.
 
 **Step 5: Commit and deploy**
 ```

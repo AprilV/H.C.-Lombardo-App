@@ -45,17 +45,26 @@ If these arrays are not updated, the chart will be stale even when tasks/backlog
 
 ## Daily Update Order (Mandatory)
 
-1. Update completed subtasks in `COMPLETED_TASKS`.
-2. Add/refresh resolution entries in `TASK_DETAILS` (resolution, date, timestamp, updatedBy).
-3. Update Product Backlog item statuses (`Done`, `In Progress`, `Blocked`, `To Do`) in `PB_ITEMS`.
-4. Update active sprint archive (`SPRINT_ARCHIVE[N]`) for:
+1. Preferred: run one command per completed subtask:
+	- `./scripts/maintenance/dashboard_complete_subtask.ps1 -Sprint <active_sprint_num> -Subtask <task_id> -Resolution "<what was completed>"`
+	- This writes `COMPLETED_TASKS`, `TASK_DETAILS`, PB parent status, creates a timestamped pre-write backup under `backups/dashboard_automation`, and runs closure receipt automatically.
+	- Capture the emitted evidence fields in command output: `backup_path`, `backup_sha256`, `dashboard_sha256_after`.
+	- Rollback command (if needed): `./scripts/maintenance/dashboard_restore_backup.ps1 -BackupFile <backup_path>`
+2. If manual recovery is needed, update completed subtasks in `COMPLETED_TASKS`.
+3. If manual recovery is needed, add/refresh resolution entries in `TASK_DETAILS` (resolution, date, timestamp, updatedBy).
+4. If manual recovery is needed, update Product Backlog item statuses (`Done`, `In Progress`, `Blocked`, `To Do`) in `PB_ITEMS`.
+5. Update active sprint archive (`SPRINT_ARCHIVE[N]`) for:
 	- `rag.msg` / `rag.detail`
 	- `metrics.taskPct` / `metrics.taskCount` narrative text
 	- `burndown`, `burnup`, `velocity`, `severity` arrays
 	- chart insight text fields (`burndownInsight`, `burnupInsight`, `velocityInsight`, `severityInsight`)
-5. Update Open Blockers list UI (`.blocker-list`) to match current risks.
-6. Reload dashboard and verify top strip + all four charts match the board/backlog state.
-7. Commit + push.
+6. Update Open Blockers list UI (`.blocker-list`) to match current risks.
+7. Reload dashboard and verify top strip + all four charts match the board/backlog state.
+8. Run closure gate (must pass before commit):
+	- `python scripts/maintenance/dashboard_closure_gate.py check --sprint <active_sprint_num>`
+	- `python scripts/maintenance/dashboard_closure_gate.py subtask --sprint <active_sprint_num> --subtask <task_id>`
+	- One-command receipt (recommended): `./scripts/maintenance/dashboard_closure_receipt.ps1 -Sprint <active_sprint_num> -Subtask <task_id>`
+9. Commit + push.
 
 ---
 
@@ -235,6 +244,7 @@ Auto-generates from `HOURS_DATA` + `COMPLETED_TASKS`. No manual update needed un
 - Burndown insight sentence must match current burndown array values.
 - Severity insight sentence must match current severity array values.
 - Blocker list text must match current active risks in sprint.
+- Closure gate command must pass with no failures.
 
 ---
 
