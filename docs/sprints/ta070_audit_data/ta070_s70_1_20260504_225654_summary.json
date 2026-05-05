@@ -1,0 +1,24 @@
+{
+  "generated_at_utc": "2026-05-04T22:56:54.321763+00:00",
+  "database": "nfl_analytics",
+  "schema": "hcl",
+  "seasons": [
+    2024,
+    2025
+  ],
+  "row_count": 272,
+  "by_season": {
+    "2024": 272
+  },
+  "line_coverage": {
+    "rows_with_vegas_spread": 272,
+    "rows_with_vegas_total": 272,
+    "rows_with_predicted_scores": 256
+  },
+  "files": {
+    "combined": "docs\\sprints\\ta070_audit_data\\ta070_s70_1_20260504_225654_combined.csv",
+    "winner": "docs\\sprints\\ta070_audit_data\\ta070_s70_1_20260504_225654_winner.csv",
+    "spread": "docs\\sprints\\ta070_audit_data\\ta070_s70_1_20260504_225654_spread.csv",
+    "total": "docs\\sprints\\ta070_audit_data\\ta070_s70_1_20260504_225654_total.csv"
+  }
+}

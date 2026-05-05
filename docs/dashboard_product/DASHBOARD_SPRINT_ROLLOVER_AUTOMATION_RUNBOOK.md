@@ -32,9 +32,48 @@ This exists to protect app delivery time. The dashboard is a support artifact an
 
 1. Sprint planning decisions:
    - Which tickets are assigned to the new sprint in `PB_ITEMS`.
-2. Sprint board authoring for new sprint subtasks.
+2. Final subtask wording quality for generated sprint boards.
 3. Task resolution narratives in `TASK_DETAILS`.
 4. Human narrative text that is not generated from arrays.
+
+## CLI Rollover Generator (new)
+
+Use the generator to create sprint boards from assigned backlog tickets instead of hand-authoring HTML.
+
+Script location:
+- `scripts/maintenance/dashboard_sprint_rollover.py`
+
+### Commands
+
+1. Check current sprint coverage:
+
+```bash
+python scripts/maintenance/dashboard_sprint_rollover.py check --sprint 14
+```
+
+2. Generate next sprint board from `PB_ITEMS` assignments:
+
+```bash
+python scripts/maintenance/dashboard_sprint_rollover.py apply --sprint 15
+```
+
+3. If replacing a previously generated board intentionally:
+
+```bash
+python scripts/maintenance/dashboard_sprint_rollover.py apply --sprint 15 --force
+```
+
+### Generator behavior
+
+1. Reads sprint schedule metadata from `SPRINT_SCHEDULE`.
+2. Reads sprint ticket assignments from `PB_ITEMS`.
+3. Creates grouped sprint board subtasks and progress widgets for the target sprint.
+4. Preserves existing dashboard wiring so runtime sync/metrics continue to work.
+
+### Required post-generation review
+
+1. Verify generated subtasks match actual execution intent (edit wording if needed).
+2. Run the mandatory verification gate below before declaring rollover complete.
 
 ## Mandatory Verification Gate (before declaring done)
 
@@ -108,11 +147,13 @@ No verification evidence means not done.
 
 ## Fast Rollover Routine (2-3 minutes)
 
-1. Hard refresh dashboard.
-2. Run verification snippet.
-3. Confirm top-strip Sprint Tasks Done text and Burndown insight sentence.
-4. If values pass, continue app work.
-5. If values fail, fix immediately before continuing sprint feature work.
+1. Assign sprint tickets in `PB_ITEMS`.
+2. Run generator: `python scripts/maintenance/dashboard_sprint_rollover.py apply --sprint <next_sprint_num>`.
+3. Hard refresh dashboard.
+4. Run verification snippet.
+5. Confirm top-strip Sprint Tasks Done text and Burndown insight sentence.
+6. If values pass, continue app work.
+7. If values fail, fix immediately before continuing sprint feature work.
 
 ## Scope Reminder
 

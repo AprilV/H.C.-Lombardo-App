@@ -1,0 +1,122 @@
+{
+  "generated_at_utc": "2026-05-05T00:50:35.845045+00:00",
+  "schema": "hcl",
+  "training_script_inspection": {
+    "training_script": "ml/train_xgb_winner.py",
+    "uses_load_data_schema_hcl": true,
+    "contains_hcl_test_reference": false
+  },
+  "missing_required_columns": {
+    "games": [],
+    "team_game_stats": []
+  },
+  "dataset_metrics": {
+    "row_count_total": 1584,
+    "class_distribution": {
+      "home_wins": 856,
+      "away_wins": 724,
+      "ties": 4,
+      "home_win_rate_pct": 54.04
+    },
+    "line_coverage": {
+      "missing_spread_line_rows": 50,
+      "missing_total_line_rows": 50,
+      "missing_spread_line_pct": 3.16,
+      "missing_total_line_pct": 3.16
+    },
+    "team_stats_join_coverage": {
+      "missing_home_stats_rows": 38,
+      "missing_away_stats_rows": 38,
+      "missing_home_stats_pct": 2.4,
+      "missing_away_stats_pct": 2.4
+    },
+    "split_counts": {
+      "train_rows_season_lte_2023": 1059,
+      "validation_rows_2024": 269,
+      "test_rows_2025": 256
+    },
+    "by_season": [
+      {
+        "season": 2020,
+        "games": 253,
+        "home_wins": 126,
+        "away_wins": 126,
+        "ties": 1,
+        "missing_spread_line": 0,
+        "missing_total_line": 0,
+        "missing_home_stats_row": 0,
+        "missing_away_stats_row": 0
+      },
+      {
+        "season": 2021,
+        "games": 269,
+        "home_wins": 139,
+        "away_wins": 129,
+        "ties": 1,
+        "missing_spread_line": 0,
+        "missing_total_line": 0,
+        "missing_home_stats_row": 0,
+        "missing_away_stats_row": 0
+      },
+      {
+        "season": 2022,
+        "games": 268,
+        "home_wins": 154,
+        "away_wins": 113,
+        "ties": 1,
+        "missing_spread_line": 0,
+        "missing_total_line": 0,
+        "missing_home_stats_row": 0,
+        "missing_away_stats_row": 0
+      },
+      {
+        "season": 2023,
+        "games": 269,
+        "home_wins": 155,
+        "away_wins": 114,
+        "ties": 0,
+        "missing_spread_line": 0,
+        "missing_total_line": 0,
+        "missing_home_stats_row": 0,
+        "missing_away_stats_row": 0
+      },
+      {
+        "season": 2024,
+        "games": 269,
+        "home_wins": 145,
+        "away_wins": 124,
+        "ties": 0,
+        "missing_spread_line": 0,
+        "missing_total_line": 0,
+        "missing_home_stats_row": 0,
+        "missing_away_stats_row": 0
+      },
+      {
+        "season": 2025,
+        "games": 256,
+        "home_wins": 137,
+        "away_wins": 118,
+        "ties": 1,
+        "missing_spread_line": 50,
+        "missing_total_line": 50,
+        "missing_home_stats_row": 38,
+        "missing_away_stats_row": 38
+      }
+    ]
+  },
+  "readiness": {
+    "checks": {
+      "required_columns_present": true,
+      "training_script_uses_hcl": true,
+      "training_script_has_no_hcl_test": true,
+      "split_train_nonzero": true,
+      "split_validation_2024_nonzero": true,
+      "split_test_2025_nonzero": true
+    },
+    "ready_for_retrain": true
+  },
+  "files": {
+    "summary": "docs/sprints/ta018_winner_retrain/ta018_s18_1_20260505_005035_summary.json",
+    "report": "docs/sprints/ta018_winner_retrain/ta018_s18_1_20260505_005035_report.md"
+  }
+}

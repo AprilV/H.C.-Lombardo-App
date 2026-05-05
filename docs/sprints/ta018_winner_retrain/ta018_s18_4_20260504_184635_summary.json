@@ -1,0 +1,58 @@
+{
+  "generated_at_utc": "2026-05-05T01:46:42.466575+00:00",
+  "task": "TA-018 s18_4",
+  "smoke_test": {
+    "endpoint": "/api/ml/predict-week/<season>/<week>",
+    "attempts": [
+      {
+        "season": 2025,
+        "week": 1,
+        "status_code": 200,
+        "total_games": 16,
+        "prediction_count": 16,
+        "error": null
+      }
+    ],
+    "selected_request": {
+      "season": 2025,
+      "week": 1
+    },
+    "selected_status_code": 200,
+    "selected_total_games": 16,
+    "selected_prediction_count": 16,
+    "response_model_label": "NFL Neural Network V2",
+    "response_accuracy_label": "65.55% on 2025 test set"
+  },
+  "loaded_predictor": {
+    "predictor_loaded": true,
+    "loaded_model_class": "XGBClassifier",
+    "loaded_win_feature_count": 16,
+    "loaded_spread_feature_count": 46
+  },
+  "winner_artifact_reference": {
+    "model_path": "ml/models/xgb_winner.pkl",
+    "model_size_bytes": 225661,
+    "model_last_modified_local": "2026-05-04T17:55:42.159946",
+    "model_sha256": "abfbd796356f4da214dbe2c10ccc52f7f7ead23d1e45fea7515168e49363a35b",
+    "feature_path": "ml/models/xgb_winner_features.txt",
+    "feature_size_bytes": 271,
+    "feature_last_modified_local": "2026-05-04T17:55:42.161445",
+    "feature_sha256": "683a7276a0efd1d8342f04c5c9c2420a6c5a6cc992fe8f650cbf4e688cde9511",
+    "feature_count": 16
+  },
+  "sample_prediction": {
+    "present": true,
+    "game_id": "2025_01_DAL_PHI",
+    "home_team": "PHI",
+    "away_team": "DAL",
+    "predicted_winner": "DAL",
+    "confidence": 0.7869957089424133
+  },
+  "checks": {
+    "endpoint_status_200": true,
+    "predictor_loaded": true,
+    "winner_model_file_exists": true,
+    "winner_feature_file_exists": true,
+    "winner_feature_count_nonzero": true
+  }
+}

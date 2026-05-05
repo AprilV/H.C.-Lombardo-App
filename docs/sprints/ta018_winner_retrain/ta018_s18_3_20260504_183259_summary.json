@@ -1,0 +1,52 @@
+{
+  "generated_at_utc": "2026-05-05T01:32:59.558995+00:00",
+  "task": "TA-018 s18_3",
+  "source_retrain_summary": "docs/sprints/ta018_winner_retrain/ta018_s18_2_20260504_175539_summary.json",
+  "artifact_paths": {
+    "model_expected": "ml/models/xgb_winner.pkl",
+    "features_expected": "ml/models/xgb_winner_features.txt",
+    "model_exists": true,
+    "features_exists": true
+  },
+  "model": {
+    "path": "ml/models/xgb_winner.pkl",
+    "size_bytes": 225661,
+    "last_modified_local": "2026-05-04T17:55:42.159946",
+    "sha256": "abfbd796356f4da214dbe2c10ccc52f7f7ead23d1e45fea7515168e49363a35b"
+  },
+  "feature_metadata": {
+    "path": "ml/models/xgb_winner_features.txt",
+    "size_bytes": 271,
+    "last_modified_local": "2026-05-04T17:55:42.161445",
+    "sha256": "683a7276a0efd1d8342f04c5c9c2420a6c5a6cc992fe8f650cbf4e688cde9511",
+    "feature_count": 16,
+    "features": [
+      "home_ppg",
+      "home_yards_pg",
+      "home_pass_yards_pg",
+      "home_rush_yards_pg",
+      "home_yards_per_play",
+      "home_turnovers",
+      "home_third_down_pct",
+      "away_ppg",
+      "away_yards_pg",
+      "away_pass_yards_pg",
+      "away_rush_yards_pg",
+      "away_yards_per_play",
+      "away_turnovers",
+      "away_third_down_pct",
+      "spread_line",
+      "total_line"
+    ]
+  },
+  "retrain_metrics_reference": {
+    "train_accuracy_pct": 75.83,
+    "validation_accuracy_pct": 64.31,
+    "test_accuracy_pct": 62.89
+  },
+  "checks": {
+    "paths_match_expected": true,
+    "non_empty_files": true,
+    "feature_count_nonzero": true
+  }
+}

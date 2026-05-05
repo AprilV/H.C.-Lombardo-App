@@ -33,6 +33,7 @@ Add the completed task IDs to `COMPLETED_TASKS` and resolutions to `TASK_DETAILS
 - Update chart insight text and RAG message so narrative matches the chart values.
 - Update open blockers list text so it matches current active risks.
 - Update "Dashboard last updated" line/date context.
+- At sprint kickoff, generate the new sprint board from assignments with: `python scripts/maintenance/dashboard_sprint_rollover.py apply --sprint <next_sprint_num>`.
 - Run rollover verification gate in `docs/dashboard_product/DASHBOARD_SPRINT_ROLLOVER_AUTOMATION_RUNBOOK.md` before declaring chart automation complete.
 
 **Step 5: Commit and deploy**

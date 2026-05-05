@@ -26,6 +26,7 @@ ARCHIVE_DIR  = REPO / "docs" / "devlog" / "archive"
 SERVE_DIR    = REPO / "docs" / "devlog"
 PORT         = 8765
 MAX_PER_DAY  = 2000  # max entries per daily file before rolling
+EVENT_DEBOUNCE_SECONDS = 0.35
 
 WATCH_EXTS = {
     '.py', '.js', '.jsx', '.ts', '.tsx', '.html', '.css',
@@ -38,15 +39,47 @@ IGNORE_NAMES = {
     'live.json', 'index.json', 'CLAUDE_SESSION_BRIEF.md'
 }
 
+_io_lock = threading.Lock()
+_event_lock = threading.Lock()
+_last_event_at = {}
+
+
+def _safe_resolve(path_like):
+    return Path(path_like).resolve(strict=False)
+
+
+def _is_relative_to(path_obj, parent_obj):
+    try:
+        path_obj.relative_to(parent_obj)
+        return True
+    except ValueError:
+        return False
+
 
 def should_track(path_str):
-    p = Path(path_str)
+    p = _safe_resolve(path_str)
+    if not _is_relative_to(p, _safe_resolve(REPO)):
+        return False
+    # Never record writes to the devlog archive itself; that causes recursion.
+    if _is_relative_to(p, _safe_resolve(ARCHIVE_DIR)):
+        return False
     for part in p.parts:
         if part in IGNORE_NAMES:
             return False
     if p.name.startswith('.'):
         return False
     return p.suffix.lower() in WATCH_EXTS
+
+
+def should_emit_event(event_type, path_str):
+    now = time.time()
+    key = (event_type, str(_safe_resolve(path_str)).lower())
+    with _event_lock:
+        last = _last_event_at.get(key)
+        if last is not None and (now - last) < EVENT_DEBOUNCE_SECONDS:
+            return False
+        _last_event_at[key] = now
+        return True
 
 
 def today():
@@ -72,9 +105,10 @@ def save_day(entries, date_str=None):
     if len(entries) > MAX_PER_DAY:
         entries = entries[-MAX_PER_DAY:]
     ARCHIVE_DIR.mkdir(parents=True, exist_ok=True)
-    with open(archive_path(date_str), 'w', encoding='utf-8') as f:
-        json.dump(entries, f, separators=(',', ':'))
-    update_index()
+    with _io_lock:
+        with open(archive_path(date_str), 'w', encoding='utf-8') as f:
+            json.dump(entries, f, separators=(',', ':'))
+        update_index()
 
 
 def update_index():
@@ -87,7 +121,7 @@ def update_index():
 
 
 def add_entry(event_type, path_str, extra=None):
-    rel = str(Path(path_str).relative_to(REPO)).replace('\\', '/')
+    rel = str(_safe_resolve(path_str).relative_to(_safe_resolve(REPO))).replace('\\', '/')
     ts  = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     entry = {'ts': ts, 'type': event_type, 'file': rel}
     if extra:
@@ -102,23 +136,34 @@ def add_entry(event_type, path_str, extra=None):
 class RepoHandler(FileSystemEventHandler):
 
     def on_modified(self, event):
-        if not event.is_directory and should_track(event.src_path):
-            add_entry('modified', event.src_path)
+        if not event.is_directory and should_track(event.src_path) and should_emit_event('modified', event.src_path):
+            try:
+                add_entry('modified', event.src_path)
+            except Exception as exc:
+                print(f"[log_watcher][WARN] modified event failed: {exc}")
 
     def on_created(self, event):
-        if not event.is_directory and should_track(event.src_path):
-            add_entry('created', event.src_path)
+        if not event.is_directory and should_track(event.src_path) and should_emit_event('created', event.src_path):
+            try:
+                add_entry('created', event.src_path)
+            except Exception as exc:
+                print(f"[log_watcher][WARN] created event failed: {exc}")
 
     def on_deleted(self, event):
-        if not event.is_directory and should_track(event.src_path):
-            add_entry('deleted', event.src_path)
+        if not event.is_directory and should_track(event.src_path) and should_emit_event('deleted', event.src_path):
+            try:
+                add_entry('deleted', event.src_path)
+            except Exception as exc:
+                print(f"[log_watcher][WARN] deleted event failed: {exc}")
 
     def on_moved(self, event):
         if not event.is_directory:
-            if should_track(event.src_path) or should_track(event.dest_path):
-                rel_dest = str(Path(event.dest_path).relative_to(REPO)).replace('\\', '/')
-                add_entry('renamed', event.dest_path,
-                          extra={'from': str(Path(event.src_path).relative_to(REPO)).replace('\\', '/')})
+            if (should_track(event.src_path) or should_track(event.dest_path)) and should_emit_event('renamed', event.dest_path):
+                try:
+                    add_entry('renamed', event.dest_path,
+                              extra={'from': str(_safe_resolve(event.src_path).relative_to(_safe_resolve(REPO))).replace('\\', '/')})
+                except Exception as exc:
+                    print(f"[log_watcher][WARN] moved event failed: {exc}")
 
 
 class CORSHandler(http.server.SimpleHTTPRequestHandler):

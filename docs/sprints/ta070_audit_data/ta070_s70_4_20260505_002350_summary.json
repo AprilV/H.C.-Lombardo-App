@@ -1,0 +1,182 @@
+{
+  "published_at_utc": "2026-05-05T00:23:50.497894+00:00",
+  "source_artifacts": {
+    "s70_1_summary": "docs/sprints/ta070_audit_data/ta070_s70_1_20260504_225654_summary.json",
+    "s70_2_summary": "docs/sprints/ta070_audit_data/ta070_s70_2_20260504_230454_summary.json",
+    "s70_3_summary": "docs/sprints/ta070_audit_data/ta070_s70_3_20260504_233539_summary.json"
+  },
+  "baseline_metrics": {
+    "row_count": 272,
+    "winner_accuracy_pct": 53.31,
+    "winner_correct_games": 145,
+    "winner_evaluable_games": 272,
+    "spread_accuracy_pct": 67.9,
+    "spread_correct_games": 184,
+    "spread_evaluable_games": 271,
+    "margin_mae_points": 12.084,
+    "total_mae_points": 9.723,
+    "total_coverage_pct": 0.0,
+    "predicted_score_coverage_pct": 94.12
+  },
+  "root_cause_findings": [
+    {
+      "finding_id": "F1",
+      "category": "feature_engineering",
+      "severity": "high",
+      "title": "Total predictions are line-anchored, not independently predictive",
+      "evidence": "predicted_total equals vegas_total for 256/256 rows (100.0%), with 0 evaluable total-pick rows",
+      "code_refs": [
+        "ml/predict_week.py:208",
+        "ml/predict_week.py:210",
+        "ml/predict_week.py:211"
+      ]
+    },
+    {
+      "finding_id": "F2",
+      "category": "data_leakage_risk",
+      "severity": "high",
+      "title": "Prediction timestamps indicate retrospective generation for evaluated rows",
+      "evidence": "predicted_at::date > game_date for 256/272 rows (94.12%); predicted_at range 2025-11-20T22:14:50.529687 to 2025-11-20T22:42:01.642579",
+      "code_refs": [
+        "scripts/maintenance/backfill_historical_seasons.py:48",
+        "scripts/maintenance/backfill_historical_seasons.py:58",
+        "api_routes_ml.py:158",
+        "api_routes_ml.py:182"
+      ]
+    },
+    {
+      "finding_id": "F3",
+      "category": "label_consistency",
+      "severity": "medium",
+      "title": "Stored actual margin sign is inconsistent with signed-margin scoring",
+      "evidence": "negative_actual_margin_rows=0 while away_win_games_in_hcl_games=129",
+      "code_refs": [
+        "scripts/maintenance/backfill_historical_seasons.py:106",
+        "api_routes_ml.py:761"
+      ]
+    },
+    {
+      "finding_id": "F4",
+      "category": "data_drift_or_instability",
+      "severity": "medium",
+      "title": "Weekly winner performance is highly volatile without clear directional drift",
+      "evidence": "weekly winner accuracy min=28.57%, max=81.25%, stddev=14.683; early_weeks=53.62%, late_weeks=52.99%",
+      "code_refs": [
+        "docs/sprints/ta070_audit_data/ta070_s70_2_20260504_230454_by_week.csv:2"
+      ]
+    }
+  ],
+  "prioritized_actions": [
+    {
+      "priority": "P0",
+      "action_id": "A1",
+      "title": "Enforce leakage-safe evaluation windows and prediction provenance",
+      "objective": "Separate retrospective backfill records from true pregame predictions and block post-game records from accuracy scoring.",
+      "addresses_findings": [
+        "F2"
+      ],
+      "evidence": "predicted_at::date > game_date for 256/272 rows (94.12%); predicted_at range 2025-11-20T22:14:50.529687 to 2025-11-20T22:42:01.642579",
+      "implementation_scope": [
+        "Add prediction provenance metadata (for example prediction_mode: live/backfill) to ml_predictions",
+        "Restrict scored evaluation cohorts to rows where predicted_at <= game_date and prediction_mode=live",
+        "Retain backfill rows for diagnostics only, not benchmark accuracy claims"
+      ],
+      "acceptance_criteria": [
+        "Published evaluation query excludes post-game predictions by construction",
+        "Model Performance/API metrics show cohort counts for live vs backfill records",
+        "Leakage check in TA-070 rerun reports predicted_after_game_date_pct=0 for benchmark cohort"
+      ],
+      "estimated_effort": "M"
+    },
+    {
+      "priority": "P0",
+      "action_id": "A2",
+      "title": "Decouple total-score predictions from vegas_total line anchoring",
+      "objective": "Produce independently predictive totals so over/under outcomes become measurable and useful.",
+      "addresses_findings": [
+        "F1"
+      ],
+      "evidence": "predicted_total equals vegas_total for 256/256 rows (100.0%), with 0 evaluable total-pick rows",
+      "implementation_scope": [
+        "Implement an explicit total-points model or equation independent of vegas_total",
+        "Store predicted_total directly and derive predicted_home_score/predicted_away_score from that independent total",
+        "Recompute TA-070 metrics and verify non-zero evaluable total-pick coverage"
+      ],
+      "acceptance_criteria": [
+        "predicted_total_equals_vegas_total_pct drops well below 95%",
+        "total_pick_evaluable_rows > 0 for completed games",
+        "s70_2 total accuracy is populated (not null) for evaluated cohort"
+      ],
+      "estimated_effort": "M"
+    },
+    {
+      "priority": "P1",
+      "action_id": "A3",
+      "title": "Standardize signed margin labels across backfill and scoring paths",
+      "objective": "Align margin targets/errors with home-minus-away convention to eliminate label inconsistency.",
+      "addresses_findings": [
+        "F3"
+      ],
+      "evidence": "negative_actual_margin_rows=0 while away_win_games_in_hcl_games=129",
+      "implementation_scope": [
+        "Replace ABS(home_score-away_score) with signed (home_score-away_score) where actual_margin is persisted",
+        "Recalculate margin_prediction_error against signed actual_margin definitions",
+        "Backfill corrected margin fields for affected historical records"
+      ],
+      "acceptance_criteria": [
+        "negative_actual_margin_rows > 0 when away wins exist",
+        "Margin MAE computed with signed convention is stable and documented",
+        "No conflicting margin definitions remain in API and maintenance scripts"
+      ],
+      "estimated_effort": "S-M"
+    },
+    {
+      "priority": "P1",
+      "action_id": "A4",
+      "title": "Add automated TA-070 guardrails to prevent recurrence",
+      "objective": "Convert current diagnostic checks into repeatable quality gates for future prediction runs.",
+      "addresses_findings": [
+        "F1",
+        "F2",
+        "F3"
+      ],
+      "evidence": "High-severity feature/leakage findings require automated prevention, not one-time manual detection.",
+      "implementation_scope": [
+        "Keep ta070_extract/compute/root-cause/publish scripts as repeatable pipeline",
+        "Add threshold checks for leakage pct, line-lock pct, and margin-sign sanity",
+        "Fail verification step when thresholds are violated"
+      ],
+      "acceptance_criteria": [
+        "Single command reruns TA-070 pipeline end-to-end",
+        "Pipeline emits pass/fail status with threshold evidence",
+        "Sprint evidence includes threshold outcomes for each run"
+      ],
+      "estimated_effort": "S"
+    },
+    {
+      "priority": "P2",
+      "action_id": "A5",
+      "title": "Stabilize week-to-week volatility via feature and retrain diagnostics",
+      "objective": "Reduce large swings in winner accuracy and identify unstable feature regimes.",
+      "addresses_findings": [
+        "F4"
+      ],
+      "evidence": "weekly winner accuracy min=28.57%, max=81.25%, stddev=14.683; early_weeks=53.62%, late_weeks=52.99%",
+      "implementation_scope": [
+        "Segment post-fix performance by week and confidence bands",
+        "Inspect feature drift around worst weeks and retraining cut points",
+        "Tune model/feature pipeline only after leakage and label fixes are landed"
+      ],
+      "acceptance_criteria": [
+        "Weekly accuracy variance decreases versus current baseline",
+        "Worst-week performance floor improves over current 28.57% minimum",
+        "Confidence bins remain monotonic after fixes"
+      ],
+      "estimated_effort": "M-L"
+    }
+  ],
+  "publication_notes": [
+    "Actions are ordered by risk reduction and audit integrity impact.",
+    "P0 actions are required before claiming production-grade benchmark accuracy."
+  ]
+}

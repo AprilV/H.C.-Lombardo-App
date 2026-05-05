@@ -1,0 +1,192 @@
+{
+  "generated_at_utc": "2026-05-04T23:35:39.083672+00:00",
+  "source_combined_csv": "docs/sprints/ta070_audit_data/ta070_s70_1_20260504_225654_combined.csv",
+  "seasons": [
+    2024
+  ],
+  "total_line_lock": {
+    "rows_with_predicted_total_and_vegas_total": 256,
+    "rows_predicted_total_equals_vegas_total": 256,
+    "predicted_total_equals_vegas_total_pct": 100.0,
+    "total_pick_evaluable_rows": 0
+  },
+  "drift": {
+    "weekly_winner_accuracy_pct_stddev": 14.683,
+    "weekly_winner_accuracy_pct_min": 28.57,
+    "weekly_winner_accuracy_pct_max": 81.25,
+    "early_weeks_1_9": {
+      "correct": 74,
+      "total": 138,
+      "accuracy_pct": 53.62
+    },
+    "late_weeks_10_18": {
+      "correct": 71,
+      "total": 134,
+      "accuracy_pct": 52.99
+    },
+    "worst_weeks": [
+      {
+        "season": 2024,
+        "week": 6,
+        "correct": 4,
+        "total": 14,
+        "accuracy_pct": 28.57
+      },
+      {
+        "season": 2024,
+        "week": 12,
+        "correct": 4,
+        "total": 13,
+        "accuracy_pct": 30.77
+      },
+      {
+        "season": 2024,
+        "week": 15,
+        "correct": 5,
+        "total": 16,
+        "accuracy_pct": 31.25
+      },
+      {
+        "season": 2024,
+        "week": 2,
+        "correct": 6,
+        "total": 16,
+        "accuracy_pct": 37.5
+      },
+      {
+        "season": 2024,
+        "week": 10,
+        "correct": 6,
+        "total": 14,
+        "accuracy_pct": 42.86
+      }
+    ],
+    "best_weeks": [
+      {
+        "season": 2024,
+        "week": 16,
+        "correct": 13,
+        "total": 16,
+        "accuracy_pct": 81.25
+      },
+      {
+        "season": 2024,
+        "week": 9,
+        "correct": 11,
+        "total": 15,
+        "accuracy_pct": 73.33
+      },
+      {
+        "season": 2024,
+        "week": 14,
+        "correct": 9,
+        "total": 13,
+        "accuracy_pct": 69.23
+      },
+      {
+        "season": 2024,
+        "week": 1,
+        "correct": 11,
+        "total": 16,
+        "accuracy_pct": 68.75
+      },
+      {
+        "season": 2024,
+        "week": 8,
+        "correct": 10,
+        "total": 16,
+        "accuracy_pct": 62.5
+      }
+    ]
+  },
+  "db_diagnostics": {
+    "timing_and_margin": {
+      "rows_total": 272,
+      "predicted_at_null": 0,
+      "predicted_after_game_date": 256,
+      "predicted_on_game_date": 0,
+      "predicted_before_game_date": 0,
+      "predicted_after_game_date_pct": 94.12,
+      "min_predicted_at": "2025-11-20T22:14:50.529687",
+      "max_predicted_at": "2025-11-20T22:42:01.642579",
+      "min_game_date": "2024-09-12",
+      "max_game_date": "2025-01-05",
+      "negative_actual_margin_rows": 0,
+      "away_win_games_in_hcl_games": 129
+    },
+    "confidence_bins": [
+      {
+        "confidence_bin": "55to65",
+        "total_rows": 79,
+        "correct_rows": 35,
+        "accuracy_pct": 44.3
+      },
+      {
+        "confidence_bin": "65to75",
+        "total_rows": 108,
+        "correct_rows": 79,
+        "accuracy_pct": 73.15
+      },
+      {
+        "confidence_bin": "gte75",
+        "total_rows": 23,
+        "correct_rows": 17,
+        "accuracy_pct": 73.91
+      },
+      {
+        "confidence_bin": "lt55",
+        "total_rows": 62,
+        "correct_rows": 14,
+        "accuracy_pct": 22.58
+      }
+    ]
+  },
+  "findings": [
+    {
+      "finding_id": "F1",
+      "category": "feature_engineering",
+      "severity": "high",
+      "title": "Total predictions are line-anchored, not independently predictive",
+      "evidence": "predicted_total equals vegas_total for 256/256 rows (100.0%), with 0 evaluable total-pick rows",
+      "code_refs": [
+        "ml/predict_week.py:208",
+        "ml/predict_week.py:210",
+        "ml/predict_week.py:211"
+      ]
+    },
+    {
+      "finding_id": "F2",
+      "category": "data_leakage_risk",
+      "severity": "high",
+      "title": "Prediction timestamps indicate retrospective generation for evaluated rows",
+      "evidence": "predicted_at::date > game_date for 256/272 rows (94.12%); predicted_at range 2025-11-20T22:14:50.529687 to 2025-11-20T22:42:01.642579",
+      "code_refs": [
+        "scripts/maintenance/backfill_historical_seasons.py:48",
+        "scripts/maintenance/backfill_historical_seasons.py:58",
+        "api_routes_ml.py:158",
+        "api_routes_ml.py:182"
+      ]
+    },
+    {
+      "finding_id": "F3",
+      "category": "label_consistency",
+      "severity": "medium",
+      "title": "Stored actual margin sign is inconsistent with signed-margin scoring",
+      "evidence": "negative_actual_margin_rows=0 while away_win_games_in_hcl_games=129",
+      "code_refs": [
+        "scripts/maintenance/backfill_historical_seasons.py:106",
+        "api_routes_ml.py:761"
+      ]
+    },
+    {
+      "finding_id": "F4",
+      "category": "data_drift_or_instability",
+      "severity": "medium",
+      "title": "Weekly winner performance is highly volatile without clear directional drift",
+      "evidence": "weekly winner accuracy min=28.57%, max=81.25%, stddev=14.683; early_weeks=53.62%, late_weeks=52.99%",
+      "code_refs": [
+        "docs/sprints/ta070_audit_data/ta070_s70_2_20260504_230454_by_week.csv:2"
+      ]
+    }
+  ]
+}

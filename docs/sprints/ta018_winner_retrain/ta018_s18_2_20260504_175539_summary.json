@@ -1,0 +1,24 @@
+{
+  "generated_at_utc": "2026-05-05T00:55:56.412338+00:00",
+  "task": "TA-018 s18_2",
+  "execution": {
+    "command": "python ml/train_xgb_winner.py",
+    "training_date_local": "2026-05-04 17:55:41",
+    "python_exit_code": 0,
+    "run_log": "docs\\sprints\\ta018_winner_retrain\\ta018_s18_2_20260504_175539_train_log.txt",
+    "log_encoding": "utf-16"
+  },
+  "metrics": {
+    "train_accuracy_pct": 75.83,
+    "validation_accuracy_pct": 64.31,
+    "test_accuracy_pct": 62.89
+  },
+  "artifacts": {
+    "model_path": "ml\\models\\xgb_winner.pkl",
+    "model_last_modified_local": "2026-05-04T17:55:42.159946",
+    "model_size_bytes": 225661,
+    "feature_list_path": "ml\\models\\xgb_winner_features.txt",
+    "feature_list_last_modified_local": "2026-05-04T17:55:42.161445",
+    "feature_list_size_bytes": 271
+  }
+}

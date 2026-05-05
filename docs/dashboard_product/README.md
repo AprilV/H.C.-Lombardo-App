@@ -27,5 +27,6 @@ All dashboard enhancements must be logged as `DSH-` tickets in `DASHBOARD_BACKLO
 - Dashboard code: `pmforge_dashboard/index.html`
 - Legacy archive: `backups/legacy_dashboard/index.html`
 - Public dashboard site: GitHub Pages from `gh-pages`
+- Rollover automation CLI: `scripts/maintenance/dashboard_sprint_rollover.py`
 - Operational update guides:
   - `docs/DASHBOARD_UPDATE_GUIDE.md`

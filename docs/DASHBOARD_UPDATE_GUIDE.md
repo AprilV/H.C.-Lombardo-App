@@ -217,7 +217,8 @@ Auto-generates from `HOURS_DATA` + `COMPLETED_TASKS`. No manual update needed un
 
 ## At Sprint KICKOFF
 
-- [ ] Replace placeholder board div with full task list
+- [ ] Run sprint board generator: `python scripts/maintenance/dashboard_sprint_rollover.py apply --sprint <next_sprint_num>`
+- [ ] Review generated subtask wording and adjust as needed
 - [ ] Update sprint selector default value
 - [ ] Update COMPLETED_TASKS comment header for new sprint
 - [ ] Confirm active sprint board checkboxes map to correct task IDs

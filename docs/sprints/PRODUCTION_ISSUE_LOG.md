@@ -137,6 +137,8 @@ These were confirmed issues from earlier code review. Status below reflects veri
 | NEW-004 | Data | public.teams is empty (0 rows) and standings sync target not populated | P1 | FIXED | S13 | Fixed Apr 27, 2026 in active DB (nfl_analytics): seeded via insert_teams.sql and synced standings via scripts/data_loading/update_public_teams_from_games.py; rows_updated=32 |
 | NEW-005 | Data Quality | 34 season-2025 games had missing final scores | P2 | FIXED | S13 | Fixed Apr 27 via scripts/data_loading/backfill_missing_scores_from_espn.py (updates_applied=34); DAT-6 now reports games_missing_scores=0 |
 | NEW-006 | Data Quality | Team abbreviation mismatch between sources (`LA` vs `LAR`) breaks strict joins | P2 | FIXED | S13 | Apr 27: centralized normalization in team_abbreviations.py and applied to core HCL/live-scores routes + standings/audit scripts. DAT-6 canonical checks now empty; API verifies LAR externally while querying LA-backed hcl data. |
+| NEW-007 | Backend / Updater | live_data_updater.py fails continuous update cycle: missing root fetcher path (`multi_source_data_fetcher.py`) | P2 | OPEN | S14 | Observed May 4, 2026 in startup updater window: `[ERROR] Multi-source fetcher not found: C:\ReactGitEC2\IS330\H.C Lombardo App\multi_source_data_fetcher.py`. Current code checks `self.project_root / "multi_source_data_fetcher.py"` in live_data_updater.py line ~26. |
+| NEW-008 | Dashboard / Logbook | log_watcher.py recursively tracks its own archive writes, creating a rapid `MODIFIED docs/devlog/archive/YYYY-MM-DD.json` loop and watcher thread crash (`OSError: [Errno 22] Invalid argument` while writing `archive/index.json`) | P2 | IN PROGRESS | S14 | Observed May 4, 2026 from live watcher output and traceback in log_watcher.py (`on_modified -> add_entry -> save_day -> update_index`). Local mitigation applied: exclude `docs/devlog/archive` from tracking, debounce duplicate events, and guard handler exceptions; requires watcher restart validation. |
 
 ---
 
@@ -158,9 +160,9 @@ These were confirmed issues from earlier code review. Status below reflects veri
 
 | Metric | Count |
 |--------|-------|
-| Total issues logged | 19 |
+| Total issues logged | 21 |
 | P1 issues | 3 |
-| P2 issues | 7 |
+| P2 issues | 9 |
 | P3 issues | 1 |
 | P4 issues | 0 |
 | API endpoints passing | 0 / 22 |
@@ -170,5 +172,5 @@ These were confirmed issues from earlier code review. Status below reflects veri
 
 ---
 
-*Last updated: April 27, 2026*  
+*Last updated: May 4, 2026*  
 *This is a living document — update it continuously during Sprint 12*
