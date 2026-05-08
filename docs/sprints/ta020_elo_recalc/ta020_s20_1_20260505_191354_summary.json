@@ -1,0 +1,38 @@
+{
+  "task": "TA-020",
+  "subtask": "s20_1",
+  "start_season": 1999,
+  "end_season": 2025,
+  "games_loaded": 7263,
+  "season_min": 1999,
+  "season_max": 2025,
+  "ratings_count": 32,
+  "ratings_output": "C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\ml\\models\\elo_ratings_current.json",
+  "top_teams": [
+    {
+      "rank": 1,
+      "team": "SEA",
+      "elo": 1607.8
+    },
+    {
+      "rank": 2,
+      "team": "PHI",
+      "elo": 1604.7
+    },
+    {
+      "rank": 3,
+      "team": "BUF",
+      "elo": 1600.9
+    },
+    {
+      "rank": 4,
+      "team": "DEN",
+      "elo": 1593.8
+    },
+    {
+      "rank": 5,
+      "team": "LAR",
+      "elo": 1572.8
+    }
+  ]
+}

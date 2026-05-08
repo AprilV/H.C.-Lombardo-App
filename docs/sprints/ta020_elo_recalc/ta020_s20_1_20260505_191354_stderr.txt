@@ -1,0 +1,2 @@
+C:\ReactGitEC2\IS330\H.C Lombardo App\ml\elo_tracker.py:94: UserWarning: pandas only supports SQLAlchemy connectable (engine/connection) or database string URI or sqlite3 DBAPI2 connection. Other DBAPI2 objects are not tested. Please consider using SQLAlchemy.
+  df = pd.read_sql(query, conn, params=(start_season, end_season))

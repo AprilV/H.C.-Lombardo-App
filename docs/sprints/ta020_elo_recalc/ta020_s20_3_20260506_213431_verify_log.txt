@@ -1,0 +1,15 @@
+✅ Loaded ratings from ml/models/elo_ratings_current.json
+   Last updated: 2026-05-05T19:13:58.076584
+✅ Loaded ratings from ml/models/elo_ratings_current.json
+   Last updated: 2026-05-05T19:13:58.076584
+ratings_status=200
+predict_status=200
+target_week=2025-W16
+predict_total_games=16
+top_team_file=SEA
+top_team_route=SEA
+all_checks_passed=False
+summary_out=docs\sprints\ta020_elo_recalc\ta020_s20_3_20260506_213431_summary.json
+report_out=docs\sprints\ta020_elo_recalc\ta020_s20_3_20260506_213431_report.md
+
+

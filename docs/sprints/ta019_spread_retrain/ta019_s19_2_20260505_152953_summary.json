@@ -1,0 +1,33 @@
+{
+  "generated_at_utc": "2026-05-05T22:30:13.3419386Z",
+  "task": "TA-019 s19_2",
+  "execution": {
+    "command": "python ml/train_xgb_spread.py",
+    "training_date_local": "2026-05-05 15:29:56",
+    "python_exit_code": 0,
+    "run_log": "docs\\sprints\\ta019_spread_retrain\\ta019_s19_2_20260505_152953_train_log.txt",
+    "log_encoding": "utf-8"
+  },
+  "metrics": {
+    "train_mae_points": 7.16,
+    "train_rmse_points": 9.59,
+    "train_r2": 0.5426,
+    "train_winner_accuracy_pct": 77.0,
+    "validation_mae_points": 10.52,
+    "validation_rmse_points": 13.70,
+    "validation_r2": 0.1069,
+    "validation_winner_accuracy_pct": 63.3,
+    "test_mae_points": 10.89,
+    "test_rmse_points": 14.12,
+    "test_r2": 0.0380,
+    "test_winner_accuracy_pct": 59.0
+  },
+  "artifacts": {
+    "model_path": "ml\\models\\xgb_spread.pkl",
+    "model_last_modified_local": "2026-05-05T15:29:56",
+    "model_size_bytes": 449450,
+    "feature_list_path": "ml\\models\\xgb_spread_features.txt",
+    "feature_list_last_modified_local": "2026-05-05T15:29:56",
+    "feature_list_size_bytes": 309
+  }
+}

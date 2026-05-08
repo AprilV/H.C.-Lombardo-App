@@ -1,0 +1,23 @@
+﻿{
+    "subtask":  "s19_4",
+    "ticket":  "TA-019",
+    "objective":  "Log MAE result in sprint evidence notes and task resolution details",
+    "generated_at":  "2026-05-05T15:51:57",
+    "source_artifacts":  {
+                             "s19_2_summary":  "C:/ReactGitEC2/IS330/H.C Lombardo App/docs/sprints/ta019_spread_retrain/ta019_s19_2_20260505_152953_summary.json",
+                             "s19_3_summary":  "C:/ReactGitEC2/IS330/H.C Lombardo App/docs/sprints/ta019_spread_retrain/ta019_s19_3_20260505_154203_summary.json",
+                             "s19_3_report":  "C:/ReactGitEC2/IS330/H.C Lombardo App/docs/sprints/ta019_spread_retrain/ta019_s19_3_20260505_154203_report.md"
+                         },
+    "logged_metrics":  {
+                           "validation_mae_points":  10.5249,
+                           "test_mae_points":  10.8893,
+                           "validation_rmse_points":  13.6969,
+                           "test_rmse_points":  14.1248,
+                           "validation_r2":  0.106909,
+                           "test_r2":  0.038019,
+                           "validation_winner_accuracy_pct":  63.2812,
+                           "test_winner_accuracy_pct":  58.9844,
+                           "mae_delta_test_minus_validation":  0.3644
+                       },
+    "note":  "TA-019 spread retrain MAE results are formally recorded in sprint evidence artifacts and ready to reference in dashboard task resolution detail."
+}

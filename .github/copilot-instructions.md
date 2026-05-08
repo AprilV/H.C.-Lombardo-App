@@ -80,7 +80,7 @@ Explicit exclusions unless user explicitly requests archive deep-read:
 - If exclusions are used, startup lock summary must name each excluded path class and why it was excluded.
 
 ## Single-Line Drift Reset Trigger
-- If the user message includes `RUN STARTUP LOCK` OR `LOOK AT CHAT_STARTUP_LOCK AND EXECUTE` OR references `docs/ai_reference/CHAT_STARTUP_LOCK.md`, execute this protocol immediately before any other work:
+- If the user message includes `EXECUTE ORDER 66` OR `RUN STARTUP LOCK` OR `LOOK AT CHAT_STARTUP_LOCK AND EXECUTE` OR references `docs/ai_reference/CHAT_STARTUP_LOCK.md`, execute this protocol immediately before any other work:
 	1. Run `./scripts/maintenance/session_resume_guard.ps1 -Reason "Startup lock trigger"`.
 	2. Read the newest `sessions/SESSION_RESUME_YYYY-MM-DD_HHMM.md` file.
 	3. Re-read the Full-Scope Startup Lock Read Matrix above (excluding only explicit archive exclusions unless user requests otherwise).

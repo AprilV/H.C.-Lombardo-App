@@ -1,0 +1,35 @@
+{
+  "task": "TA-020",
+  "subtask": "s20_2",
+  "ratings_file": "C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\ml\\models\\elo_ratings_current.json",
+  "ratings_file_exists": true,
+  "ratings_file_size_bytes": 1207,
+  "ratings_last_updated": "2026-05-05T19:13:58.076584",
+  "ratings_count": 32,
+  "missing_teams": [],
+  "system_params": {
+    "base_elo": 1500,
+    "k_factor": 20,
+    "home_advantage": 65,
+    "mean_reversion": 0.33
+  },
+  "tracker_load_success": true,
+  "tracker_ratings_count": 32,
+  "predictor_ratings_count": 32,
+  "sample_prediction": {
+    "home_team": "KC",
+    "away_team": "BUF",
+    "predicted_winner": "BUF",
+    "home_win_prob": 0.483,
+    "away_win_prob": 0.517,
+    "elo_spread": -0.5
+  },
+  "checks": {
+    "ratings_file_exists": true,
+    "ratings_count_32": true,
+    "tracker_load_success": true,
+    "predictor_uses_ratings": true,
+    "sample_prediction_generated": true
+  },
+  "all_checks_passed": true
+}

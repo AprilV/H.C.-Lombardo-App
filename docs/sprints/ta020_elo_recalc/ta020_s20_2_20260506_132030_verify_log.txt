@@ -1,0 +1,15 @@
+✅ Loaded ratings from C:\ReactGitEC2\IS330\H.C Lombardo App\ml\models\elo_ratings_current.json
+   Last updated: 2026-05-05T19:13:58.076584
+✅ Loaded ratings from ml/models/elo_ratings_current.json
+   Last updated: 2026-05-05T19:13:58.076584
+ratings_file_exists=True
+ratings_count=32
+missing_teams_count=0
+tracker_load_success=True
+predictor_ratings_count=32
+sample_predicted_winner=BUF
+all_checks_passed=True
+summary_out=docs\sprints\ta020_elo_recalc\ta020_s20_2_20260506_132030_summary.json
+report_out=docs\sprints\ta020_elo_recalc\ta020_s20_2_20260506_132030_report.md
+
+

@@ -4,6 +4,10 @@
 One-line anti-drift trigger for any chat. Use this when you want protocol lock before implementation.
 
 ## What To Type In Chat
+EXECUTE ORDER 66
+
+or
+
 RUN STARTUP LOCK
 
 or

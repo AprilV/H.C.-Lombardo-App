@@ -1,0 +1,109 @@
+
+================================================================================
+  XGBoost Spread Prediction Model Training
+================================================================================
+Training Date: 2026-05-05 15:29:56
+Target: Predict NFL game point differentials (spread)
+Data: 2020-2025 seasons from hcl schema
+
+Connecting to database schema: hcl
+✓ Loaded 1,519 games from 2020-2025
+
+Preparing features...
+✓ Features: 18 columns
+✓ Target range: -45 to 50 points
+✓ Mean differential: 1.80 points (home field advantage)
+
+Splitting data by season...
+  Training (≤2023):   1,007 games
+  Validation (2024):  256 games
+  Test (2025):        256 games
+
+================================================================================
+  TRAINING XGBOOST REGRESSOR
+================================================================================
+Training model...
+✓ Training complete
+
+================================================================================
+  MODEL EVALUATION
+================================================================================
+
+Training Set (2020-2023):
+----------------------------------------
+MAE:  7.16 points
+RMSE: 9.59 points
+R²:   0.5426
+Winner Accuracy: 77.0%
+
+Sample Predictions:
+  ATL @ DAL: Predicted +4.9, Actual +1.0
+  BAL @ HOU: Predicted -10.6, Actual -17.0
+  BUF @ MIA: Predicted -7.1, Actual -3.0
+  CAR @ TB: Predicted +9.1, Actual +14.0
+  CIN @ CLE: Predicted +6.2, Actual +5.0
+
+Validation Set (2024):
+----------------------------------------
+MAE:  10.52 points
+RMSE: 13.70 points
+R²:   0.1069
+Winner Accuracy: 63.3%
+
+Sample Predictions:
+  ATL @ PHI: Predicted -2.0, Actual -1.0
+  BUF @ MIA: Predicted -2.3, Actual -21.0
+  CHI @ HOU: Predicted -2.0, Actual +6.0
+  CIN @ KC: Predicted +5.4, Actual +1.0
+  CLE @ JAX: Predicted +2.9, Actual -5.0
+
+Test Set (2025):
+----------------------------------------
+MAE:  10.89 points
+RMSE: 14.12 points
+R²:   0.0380
+Winner Accuracy: 59.0%
+
+Sample Predictions:
+  ATL @ MIN: Predicted +6.6, Actual -16.0
+  BUF @ NYJ: Predicted -14.6, Actual -20.0
+  CAR @ ARI: Predicted +7.2, Actual +5.0
+  CHI @ DET: Predicted -0.5, Actual +31.0
+  CLE @ BAL: Predicted +22.6, Actual +24.0
+
+================================================================================
+  TOP 10 FEATURE IMPORTANCE
+================================================================================
+  spread_line                   : 0.6479
+  total_line                    : 0.3521
+  home_yards_pg                 : 0.0000
+  home_ppg                      : 0.0000
+  home_pass_yards_pg            : 0.0000
+  home_rush_yards_pg            : 0.0000
+  home_third_down_pct           : 0.0000
+  home_red_zone_pct             : 0.0000
+  home_yards_per_play           : 0.0000
+  home_turnovers                : 0.0000
+
+================================================================================
+  SAVING MODEL
+================================================================================
+✓ Model saved: ml/models/xgb_spread.pkl
+✓ Features saved: ml/models/xgb_spread_features.txt
+
+================================================================================
+  FINAL SUMMARY
+================================================================================
+✓ XGBoost Spread Model Complete
+
+Test MAE: 10.89 points
+Vegas typical MAE: ~10.5 points
+  Vegas is 0.39 points better
+
+Winner Accuracy: 59.0%
+
+Model ready for predictions.
+
+C:\ReactGitEC2\IS330\H.C Lombardo App\ml\train_xgb_spread.py:142: UserWarning: pandas only supports SQLAlchemy connectable (engine/connection) or database string URI or sqlite3 DBAPI2 connection. Other DBAPI2 objects are not tested. Please consider using SQLAlchemy.
+  df = pd.read_sql(query, conn)
+
