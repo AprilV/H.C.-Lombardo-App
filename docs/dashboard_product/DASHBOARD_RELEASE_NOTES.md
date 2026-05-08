@@ -6,6 +6,30 @@ Format: `YYYY.MM.DD` (example: `2026.04.23`)
 
 ---
 
+## 2026.05.07 (Draft / In Progress)
+
+### Completed
+
+1. Updated dashboard top-strip percent logic so `Sprint Tasks Done` uses effort-point percentage whenever sprint effort points are present, aligning with burndown/burnup/velocity units.
+2. Added explicit unit subtitle under `Sprint Tasks Done` to remove stakeholder ambiguity between subtask and effort-point progress.
+3. Added sprint-aware chart unit note in `Sprint Health` so chart interpretation stays explicit on every sprint selection.
+
+### In Progress
+
+1. `DSH-009` and `DSH-010` remain in progress.
+
+### Notes
+
+1. Sprint 14 now renders as `49%` with `21 of 52 subtasks complete` and `25 of 51 effort points complete`, with unit labels visible in both metrics and chart area.
+2. This update is a dashboard clarity/governance refinement and does not change backlog ticket assignments.
+
+### Evidence
+
+1. `pmforge_dashboard/index.html`.
+2. `docs/dashboard_product/DASHBOARD_RELEASE_NOTES.md`.
+
+---
+
 ## 2026.05.01 (Draft / In Progress)
 
 ### Completed

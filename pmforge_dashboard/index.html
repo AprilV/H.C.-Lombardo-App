@@ -1982,6 +1982,14 @@
             background: rgba(255,215,0,0.15);
         }
 
+        .dash-section-note {
+            font-size: 0.74rem;
+            color: var(--muted);
+            margin-top: -0.35rem;
+            margin-bottom: 0.85rem;
+            line-height: 1.45;
+        }
+
         /* dash-section-label overrides handled in main light block */
 
         /* Live App button in dash */
@@ -2339,6 +2347,7 @@
             <div class="pm-metric-label">Sprint Tasks Done</div>
             <div class="pm-metric-value" style="color:#10b981;" id="dash-task-pct">0%</div>
             <div class="pm-metric-sub" id="dash-task-count">Calculating from active sprint board...</div>
+            <div class="pm-metric-sub" id="dash-task-unit">Percent unit: effort points</div>
         </div>
         <div class="pm-metric">
             <div class="pm-metric-label">Open P1 Blockers</div>
@@ -2387,6 +2396,7 @@
 
     <!-- ── CHARTS ROW 1: Burnup + Burndown ── -->
     <div class="dash-section-label">Sprint Health</div>
+    <div class="dash-section-note" id="dash-chart-unit-note">Chart unit: Burndown, Burnup, and Velocity use effort points (XS=1, S=2, M=3, L=5, XL=8). Severity shows open ticket counts by priority.</div>
     <div class="chart-grid-2">
 
         <div class="chart-card">
@@ -4615,25 +4625,54 @@ document.addEventListener('click', function(e) {
 });
 
 /* ── SYNC DASHBOARD METRICS FROM CURRENT SPRINT TASKS ── */
+function getDashTaskUnitLabel(usePoints) {
+    return usePoints
+        ? 'Percent unit: effort points (XS=1, S=2, M=3, L=5, XL=8)'
+        : 'Percent unit: subtasks';
+}
+
+function getDashChartUnitLabel(sprintNum, usePoints) {
+    var sprintTag = 'S' + String(sprintNum || CURRENT_DASH_SPRINT || '');
+    if (usePoints) {
+        return 'Chart unit (' + sprintTag + '): Burndown, Burnup, and Velocity use effort points (XS=1, S=2, M=3, L=5, XL=8). Severity shows open ticket counts by priority.';
+    }
+    return 'Chart unit (' + sprintTag + '): Burndown, Burnup, and Velocity use subtasks. Severity shows open ticket counts by priority.';
+}
+
+function syncDashChartUnitNote(sprintNum) {
+    var el = document.getElementById('dash-chart-unit-note');
+    if (!el) return;
+    var n = parseInt(sprintNum, 10);
+    if (isNaN(n)) n = parseInt(CURRENT_DASH_SPRINT, 10) || getCurrentSprint();
+    var pointMetrics = getCommittedSprintTicketCounts(window.PB_ITEMS || [], n);
+    el.textContent = getDashChartUnitLabel(n, pointMetrics.totalPoints > 0);
+}
+
 function syncDashMetrics() {
     const items = window.PB_ITEMS || [];
     const pointMetrics = getCommittedSprintTicketCounts(items, CURRENT_DASH_SPRINT);
     const boardMetrics = getBoardCompletionCounts(CURRENT_DASH_SPRINT);
     const usePoints = pointMetrics.totalPoints > 0;
 
-    const done = usePoints ? pointMetrics.donePoints : boardMetrics.done;
-    const total = usePoints ? pointMetrics.totalPoints : boardMetrics.total;
-    const pct = usePoints ? pointMetrics.pctPoints : boardMetrics.pct;
+    const doneSubtasks = boardMetrics.done;
+    const totalSubtasks = boardMetrics.total;
+    const pctSubtasks = boardMetrics.pct;
+    const pctDisplay = usePoints ? pointMetrics.pctPoints : pctSubtasks;
     const pctEl = document.getElementById('dash-task-pct');
     const countEl = document.getElementById('dash-task-count');
-    if (pctEl) pctEl.textContent = pct + '%';
+    const unitEl = document.getElementById('dash-task-unit');
+    if (pctEl) pctEl.textContent = pctDisplay + '%';
+    if (unitEl) unitEl.textContent = getDashTaskUnitLabel(usePoints);
+    syncDashChartUnitNote(CURRENT_DASH_SPRINT);
     if (countEl) {
-        if (total > 0) {
+        if (totalSubtasks > 0) {
             countEl.textContent = usePoints
-                ? (done + ' of ' + total + ' effort points complete')
-                : (done + ' of ' + total + ' subtasks complete');
+                ? (doneSubtasks + ' of ' + totalSubtasks + ' subtasks complete · ' + pointMetrics.donePoints + ' of ' + pointMetrics.totalPoints + ' effort points complete')
+                : (doneSubtasks + ' of ' + totalSubtasks + ' subtasks complete');
         } else if (boardMetrics.excluded > 0) {
             countEl.textContent = '0 actionable subtasks (all deferred to backlog)';
+        } else if (usePoints && pointMetrics.totalPoints > 0) {
+            countEl.textContent = pointMetrics.donePoints + ' of ' + pointMetrics.totalPoints + ' effort points complete';
         } else {
             countEl.textContent = 'Sprint Active';
         }
@@ -5181,6 +5220,12 @@ const COMPLETED_TASKS = [
     's22_1', 's22_2', 's22_3',
     // TA-070 — audit extraction through published corrective-action plan (May 4-5)
     's70_1', 's70_2', 's70_3', 's70_4',
+    's19_2',
+    's19_3',
+    's19_4',
+    's20_1',
+    's20_2',
+    's20_3',
 ];
 const BLOCKED_TASKS = [
     's11_2', // TA-011 EC2 .env update blocked on SSH access
@@ -5386,6 +5431,12 @@ const TASK_DETAILS = {
     // TA-009 — CLAUDE.md
     t9_1:  { resolution:'CLAUDE.md updated with current routes, deployment state, architecture, and Spring 2026 term details.', date:'Apr 17, 2026' },
     t8_1:  { resolution:'BLOCKED — Cannot retrieve Amplify live URL from AWS console. Root MFA device was lost, locking all console-based access. To unblock: call AWS Support at 1-800-879-2747 to reset root MFA. Once console access is restored, retrieve the Amplify URL and add it to the Dashboard overview section. Moved to backlog as P1 Critical — assign to S13.', date:'Apr 17, 2026' },
+    s19_2: { resolution:'Executed ml/train_xgb_spread.py against hcl schema and published TA-019 s19_2 execution artifacts (docs/sprints/ta019_spread_retrain/ta019_s19_2_20260505_152953_summary.json, docs/sprints/ta019_spread_retrain/ta019_s19_2_20260505_152953_report.md) plus run log (docs/sprints/ta019_spread_retrain/ta019_s19_2_20260505_152953_train_log.txt). Retrain completed with python_exit_code=0 and saved refreshed artifacts ml/models/xgb_spread.pkl and ml/models/xgb_spread_features.txt; test metrics: MAE 10.89, RMSE 14.12, winner accuracy 59.0%.', date:'May 5, 2026', timestamp:'2026-05-05T15:29', updatedBy:'Copilot (local TA-019 retrain execution evidence)' },
+    s19_3: { resolution:'Executed scripts/verification/ta019_compute_spread_mae.py --schema hcl and generated TA-019 s19_3 metric evidence artifacts (docs/sprints/ta019_spread_retrain/ta019_s19_3_20260505_154203_summary.json, docs/sprints/ta019_spread_retrain/ta019_s19_3_20260505_154203_report.md). Computed validation/test split metrics from refreshed spread artifacts (ml/models/xgb_spread.pkl, ml/models/xgb_spread_features.txt): validation MAE 10.5249, test MAE 10.8893, validation RMSE 13.6969, test RMSE 14.1248, with ordered feature alignment match true (18/18).', date:'May 5, 2026', timestamp:'2026-05-05T15:42', updatedBy:'Copilot (local TA-019 MAE evidence)' },
+    s19_4: { resolution:'Logged TA-019 spread MAE results into sprint evidence notes and dashboard-ready resolution detail by publishing s19_4 artifacts (docs/sprints/ta019_spread_retrain/ta019_s19_4_20260505_155157_summary.json, docs/sprints/ta019_spread_retrain/ta019_s19_4_20260505_155157_report.md) referencing s19_2/s19_3 evidence. Recorded metrics: validation MAE 10.5249, test MAE 10.8893, validation RMSE 13.6969, test RMSE 14.1248, and MAE delta +0.3644 (test - validation).', date:'May 5, 2026', timestamp:'2026-05-05T15:51', updatedBy:'Copilot (local TA-019 MAE log evidence)' },
+    s20_1: { resolution:'Executed scripts/verification/ta020_rebuild_elo_ratings.py with --start-season 1999 --end-season 2025 and published TA-020 s20_1 evidence artifacts (docs/sprints/ta020_elo_recalc/ta020_s20_1_20260505_191354_summary.json, docs/sprints/ta020_elo_recalc/ta020_s20_1_20260505_191354_report.md) plus run log (docs/sprints/ta020_elo_recalc/ta020_s20_1_20260505_191354_rebuild_log.txt). Rebuild completed with python_exit_code=0, processed 7,263 historical games through season 2025 (season_min=1999, season_max=2025), and refreshed ml/models/elo_ratings_current.json with 32 team ratings.', date:'May 5, 2026', timestamp:'2026-05-05T19:13', updatedBy:'Copilot (local TA-020 Elo rebuild evidence)' },
+    s20_2: { resolution:'Executed scripts/verification/ta020_verify_elo_persistence.py and published TA-020 s20_2 persistence artifacts (docs/sprints/ta020_elo_recalc/ta020_s20_2_20260506_132030_summary.json, docs/sprints/ta020_elo_recalc/ta020_s20_2_20260506_132030_report.md) plus verification log (docs/sprints/ta020_elo_recalc/ta020_s20_2_20260506_132030_verify_log.txt). Validation passed with python_exit_code=0: ml/models/elo_ratings_current.json exists and loaded successfully, ratings_count=32 with missing_teams_count=0, EloTracker load_current_ratings=True, EloPredictionSystem consumed persisted ratings (predictor_ratings_count=32), and sample prediction generated (BUF over KC).', date:'May 6, 2026', timestamp:'2026-05-06T13:20', updatedBy:'Copilot (local TA-020 persistence evidence)' },
+    s20_3: { resolution:'Executed scripts/verification/ta020_verify_elo_api_routes.py and published TA-020 s20_3 API verification artifacts (docs/sprints/ta020_elo_recalc/ta020_s20_3_20260506_213606_summary.json, docs/sprints/ta020_elo_recalc/ta020_s20_3_20260506_213606_report.md) plus verification log (docs/sprints/ta020_elo_recalc/ta020_s20_3_20260506_213606_verify_log.txt). Validation passed with python_exit_code=0: /api/elo/ratings/current returned 200 with last_updated matching ml/models/elo_ratings_current.json and 32 ratings; /api/elo/predict-week/2025/18 returned 200 on runtime-generation path, and Elo predictor consumed current persisted ratings (top team SEA alignment check passed).', date:'May 6, 2026', timestamp:'2026-05-06T21:36', updatedBy:'Copilot (local TA-020 API route evidence)' },
 };
 
 function updateProgress() {
@@ -5443,20 +5494,30 @@ function updateSprintBoardProgress(sprintNum, options) {
     var done = metrics.done;
     var total = metrics.total;
     var pct = metrics.pct;
+    var pointMetrics = getCommittedSprintTicketCounts(window.PB_ITEMS || [], n);
+    var usePointProgress = pointMetrics.totalPoints > 0;
+    var pctDisplay = usePointProgress ? pointMetrics.pctPoints : pct;
     var fill = document.getElementById('s' + n + '-fill');
     var pctEl = document.getElementById('s' + n + '-pct');
     var countEl = document.getElementById('s' + n + '-count');
 
     if (!fill && !pctEl && !countEl) return;
 
-    if (fill) fill.style.width = pct + '%';
-    if (pctEl) pctEl.textContent = pct + '%';
+    if (fill) fill.style.width = pctDisplay + '%';
+    if (pctEl) pctEl.textContent = pctDisplay + '%';
 
     if (countEl) {
+        var subtaskSummary = '';
         if (metrics.excluded > 0) {
-            countEl.textContent = done + ' of ' + total + ' Sprint ' + n + ' subtasks complete (' + metrics.excluded + ' deferred to backlog)';
+            subtaskSummary = done + ' of ' + total + ' Sprint ' + n + ' subtasks complete (' + metrics.excluded + ' deferred to backlog)';
         } else {
-            countEl.textContent = done + ' of ' + total + ' Sprint ' + n + ' subtasks complete';
+            subtaskSummary = done + ' of ' + total + ' Sprint ' + n + ' subtasks complete';
+        }
+
+        if (usePointProgress) {
+            countEl.textContent = subtaskSummary + ' · ' + pointMetrics.donePoints + ' of ' + pointMetrics.totalPoints + ' effort points complete';
+        } else {
+            countEl.textContent = subtaskSummary;
         }
     }
 
@@ -8303,6 +8364,11 @@ function loadSprintDashboard(num, options) {
     })();
     el = document.getElementById('dash-task-pct');              if (el) el.textContent = s.metrics.taskPct;
     el = document.getElementById('dash-task-count');            if (el) el.textContent = s.metrics.taskCount;
+    el = document.getElementById('dash-task-unit');             if (el) {
+        var selectedPointMetrics = getCommittedSprintTicketCounts(window.PB_ITEMS || [], sprintNum);
+        el.textContent = getDashTaskUnitLabel(selectedPointMetrics.totalPoints > 0);
+    }
+    syncDashChartUnitNote(sprintNum);
     el = document.getElementById('dash-p1-count');   if (el) el.textContent = s.p1Count || '—';
     el = document.getElementById('dash-p1-sub');     if (el) el.textContent = s.p1Sub   || 'Set at sprint kickoff';
     el = document.getElementById('dash-open-count'); if (el) el.textContent = s.openCount || '—';
@@ -8875,7 +8941,7 @@ initTasks();
         { id:'TA-016', feature:'Confirm background updater running in production', cat:'Infrastructure', pri:'High',     effort:'S', sprint:'TBD', status:'Backlog'   },
         { id:'TA-017', feature:'Audit git history for exposed secrets',           cat:'Security',       pri:'High',     effort:'M', sprint:'TBD', status:'Backlog'   },
         { id:'TA-018', feature:'Retrain XGBoost winner classifier on 2025 data', cat:'ML',             pri:'Critical', effort:'L', sprint:'S14', status:'Done' },
-        { id:'TA-019', feature:'Retrain spread regressor — document MAE',         cat:'ML',             pri:'Critical', effort:'L', sprint:'S14', status:'In Sprint' },
+        { id:'TA-019', feature:'Retrain spread regressor — document MAE',         cat:'ML',             pri:'Critical', effort:'L', sprint:'S14', status:'Done' },
         { id:'TA-020', feature:'Recalculate Elo ratings through 2025 season',     cat:'ML',             pri:'High',     effort:'M', sprint:'S14', status:'In Sprint' },
         { id:'TA-021', feature:'Fix ML training schema (hcl_test → hcl) — duplicate of TA-057, consolidated there', cat:'ML', pri:'Critical', effort:'S', sprint:'S14', status:'Done' },
         { id:'TA-022', feature:'Fix broken SQL in train_xgb_spread.py — duplicate of TA-058, consolidated there',   cat:'ML', pri:'High',     effort:'S', sprint:'S14', status:'Done' },
