@@ -18,14 +18,21 @@ Created: October 28, 2025
 """
 
 import argparse
+import csv
+import io
 import logging
 import sys
 from datetime import datetime
 from typing import List, Dict, Any, Optional
+import urllib.request
 
 import psycopg2
 from psycopg2.extras import RealDictCursor, execute_values
-import nfl_data_py as nfl
+
+try:
+    import nfl_data_py as nfl
+except ModuleNotFoundError:
+    nfl = None
 
 # Configure logging
 logging.basicConfig(
@@ -37,6 +44,31 @@ logging.basicConfig(
     ]
 )
 logger = logging.getLogger(__name__)
+
+
+def import_schedule_records(seasons: List[int]) -> List[Dict[str, Any]]:
+    """Import schedule rows from nfl_data_py when available, else fallback to nflverse CSV."""
+    if nfl is not None:
+        schedules = nfl.import_schedules(seasons)
+        return schedules.to_dict("records")
+
+    logger.warning("nfl_data_py not available; using direct nflverse games.csv fallback")
+    season_set = {int(s) for s in seasons}
+    url = "https://raw.githubusercontent.com/nflverse/nfldata/master/data/games.csv"
+
+    records: List[Dict[str, Any]] = []
+    with urllib.request.urlopen(url, timeout=120) as resp:
+        text_stream = io.TextIOWrapper(resp, encoding="utf-8", newline="")
+        reader = csv.DictReader(text_stream)
+        for row in reader:
+            try:
+                season_val = int((row.get("season") or "").strip())
+            except (TypeError, ValueError):
+                continue
+            if season_val in season_set:
+                records.append(row)
+
+    return records
 
 
 def get_db_connection(schema_prefix: str = 'hcl_test') -> psycopg2.extensions.connection:
@@ -92,35 +124,79 @@ def load_schedules(conn, seasons: List[int], schema: str = 'hcl_test') -> int:
     
     try:
         # Fetch schedule data from nflverse
-        schedules = nfl.import_schedules(seasons)
+        schedules = import_schedule_records(seasons)
         logger.info(f"Fetched {len(schedules)} games from nflverse")
         
         # Helper function to convert values safely
         def convert_val(val):
-            """Convert numpy types to Python types, handle NaN"""
-            import pandas as pd
-            if pd.isna(val):
+            """Convert dataframe/csv values safely to Python-native values."""
+            if val is None:
                 return None
+            if isinstance(val, str):
+                stripped = val.strip()
+                if stripped == "" or stripped.lower() in {"na", "nan", "none"}:
+                    return None
+                return stripped
+            try:
+                import pandas as pd
+
+                if pd.isna(val):
+                    return None
+            except Exception:
+                pass
             if hasattr(val, 'item'):  # numpy type
                 return val.item()
             return val
+
+        def to_int(val):
+            val = convert_val(val)
+            if val is None:
+                return None
+            try:
+                return int(float(val))
+            except (TypeError, ValueError):
+                return None
+
+        def to_float(val):
+            val = convert_val(val)
+            if val is None:
+                return None
+            if isinstance(val, str) and val.lower() in {"pk", "pick"}:
+                return 0.0
+            try:
+                return float(val)
+            except (TypeError, ValueError):
+                return None
         
         # Prepare insert data
         games_data = []
-        for _, row in schedules.iterrows():
+        for row in schedules:
             # Combine gameday and gametime to create proper timestamp
             kickoff = None
-            if row.get('gameday') and row.get('gametime'):
+            gameday = convert_val(row.get('gameday'))
+            gametime = convert_val(row.get('gametime'))
+            if gameday and gametime:
                 try:
-                    kickoff = f"{row['gameday']} {row['gametime']}:00"
-                except:
+                    kickoff = f"{gameday} {gametime}"
+                    if len(str(gametime).split(':')) == 2:
+                        kickoff = f"{kickoff}:00"
+                except Exception:
                     kickoff = None
+
+            game_type = str(convert_val(row.get('game_type')) or 'REG').upper()
+            div_raw = convert_val(row.get('div_game'))
+            if div_raw is None:
+                is_divisional_game = None
+            elif isinstance(div_raw, bool):
+                is_divisional_game = div_raw
+            else:
+                is_divisional_game = str(div_raw).strip().lower() in {'1', 'true', 't', 'yes', 'y'}
             
             game_data = (
                 row['game_id'],
-                int(row['season']),
-                int(row['week']),
-                convert_val(row.get('gameday')),
+                int(convert_val(row.get('season'))),
+                int(convert_val(row.get('week'))),
+                gameday,
                 kickoff,
                 row['home_team'],
                 row['away_team'],
@@ -128,31 +204,31 @@ def load_schedules(conn, seasons: List[int], schema: str = 'hcl_test') -> int:
                 None,  # city (not in nflverse)
                 None,  # state (not in nflverse)
                 None,  # timezone (not in nflverse)
-                row.get('game_type') != 'REG',  # is_postseason
-                convert_val(row.get('home_score')),
-                convert_val(row.get('away_score')),
+                game_type != 'REG',  # is_postseason
+                to_int(row.get('home_score')),
+                to_int(row.get('away_score')),
                 
                 # Betting Lines (10 columns)
-                convert_val(row.get('spread_line')),
-                convert_val(row.get('total_line')),
-                convert_val(row.get('home_moneyline')),
-                convert_val(row.get('away_moneyline')),
-                convert_val(row.get('home_spread_odds')),
-                convert_val(row.get('away_spread_odds')),
-                convert_val(row.get('over_odds')),
-                convert_val(row.get('under_odds')),
+                to_float(row.get('spread_line')),
+                to_float(row.get('total_line')),
+                to_float(row.get('home_moneyline')),
+                to_float(row.get('away_moneyline')),
+                to_float(row.get('home_spread_odds')),
+                to_float(row.get('away_spread_odds')),
+                to_float(row.get('over_odds')),
+                to_float(row.get('under_odds')),
                 
                 # Weather (4 columns)
                 convert_val(row.get('roof')),
                 convert_val(row.get('surface')),
-                convert_val(row.get('temp')),
-                convert_val(row.get('wind')),
+                to_float(row.get('temp')),
+                to_float(row.get('wind')),
                 
                 # Context (9 columns)
-                convert_val(row.get('away_rest')),
-                convert_val(row.get('home_rest')),
-                bool(convert_val(row.get('div_game'))) if convert_val(row.get('div_game')) is not None else None,  # Convert to boolean
-                convert_val(row.get('overtime')),
+                to_int(row.get('away_rest')),
+                to_int(row.get('home_rest')),
+                is_divisional_game,
+                to_int(row.get('overtime')),
                 convert_val(row.get('referee')),
                 convert_val(row.get('away_coach')),
                 convert_val(row.get('home_coach')),
@@ -160,6 +236,10 @@ def load_schedules(conn, seasons: List[int], schema: str = 'hcl_test') -> int:
                 convert_val(row.get('home_qb_name'))
             )
             games_data.append(game_data)
+
+        if not games_data:
+            logger.warning("No schedule rows resolved for requested seasons")
+            return 0
         
         # Insert into database using UPSERT
         insert_sql = f"""

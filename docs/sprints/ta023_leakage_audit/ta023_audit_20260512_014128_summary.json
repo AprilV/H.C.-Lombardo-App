@@ -1,0 +1,94 @@
+{
+  "task": "TA-023",
+  "generated_at_utc": "2026-05-12T01:41:28.350477+00:00",
+  "source_guard_audit": {
+    "files": {
+      "winner": "ml/train_xgb_winner.py",
+      "spread": "ml/train_xgb_spread.py",
+      "predictor": "ml/predict_week.py"
+    },
+    "checks": {
+      "winner_prior_window_clause": true,
+      "spread_prior_window_clause": true,
+      "winner_week1_excluded": true,
+      "spread_week1_excluded": true,
+      "predictor_uses_prior_weeks_only": true,
+      "predictor_excludes_postseason": true
+    },
+    "all_checks_passed": true
+  },
+  "split_boundary_audit": {
+    "winner": {
+      "pipeline": "winner",
+      "rows": 0,
+      "season_min": null,
+      "season_max": null,
+      "week_min": null,
+      "train_rows": 0,
+      "val_rows": 0,
+      "test_rows": 0,
+      "out_of_scope_season_rows": 0,
+      "checks": {
+        "rows_nonempty": false,
+        "train_nonempty": false,
+        "val_nonempty": false,
+        "test_nonempty": false,
+        "season_min_gte_2020": false,
+        "season_max_lte_2025": true,
+        "week_min_gte_2": false,
+        "no_out_of_scope_season_rows": true
+      },
+      "all_checks_passed": false
+    },
+    "spread": {
+      "pipeline": "spread",
+      "rows": 0,
+      "season_min": null,
+      "season_max": null,
+      "week_min": null,
+      "train_rows": 0,
+      "val_rows": 0,
+      "test_rows": 0,
+      "out_of_scope_season_rows": 0,
+      "checks": {
+        "rows_nonempty": false,
+        "train_nonempty": false,
+        "val_nonempty": false,
+        "test_nonempty": false,
+        "season_min_gte_2020": false,
+        "season_max_lte_2025": true,
+        "week_min_gte_2": false,
+        "no_out_of_scope_season_rows": true
+      },
+      "all_checks_passed": false
+    },
+    "all_checks_passed": false
+  },
+  "leakage_indicator_audit": {
+    "winner_training_rows": 0,
+    "strict_prior_match_rows": 0,
+    "strict_prior_match_pct": null,
+    "prediction_timing_table_present": false,
+    "prediction_timing_rows_total_2024_2025": null,
+    "prediction_timing_predicted_at_null": null,
+    "prediction_timing_predicted_after_game_date": null,
+    "prediction_timing_predicted_on_or_before_game_date": null,
+    "prediction_timing_predicted_after_game_date_pct": null,
+    "indicators": {
+      "same_game_feature_leakage_indicator": false,
+      "prediction_timestamp_after_game_indicator": null
+    },
+    "checks": {
+      "winner_home_away_ppg_matches_strict_prior_avg": true,
+      "predictions_timestamped_on_or_before_game_date": null
+    },
+    "same_game_mismatch_examples": []
+  },
+  "subtask_status": {
+    "s23_1_pass": true,
+    "s23_2_pass": true,
+    "s23_3_pass": false,
+    "s23_4_pass": false
+  },
+  "overall_feature_pipeline_pass": false
+}
