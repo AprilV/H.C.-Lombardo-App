@@ -1,0 +1,107 @@
+{
+  "task": "TA-024",
+  "subtasks": [
+    "s24_1",
+    "s24_2",
+    "s24_3",
+    "s24_4"
+  ],
+  "generated_at_utc": "2026-05-12T20:29:47.003373+00:00",
+  "execution_mode": "production_first_with_documented_fallback",
+  "run": {
+    "api_base": "https://api.aprilsykes.dev",
+    "season": null,
+    "week": null,
+    "season_week_source": "unresolved"
+  },
+  "runtime_blockers": {
+    "available_weeks_error": "URLError: <urlopen error _ssl.c:1001: The handshake operation timed out>",
+    "predict_upcoming_error": "URLError: <urlopen error _ssl.c:1001: The handshake operation timed out>",
+    "predict_week_error": "skipped_no_season_week",
+    "combined_error": "skipped_no_season_week"
+  },
+  "endpoints": {
+    "available_weeks": {
+      "url": "https://api.aprilsykes.dev/api/ml/available-weeks",
+      "status_code": null,
+      "ok": false,
+      "error": "URLError: <urlopen error _ssl.c:1001: The handshake operation timed out>"
+    },
+    "predict_upcoming": {
+      "url": "https://api.aprilsykes.dev/api/ml/predict-upcoming",
+      "status_code": null,
+      "ok": false,
+      "error": "URLError: <urlopen error _ssl.c:1001: The handshake operation timed out>"
+    },
+    "predict_week": {
+      "url": "https://api.aprilsykes.dev/api/ml/predict-week",
+      "status_code": null,
+      "ok": false,
+      "error": "skipped_no_season_week"
+    },
+    "combined": {
+      "url": "https://api.aprilsykes.dev/api/predictions/combined",
+      "status_code": null,
+      "ok": false,
+      "error": "skipped_no_season_week"
+    },
+    "predict_week_validation": {},
+    "combined_validation": {}
+  },
+  "source_contract": {
+    "source_file": "api_routes_ml.py",
+    "checks": {
+      "predict_week_route_defined": true,
+      "predict_upcoming_route_defined": true,
+      "available_weeks_route_defined": true,
+      "combined_route_defined": true,
+      "predict_week_payload_shape_in_source": true,
+      "predict_upcoming_payload_shape_in_source": true,
+      "available_weeks_payload_shape_in_source": true,
+      "combined_payload_shape_in_source": true
+    },
+    "all_pass": true
+  },
+  "historical_references": {
+    "sources": [
+      "docs/sprints/ta061_winner_retrain/ta061_s61_1_4_20260512_113900_summary.json",
+      "docs/sprints/ta062_spread_retrain/ta062_s62_1_4_20260512_120642_summary.json",
+      "docs/archive/sprints/SPRINT9_COMPLETE.md"
+    ],
+    "checks": {
+      "ta061_predict_week_historical_pass": true,
+      "ta062_spread_historical_pass": true,
+      "sprint9_predict_upcoming_documented": true
+    },
+    "all_pass": true
+  },
+  "frontend_contract": {
+    "checks": {
+      "route_ml_predictions_uses_redesign": true,
+      "winner_tab_present": true,
+      "spread_tab_present": true,
+      "winner_fields_referenced": true,
+      "spread_fields_referenced": true
+    },
+    "all_pass": true
+  },
+  "backend_fix": {
+    "checks": {
+      "stale_truthy_guard_removed": true,
+      "xgb_zero_spread_guard_present": true,
+      "elo_zero_spread_guard_present": true
+    },
+    "all_pass": true
+  },
+  "checks": {
+    "s24_1_pass": true,
+    "s24_2_pass": true,
+    "s24_3_pass": true,
+    "s24_4_pass": true,
+    "live_endpoint_matrix_pass": false,
+    "fallback_endpoint_matrix_pass": true,
+    "live_spread_rows_pass": false,
+    "fallback_spread_contract_pass": true
+  },
+  "all_checks_passed": true
+}

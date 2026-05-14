@@ -1,0 +1,58 @@
+{
+  "task": "TA-061",
+  "subtasks": [
+    "s61_1",
+    "s61_2",
+    "s61_3",
+    "s61_4"
+  ],
+  "generated_at_utc": "2026-05-12T18:36:09.879703+00:00",
+  "execution_mode": "closure_audit_no_redundant_retrain",
+  "evidence_sources": {
+    "s18_1_summary": "C:\\Users\\april\\H.C.-Lombardo-App\\docs\\sprints\\ta018_winner_retrain\\ta018_s18_1_20260505_005035_summary.json",
+    "s18_2_summary": "C:\\Users\\april\\H.C.-Lombardo-App\\docs\\sprints\\ta018_winner_retrain\\ta018_s18_2_20260504_175539_summary.json",
+    "s18_3_summary": "C:\\Users\\april\\H.C.-Lombardo-App\\docs\\sprints\\ta018_winner_retrain\\ta018_s18_3_20260504_183259_summary.json",
+    "s18_4_summary": "C:\\Users\\april\\H.C.-Lombardo-App\\docs\\sprints\\ta018_winner_retrain\\ta018_s18_4_20260504_184635_summary.json"
+  },
+  "accuracy_comparison": {
+    "baseline_source": "api_routes_ml.py:model_info.performance.baseline_comparison.this_model",
+    "prior_baseline_accuracy_pct": 65.55,
+    "retrain_test_accuracy_pct": 62.89,
+    "delta_pct_points": -2.66,
+    "model_meets_or_exceeds_baseline": false
+  },
+  "current_artifacts": {
+    "model_path": "C:\\Users\\april\\H.C.-Lombardo-App\\ml\\models\\xgb_winner.pkl",
+    "model_exists": true,
+    "model_sha256": "abfbd796356f4da214dbe2c10ccc52f7f7ead23d1e45fea7515168e49363a35b",
+    "model_last_modified": "2026-05-11T12:40:00.330645",
+    "feature_path": "C:\\Users\\april\\H.C.-Lombardo-App\\ml\\models\\xgb_winner_features.txt",
+    "feature_exists": true,
+    "feature_sha256": "683a7276a0efd1d8342f04c5c9c2420a6c5a6cc992fe8f650cbf4e688cde9511",
+    "feature_last_modified": "2026-05-11T12:40:00.333886",
+    "feature_count": 16
+  },
+  "historical_smoke_reference": {
+    "ta018_s18_4_status_200": true,
+    "ta018_s18_4_prediction_count": 16
+  },
+  "smoke_check": {
+    "mode": "live_http",
+    "endpoint": "http://127.0.0.1:5000/api/ml/predict-week/2025/1",
+    "status_code": null,
+    "total_games": null,
+    "prediction_count": null,
+    "model": null,
+    "accuracy_label": null,
+    "error": "URLError: <urlopen error [WinError 10061] No connection could be made because the target machine actively refused it>"
+  },
+  "checks": {
+    "s61_1_pass": true,
+    "s61_2_pass": true,
+    "s61_3_pass": true,
+    "s61_4_pass": true,
+    "s61_4_fresh_smoke_pass": false,
+    "s61_4_historical_smoke_reference_pass": true
+  },
+  "all_checks_passed": false
+}

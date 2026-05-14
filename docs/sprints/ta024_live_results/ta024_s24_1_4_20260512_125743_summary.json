@@ -1,0 +1,39 @@
+{
+  "task": "TA-024",
+  "subtasks": [
+    "s24_1",
+    "s24_2",
+    "s24_3",
+    "s24_4"
+  ],
+  "generated_at_utc": "2026-05-12T19:58:33.435225+00:00",
+  "run": {
+    "api_base": "https://api.aprilsykes.dev",
+    "season": null,
+    "week": null,
+    "season_week_source": "unresolved"
+  },
+  "endpoints": {
+    "available_weeks": {
+      "url": "https://api.aprilsykes.dev/api/ml/available-weeks",
+      "status_code": null,
+      "ok": false,
+      "error": "URLError: <urlopen error _ssl.c:1015: The handshake operation timed out>"
+    },
+    "predict_upcoming": {
+      "url": "https://api.aprilsykes.dev/api/ml/predict-upcoming",
+      "status_code": null,
+      "ok": false,
+      "error": "URLError: <urlopen error _ssl.c:1015: The handshake operation timed out>"
+    }
+  },
+  "checks": {
+    "s24_1_pass": false,
+    "s24_2_pass": false,
+    "s24_3_pass": false,
+    "s24_4_pass": false,
+    "season_week_resolved": false
+  },
+  "all_checks_passed": false,
+  "error": "Failed to resolve season/week from production endpoints"
+}

@@ -10,6 +10,7 @@ from dotenv import load_dotenv
 import os
 from datetime import datetime
 from logging_config import setup_logging, log_activity
+from team_abbreviations import to_canonical_abbr
 
 # Load environment variables
 load_dotenv()
@@ -17,6 +18,8 @@ load_dotenv()
 # Initialize logging
 loggers = setup_logging()
 log_activity('scraper', 'info', 'Scraper module initialized', source='TeamRankings.com')
+
+MIN_EXPECTED_TEAMS = 28
 
 def get_db_connection():
     """Get PostgreSQL database connection"""
@@ -223,42 +226,106 @@ def update_database():
         print("❌ No data scraped, database not updated")
         return False
     
+    if len(teams) < MIN_EXPECTED_TEAMS:
+        print(
+            f"❌ Safety stop: scraped {len(teams)} teams "
+            f"(< {MIN_EXPECTED_TEAMS}); keeping existing database data"
+        )
+        return False
+
+    conn = None
+    cursor = None
+
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
-        
-        # Clear existing data
-        cursor.execute("DELETE FROM teams")
-        
-        # Insert fresh data
+
+        cursor.execute("SELECT id, abbreviation, name FROM teams")
+        existing_rows = cursor.fetchall()
+
+        existing_by_abbr = {}
+        existing_by_name = {}
+        for existing_id, existing_abbr, existing_name in existing_rows:
+            canonical_abbr = to_canonical_abbr(existing_abbr)
+            if canonical_abbr:
+                existing_by_abbr[canonical_abbr] = existing_id
+            if existing_name:
+                existing_by_name[existing_name.strip().lower()] = existing_id
+
+        updated_count = 0
+        unmatched_count = 0
+
         for team in teams:
-            cursor.execute("""
-                INSERT INTO teams (name, abbreviation, wins, losses, ppg, pa, games_played)
-                VALUES (%s, %s, %s, %s, %s, %s, %s)
-            """, (
-                team['name'],
-                get_team_abbreviation(team['name']),
-                team['wins'],
-                team['losses'],
-                round(team['ppg'], 1),
-                round(team['pa'], 1),
-                team['wins'] + team['losses']  # Total games played
-            ))
-        
+            abbreviation = to_canonical_abbr(get_team_abbreviation(team['name']))
+            wins = int(team.get('wins', 0))
+            losses = int(team.get('losses', 0))
+            ppg = round(float(team.get('ppg', 0.0)), 1)
+            pa = round(float(team.get('pa', 0.0)), 1)
+            games_played = wins + losses
+
+            team_id = existing_by_abbr.get(abbreviation) or existing_by_name.get(team['name'].strip().lower())
+            if team_id is None:
+                unmatched_count += 1
+                continue
+
+            cursor.execute(
+                """
+                UPDATE teams
+                SET name = %s,
+                    abbreviation = %s,
+                    wins = %s,
+                    losses = %s,
+                    ppg = %s,
+                    pa = %s,
+                    games_played = %s
+                WHERE id = %s
+                """,
+                (team['name'], abbreviation, wins, losses, ppg, pa, games_played, team_id),
+            )
+            updated_count += cursor.rowcount
+
+        if updated_count < MIN_EXPECTED_TEAMS:
+            conn.rollback()
+            print(
+                f"❌ Safety rollback: only {updated_count} teams matched existing rows "
+                f"({unmatched_count} unmatched)"
+            )
+            return False
+
+        cursor.execute("SELECT COUNT(*) FROM teams")
+        total_count = cursor.fetchone()[0]
+
+        if total_count < MIN_EXPECTED_TEAMS:
+            conn.rollback()
+            print(
+                f"❌ Safety rollback: teams table has {total_count} rows "
+                f"(< {MIN_EXPECTED_TEAMS})"
+            )
+            return False
+
         conn.commit()
-        conn.close()
-        
-        print(f"\n✅ Database updated with {len(teams)} teams")
+
+        print(
+            f"\n✅ Database updated: {len(teams)} processed "
+            f"({updated_count} updated, {unmatched_count} unmatched), total={total_count}"
+        )
         print("="*70 + "\n")
-        
+
         # Record update time
         record_update()
-        
+
         return True
-        
+
     except Exception as e:
+        if conn:
+            conn.rollback()
         print(f"❌ Database update failed: {e}")
         return False
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
 
 def record_update():
     """Record that an update occurred"""

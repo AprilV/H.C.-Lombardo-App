@@ -1,0 +1,6 @@
+Sprint 14 closure gate
+- Sprint board subtasks: 52
+- Completed subtasks on board: 38
+- TASK_DETAILS entries on board: 38
+
+PASS: Closure gate passed. Sprint bookkeeping is aligned.

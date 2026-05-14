@@ -1,0 +1,20 @@
+task=TA-020
+subtask=s20_4
+command=.venv/Scripts/python.exe scripts/verification/ta020_record_top_team_snapshot.py --api-base http://127.0.0.1:5000 --summary-out docs/sprints/ta020_elo_recalc/ta020_s20_4_20260511_173245_summary.json --report-out docs/sprints/ta020_elo_recalc/ta020_s20_4_20260511_173245_report.md
+python_exit_code=0
+timestamp_local=2026-05-11T17:32:46
+
+[stdout]
+ratings_count=32
+top_team=SEA
+top_rating=1607.8
+top_gap=3.2
+route_status=200
+route_top=SEA:1607.8
+route_error=None
+all_checks_passed=True
+summary_out=docs\sprints\ta020_elo_recalc\ta020_s20_4_20260511_173245_summary.json
+report_out=docs\sprints\ta020_elo_recalc\ta020_s20_4_20260511_173245_report.md
+
+
+[stderr]

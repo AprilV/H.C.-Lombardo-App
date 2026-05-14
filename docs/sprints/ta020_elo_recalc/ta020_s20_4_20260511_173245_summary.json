@@ -1,0 +1,58 @@
+{
+  "task": "TA-020",
+  "subtask": "s20_4",
+  "ratings_file": "C:\\Users\\april\\H.C.-Lombardo-App\\ml\\models\\elo_ratings_current.json",
+  "ratings_file_sha256": "e24cefd61490c722746f61597eb25e118ed6151c8cbbc6a5ed7042d228cb9b60",
+  "file_last_updated": "2026-05-05T19:13:58.076584",
+  "snapshot_captured_at_utc": "2026-05-12T00:32:46.602814+00:00",
+  "ratings_count": 32,
+  "top_team": "SEA",
+  "top_rating": 1607.8,
+  "second_team": "PHI",
+  "second_rating": 1604.7,
+  "top_gap": 3.2,
+  "bottom_team": "TEN",
+  "bottom_rating": 1361.8,
+  "top5": [
+    {
+      "rank": 1,
+      "team": "SEA",
+      "rating": 1607.8
+    },
+    {
+      "rank": 2,
+      "team": "PHI",
+      "rating": 1604.7
+    },
+    {
+      "rank": 3,
+      "team": "BUF",
+      "rating": 1600.9
+    },
+    {
+      "rank": 4,
+      "team": "DEN",
+      "rating": 1593.8
+    },
+    {
+      "rank": 5,
+      "team": "LAR",
+      "rating": 1572.8
+    }
+  ],
+  "route_status": 200,
+  "route_last_updated": "2026-05-05T19:13:58.076584",
+  "route_top": {
+    "team": "SEA",
+    "rating": 1607.8
+  },
+  "route_error": null,
+  "checks": {
+    "ratings_count_32": true,
+    "top_team_exists": true,
+    "route_status_200": true,
+    "route_top_matches_file": true,
+    "route_last_updated_matches_file": true
+  },
+  "all_checks_passed": true
+}

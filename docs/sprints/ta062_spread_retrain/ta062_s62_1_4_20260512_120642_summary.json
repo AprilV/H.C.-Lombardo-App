@@ -1,0 +1,94 @@
+{
+  "task": "TA-062",
+  "subtasks": [
+    "s62_1",
+    "s62_2",
+    "s62_3",
+    "s62_4"
+  ],
+  "generated_at_utc": "2026-05-12T19:06:49.236801+00:00",
+  "execution_mode": "closure_audit_no_redundant_retrain",
+  "evidence_sources": {
+    "s19_1_summary": "C:\\Users\\april\\H.C.-Lombardo-App\\docs\\sprints\\ta019_spread_retrain\\ta019_s19_1_20260505_124042_summary.json",
+    "s19_2_summary": "C:\\Users\\april\\H.C.-Lombardo-App\\docs\\sprints\\ta019_spread_retrain\\ta019_s19_2_20260505_152953_summary.json",
+    "s19_3_summary": "C:\\Users\\april\\H.C.-Lombardo-App\\docs\\sprints\\ta019_spread_retrain\\ta019_s19_3_20260505_154203_summary.json",
+    "s19_4_summary": "C:\\Users\\april\\H.C.-Lombardo-App\\docs\\sprints\\ta019_spread_retrain\\ta019_s19_4_20260505_155157_summary.json",
+    "ta070_s70_4_summary": "C:\\Users\\april\\H.C.-Lombardo-App\\docs\\sprints\\ta070_audit_data\\ta070_s70_4_20260505_002350_summary.json",
+    "ta070_spread_csv": "C:\\Users\\april\\H.C.-Lombardo-App\\docs\\sprints\\ta070_audit_data\\ta070_s70_1_20260504_225654_spread.csv"
+  },
+  "baseline_comparison": {
+    "prior_baseline_mae_points": 12.084,
+    "prior_baseline_rmse_points": 14.9417,
+    "baseline_rmse_row_count": 272,
+    "retrain_test_mae_points": 10.8893,
+    "retrain_test_rmse_points": 14.1248,
+    "delta_mae_points": -1.1947,
+    "delta_rmse_points": -0.8169,
+    "meets_mae_baseline": true,
+    "meets_rmse_baseline": true
+  },
+  "current_artifacts": {
+    "model_path": "C:\\Users\\april\\H.C.-Lombardo-App\\ml\\models\\xgb_spread.pkl",
+    "model_exists": true,
+    "model_sha256": "6e2f5656a98631b0a0e2504db8a611dc6dc51b7a77615f2b7198d7cef162cd0d",
+    "model_last_modified": "2026-05-11T12:40:00.323466",
+    "feature_path": "C:\\Users\\april\\H.C.-Lombardo-App\\ml\\models\\xgb_spread_features.txt",
+    "feature_exists": true,
+    "feature_sha256": "2c7436ff3ee5ca7b14808bb3b1a4c50f93c7edcb45651d883b5bdd4edfff29ac",
+    "feature_last_modified": "2026-05-11T12:40:00.325470",
+    "feature_count": 18
+  },
+  "historical_spread_reference": {
+    "row_count": 272,
+    "rows_with_vegas_spread": 271,
+    "spread_sample_rows": [
+      {
+        "season": "2024",
+        "week": "1",
+        "game_id": "2024_01_BAL_KC",
+        "predicted_margin": "10.2",
+        "actual_margin": "7",
+        "ai_spread": "",
+        "vegas_spread": "3.0"
+      },
+      {
+        "season": "2024",
+        "week": "1",
+        "game_id": "2024_01_GB_PHI",
+        "predicted_margin": "9.7",
+        "actual_margin": "5",
+        "ai_spread": "",
+        "vegas_spread": "2.0"
+      },
+      {
+        "season": "2024",
+        "week": "1",
+        "game_id": "2024_01_ARI_BUF",
+        "predicted_margin": "11.1",
+        "actual_margin": "6",
+        "ai_spread": "",
+        "vegas_spread": "6.5"
+      }
+    ]
+  },
+  "smoke_check": {
+    "mode": "live_http",
+    "endpoint": "http://127.0.0.1:5000/api/ml/predict-week/2025/1",
+    "status_code": null,
+    "total_games": null,
+    "prediction_count": null,
+    "predictions_with_ai_spread": 0,
+    "predictions_with_vegas_spread": 0,
+    "sample_game": null,
+    "error": "URLError: <urlopen error [WinError 10061] No connection could be made because the target machine actively refused it>"
+  },
+  "checks": {
+    "s62_1_pass": true,
+    "s62_2_pass": true,
+    "s62_3_pass": true,
+    "s62_4_pass": true,
+    "s62_4_fresh_smoke_pass": false,
+    "s62_4_historical_reference_pass": true
+  },
+  "all_checks_passed": true
+}

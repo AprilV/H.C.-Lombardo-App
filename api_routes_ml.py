@@ -1168,7 +1168,7 @@ def get_combined_predictions(season, week):
                         'split_prediction': elo.get('split_prediction', False)
                     },
                     'agreement': agreement,
-                    'vegas_spread': float(xgb['vegas_spread']) if xgb.get('vegas_spread') else None
+                    'vegas_spread': float(xgb['vegas_spread']) if xgb.get('vegas_spread') is not None else None
                 })
             elif xgb:
                 # Only XGBoost available
@@ -1184,7 +1184,7 @@ def get_combined_predictions(season, week):
                     },
                     'elo': None,
                     'agreement': None,
-                    'vegas_spread': float(xgb['vegas_spread']) if xgb.get('vegas_spread') else None
+                    'vegas_spread': float(xgb['vegas_spread']) if xgb.get('vegas_spread') is not None else None
                 })
             elif elo:
                 # Only Elo available
@@ -1192,13 +1192,15 @@ def get_combined_predictions(season, week):
                     'game_id': game_id,
                     'home_team': elo['home_team'],
                     'away_team': elo['away_team'],
+                    'game_date': elo.get('game_date'),
                     'xgb': None,
                     'elo': {
                         'predicted_winner': elo['predicted_winner'],
                         'confidence': float(elo['confidence']),
                         'spread': float(elo['elo_spread'])
                     },
-                    'agreement': None
+                    'agreement': None,
+                    'vegas_spread': float(elo['vegas_spread']) if elo.get('vegas_spread') is not None else None
                 })
         
         # Calculate summary stats

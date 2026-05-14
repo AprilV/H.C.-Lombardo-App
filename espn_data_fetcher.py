@@ -9,6 +9,7 @@ from psycopg2.extras import RealDictCursor
 from dotenv import load_dotenv
 import os
 from datetime import datetime
+from team_abbreviations import to_canonical_abbr
 
 # Load environment variables
 load_dotenv()
@@ -17,12 +18,29 @@ class ESPNDataFetcher:
     """Fetch and process NFL data from ESPN API"""
     
     BASE_URL = "http://site.api.espn.com/apis/site/v2/sports/football/nfl"
+    MIN_EXPECTED_TEAMS = 28
     
     def __init__(self):
         self.session = requests.Session()
         self.session.headers.update({
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
         })
+
+    @staticmethod
+    def _safe_int(value, default=0):
+        """Convert value to int safely."""
+        try:
+            return int(value)
+        except (TypeError, ValueError):
+            return default
+
+    @staticmethod
+    def _safe_float(value, default=0.0):
+        """Convert value to float safely."""
+        try:
+            return float(value)
+        except (TypeError, ValueError):
+            return default
     
     def get_db_connection(self):
         """Get PostgreSQL database connection"""
@@ -212,41 +230,126 @@ class ESPNDataFetcher:
             print("⚠️  No stats from scoreboard, keeping existing database data")
             return False
         
-        # Update database
-        conn = self.get_db_connection()
-        cursor = conn.cursor()
-        
-        # Clear existing data
-        cursor.execute("DELETE FROM teams")
-        
-        # Insert updated data
-        updated_count = 0
-        for team in teams:
-            team_id = team['id']
-            stats = team_stats.get(team_id, {})
-            
-            if stats and stats.get('ppg', 0) > 0:  # Only insert if we have valid stats
-                cursor.execute("""
-                    INSERT INTO teams (name, abbreviation, wins, losses, ppg, pa, games_played)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s)
-                """, (
-                    stats.get('name', team['name']),
-                    stats.get('abbreviation', team['abbreviation']),
-                    stats.get('wins', 0),
-                    stats.get('losses', 0),
-                    round(stats.get('ppg', 0), 1),
-                    round(stats.get('pa', 0), 1),
-                    stats.get('wins', 0) + stats.get('losses', 0)
+        conn = None
+        cursor = None
+
+        try:
+            conn = self.get_db_connection()
+            cursor = conn.cursor()
+
+            # Build candidate rows first so we can refuse partial/empty refreshes.
+            candidate_rows = []
+            for team in teams:
+                team_id = team.get('id')
+                stats = team_stats.get(team_id, {}) if team_id else {}
+
+                abbreviation = to_canonical_abbr(
+                    (stats.get('abbreviation') or team.get('abbreviation') or '').strip().upper()
+                )
+                if not abbreviation:
+                    continue
+
+                wins = self._safe_int(stats.get('wins'), 0)
+                losses = self._safe_int(stats.get('losses'), 0)
+                ppg = round(self._safe_float(stats.get('ppg'), 0.0), 1)
+                pa = round(self._safe_float(stats.get('pa'), 0.0), 1)
+                games_played = self._safe_int(stats.get('games_played'), wins + losses)
+                if games_played <= 0 and (wins > 0 or losses > 0):
+                    games_played = wins + losses
+
+                candidate_rows.append((
+                    stats.get('name') or team.get('name') or abbreviation,
+                    abbreviation,
+                    wins,
+                    losses,
+                    ppg,
+                    pa,
+                    games_played,
                 ))
-                updated_count += 1
-        
-        conn.commit()
-        conn.close()
-        
-        print(f"✅ Database updated with {updated_count} teams")
-        print("="*70 + "\n")
-        
-        return True
+
+            if len(candidate_rows) < self.MIN_EXPECTED_TEAMS:
+                print(
+                    f"❌ Safety stop: parsed {len(candidate_rows)} teams "
+                    f"(< {self.MIN_EXPECTED_TEAMS}); keeping existing data"
+                )
+                return False
+
+            cursor.execute("SELECT id, abbreviation, name FROM teams")
+            existing_rows = cursor.fetchall()
+
+            existing_by_abbr = {}
+            existing_by_name = {}
+            for existing_id, existing_abbr, existing_name in existing_rows:
+                canonical_abbr = to_canonical_abbr(existing_abbr)
+                if canonical_abbr:
+                    existing_by_abbr[canonical_abbr] = existing_id
+                if existing_name:
+                    existing_by_name[existing_name.strip().lower()] = existing_id
+
+            updated_count = 0
+            unmatched_count = 0
+
+            for row in candidate_rows:
+                team_id = existing_by_abbr.get(row[1]) or existing_by_name.get(row[0].strip().lower())
+
+                if team_id is None:
+                    unmatched_count += 1
+                    continue
+
+                cursor.execute(
+                    """
+                    UPDATE teams
+                    SET name = %s,
+                        abbreviation = %s,
+                        wins = %s,
+                        losses = %s,
+                        ppg = %s,
+                        pa = %s,
+                        games_played = %s
+                    WHERE id = %s
+                    """,
+                    (row[0], row[1], row[2], row[3], row[4], row[5], row[6], team_id),
+                )
+                updated_count += cursor.rowcount
+
+            if updated_count < self.MIN_EXPECTED_TEAMS:
+                conn.rollback()
+                print(
+                    f"❌ Safety rollback: only {updated_count} teams matched existing rows "
+                    f"({unmatched_count} unmatched)"
+                )
+                return False
+
+            cursor.execute("SELECT COUNT(*) FROM teams")
+            total_count = cursor.fetchone()[0]
+
+            if total_count < self.MIN_EXPECTED_TEAMS:
+                conn.rollback()
+                print(
+                    f"❌ Safety rollback: teams table has {total_count} rows "
+                    f"(< {self.MIN_EXPECTED_TEAMS})"
+                )
+                return False
+
+            conn.commit()
+
+            print(
+                f"✅ Database updated: {len(candidate_rows)} processed "
+                f"({updated_count} updated, {unmatched_count} unmatched), total={total_count}"
+            )
+            print("="*70 + "\n")
+            return True
+
+        except Exception as e:
+            if conn:
+                conn.rollback()
+            print(f"❌ Database update failed: {e}")
+            return False
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
     
     def get_last_update_time(self):
         """Check when database was last updated"""
