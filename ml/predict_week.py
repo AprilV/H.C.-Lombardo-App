@@ -160,13 +160,19 @@ class WeeklyPredictor:
             home_stats = defaults
         if away_stats is None:
             away_stats = defaults
+
+        def _coerce_stat(stats, key):
+            value = stats.get(key)
+            if value is None or pd.isna(value) or np.isinf(value):
+                return float(defaults[key])
+            return float(value)
         
         # Build feature dictionary matching model feature names
         features = {}
         for key in defaults.keys():
             stat_name = key.replace('avg_', '')
-            features[f'home_{stat_name}'] = home_stats.get(key, defaults[key])
-            features[f'away_{stat_name}'] = away_stats.get(key, defaults[key])
+            features[f'home_{stat_name}'] = _coerce_stat(home_stats, key)
+            features[f'away_{stat_name}'] = _coerce_stat(away_stats, key)
         
         features['ppg_differential'] = features['home_ppg'] - features['away_ppg']
         features['success_differential'] = features['home_success'] - features['away_success']

@@ -472,20 +472,21 @@ def get_model_performance():
             )
             
             # Check classification accuracy (did we pick the right winner?)
-            if prediction['predicted_winner'] == game['actual_winner']:
+            if prediction.get('predicted_winner') == game['actual_winner']:
                 classification_correct += 1
             
             # Check regression accuracy (how close was our spread?)
-            predicted_margin = prediction['predicted_margin']
+            predicted_margin = prediction.get('predicted_margin')
             actual_margin = game['actual_margin']
-            regression_errors.append(abs(predicted_margin - actual_margin))
+            if predicted_margin is not None and actual_margin is not None:
+                regression_errors.append(abs(predicted_margin - actual_margin))
             
             # Check spread betting performance
-            ai_spread = prediction['ai_spread']
+            ai_spread = prediction.get('ai_spread')
             vegas_spread = game['vegas_spread']
             
             # Did AI spread beat the actual result better than Vegas?
-            if vegas_spread:
+            if ai_spread is not None and vegas_spread is not None and actual_margin is not None:
                 ai_diff = abs(ai_spread - (-actual_margin))  # AI spread is negative of margin
                 vegas_diff = abs(vegas_spread - (-actual_margin))
                 

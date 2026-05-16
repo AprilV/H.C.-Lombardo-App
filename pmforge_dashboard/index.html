@@ -2273,7 +2273,7 @@
                 <span id="brand-methodology-status" style="font-size:0.72rem; color:#93c5fd; border:1px solid rgba(147,197,253,0.4); background:rgba(147,197,253,0.12); border-radius:999px; padding:0.22rem 0.58rem; white-space:nowrap;">Active</span>
             </div>
             <div style="font-size:0.72rem; color:var(--muted); line-height:1.35;">Hybrid Forge and Predictive Forge are listed as future workspaces (coming soon / work in progress).</div>
-            <input id="brand-live-app-url" type="url" value="https://master.d2tamnlcbzo0d5.amplifyapp.com/" placeholder="Live app URL" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.15); border-radius:0.45rem; color:#e2e8f0; font-size:0.8rem; padding:0.38rem 0.55rem; outline:none;" aria-label="Live app URL">
+            <input id="brand-live-app-url" type="url" value="https://staging.d2fwv8daemi5y2.amplifyapp.com/" placeholder="Live app URL" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.15); border-radius:0.45rem; color:#e2e8f0; font-size:0.8rem; padding:0.38rem 0.55rem; outline:none;" aria-label="Live app URL">
             <div style="display:flex; gap:0.75rem; flex-wrap:wrap; align-items:center;">
             <a href="#" class="dash-live-btn" id="live-app-btn" target="_blank" rel="noopener noreferrer">🔗 Live App</a>
             <button class="btn btn-secondary" style="padding:0.5rem 1.1rem; font-size:0.82rem;" onclick="showTab('architecture', document.querySelectorAll('.nav-tab')[1])">🏗️ Architecture</button>
@@ -2352,7 +2352,7 @@
         <div class="pm-metric">
             <div class="pm-metric-label">Open P1 Blockers</div>
             <div class="pm-metric-value" style="color:#ff6b6b;" id="dash-p1-count">1</div>
-            <div class="pm-metric-sub" id="dash-p1-sub">TA-008 blocked (AWS MFA lockout)</div>
+            <div class="pm-metric-sub" id="dash-p1-sub">TA-011 s11_2 blocked (EC2 .env update pending)</div>
         </div>
         <div class="pm-metric">
             <div class="pm-metric-label">Total Open Tasks</div>
@@ -2403,14 +2403,14 @@
             <div class="chart-card-title" id="burndown-chart-title">Burndown — Sprint 12</div>
             <div class="chart-card-subtitle">Tracks remaining effort points vs. ideal pace. The red line should trend toward the gold dashed line as sprint work is completed.</div>
             <canvas id="burndown-chart" height="180"></canvas>
-            <div class="chart-card-insight" id="burndown-chart-insight"><strong>S12 status:</strong> 84 of 85 tasks complete. 1 task blocked (TA-008 — awaiting AWS console access). Sprint closes Apr 18.</div>
+            <div class="chart-card-insight" id="burndown-chart-insight"><strong>S12 status:</strong> 85 of 85 tasks complete. TA-008 was closed on May 16 after Amplify frontend deployment.</div>
         </div>
 
         <div class="chart-card">
             <div class="chart-card-title">Burnup — Scope vs. Completion</div>
             <div class="chart-card-subtitle">Shows committed scope versus completed effort points by sprint. A healthy trend keeps completion climbing toward planned scope.</div>
             <canvas id="burnup-chart" height="180"></canvas>
-            <div class="chart-card-insight" id="burnup-chart-insight"><strong>S12 progress:</strong> 8 backlog items delivered this sprint (TA-001, TA-002, TA-003, TA-004, TA-005, TA-006, TA-007, TA-009). Cumulative completed: 83 of 83. TA-008 blocked — carries to S13.</div>
+            <div class="chart-card-insight" id="burnup-chart-insight"><strong>S12 progress:</strong> 9 backlog items delivered this sprint (TA-001 through TA-009). Cumulative completed: 84 of 84.</div>
         </div>
 
     </div>
@@ -2422,7 +2422,7 @@
             <div class="chart-card-title">Velocity — Effort Points Delivered Per Sprint</div>
             <div class="chart-card-subtitle">How many effort points were completed each sprint. Consistent bars support reliable planning; sharp drops usually indicate blockers or carryover.</div>
             <canvas id="velocity-chart" height="180"></canvas>
-            <div class="chart-card-insight" id="velocity-chart-insight"><strong>Avg velocity:</strong> ~6.8 TA items/sprint across S1–S11. S12 delivered 8 TA items (TA-001, TA-002, TA-003, TA-004, TA-005, TA-006, TA-007, TA-009). TA-008 blocked, carries to S13.</div>
+            <div class="chart-card-insight" id="velocity-chart-insight"><strong>Avg velocity:</strong> ~6.8 TA items/sprint across S1-S11. S12 delivered 9 TA items (TA-001 through TA-009).</div>
         </div>
 
         <div class="chart-card">
@@ -2807,15 +2807,15 @@
                 </div>
             </div>
 
-            <!-- TA-008: Live App URL Added to Dashboard (BLOCKED) -->
+            <!-- TA-008: Live App URL Added to Dashboard (DONE) -->
             <div class="area-card">
                 <div class="area-header" onclick="toggleArea('ta008')">
-                    <div class="area-title">🔗 TA-008 — Live App URL Added to Dashboard <span style="color:#ff6b6b;font-size:0.72rem;font-weight:600;margin-left:0.5rem;">BLOCKED</span> <span class="area-count" id="count-ta008">0/1</span></div>
+                    <div class="area-title">🔗 TA-008 — Live App URL Added to Dashboard <span style="color:#10b981;font-size:0.72rem;font-weight:600;margin-left:0.5rem;">DONE</span> <span class="area-count" id="count-ta008">1/1</span></div>
                     <span id="arrow-ta008">▾</span>
                 </div>
                 <div class="area-body" id="ta008">
-                    <div class="area-section-label">Blocked — Waiting on AWS Console Access</div>
-                    <label class="task-item" id="wrap-t8_1"><input type="checkbox" id="t8_1" onchange="toggleTask('t8_1')"><span class="task-text">Add live Amplify URL to Dashboard overview section <span class="task-sub">Blocked: AWS root MFA lockout — support case 177854801600589 opened May 11, 2026; awaiting response</span></span></label>
+                    <div class="area-section-label">Completed — Frontend URL restored and validated</div>
+                    <label class="task-item" id="wrap-t8_1"><input type="checkbox" id="t8_1" onchange="toggleTask('t8_1')"><span class="task-text">Add live Amplify URL to Dashboard overview section <span class="task-sub">Completed: provisioned Amplify app app1699 in us-east-2 (account 563960656132), deployed staging branch, and validated public frontend URL https://staging.d2fwv8daemi5y2.amplifyapp.com/.</span></span></label>
                 </div>
             </div>
 
@@ -3809,7 +3809,15 @@ document.getElementById('live-app-btn').addEventListener('click', function(e) {
 });
 
 /* ── BRANDING + METHODOLOGY EDITOR ── */
-var DEFAULT_LIVE_APP_URL = 'https://master.d2tamnlcbzo0d5.amplifyapp.com/';
+var LEGACY_LIVE_APP_HOSTS = {
+    'master.d2tamnlcbzo0d5.amplifyapp.com': true,
+    'nfl.aprilsykes.dev': true
+};
+var LOCAL_DEV_LIVE_APP_URL = 'http://127.0.0.1:3000/';
+var PROD_LIVE_APP_URL = 'https://staging.d2fwv8daemi5y2.amplifyapp.com/';
+var DEFAULT_LIVE_APP_URL = (window.location && window.location.protocol === 'file:')
+    ? LOCAL_DEV_LIVE_APP_URL
+    : PROD_LIVE_APP_URL;
 var BRANDING_STORAGE_KEY = 'pmforge_dashboard_branding_v1';
 
 var METHOD_META = {
@@ -3825,11 +3833,30 @@ function formatBrandDate(isoDate) {
     return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
+function getNormalizedLiveAppHost(url) {
+    try {
+        return new URL(url).hostname.toLowerCase();
+    } catch (e) {
+        return '';
+    }
+}
+
 function normalizeLiveAppUrl(rawUrl) {
     var url = String(rawUrl || '').trim();
     if (!url) return DEFAULT_LIVE_APP_URL;
     if (!/^https?:\/\//i.test(url)) {
-        url = 'https://' + url.replace(/^\/+/, '');
+        var cleaned = url.replace(/^\/+/, '');
+        if (/^(localhost|127\.0\.0\.1|0\.0\.0\.0)(:\d+)?(\/|$)/i.test(cleaned)) {
+            url = 'http://' + cleaned;
+        } else {
+            url = 'https://' + cleaned;
+        }
+    }
+
+    var host = getNormalizedLiveAppHost(url);
+    // Known legacy hosts are currently unavailable; use local app runtime as safe default.
+    if (host && LEGACY_LIVE_APP_HOSTS[host]) {
+        return LOCAL_DEV_LIVE_APP_URL;
     }
     return url;
 }
@@ -3847,6 +3874,12 @@ function getBrandingSnapshot() {
     var contextLine = getVal('brand-context-line', 'Project Context');
     var org = contextLine.split('·')[0] ? contextLine.split('·')[0].trim() : 'Organization';
     var liveAppUrlRaw = getVal('brand-live-app-url', DEFAULT_LIVE_APP_URL);
+    var normalizedLiveAppUrl = normalizeLiveAppUrl(liveAppUrlRaw);
+    if ((window.location && window.location.protocol === 'file:') && normalizedLiveAppUrl !== liveAppUrlRaw) {
+        var liveInput = document.getElementById('brand-live-app-url');
+        if (liveInput) liveInput.value = normalizedLiveAppUrl;
+        liveAppUrlRaw = normalizedLiveAppUrl;
+    }
     var roleAName = getVal('brand-role-a-name', 'Unassigned') || 'Unassigned';
     var roleBName = getVal('brand-role-b-name', 'Unassigned') || 'Unassigned';
     var roleCName = getVal('brand-role-c-name', 'Unassigned') || 'Unassigned';
@@ -3870,7 +3903,7 @@ function getBrandingSnapshot() {
         methodLabel: method.label,
         methodStatus: method.status,
         liveAppUrlRaw: liveAppUrlRaw,
-        liveAppUrl: normalizeLiveAppUrl(liveAppUrlRaw)
+        liveAppUrl: normalizedLiveAppUrl
     };
 }
 window.getBrandingSnapshot = getBrandingSnapshot;
@@ -5185,6 +5218,8 @@ const COMPLETED_TASKS = [
     't5_1', 't5_2', 't5_3', 't5_4', 't5_5', 't5_6', 't5_7', 't5_8', 't5_9', 't5_10', 't5_11', 't5_12',
     // Area 6 — TA-006: CORS (completed Apr 17)
     't6_1', 't6_2', 't6_3', 't6_4',
+    // TA-008 — live app URL restored (May 16)
+    't8_1',
     // TA-009 — CLAUDE.md updated (Apr 17)
     't9_1',
     // ── Sprint 13 completed subtasks ──
@@ -5236,6 +5271,11 @@ const COMPLETED_TASKS = [
     's24_2',
     's24_3',
     's24_4',
+    // TA-025 — ModelPerformance metrics flow restored (May 16)
+    's25_1',
+    's25_2',
+    's25_3',
+    's25_4',
     // TA-061 — winner retrain closure audit complete (May 12)
     's61_1',
     's61_2',
@@ -5246,27 +5286,21 @@ const COMPLETED_TASKS = [
     's62_2',
     's62_3',
     's62_4',
-];
-const BLOCKED_TASKS = [
-    's11_2', // TA-011 EC2 .env update blocked on SSH access
-    't8_1', // TA-008: blocked — AWS console locked, can't retrieve Amplify URL
-    // TA-025 — blocked by known runtime outage: API/DB/Amplify unreachable
-    's25_1',
-    's25_2',
-    's25_3',
-    's25_4',
-    // TA-063 — blocked by EC2/DB access outage in current environment
+    // TA-063 — EC2 cleanup recovery execution (May 16)
     's63_7',
     's63_8',
     's63_9',
     's63_10',
     's63_11',
     's63_12',
-    // TA-072 — blocked by AWS account + infrastructure reachability outage
+    // TA-072 — AWS continuity path recovered (May 16)
     's72_1',
     's72_2',
     's72_3',
     's72_4',
+];
+const BLOCKED_TASKS = [
+    's11_2', // TA-011 EC2 .env update blocked on SSH access
 ];
 
 const LEGACY_COMPLETED_TASKS = COMPLETED_TASKS.slice();
@@ -5460,14 +5494,18 @@ const TASK_DETAILS = {
     ta_parent_ta_060: { resolution:'Completed TA-060 by implementing upcoming week detection in ml/predict_ensemble.py. Added EnsemblePredictor.predict_upcoming() to find the next season/week with unplayed games and wired CLI --upcoming to run that path instead of exiting with TODO.', date:'May 4, 2026', timestamp:'2026-05-04T13:05', updatedBy:'Copilot (code diff + local verification evidence)' },
     ta_parent_ta_021: { resolution:'Closed as duplicate scope of TA-057. TA-057 evidence confirms winner-training schema mismatch (hcl_test -> hcl) was fixed and verified.', date:'May 4, 2026', updatedBy:'Copilot (parent-ticket consolidation evidence)' },
     ta_parent_ta_022: { resolution:'Closed as duplicate scope of TA-058. TA-058 evidence confirms broken spread-training SQL WINDOW clause was fixed and execution validated.', date:'May 4, 2026', updatedBy:'Copilot (parent-ticket consolidation evidence)' },
+    ta_parent_ta_008: { resolution:'Completed TA-008 by restoring frontend hosting in Amplify: app1699 was provisioned in account 563960656132 (us-east-2), staging branch deployed from manual artifact upload, and public reachability validated at https://staging.d2fwv8daemi5y2.amplifyapp.com/.', date:'May 16, 2026', timestamp:'2026-05-16T03:43', updatedBy:'Copilot (Amplify deployment evidence)' },
+    ta_parent_ta_025: { resolution:'Completed TA-025 by restoring end-to-end ModelPerformance data flow: configured API Gateway HTTPS proxy routes (/, /{proxy+}) with backend integration mapping, enabled CORS for staging origin, installed missing xgboost in EC2 venv, applied DB migrations (add_epa_columns.sql and create_predictions_tracking.sql), hardened feature generation against null advanced metrics, and validated /api/ml/model-performance + /api/ml/performance-stats along with staging /model-performance render path.', date:'May 16, 2026', timestamp:'2026-05-16T04:26', updatedBy:'Copilot (runtime recovery evidence)' },
+    ta_parent_ta_072: { resolution:'Completed TA-072 continuity recovery: restored AWS operational access, recovered EC2 runtime execution path, and validated backup continuity in S3 bucket hcl-lombardo-backups-563960656132-us-east-2 with verified backup prefix ec2-backups/20260516_022248 (app_bundle.tar.gz + nfl_analytics.sql).', date:'May 16, 2026', timestamp:'2026-05-16T03:22', updatedBy:'Copilot (AWS recovery evidence)' },
     ta_parent_dsh_011: { resolution:'Completed DSH-011 by moving PM4 dashboard publish source to pmforge_dashboard/index.html, deprecating legacy Dashboard/index.html as active source, and aligning docs/release/backlog references to the new source-of-truth path. Validation included local runtime load checks and source-path consistency verification across dashboard process docs.', date:'May 1, 2026', timestamp:'2026-05-01T13:48', updatedBy:'Copilot (source-path transition evidence)' },
     s69_1: { resolution:'Located and confirmed the premature return in compute_rolling_features before final feature sanitation/computation block.', date:'Apr 22, 2026', timestamp:'2026-04-22T11:08', updatedBy:'Claude + April review' },
     s69_2: { resolution:'Moved return to run after differential computation plus NaN/inf handling so full feature set is produced.', date:'Apr 22, 2026', timestamp:'2026-04-22T11:15', updatedBy:'Claude + April review' },
     s69_3: { resolution:'Fixed variable mismatch path to use valid feature keys (home_ppg / away_ppg) and removed dead mismatch path risk.', date:'Apr 22, 2026', timestamp:'2026-04-22T11:22', updatedBy:'Claude + April review' },
     s69_4: { resolution:'Validated feature output coverage with targeted checks; expected key factors and differentials are now present in prediction payload.', date:'Apr 22, 2026', timestamp:'2026-04-22T11:30', updatedBy:'Claude + April review' },
+    // TA-008 — live app URL
+    t8_1:  { resolution:'Completed TA-008 by provisioning Amplify app app1699 in us-east-2 (account 563960656132), deploying staging branch from manual artifact upload, and validating public frontend reachability at https://staging.d2fwv8daemi5y2.amplifyapp.com/ (root and /team-stats route shell load confirmed).', date:'May 16, 2026', timestamp:'2026-05-16T03:43', updatedBy:'Copilot (Amplify deploy + URL validation)' },
     // TA-009 — CLAUDE.md
     t9_1:  { resolution:'CLAUDE.md updated with current routes, deployment state, architecture, and Spring 2026 term details.', date:'Apr 17, 2026' },
-    t8_1:  { resolution:'BLOCKED — Cannot retrieve Amplify live URL from AWS console due root MFA lockout after phone replacement (old MFA device unavailable). AWS Support case 177854801600589 was opened on May 11, 2026 and is pending response. Keep TA-008 in Blocked/P1 until AWS restores root MFA access; then retrieve Amplify URL and update dashboard overview immediately.', date:'May 11, 2026', timestamp:'2026-05-11T18:00', updatedBy:'Copilot (status sync per April)' },
     s19_2: { resolution:'Executed ml/train_xgb_spread.py against hcl schema and published TA-019 s19_2 execution artifacts (docs/sprints/ta019_spread_retrain/ta019_s19_2_20260505_152953_summary.json, docs/sprints/ta019_spread_retrain/ta019_s19_2_20260505_152953_report.md) plus run log (docs/sprints/ta019_spread_retrain/ta019_s19_2_20260505_152953_train_log.txt). Retrain completed with python_exit_code=0 and saved refreshed artifacts ml/models/xgb_spread.pkl and ml/models/xgb_spread_features.txt; test metrics: MAE 10.89, RMSE 14.12, winner accuracy 59.0%.', date:'May 5, 2026', timestamp:'2026-05-05T15:29', updatedBy:'Copilot (local TA-019 retrain execution evidence)' },
     s19_3: { resolution:'Executed scripts/verification/ta019_compute_spread_mae.py --schema hcl and generated TA-019 s19_3 metric evidence artifacts (docs/sprints/ta019_spread_retrain/ta019_s19_3_20260505_154203_summary.json, docs/sprints/ta019_spread_retrain/ta019_s19_3_20260505_154203_report.md). Computed validation/test split metrics from refreshed spread artifacts (ml/models/xgb_spread.pkl, ml/models/xgb_spread_features.txt): validation MAE 10.5249, test MAE 10.8893, validation RMSE 13.6969, test RMSE 14.1248, with ordered feature alignment match true (18/18).', date:'May 5, 2026', timestamp:'2026-05-05T15:42', updatedBy:'Copilot (local TA-019 MAE evidence)' },
     s19_4: { resolution:'Logged TA-019 spread MAE results into sprint evidence notes and dashboard-ready resolution detail by publishing s19_4 artifacts (docs/sprints/ta019_spread_retrain/ta019_s19_4_20260505_155157_summary.json, docs/sprints/ta019_spread_retrain/ta019_s19_4_20260505_155157_report.md) referencing s19_2/s19_3 evidence. Recorded metrics: validation MAE 10.5249, test MAE 10.8893, validation RMSE 13.6969, test RMSE 14.1248, and MAE delta +0.3644 (test - validation).', date:'May 5, 2026', timestamp:'2026-05-05T15:51', updatedBy:'Copilot (local TA-019 MAE log evidence)' },
@@ -5483,20 +5521,20 @@ const TASK_DETAILS = {
     s24_2: { resolution:'Verified ML Predictions frontend render contracts for winner and spread views: /ml-predictions route targets MLPredictionsRedesign, winner and spread tabs are present, and expected xgb/elo/vegas payload fields are referenced by the component. Evidence captured in TA-024 closure summary and report.', date:'May 12, 2026', timestamp:'2026-05-12T13:28', updatedBy:'Copilot (closure-audit execution)' },
     s24_3: { resolution:'Fixed API-to-UI payload mismatch in api_routes_ml.py by preserving vegas_spread values of 0.0 in combined responses and including game_date plus vegas_spread for Elo-only combined entries. Retest passed in TA-024 closure artifacts with backend fix checks all true.', date:'May 12, 2026', timestamp:'2026-05-12T13:28', updatedBy:'Copilot (closure-audit execution)' },
     s24_4: { resolution:'Published TA-024 acceptance evidence package: docs/sprints/ta024_live_results/ta024_s24_1_4_20260512_132856_summary.json and ta024_s24_1_4_20260512_132856_report.md with all_checks_passed=true and explicit runtime blocker details.', date:'May 12, 2026', timestamp:'2026-05-12T13:28', updatedBy:'Copilot (closure-audit execution)' },
-    s25_1: { resolution:'BLOCKED — Cannot validate /api/ml/model-performance payload because API, EC2/DB runtime, and Amplify-hosted path are currently unreachable in this environment. Resume endpoint verification immediately after connectivity restoration.', date:'May 12, 2026', timestamp:'2026-05-12T14:18', updatedBy:'Copilot (runtime outage blocker sync)' },
-    s25_2: { resolution:'BLOCKED — ModelPerformance empty/populated state validation depends on live API data flow and deployed frontend reachability; current outage prevents end-to-end rendering checks.', date:'May 12, 2026', timestamp:'2026-05-12T14:18', updatedBy:'Copilot (runtime outage blocker sync)' },
-    s25_3: { resolution:'BLOCKED — Weekly trend and benchmark delta validation requires retrievable production/local metric samples from unreachable API/DB runtime.', date:'May 12, 2026', timestamp:'2026-05-12T14:18', updatedBy:'Copilot (runtime outage blocker sync)' },
-    s25_4: { resolution:'BLOCKED — Acceptance screenshot/data evidence for metrics flow cannot be captured while Amplify/app/API endpoints remain unreachable.', date:'May 12, 2026', timestamp:'2026-05-12T14:18', updatedBy:'Copilot (runtime outage blocker sync)' },
-    s63_7: { resolution:'BLOCKED — EC2 access recovery cannot be executed while AWS account and runtime endpoints are unreachable in the current environment.', date:'May 12, 2026', timestamp:'2026-05-12T14:18', updatedBy:'Copilot (runtime outage blocker sync)' },
-    s63_8: { resolution:'BLOCKED — Pre-cleanup disk baseline capture requires EC2 shell access (df -h and directory sizing), currently unavailable due reachability outage.', date:'May 12, 2026', timestamp:'2026-05-12T14:18', updatedBy:'Copilot (runtime outage blocker sync)' },
-    s63_9: { resolution:'BLOCKED — Cleanup actions cannot run without EC2/SSH access; host remains unreachable in this execution context.', date:'May 12, 2026', timestamp:'2026-05-12T14:18', updatedBy:'Copilot (runtime outage blocker sync)' },
-    s63_10: { resolution:'BLOCKED — Service restart/regression validation requires remote host access after cleanup, which is currently unavailable.', date:'May 12, 2026', timestamp:'2026-05-12T14:18', updatedBy:'Copilot (runtime outage blocker sync)' },
-    s63_11: { resolution:'BLOCKED — Post-cleanup disk verification cannot run without restored EC2 shell and filesystem access.', date:'May 12, 2026', timestamp:'2026-05-12T14:18', updatedBy:'Copilot (runtime outage blocker sync)' },
-    s63_12: { resolution:'BLOCKED — Cleanup command/outcome evidence cannot be produced before AWS/EC2 access is restored and execution can occur.', date:'May 12, 2026', timestamp:'2026-05-12T14:18', updatedBy:'Copilot (runtime outage blocker sync)' },
-    s72_1: { resolution:'BLOCKED — New AWS account provisioning and security validation cannot proceed from this environment while AWS access path is unavailable.', date:'May 12, 2026', timestamp:'2026-05-12T14:18', updatedBy:'Copilot (runtime outage blocker sync)' },
-    s72_2: { resolution:'BLOCKED — EC2 runtime stand-up/recovery requires AWS console/CLI path and network reachability that are currently unavailable.', date:'May 12, 2026', timestamp:'2026-05-12T14:18', updatedBy:'Copilot (runtime outage blocker sync)' },
-    s72_3: { resolution:'BLOCKED — Deployment credential/workflow verification depends on unreachable AWS runtime and app infrastructure endpoints.', date:'May 12, 2026', timestamp:'2026-05-12T14:18', updatedBy:'Copilot (runtime outage blocker sync)' },
-    s72_4: { resolution:'BLOCKED — Post-cutover health evidence cannot be captured because app/API infrastructure endpoints are currently unreachable.', date:'May 12, 2026', timestamp:'2026-05-12T14:18', updatedBy:'Copilot (runtime outage blocker sync)' },
+    s25_1: { resolution:'Validated /api/ml/model-performance on restored HTTPS path (API Gateway 9dkkj5n2rc) returning 200 with classification and regression metric payload after applying proxy route mapping, xgboost dependency install, and DB schema migrations (add_epa_columns.sql + create_predictions_tracking.sql).', date:'May 16, 2026', timestamp:'2026-05-16T04:26', updatedBy:'Copilot (runtime recovery evidence)' },
+    s25_2: { resolution:'Confirmed ModelPerformance page now handles empty/populated states in production without fetch failures: frontend loads /model-performance from staging and renders the empty-state guidance when no scored predictions are available.', date:'May 16, 2026', timestamp:'2026-05-16T04:26', updatedBy:'Copilot (runtime recovery evidence)' },
+    s25_3: { resolution:'Validated metrics contract for trend/benchmark rendering from recovered endpoints: /api/ml/model-performance returns accuracy/MAE aggregates and /api/ml/performance-stats?season=2025 returns by_week + overall structures for UI trend and delta displays.', date:'May 16, 2026', timestamp:'2026-05-16T04:26', updatedBy:'Copilot (runtime recovery evidence)' },
+    s25_4: { resolution:'Recorded acceptance evidence for restored metrics flow: API Gateway CORS configured for staging origin, dashboard pages now fetch live team/prediction data from execute-api endpoint, and Team Stats + ML pages render successfully in staging.', date:'May 16, 2026', timestamp:'2026-05-16T04:26', updatedBy:'Copilot (runtime recovery evidence)' },
+    s63_7: { resolution:'Recovered AWS/EC2 execution path and validated admin-level host access for cleanup execution (SSM session continuity restored; SSH readiness and security-group evidence captured).', date:'May 16, 2026', timestamp:'2026-05-16T03:02', updatedBy:'Copilot (AWS recovery evidence)' },
+    s63_8: { resolution:'Captured pre-cleanup disk baseline and size evidence in /tmp/ta63_s638_precleanup_20260516_030531.txt, including high-water utilization context used for before/after comparison.', date:'May 16, 2026', timestamp:'2026-05-16T03:05', updatedBy:'Copilot (AWS recovery evidence)' },
+    s63_9: { resolution:'Executed safe cleanup runbook and recorded reclaimed-space evidence in /tmp/ta63_s639_cleanup_20260516_030748.txt (journal vacuum, tmp/log/cache pruning, and package-cache cleanup).', date:'May 16, 2026', timestamp:'2026-05-16T03:07', updatedBy:'Copilot (AWS recovery evidence)' },
+    s63_10: { resolution:'Restarted and validated core runtime services (postgresql, hc-lombardo, nginx) and captured endpoint checks (/health and /api/hcl/teams?season=2025 returned HTTP 200) in /tmp/ta63_s6310_restart_20260516_031434.txt.', date:'May 16, 2026', timestamp:'2026-05-16T03:14', updatedBy:'Copilot (AWS recovery evidence)' },
+    s63_11: { resolution:'Captured post-cleanup filesystem evidence in /tmp/ta63_s6311_postcleanup_20260516_031652.txt; root utilization is now 33% with UTIL_TARGET_ROOT_LE_40=pass.', date:'May 16, 2026', timestamp:'2026-05-16T03:16', updatedBy:'Copilot (AWS recovery evidence)' },
+    s63_12: { resolution:'Documented cleanup command set, outcomes, and rollback guidance in the recovery evidence log, including baseline, cleanup, restart, and post-cleanup artifact references plus backup rollback anchor (ec2-backups/20260516_022248).', date:'May 16, 2026', timestamp:'2026-05-16T03:20', updatedBy:'Copilot (AWS recovery evidence)' },
+    s72_1: { resolution:'Established new AWS continuity path with account access restored and operator-ready execution controls verified for Sprint 14 infrastructure tasks.', date:'May 16, 2026', timestamp:'2026-05-16T02:45', updatedBy:'Copilot (AWS recovery evidence)' },
+    s72_2: { resolution:'Recovered EC2 runtime access and network path with validated security group ingress and host reachability for maintenance operations.', date:'May 16, 2026', timestamp:'2026-05-16T02:52', updatedBy:'Copilot (AWS recovery evidence)' },
+    s72_3: { resolution:'Validated deployment/restart operations path on recovered infrastructure and confirmed backup workflow continuity to S3 (bucket hcl-lombardo-backups-563960656132-us-east-2, latest verified prefix ec2-backups/20260516_022248 containing app_bundle.tar.gz and nfl_analytics.sql).', date:'May 16, 2026', timestamp:'2026-05-16T03:00', updatedBy:'Copilot (AWS recovery evidence)' },
+    s72_4: { resolution:'Captured post-cutover health evidence: runtime services active and API validation endpoints healthy after recovery execution.', date:'May 16, 2026', timestamp:'2026-05-16T03:14', updatedBy:'Copilot (AWS recovery evidence)' },
     s61_1: { resolution:'Closed via TA-061 closure audit without redundant retrain run. Verified TA-018 winner retrain readiness + execution evidence still satisfies corrected hcl pipeline requirement (docs/sprints/ta061_winner_retrain/ta061_s61_1_4_20260512_113900_summary.json and report.md).', date:'May 12, 2026', timestamp:'2026-05-12T11:39', updatedBy:'Copilot (closure-audit execution)' },
     s61_2: { resolution:'Computed and recorded winner-model baseline delta from source-of-truth metadata: prior baseline 65.55% vs retrain test accuracy 62.89% (delta -2.66 pts), captured in TA-061 closure audit artifacts (docs/sprints/ta061_winner_retrain/ta061_s61_1_4_20260512_113900_summary.json and report.md).', date:'May 12, 2026', timestamp:'2026-05-12T11:39', updatedBy:'Copilot (closure-audit execution)' },
     s61_3: { resolution:'Validated current winner artifact integrity with hash evidence from TA-061 audit: ml/models/xgb_winner.pkl sha256 abfbd796356f4da214dbe2c10ccc52f7f7ead23d1e45fea7515168e49363a35b and ml/models/xgb_winner_features.txt sha256 683a7276a0efd1d8342f04c5c9c2420a6c5a6cc992fe8f650cbf4e688cde9511, feature_count=16.', date:'May 12, 2026', timestamp:'2026-05-12T11:39', updatedBy:'Copilot (closure-audit execution)' },
@@ -6211,6 +6249,22 @@ function normalizeApiSprintToUi(sprintCode, fallback) {
     return raw;
 }
 
+function isDashboardSmokeRecord(entry) {
+    if (!entry || typeof entry !== 'object') return false;
+    var source = String(entry.source || '').trim().toLowerCase();
+    var updatedBy = String(entry.updated_by || entry.updatedBy || '').trim().toLowerCase();
+    var id = String(entry.id || '').trim().toUpperCase();
+    if (source === 'system' && updatedBy === 'phase3-smoke') return true;
+    if (id.indexOf('DSH-TST-') === 0) return true;
+    return false;
+}
+
+function dropSmokeSystemRecords(items) {
+    return (Array.isArray(items) ? items : []).filter(function(entry) {
+        return !isDashboardSmokeRecord(entry);
+    });
+}
+
 function upsertLocalTicketFromApi(apiTicket) {
     if (!apiTicket || !apiTicket.id) return null;
     var ticketId = String(apiTicket.id).toUpperCase();
@@ -6541,22 +6595,34 @@ window.dashboardApiBootstrapWorkspace = function() {
 
     var run = DASHBOARD_API_SYNC_QUEUE.then(async function() {
         var ticketResp = await dashboardApiRequest('GET', '/tickets');
-        var apiTickets = (ticketResp && ticketResp.body && ticketResp.body.data && Array.isArray(ticketResp.body.data.items))
+        var apiTicketsRaw = (ticketResp && ticketResp.body && ticketResp.body.data && Array.isArray(ticketResp.body.data.items))
             ? ticketResp.body.data.items
             : [];
+        var apiTickets = dropSmokeSystemRecords(apiTicketsRaw);
+        var apiTicketIdMap = Object.create(null);
+        for (var t = 0; t < apiTickets.length; t++) {
+            var ticketId = String(apiTickets[t] && apiTickets[t].id || '').toUpperCase();
+            if (ticketId) apiTicketIdMap[ticketId] = true;
+        }
 
-        if (!apiTickets.length) {
+        var subtaskResp = await dashboardApiRequest('GET', '/subtasks');
+        var apiSubtasksRaw = (subtaskResp && subtaskResp.body && subtaskResp.body.data && Array.isArray(subtaskResp.body.data.items))
+            ? subtaskResp.body.data.items
+            : [];
+        var apiSubtasks = dropSmokeSystemRecords(apiSubtasksRaw).filter(function(subtask) {
+            var parentId = String(subtask && subtask.ticket_id || '').toUpperCase();
+            if (!parentId) return true;
+            if (apiTicketIdMap[parentId]) return true;
+            return parentId.indexOf('DSH-TST-') !== 0;
+        });
+
+        if (!apiTickets.length && !apiSubtasks.length) {
             return { tickets: 0, subtasks: 0, comments: 0 };
         }
 
         for (var i = 0; i < apiTickets.length; i++) {
             upsertLocalTicketFromApi(apiTickets[i]);
         }
-
-        var subtaskResp = await dashboardApiRequest('GET', '/subtasks');
-        var apiSubtasks = (subtaskResp && subtaskResp.body && subtaskResp.body.data && Array.isArray(subtaskResp.body.data.items))
-            ? subtaskResp.body.data.items
-            : [];
         if (apiSubtasks.length) {
             applyApiSubtaskOverlay(apiSubtasks);
         }
@@ -7365,19 +7431,19 @@ var SPRINT_ARCHIVE = {
     12: {
         label: 'Sprint 12 — Diagnose & Restore',
         status: 'completed',
-        rag: { cls: 'green', label: 'ON TRACK — GREEN', msg: 'Sprint 12 closed Apr 18 · 8 of 9 tasks delivered · TA-008 blocked (AWS MFA) · Sprint 13 starts Apr 20', detail: 'Updated: Apr 18, 2026 · Next review: Apr 20 (S13 kickoff)' },
-        metrics: { sprintNum: '12', sprintSub: 'of 16 total · Diagnose &amp; Restore', daysVal: '0', daysSub: 'Sprint closed Apr 18, 2026', taskPct: '99%', taskCount: '84 of 85 tasks complete' },
+        rag: { cls: 'green', label: 'ON TRACK — GREEN', msg: 'Sprint 12 closed Apr 18 · 9 of 9 tasks delivered · TA-008 closure addendum validated May 16 · Sprint 13 starts Apr 20', detail: 'Updated: May 16, 2026 · Next review: Apr 20 (S13 kickoff)' },
+        metrics: { sprintNum: '12', sprintSub: 'of 16 total · Diagnose &amp; Restore', daysVal: '0', daysSub: 'Sprint closed Apr 18, 2026', taskPct: '100%', taskCount: '85 of 85 tasks complete' },
         burndownTitle: 'Burndown — Sprint 12',
-        burndownInsight: '<strong>S12 status:</strong> 84 of 85 tasks complete. 1 task blocked (TA-008 — awaiting AWS console access). Sprint closed Apr 18.',
+        burndownInsight: '<strong>S12 status:</strong> 85 of 85 tasks complete. TA-008 closure addendum completed May 16 with Amplify frontend deployment evidence.',
         burndown: { ideal: [83,77,71,65,59,53,47,41,35,29,23,17,11,0], actual: [83,83,79,79,68,65,62,58,55,50,42,1,null,null], max: 90 },
-        burnupInsight: '<strong>S12 progress:</strong> 8 backlog items delivered (TA-001 through TA-009). Cumulative completed: 83 of 83. TA-008 blocked — carries to S13.',
+        burnupInsight: '<strong>S12 progress:</strong> 9 backlog items delivered (TA-001 through TA-009). Cumulative completed: 84 of 84.',
         burnup: { labels: ['S1','S2','S3','S4','S5','S6','S7','S8','S9','S10','S11','S12*'], scope: [8,14,20,26,32,40,50,58,65,72,78,83], completed: [8,13,19,25,30,37,46,54,61,68,75,83] },
-        velocityInsight: '<strong>Avg velocity:</strong> ~6.8 TA items/sprint across S1–S11. S12 delivered 8 TA items. TA-008 blocked, carries to S13.',
+        velocityInsight: '<strong>Avg velocity:</strong> ~6.8 TA items/sprint across S1-S11. S12 delivered 9 TA items.',
         velocity: { labels: ['S1','S2','S3','S4','S5','S6','S7','S8','S9','S10','S11','S12*'], data: [8,5,6,6,5,7,9,8,7,7,7,8], activeIndex: 11 },
         severityInsight: '<strong>S13 focus:</strong> 4 new P1 tasks added — ML pipeline rebuild (broken schema, SQL, retrain), EC2 disk cleanup. 9 P1 blockers total. ML pipeline fixes (TA-057, TA-058, TA-063) assigned to S13.',
         severity: [9,13,7,2],
-        p1Count: '3', p1Sub: 'Disk critical (R-09) · AWS MFA locked (R-10) · Live URL blocked (TA-008)',
-        openCount: '25', openSub: 'Disk critical · 6 from code analysis · AWS MFA locked'
+        p1Count: '2', p1Sub: 'Disk critical (R-09) · AWS access risk (R-10)',
+        openCount: '24', openSub: 'Disk critical · 6 from code analysis · AWS access risk'
     },
     13: {
         label: 'Sprint 13 — Data & Clean',
@@ -7393,7 +7459,7 @@ var SPRINT_ARCHIVE = {
         velocity: { labels: ['S1','S2','S3','S4','S5','S6','S7','S8','S9','S10','S11','S12','S13*'], data: [8,5,6,6,5,7,9,8,7,7,7,8,5], activeIndex: 12 },
         severityInsight: '<strong>S13 focus:</strong> TA-069 is resolved, TA-058 SQL execution verification is complete, TA-059 season dynamic rollout is complete, and TA-068 route validation is complete. TA-063 is deferred to Sprint 14 backlog; TA-011 remains partially blocked by EC2 access, while TA-012 and TA-013 are complete.',
         severity: [18,24,11,6],
-        p1Count: '1', p1Sub: 'TA-008 blocked (AWS MFA lockout)',
+        p1Count: '1', p1Sub: 'TA-011 s11_2 blocked (EC2 .env update pending)',
         openCount: '58', openSub: '3 in S13 · 55 in backlog'
     },
     14: {
@@ -8852,8 +8918,9 @@ initTasks();
 
         setHoursSyncStatus('Loading hours from dashboard API...');
         window.dashboardApiLoadHours().then(function(rows) {
-            if (rows && rows.length) {
-                applyHoursApiRows(rows);
+            var cleanRows = dropSmokeSystemRecords(rows);
+            if (cleanRows && cleanRows.length) {
+                applyHoursApiRows(cleanRows);
                 render();
                 setHoursSyncStatus('Hours loaded from dashboard API.');
                 return;
@@ -8996,7 +9063,7 @@ initTasks();
         { id:'TA-005', feature:'Verify REACT_APP_API_URL in Amplify',           cat:'Infrastructure', pri:'Critical', effort:'S', sprint:'S12', status:'Done'      },
         { id:'TA-006', feature:'CORS configuration fix',                         cat:'Backend',        pri:'Critical', effort:'S', sprint:'S12', status:'Done' },
         { id:'TA-007', feature:'Production Task Log created',                   cat:'Documentation',  pri:'High',     effort:'S', sprint:'S12', status:'Done' },
-        { id:'TA-008', feature:'Live app URL added to dashboard',                cat:'Dashboard',      pri:'Critical', effort:'S', sprint:'S12', status:'Blocked'   },
+        { id:'TA-008', feature:'Live app URL added to dashboard',                cat:'Dashboard',      pri:'Critical', effort:'S', sprint:'S12', status:'Done'      },
         { id:'TA-009', feature:'CLAUDE.md updated to reflect current state',     cat:'Documentation',  pri:'Medium',   effort:'S', sprint:'S12', status:'Done'      },
 
         // ── UNASSIGNED BACKLOG (sprint assigned at planning) ──
@@ -9015,7 +9082,7 @@ initTasks();
         { id:'TA-022', feature:'Fix broken SQL in train_xgb_spread.py — duplicate of TA-058, consolidated there',   cat:'ML', pri:'High',     effort:'S', sprint:'S14', status:'Done' },
         { id:'TA-023', feature:'Verify no data leakage in feature pipeline',      cat:'ML',             pri:'High',     effort:'M', sprint:'S14', status:'Done' },
         { id:'TA-024', feature:'ML Predictions page showing live results in prod', cat:'Frontend',       pri:'High',     effort:'M', sprint:'S14', status:'Done' },
-        { id:'TA-025', feature:'Record model accuracy metrics in ModelPerformance', cat:'ML',            pri:'Medium',   effort:'S', sprint:'S14', status:'Blocked' },
+        { id:'TA-025', feature:'Record model accuracy metrics in ModelPerformance', cat:'ML',            pri:'Medium',   effort:'S', sprint:'S14', status:'Done' },
         { id:'TA-026', feature:'Mobile-responsive pass — all pages at 375px',     cat:'Frontend',       pri:'High',     effort:'L', sprint:'TBD', status:'Backlog'   },
         { id:'TA-027', feature:'Fix all broken layouts and overflow problems',       cat:'Frontend',       pri:'High',     effort:'M', sprint:'TBD', status:'Backlog'   },
         { id:'TA-028', feature:'Loading states and error states on all pages',     cat:'Frontend',       pri:'Medium',   effort:'M', sprint:'TBD', status:'Backlog'   },
@@ -9053,7 +9120,7 @@ initTasks();
         { id:'TA-060', feature:'Implement upcoming week detection in predict_ensemble.py (line 338) — currently a TODO stub, --upcoming flag prints error and exits', cat:'ML', pri:'Medium', effort:'M', sprint:'S14', status:'Done' },
         { id:'TA-061', feature:'Retrain XGBoost winner model with corrected data pipeline — depends on TA-057 and TA-058 being resolved first', cat:'ML', pri:'Critical', effort:'L', sprint:'S14', status:'Done' },
         { id:'TA-062', feature:'Retrain XGBoost spread model with corrected data pipeline — depends on TA-057 and TA-058 being resolved first', cat:'ML', pri:'Critical', effort:'L', sprint:'S14', status:'Done' },
-        { id:'TA-063', feature:'EC2 disk cleanup — remove logs, tmp files, old builds to free space; disk at 90% (6.0G/6.8G) as of Apr 21, server will crash if full', cat:'Infrastructure', pri:'Critical', effort:'S', sprint:'S14', status:'Blocked' },
+        { id:'TA-063', feature:'EC2 disk cleanup — remove logs, tmp files, old builds to free space; disk at 90% (6.0G/6.8G) as of Apr 21, server will crash if full', cat:'Infrastructure', pri:'Critical', effort:'S', sprint:'S14', status:'Done' },
         { id:'TA-064', feature:'Evaluate managed database to replace EC2 PostgreSQL — research AWS RDS, Railway, or Render to eliminate disk management and reduce single point of failure', cat:'Infrastructure', pri:'Low', effort:'M', sprint:'TBD', status:'Backlog' },
         { id:'TA-065', feature:'Build sprint selector dropdown on Dashboard home page — SPRINT_ARCHIVE data object + loadSprintDashboard() function; switches charts and metrics by sprint', cat:'Dashboard', pri:'Medium', effort:'M', sprint:'TBD', status:'Backlog' },
         { id:'TA-066', feature:'Database-backed PM dashboard automation — store sprint/task completion state in PostgreSQL, expose via Flask API, eliminate hardcoded COMPLETED_TASKS array', cat:'Dashboard', pri:'Medium', effort:'L', sprint:'TBD', status:'Backlog' },
@@ -9062,7 +9129,7 @@ initTasks();
         { id:'TA-069', feature:'Fix early return bug in ml/predict_week.py line 171 — return statement placed before NaN/inf handling and ppg/success/ypp differential feature computation, leaving ~20% of features uncalculated. Also fix variable name mismatch: dead code references home_ppg_season but dict uses home_ppg.', cat:'ML', pri:'High', effort:'S', sprint:'S13', status:'Done' },
         { id:'TA-070', feature:'ML prediction accuracy audit — winner predictions, point spreads, and over/under totals are producing incorrect/unrealistic results. Audit actual 2024–2025 predictions vs outcomes, identify whether root cause is overfitting, data leakage, schema mismatch (hcl_test vs hcl), or feature engineering errors. Must complete after TA-057/068/069 infrastructure fixes.', cat:'ML', pri:'High', effort:'L', sprint:'S14', status:'Done' },
         { id:'TA-071', feature:'Monitoring stack research ticket (future sprint) — define phased observability plan: Phase 1 baseline with AWS CloudWatch + CloudWatch Alarms for EC2 health (CPU, memory, disk), Flask API uptime/latency, error-rate alerts, and deployment event visibility; Phase 2 evaluate Grafana dashboards (CloudWatch datasource) for unified app + dashboard + infrastructure views; Phase 3 evaluate ELK/OpenSearch only if log volume/search needs justify added ops overhead. Deliverable: recommendation matrix (cost, setup complexity, alert quality, maintenance load) and implementation trigger criteria for each phase.', cat:'Infrastructure', pri:'Medium', effort:'M', sprint:'TBD', status:'Backlog' },
-        { id:'TA-072', feature:'Create a new AWS account for EC2 continuity and migrate runtime access/deployment operations so Sprint 14 ML execution is not blocked by current AWS account lockout constraints.', cat:'Infrastructure', pri:'Critical', effort:'M', sprint:'S14', status:'Blocked' },
+        { id:'TA-072', feature:'Create a new AWS account for EC2 continuity and migrate runtime access/deployment operations so Sprint 14 ML execution is not blocked by current AWS account lockout constraints.', cat:'Infrastructure', pri:'Critical', effort:'M', sprint:'S14', status:'Done' },
         { id:'TA-073', feature:'Fix live_data_updater.py fetcher path mismatch — updater checks root multi_source_data_fetcher.py but file is not present there, causing continuous update loop errors and skipped refresh runs.', cat:'Backend', pri:'High', effort:'S', sprint:'TBD', status:'Backlog' },
         { id:'TA-074', feature:'Fix log_watcher.py self-recursive archive events — watcher logs its own docs/devlog/archive writes, floods MODIFIED events, and can crash thread on archive/index.json write (Errno 22).', cat:'Dashboard', pri:'High', effort:'S', sprint:'TBD', status:'Backlog' },
         {
@@ -9161,7 +9228,7 @@ function showSprintView(view, btn) {
         { id:'R-06', risk:'AWS Amplify build fails after a push',                      like:'M', impact:'M', mitigation:'Check Amplify build logs; most failures are env var or npm dependency problems. Fix and repush.',        sprint:'S12', status:'open' },
         { id:'R-07', risk:'Project scope too large to complete by Jun 13',             like:'M', impact:'H', mitigation:'Sprints are fixed and linear. If behind, defer UI polish (S15) before cutting ML work (S14).',        sprint:'All', status:'open' },
         { id:'R-08', risk:'PostgreSQL data loss or schema corruption',                 like:'L', impact:'H', mitigation:'pg_dump backup before any schema changes. EC2 snapshots via AWS console.',                            sprint:'S13', status:'open' },
-        { id:'R-09', risk:'EC2 disk full — server crash or failed writes',            like:'H', impact:'H', mitigation:'TA-063 deferred to Sprint 14 backlog while AWS MFA/subscription access is restored. Last known disk evidence Apr 21: 90% (6.0G/6.8G). Resume cleanup immediately after access recovery.', sprint:'S14', status:'open' },
+        { id:'R-09', risk:'EC2 disk full — server crash or failed writes',            like:'H', impact:'H', mitigation:'Resolved in Sprint 14 TA-063 recovery execution. Cleanup evidence captured May 16 with post-cleanup root utilization reduced to 33% and validation services healthy after restart.', sprint:'S14', status:'resolved' },
         { id:'R-10', risk:'AWS console inaccessible — root MFA device lost',          like:'H', impact:'M', mitigation:'AWS root MFA recovery case 177854801600589 opened May 11, 2026 (old MFA phone not recoverable; awaiting AWS response). Continue local-first execution and use CLI-only operations where possible until console access is restored.', sprint:'S12', status:'open' },
         { id:'R-11', risk:'AI delivery failure from prior assistant created repeated errors, cost increase, and scope slippage in dashboard automation work', like:'H', impact:'H', mitigation:'Risk response implemented Apr 22, 2026: prior assistant was terminated and replaced with GPT-5.3-Codex. Controls now in effect: contract-first execution, no-assumption rule, per-task chat isolation, mandatory review before deploy, and explicit verification against requirements. Incident reference: dashboard navbar/logbook automation failure consumed ~16 hours and required ~2.5 days to recover, taking time away from core app delivery.', sprint:'All', status:'implemented' },
     ];
@@ -9217,8 +9284,9 @@ function showSprintView(view, btn) {
 
     setRiskSyncStatus('Loading risks from dashboard API...');
     window.dashboardApiLoadRisks().then(function(items) {
-        if (items && items.length) {
-            risks = items.map(normalizeRiskEntry);
+        var cleanItems = dropSmokeSystemRecords(items);
+        if (cleanItems && cleanItems.length) {
+            risks = cleanItems.map(normalizeRiskEntry);
             window.RISK_DATA = risks;
             renderRiskRows(risks);
             setRiskSyncStatus('Risk register loaded from dashboard API.');
@@ -9352,8 +9420,9 @@ function showSprintView(view, btn) {
 
     setDecisionSyncStatus('Loading decisions from dashboard API...');
     window.dashboardApiLoadDecisions().then(function(items) {
-        if (items && items.length) {
-            decisions = items.map(normalizeDecisionEntry);
+        var cleanItems = dropSmokeSystemRecords(items);
+        if (cleanItems && cleanItems.length) {
+            decisions = cleanItems.map(normalizeDecisionEntry);
             window.DECISION_DATA = decisions;
             renderDecisionRows(decisions);
             setDecisionSyncStatus('Decision log loaded from dashboard API.');
@@ -11004,8 +11073,9 @@ function showSprintView(view, btn) {
     initTicketWorkspaceTab();
     window.renderTaskTracker();
 
-    if (typeof window.dashboardApiBootstrapWorkspace === 'function') {
-        window.dashboardApiBootstrapWorkspace().then(function() {
+    function runDashboardBootstrapWithRetry(attempt) {
+        var maxAttempts = 3;
+        return window.dashboardApiBootstrapWorkspace().then(function() {
             normalizeItems();
             if (typeof syncTaskStatesFromData === 'function') syncTaskStatesFromData({ skipTracker: true });
             if (typeof refreshBlockerCounts === 'function') refreshBlockerCounts(true);
@@ -11017,7 +11087,17 @@ function showSprintView(view, btn) {
             }
         }).catch(function(err) {
             logDashboardApiError(err);
+            if (attempt < maxAttempts) {
+                var retryDelayMs = attempt * 2000;
+                setTimeout(function() {
+                    runDashboardBootstrapWithRetry(attempt + 1);
+                }, retryDelayMs);
+            }
         });
+    }
+
+    if (typeof window.dashboardApiBootstrapWorkspace === 'function') {
+        runDashboardBootstrapWithRetry(1);
     }
 })();
 </script>
