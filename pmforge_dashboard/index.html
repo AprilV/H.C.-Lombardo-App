@@ -574,6 +574,39 @@
             border-color: rgba(147, 197, 253, 0.7);
         }
 
+        .arch-live-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-left: auto;
+        }
+
+        .arch-live-mode-badge {
+            border: 1px solid rgba(52, 211, 153, 0.55);
+            background: rgba(16, 185, 129, 0.16);
+            color: #a7f3d0;
+            padding: 0.3rem 0.65rem;
+            border-radius: 999px;
+            font-size: 0.68rem;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            line-height: 1;
+        }
+
+        .arch-live-mode-badge.is-live {
+            border-color: rgba(52, 211, 153, 0.55);
+            background: rgba(16, 185, 129, 0.16);
+            color: #a7f3d0;
+        }
+
+        .arch-live-mode-badge.is-paused {
+            border-color: rgba(251, 191, 36, 0.55);
+            background: rgba(245, 158, 11, 0.16);
+            color: #fde68a;
+        }
+
         .arch-health-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
@@ -2602,7 +2635,10 @@
                 <div class="arch-live-summary" id="arch-live-summary">Live topology monitor is initializing...</div>
                 <div class="arch-live-meta" id="arch-live-meta">Checks run every 20 seconds.</div>
             </div>
-            <button type="button" class="arch-live-btn" id="arch-refresh-btn">Refresh now</button>
+            <div class="arch-live-controls">
+                <div class="arch-live-mode-badge is-live" id="arch-live-mode-badge">Live mode on (default)</div>
+                <button type="button" class="arch-live-btn" id="arch-refresh-btn">Refresh now</button>
+            </div>
         </div>
 
         <div class="arch-health-grid" id="arch-health-grid">
@@ -5078,6 +5114,21 @@ function setArchitectureSummary(summaryText, metaText) {
     if (metaEl) metaEl.textContent = metaText || ('Checks run every ' + Math.round(ARCH_MONITOR_INTERVAL_MS / 1000) + ' seconds.');
 }
 
+function setArchitectureLiveModeBadge(isLiveEnabled) {
+    var badgeEl = document.getElementById('arch-live-mode-badge');
+    if (!badgeEl) return;
+
+    badgeEl.classList.remove('is-live', 'is-paused');
+    if (isLiveEnabled) {
+        badgeEl.classList.add('is-live');
+        badgeEl.textContent = 'Live mode on (default)';
+        return;
+    }
+
+    badgeEl.classList.add('is-paused');
+    badgeEl.textContent = 'Live mode off (archLive=off)';
+}
+
 function getArchitectureQueryParams() {
     try {
         var merged = new URLSearchParams(window.location && window.location.search ? window.location.search : '');
@@ -5386,6 +5437,7 @@ async function runArchitectureHealthCheck(forceNow) {
 
     architectureMonitorRunning = true;
     var liveProbesEnabled = shouldRunArchitectureLiveProbes();
+    setArchitectureLiveModeBadge(liveProbesEnabled);
     if (!liveProbesEnabled) {
         var pausedStatuses = {
             frontend: 'up',
@@ -5517,6 +5569,7 @@ function init3DArchitecture() {
     const container = document.getElementById('canvas-container');
     const canvas = document.getElementById('architecture-canvas');
     setArchitectureSummary('Live topology monitor is initializing...', 'Checks run every ' + Math.round(ARCH_MONITOR_INTERVAL_MS / 1000) + ' seconds.');
+    setArchitectureLiveModeBadge(shouldRunArchitectureLiveProbes());
 
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0x020510);
