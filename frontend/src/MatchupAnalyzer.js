@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import './MatchupAnalyzer.css';
 import { getDefaultSeason } from './utils/season';
 
-const API_URL = process.env.REACT_APP_API_URL || 'https://api.aprilsykes.dev';
+const API_URL = process.env.REACT_APP_API_URL ?? '';
 
 // All available statistics organized by category
 const STAT_CATEGORIES = {

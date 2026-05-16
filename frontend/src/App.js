@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider } from './contexts/ThemeContext';
 import SideMenu from './SideMenu';
@@ -17,7 +17,7 @@ import Admin from './Admin';
 import Settings from './Settings';
 import './App.css';
 
-const API_URL = process.env.REACT_APP_API_URL || 'https://api.aprilsykes.dev';
+const API_URL = process.env.REACT_APP_API_URL ?? '';
 
 function App() {
   const [serverStatus, setServerStatus] = useState(null);

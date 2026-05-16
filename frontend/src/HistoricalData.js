@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import './HistoricalData.css';
 import { getDefaultSeason, MIN_NFL_SEASON } from './utils/season';
 
-const API_URL = process.env.REACT_APP_API_URL || 'https://api.aprilsykes.dev';
+const API_URL = process.env.REACT_APP_API_URL ?? '';
 
 // All available statistics from nflverse data (ALL stats from team_game_stats aggregated)
 const ALL_STATS = [

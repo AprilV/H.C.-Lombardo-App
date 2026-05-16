@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './MLPredictionsRedesign.css';
 import { getDefaultSeason, getRecentSeasons } from './utils/season';
 
-const API_URL = process.env.REACT_APP_API_URL || 'https://api.aprilsykes.dev';
+const API_URL = process.env.REACT_APP_API_URL ?? '';
 
 function MLPredictionsRedesign() {
   const defaultSeason = getDefaultSeason();
