@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PM Forge Suite — Agile Forge</title>
+    <link rel="icon" href="data:,">
 
     <!-- Three.js for 3D Architecture Diagram -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -533,6 +534,139 @@
         .detail-label { color: var(--muted); flex-shrink: 0; min-width: 70px; }
         .detail-value { color: var(--text); }
 
+        .arch-live-strip {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin: 0.5rem 0 1rem;
+            padding: 0.7rem 0.9rem;
+            border-radius: 0.6rem;
+            background: linear-gradient(120deg, rgba(16,185,129,0.1), rgba(59,130,246,0.08));
+            border: 1px solid rgba(148, 163, 184, 0.25);
+        }
+
+        .arch-live-summary {
+            font-size: 0.84rem;
+            font-weight: 700;
+            color: #dbeafe;
+        }
+
+        .arch-live-meta {
+            font-size: 0.75rem;
+            color: var(--muted);
+        }
+
+        .arch-live-btn {
+            border: 1px solid rgba(147, 197, 253, 0.45);
+            background: rgba(30, 64, 175, 0.2);
+            color: #bfdbfe;
+            padding: 0.35rem 0.7rem;
+            border-radius: 999px;
+            font-size: 0.74rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .arch-live-btn:hover {
+            background: rgba(30, 64, 175, 0.32);
+            border-color: rgba(147, 197, 253, 0.7);
+        }
+
+        .arch-health-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 0.55rem;
+            margin-bottom: 1rem;
+        }
+
+        .arch-health-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+            padding: 0.45rem 0.6rem;
+            border-radius: 0.5rem;
+            border: 1px solid rgba(148, 163, 184, 0.25);
+            background: rgba(15, 23, 42, 0.45);
+            font-size: 0.76rem;
+        }
+
+        .arch-health-item .left {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            color: #e2e8f0;
+            min-width: 0;
+        }
+
+        .arch-health-dot {
+            width: 0.6rem;
+            height: 0.6rem;
+            border-radius: 50%;
+            flex-shrink: 0;
+            background: #6b7280;
+            box-shadow: 0 0 8px rgba(107, 114, 128, 0.6);
+        }
+
+        .arch-health-state {
+            font-size: 0.68rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #94a3b8;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .arch-health-item.is-up {
+            border-color: rgba(16, 185, 129, 0.45);
+            background: rgba(16, 185, 129, 0.12);
+        }
+
+        .arch-health-item.is-up .arch-health-dot {
+            background: #10b981;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.9);
+        }
+
+        .arch-health-item.is-up .arch-health-state { color: #6ee7b7; }
+
+        .arch-health-item.is-down {
+            border-color: rgba(239, 68, 68, 0.45);
+            background: rgba(239, 68, 68, 0.12);
+        }
+
+        .arch-health-item.is-down .arch-health-dot {
+            background: #ef4444;
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.9);
+        }
+
+        .arch-health-item.is-down .arch-health-state { color: #fca5a5; }
+
+        .arch-health-item.is-degraded {
+            border-color: rgba(245, 158, 11, 0.45);
+            background: rgba(245, 158, 11, 0.12);
+        }
+
+        .arch-health-item.is-degraded .arch-health-dot {
+            background: #f59e0b;
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.9);
+        }
+
+        .arch-health-item.is-degraded .arch-health-state { color: #fcd34d; }
+
+        .arch-health-item.is-unknown {
+            border-color: rgba(148, 163, 184, 0.35);
+            background: rgba(148, 163, 184, 0.08);
+        }
+
+        .arch-health-item.is-unknown .arch-health-dot {
+            background: #64748b;
+            box-shadow: 0 0 8px rgba(100, 116, 139, 0.8);
+        }
+
+        .arch-health-item.is-unknown .arch-health-state { color: #cbd5e1; }
+
         .label-3d {
             background: rgba(15, 23, 42, 0.85);
             border: 1px solid rgba(59, 130, 246, 0.4);
@@ -927,6 +1061,12 @@
         body.light #canvas-overlay { background: rgba(255,255,255,0.94); border-color: rgba(1,51,105,0.25); }
         body.light #canvas-overlay h3 { color: #013369; }
         body.light #canvas-overlay p { color: #4a5568; }
+        body.light .arch-live-strip { background: linear-gradient(120deg, rgba(16,185,129,0.1), rgba(59,130,246,0.09)); border-color: rgba(30, 64, 175, 0.2); }
+        body.light .arch-live-summary { color: #0f172a; }
+        body.light .arch-live-meta { color: #475569; }
+        body.light .arch-live-btn { background: rgba(30, 64, 175, 0.1); color: #1d4ed8; border-color: rgba(29, 78, 216, 0.35); }
+        body.light .arch-health-item { background: rgba(255,255,255,0.7); border-color: rgba(30, 64, 175, 0.15); }
+        body.light .arch-health-item .left { color: #0f172a; }
 
         /* Footer */
         body.light footer { border-top-color: rgba(1,51,105,0.12); color: #6b7280; }
@@ -2457,6 +2597,24 @@
             <div id="hover-tooltip"></div>
         </div>
 
+        <div class="arch-live-strip">
+            <div>
+                <div class="arch-live-summary" id="arch-live-summary">Live topology monitor is initializing...</div>
+                <div class="arch-live-meta" id="arch-live-meta">Checks run every 20 seconds.</div>
+            </div>
+            <button type="button" class="arch-live-btn" id="arch-refresh-btn">Refresh now</button>
+        </div>
+
+        <div class="arch-health-grid" id="arch-health-grid">
+            <div class="arch-health-item is-unknown" id="arch-health-frontend"><span class="left"><span class="arch-health-dot"></span>React</span><span class="arch-health-state" id="arch-state-frontend">Unknown</span></div>
+            <div class="arch-health-item is-unknown" id="arch-health-backend"><span class="left"><span class="arch-health-dot"></span>Flask API</span><span class="arch-health-state" id="arch-state-backend">Unknown</span></div>
+            <div class="arch-health-item is-unknown" id="arch-health-postgres"><span class="left"><span class="arch-health-dot"></span>PostgreSQL</span><span class="arch-health-state" id="arch-state-postgres">Unknown</span></div>
+            <div class="arch-health-item is-unknown" id="arch-health-ml"><span class="left"><span class="arch-health-dot"></span>ML Engine</span><span class="arch-health-state" id="arch-state-ml">Unknown</span></div>
+            <div class="arch-health-item is-unknown" id="arch-health-espn"><span class="left"><span class="arch-health-dot"></span>ESPN API</span><span class="arch-health-state" id="arch-state-espn">Unknown</span></div>
+            <div class="arch-health-item is-unknown" id="arch-health-nflverse"><span class="left"><span class="arch-health-dot"></span>NFLverse</span><span class="arch-health-state" id="arch-state-nflverse">Unknown</span></div>
+            <div class="arch-health-item is-unknown" id="arch-health-s3"><span class="left"><span class="arch-health-dot"></span>AWS S3 Backup</span><span class="arch-health-state" id="arch-state-s3">Unknown</span></div>
+        </div>
+
         <div class="arch-info-grid">
             <div class="arch-info-card">
                 <div class="arch-node-label">
@@ -2529,6 +2687,19 @@
                     <li>EPA per play · 64 advanced stats/game</li>
                     <li>Loaded offline → PostgreSQL hcl schema</li>
                     <li>Basis for all ML model training</li>
+                </ul>
+            </div>
+            <div class="arch-info-card">
+                <div class="arch-node-label">
+                    <div class="node-dot" style="background:#38bdf8; border-radius:50%;"></div>
+                    <h4>AWS S3 Backup</h4>
+                </div>
+                <ul>
+                    <li>Backup bucket: hcl-lombardo-backups-563960656132-us-east-2</li>
+                    <li>Stores app bundle + nfl_analytics SQL snapshots</li>
+                    <li>Continuity path validated during Sprint 14 recovery</li>
+                    <li>Backup prefix pattern: ec2-backups/YYYYMMDD_HHMMSS</li>
+                    <li>Used for rollback and restore readiness</li>
                 </ul>
             </div>
         </div>
@@ -3106,17 +3277,17 @@
     <div class="pm-panel" style="max-width:1300px; margin:2rem auto;">
         <div class="pm-header">
             <div>
-                <h2 id="retro-title">Sprint 13 — Retrospective</h2>
-                <p id="retro-subtitle">Completed at sprint close-ready state — Apr 30, 2026. Blocked carryover documented for Sprint 14 planning.</p>
+                <h2 id="retro-title">Sprint 14 — Retrospective</h2>
+                <p id="retro-subtitle">Completed at sprint close-ready state - May 15, 2026. ML retrain, platform continuity, and dashboard stabilization evidence captured.</p>
             </div>
             <div class="sprint-meta" style="gap:0.45rem;">
-                <span class="meta-pill" id="retro-dates-pill">Apr 20 – May 2, 2026</span>
+                <span class="meta-pill" id="retro-dates-pill">May 4 – May 16, 2026</span>
                 <div style="display:flex; align-items:center; gap:0.35rem;">
                     <span style="font-size:0.76rem; color:var(--muted);">Sprint:</span>
                     <select id="retro-sprint-select" onchange="selectRetroSprint(this.value)" style="background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.16); border-radius:0.35rem; color:#f1f5f9; font-size:0.8rem; padding:0.35rem 0.45rem; outline:none;">
                         <option value="12">Sprint 12</option>
-                        <option value="13" selected>Sprint 13</option>
-                        <option value="14">Sprint 14</option>
+                        <option value="13">Sprint 13</option>
+                        <option value="14" selected>Sprint 14</option>
                         <option value="15">Sprint 15</option>
                         <option value="16">Sprint 16</option>
                     </select>
@@ -3255,15 +3426,44 @@
         <div id="retro-content-14" style="max-width:900px; display:none; flex-direction:column; gap:1.25rem;">
             <div class="retro-card retro-good">
                 <div class="retro-label">What went well?</div>
-                <div class="retro-text"><p style="margin:0;">Placeholder — complete this section after Sprint 14 is finished.</p></div>
+                <div class="retro-text">
+                    <p style="margin:0 0 0.6rem;">Sprint 14 closed with strong delivery across ML, platform continuity, and operational stability. High-risk work was executed without breaking the local development workflow.</p>
+                    <ul style="margin:0; padding-left:1.25rem; line-height:1.9;">
+                        <li>Completed core Sprint 14 objectives for model refresh and validation workflow readiness</li>
+                        <li>Recovered and documented AWS continuity path, including S3 backup integration in architecture evidence</li>
+                        <li>Stabilized dashboard runtime behavior by fixing architecture initialization ordering and local probe routing</li>
+                        <li>Implemented live topology health monitoring with service status mapping and connection-level state feedback</li>
+                        <li>Resolved local CORS blockers between dashboard preview and Flask API to restore live status updates</li>
+                        <li>Improved architecture visualization quality with curved signal lanes and status-driven flow animation</li>
+                        <li>Brought dashboard branding/live-link behavior back in sync with current staging deployment target</li>
+                    </ul>
+                </div>
             </div>
             <div class="retro-card retro-bad">
                 <div class="retro-label">What didn't go well?</div>
-                <div class="retro-text"><p style="margin:0;">Placeholder — complete this section after Sprint 14 is finished.</p></div>
+                <div class="retro-text">
+                    <p style="margin:0 0 0.6rem;">Execution quality was good overall, but several environment and coupling issues added avoidable rework late in the sprint.</p>
+                    <ul style="margin:0; padding-left:1.25rem; line-height:1.9;">
+                        <li>Local static preview defaulted to the wrong API behavior at different points, creating timeout and CORS noise</li>
+                        <li>Architecture tab had a startup-order bug (init variable timing) that caused a runtime crash before patching</li>
+                        <li>Single-file dashboard structure increased regression risk and made verification slower than necessary</li>
+                        <li>S3 browser probing is constrained by CORS/403 behavior, so direct bucket health cannot be fully trusted client-side</li>
+                        <li>Retrospective and closeout narrative lagged behind implementation until explicit finalization pass was requested</li>
+                    </ul>
+                </div>
             </div>
             <div class="retro-card retro-improve">
                 <div class="retro-label">What will we do differently next sprint?</div>
-                <div class="retro-text"><p style="margin:0;">Placeholder — complete this section after Sprint 14 is finished.</p></div>
+                <div class="retro-text">
+                    <p style="margin:0 0 0.6rem;">Sprint 15 will focus on proactive quality gates and maintainability so UI/UX polish is not slowed by infrastructure drift.</p>
+                    <ul style="margin:0; padding-left:1.25rem; line-height:1.9;">
+                        <li>Add a pre-close smoke checklist for dashboard tabs, architecture monitor, and local/staging link behavior</li>
+                        <li>Separate visualization and monitor logic into clearer modules to reduce single-file edit risk</li>
+                        <li>Keep explicit probe profiles for local, staging, and production to prevent accidental noisy defaults</li>
+                        <li>Capture CORS and endpoint assumptions in one reference block and validate them at sprint kickoff</li>
+                        <li>Finalize retro, DoD, and governance text in the same closeout commit window to avoid documentation lag</li>
+                    </ul>
+                </div>
             </div>
         </div>
 
@@ -3545,7 +3745,7 @@
                 <ul>
                     <li>Started: September 2025</li>
                     <li>Current term: Spring 2026</li>
-                    <li>11 sprints completed, 5 planned</li>
+                    <li>Sprint cadence: 5 planned (S12-S16) for Spring 2026</li>
                     <li id="about-target-line">Completion Date: June 13, 2026</li>
                 </ul>
             </div>
@@ -3591,11 +3791,11 @@
         <div class="section-title" style="margin-bottom:1rem;">Term Objectives</div>
         <div class="objectives-list">
             <div class="objective-item"><span class="check">✓</span><div class="objective-text">Full-stack NFL analytics app deployed to AWS (React + Flask + PostgreSQL)</div></div>
-            <div class="objective-item"><span class="check">✓</span><div class="objective-text">7,269 historical games with 64 stats per game including EPA metrics</div></div>
+            <div class="objective-item"><span class="check">✓</span><div class="objective-text">7,263 historical games with 64 stats per game including EPA metrics</div></div>
             <div class="objective-item"><span class="check">✓</span><div class="objective-text">XGBoost ML models trained on rolling features (no data leakage)</div></div>
             <div class="objective-item"><span class="check">✓</span><div class="objective-text">Elo rating system with live prediction capability</div></div>
-            <div class="objective-item"><span class="pending">○</span><div class="objective-text">Production environment restored and fully verified (Sprint 12)</div></div>
-            <div class="objective-item"><span class="pending">○</span><div class="objective-text">2025 season data loaded and models retrained (Sprint 13–14)</div></div>
+            <div class="objective-item"><span class="check">✓</span><div class="objective-text">Production environment restored and fully verified (Sprint 12)</div></div>
+            <div class="objective-item"><span class="check">✓</span><div class="objective-text">2025 season data loaded and models retrained (Sprint 13-14)</div></div>
             <div class="objective-item"><span class="pending">○</span><div class="objective-text">All pages working in production, mobile-responsive (Sprint 15)</div></div>
             <div class="objective-item"><span class="pending">○</span><div class="objective-text">Security hardened, rate limiting, no exposed credentials (Sprint 16)</div></div>
             <div class="objective-item"><span class="pending">○</span><div class="objective-text">Public release with final documentation and performance report</div></div>
@@ -3740,6 +3940,9 @@
 <!-- ══════════════════════════════════════════════════════════════ -->
 <script>
 
+// Predeclare architecture init state so early tab/hash bootstrap cannot hit TDZ.
+var architectureInitialized = false;
+
 /* ── TAB SWITCHING ── */
 function showTab(name, btn) {
     if (name === 'backlog') {
@@ -3751,8 +3954,12 @@ function showTab(name, btn) {
     if (!panel) return;
     panel.classList.add('active');
     if (btn) btn.classList.add('active');
-    if (name === 'architecture' && !architectureInitialized) {
-        setTimeout(init3DArchitecture, 50);
+    if (name === 'architecture') {
+        if (!architectureInitialized) {
+            setTimeout(init3DArchitecture, 50);
+        } else if (typeof runArchitectureHealthCheck === 'function') {
+            runArchitectureHealthCheck(true);
+        }
     }
     location.hash = name;
 }
@@ -3778,7 +3985,8 @@ function openDeliveryView(btn) {
 
 // Restore tab from URL hash on load
 (function restoreTabFromHash() {
-    var hash = location.hash.replace('#', '');
+    var rawHash = location.hash.replace('#', '');
+    var hash = rawHash.split('?')[0];
     if (!hash) return;
     var requested = hash === 'backlog' ? 'sprints' : hash;
     var panel = document.getElementById('tab-' + requested);
@@ -3883,6 +4091,8 @@ function getBrandingSnapshot() {
     var roleAName = getVal('brand-role-a-name', 'Unassigned') || 'Unassigned';
     var roleBName = getVal('brand-role-b-name', 'Unassigned') || 'Unassigned';
     var roleCName = getVal('brand-role-c-name', 'Unassigned') || 'Unassigned';
+    var roleCIsAssigned = String(roleCName || '').trim().toLowerCase() !== 'unassigned';
+    var developerFallback = roleCIsAssigned ? roleCName : 'April V. Sykes';
 
     return {
         suiteName: getVal('brand-suite-name', 'PM Forge Suite'),
@@ -3896,7 +4106,7 @@ function getBrandingSnapshot() {
         roleBName: roleBName,
         roleCLabel: getVal('brand-role-c-label', 'Product Owner'),
         roleCName: roleCName,
-        developerName: getVal('brand-developer-name', roleCName || 'April V. Sykes') || roleCName || 'April V. Sykes',
+        developerName: getVal('brand-developer-name', developerFallback) || developerFallback,
         targetDateRaw: getVal('brand-target-date', ''),
         targetDateLabel: formatBrandDate(getVal('brand-target-date', '')),
         methodKey: methodKey,
@@ -3977,6 +4187,31 @@ function persistBrandingEditorValues() {
     writeBrandingStorage(payload);
 }
 
+function migrateLiveAppUrlForLocalDashboard() {
+    var liveInput = document.getElementById('brand-live-app-url');
+    if (!liveInput) return;
+
+    var currentUrl = String(liveInput.value || '').trim();
+    if (!currentUrl) return;
+
+    var pageHost = String(window.location && window.location.hostname || '').toLowerCase();
+    var pagePort = String(window.location && window.location.port || '');
+    var onLocalDashboard = (pageHost === '127.0.0.1' || pageHost === 'localhost') && (pagePort === '5500' || pagePort === '5501');
+    if (!onLocalDashboard) return;
+
+    try {
+        var parsed = new URL(normalizeLiveAppUrl(currentUrl));
+        var host = parsed.hostname.toLowerCase();
+        var port = parsed.port || (parsed.protocol === 'https:' ? '443' : '80');
+        var isLegacyLocalFrontend = (host === '127.0.0.1' || host === 'localhost') && port === '3000';
+        if (!isLegacyLocalFrontend) return;
+
+        liveInput.value = PROD_LIVE_APP_URL;
+    } catch (e) {
+        // Keep existing value if URL parsing fails.
+    }
+}
+
 function setBrandingFieldsLocked(locked) {
     BRAND_EDITABLE_IDS.forEach(function(id) {
         var el = document.getElementById(id);
@@ -4052,6 +4287,7 @@ window.applyBrandingToUI = applyBrandingToUI;
 
 function initBrandingEditor() {
     restoreBrandingEditorValues();
+    migrateLiveAppUrlForLocalDashboard();
 
     BRAND_EDITABLE_IDS.forEach(function(id) {
         var el = document.getElementById(id);
@@ -4335,7 +4571,11 @@ window.applyRetroEditorChanges = function() {
             if (status) status.textContent = 'Retrospective notes saved to dashboard API for Sprint ' + key + '.';
         }).catch(function(err) {
             if (status) {
-                status.textContent = 'Retrospective notes updated on page, but API save failed: ' + (err && err.message ? err.message : 'unknown error');
+                if (isDashboardApiLocalSyncDisabledError(err)) {
+                    status.textContent = 'Retrospective notes updated on page. Local preview API sync is currently off.';
+                } else {
+                    status.textContent = 'Retrospective notes updated on page, but API save failed: ' + (err && err.message ? err.message : 'unknown error');
+                }
             }
         });
     } else if (status) {
@@ -4420,7 +4660,11 @@ window.applyDodEditorChanges = function() {
             if (status) status.textContent = 'Definition of Done saved to dashboard API for Sprint ' + key + '.';
         }).catch(function(err) {
             if (status) {
-                status.textContent = 'Definition of Done updated on page, but API save failed: ' + (err && err.message ? err.message : 'unknown error');
+                if (isDashboardApiLocalSyncDisabledError(err)) {
+                    status.textContent = 'Definition of Done updated on page. Local preview API sync is currently off.';
+                } else {
+                    status.textContent = 'Definition of Done updated on page, but API save failed: ' + (err && err.message ? err.message : 'unknown error');
+                }
             }
         });
     } else if (status) {
@@ -4472,7 +4716,7 @@ function selectRetroSprint(sprintNum) {
         },
         '14': {
             title: 'Sprint 14 — Retrospective',
-            subtitle: 'Placeholder — retrospective is completed only after the sprint closes.',
+            subtitle: 'Completed at sprint close-ready state - May 15, 2026. ML retrain, platform continuity, and dashboard stabilization evidence captured.',
             dates: 'May 4 – May 16, 2026'
         },
         '15': {
@@ -4751,14 +4995,501 @@ function syncDashMetrics() {
 ═══════════════════════════════════════════════════════════ */
 
 let scene, camera, renderer, labelRenderer, controls;
-let architectureInitialized = false;
+if (typeof architectureInitialized !== 'boolean') architectureInitialized = false;
+let architectureNodes = {};
+let architectureConnections = [];
+let architectureNodeState = {};
+let architectureMonitorTimer = null;
+let architectureMonitorRunning = false;
+const ARCH_MONITOR_INTERVAL_MS = 20000;
+const ARCH_S3_BACKUP_URL = 'https://hcl-lombardo-backups-563960656132-us-east-2.s3.us-east-2.amazonaws.com/';
+const ARCH_STATUS_COLORS = {
+    up: 0x10b981,
+    down: 0xef4444,
+    degraded: 0xf59e0b,
+    unknown: 0x64748b
+};
+
+const ARCH_LINK_STYLE = {
+    up: {
+        lineOpacity: 0.92,
+        tubeOpacity: 0.58,
+        particleSpeed: 1.35,
+        particleOpacity: 0.95,
+        glowOpacity: 0.35,
+        dashSize: 2.8,
+        gapSize: 0.75,
+        dashSpeed: 0.035
+    },
+    degraded: {
+        lineOpacity: 0.62,
+        tubeOpacity: 0.36,
+        particleSpeed: 0.75,
+        particleOpacity: 0.7,
+        glowOpacity: 0.24,
+        dashSize: 1.7,
+        gapSize: 1.4,
+        dashSpeed: 0.018
+    },
+    down: {
+        lineOpacity: 0.34,
+        tubeOpacity: 0.18,
+        particleSpeed: 0.25,
+        particleOpacity: 0.3,
+        glowOpacity: 0.1,
+        dashSize: 0.95,
+        gapSize: 2.2,
+        dashSpeed: 0.006
+    },
+    unknown: {
+        lineOpacity: 0.45,
+        tubeOpacity: 0.24,
+        particleSpeed: 0.45,
+        particleOpacity: 0.5,
+        glowOpacity: 0.16,
+        dashSize: 1.2,
+        gapSize: 1.8,
+        dashSpeed: 0.01
+    }
+};
+
+function getArchitectureLinkStyle(status) {
+    return ARCH_LINK_STYLE[status] || ARCH_LINK_STYLE.unknown;
+}
+
+function getArchitectureStatusLabel(status) {
+    if (status === 'up') return 'Up';
+    if (status === 'down') return 'Down';
+    if (status === 'degraded') return 'Degraded';
+    return 'Unknown';
+}
+
+function getArchitectureStatusClass(status) {
+    if (status === 'up') return 'is-up';
+    if (status === 'down') return 'is-down';
+    if (status === 'degraded') return 'is-degraded';
+    return 'is-unknown';
+}
+
+function setArchitectureSummary(summaryText, metaText) {
+    var summaryEl = document.getElementById('arch-live-summary');
+    var metaEl = document.getElementById('arch-live-meta');
+    if (summaryEl) summaryEl.textContent = summaryText || 'Live topology monitor is initializing...';
+    if (metaEl) metaEl.textContent = metaText || ('Checks run every ' + Math.round(ARCH_MONITOR_INTERVAL_MS / 1000) + ' seconds.');
+}
+
+function getArchitectureQueryParams() {
+    try {
+        var merged = new URLSearchParams(window.location && window.location.search ? window.location.search : '');
+        var hash = String(window.location && window.location.hash || '');
+        var qIndex = hash.indexOf('?');
+        if (qIndex !== -1) {
+            var hashParams = new URLSearchParams(hash.slice(qIndex + 1));
+            hashParams.forEach(function(value, key) {
+                merged.set(key, value);
+            });
+        }
+        return merged;
+    } catch (e) {
+        return null;
+    }
+}
+
+function isArchitectureLocalStaticPreview() {
+    var host = String(window.location && window.location.hostname || '').toLowerCase();
+    var port = String(window.location && window.location.port || '');
+    var isLocalHost = host === '127.0.0.1' || host === 'localhost';
+    return (window.location && window.location.protocol === 'file:') || (isLocalHost && port && port !== '5000');
+}
+
+function shouldRunArchitectureLiveProbes() {
+    if (typeof window.ARCHITECTURE_LIVE_MONITOR === 'boolean') {
+        return window.ARCHITECTURE_LIVE_MONITOR;
+    }
+
+    var params = getArchitectureQueryParams();
+    if (params) {
+        var archLive = String(params.get('archLive') || '').trim().toLowerCase();
+        if (archLive === 'on' || archLive === '1' || archLive === 'true') return true;
+        if (archLive === 'off' || archLive === '0' || archLive === 'false') return false;
+
+        // If API routing is explicitly provided, assume probes are intentionally enabled.
+        if (params.get('archApiBase') || params.get('archApi')) return true;
+    }
+
+    // Default to live probes. Local static preview routes to local API by default.
+    return true;
+}
+
+function shouldProbeArchitectureS3() {
+    if (typeof window.ARCHITECTURE_ENABLE_S3_PROBE === 'boolean') {
+        return window.ARCHITECTURE_ENABLE_S3_PROBE;
+    }
+
+    var params = getArchitectureQueryParams();
+    if (!params) return false;
+
+    var s3Probe = String(params.get('archS3Probe') || '').trim().toLowerCase();
+    return s3Probe === 'on' || s3Probe === '1' || s3Probe === 'true';
+}
+
+function getArchitectureApiBase() {
+    if (window.ARCHITECTURE_API_BASE) {
+        return String(window.ARCHITECTURE_API_BASE).replace(/\/+$/, '');
+    }
+
+    var params = getArchitectureQueryParams();
+
+    if (params) {
+        var explicitBase = String(params.get('archApiBase') || '').trim();
+        if (explicitBase) return explicitBase.replace(/\/+$/, '');
+
+        var mode = String(params.get('archApi') || '').trim().toLowerCase();
+        if (mode === 'local') return 'http://127.0.0.1:5000';
+        if (mode === 'prod' || mode === 'production') return 'https://api.aprilsykes.dev';
+    }
+
+    // Prefer local API target when running static local preview.
+    if (isArchitectureLocalStaticPreview()) {
+        return 'http://127.0.0.1:5000';
+    }
+
+    return window.location ? window.location.origin : 'https://api.aprilsykes.dev';
+}
+
+function updateArchitectureHealthPill(nodeKey, status) {
+    var row = document.getElementById('arch-health-' + nodeKey);
+    var state = document.getElementById('arch-state-' + nodeKey);
+    if (!row || !state) return;
+
+    row.classList.remove('is-up', 'is-down', 'is-degraded', 'is-unknown');
+    row.classList.add(getArchitectureStatusClass(status));
+    state.textContent = getArchitectureStatusLabel(status);
+}
+
+function registerArchitectureNode(nodeKey, object3d) {
+    if (!nodeKey || !object3d) return;
+
+    architectureNodes[nodeKey] = object3d;
+    if (!object3d.userData) object3d.userData = {};
+    object3d.userData.nodeKey = nodeKey;
+
+    var beacon = new THREE.Mesh(
+        new THREE.SphereGeometry(0.42, 14, 14),
+        new THREE.MeshBasicMaterial({ color: ARCH_STATUS_COLORS.unknown, transparent: true, opacity: 0.92 })
+    );
+    beacon.position.set(0, 3.2, 0);
+    object3d.add(beacon);
+    object3d.userData.statusBeacon = beacon;
+
+    architectureNodeState[nodeKey] = {
+        status: 'unknown',
+        reason: 'Waiting for first check.'
+    };
+    updateArchitectureHealthPill(nodeKey, 'unknown');
+}
+
+function registerArchitectureConnection(linkId, fromKey, toKey, line, tube, particles) {
+    architectureConnections.push({
+        linkId: linkId,
+        fromKey: fromKey,
+        toKey: toKey,
+        line: line,
+        tube: tube,
+        particles: Array.isArray(particles) ? particles : [],
+        dashSpeed: ARCH_LINK_STYLE.unknown.dashSpeed,
+        phase: Math.random() * Math.PI * 2,
+        status: 'unknown'
+    });
+    applyArchitectureConnectionStatus(linkId, 'unknown');
+}
+
+function applyArchitectureNodeStatus(nodeKey, status, reason) {
+    var node = architectureNodes[nodeKey];
+    if (!node) return;
+
+    var color = ARCH_STATUS_COLORS[status] || ARCH_STATUS_COLORS.unknown;
+    architectureNodeState[nodeKey] = {
+        status: status,
+        reason: reason || ''
+    };
+
+    if (node.userData && node.userData.material) {
+        node.userData.material.emissive.setHex(color);
+    }
+
+    if (node.userData && node.userData.statusBeacon && node.userData.statusBeacon.material) {
+        node.userData.statusBeacon.material.color.setHex(color);
+    }
+
+    updateArchitectureHealthPill(nodeKey, status);
+}
+
+function applyArchitectureConnectionStatus(linkId, status) {
+    var color = ARCH_STATUS_COLORS[status] || ARCH_STATUS_COLORS.unknown;
+    var style = getArchitectureLinkStyle(status);
+    architectureConnections.forEach(function(link) {
+        if (link.linkId !== linkId) return;
+        link.status = status;
+        link.dashSpeed = style.dashSpeed;
+        if (link.line && link.line.material) {
+            link.line.material.color.setHex(color);
+            link.line.material.opacity = style.lineOpacity;
+            if (typeof link.line.material.dashSize === 'number') link.line.material.dashSize = style.dashSize;
+            if (typeof link.line.material.gapSize === 'number') link.line.material.gapSize = style.gapSize;
+        }
+        if (link.tube && link.tube.material) {
+            link.tube.material.color.setHex(color);
+            link.tube.material.opacity = style.tubeOpacity;
+        }
+        if (link.particles && link.particles.length) {
+            link.particles.forEach(function(particle) {
+                if (!particle || !particle.material || !particle.userData) return;
+                particle.material.color.setHex(color);
+                particle.material.emissive.setHex(color);
+                particle.material.opacity = style.particleOpacity;
+                if (particle.userData.glowMaterial) {
+                    particle.userData.glowMaterial.color.setHex(color);
+                    particle.userData.glowMaterial.opacity = style.glowOpacity;
+                }
+                particle.userData.speed = (particle.userData.baseSpeed || 1) * style.particleSpeed;
+            });
+        }
+    });
+}
+
+function resolveArchitectureLinkStatus(a, b) {
+    var s1 = a || 'unknown';
+    var s2 = b || 'unknown';
+    if (s1 === 'down' || s2 === 'down') return 'down';
+    if (s1 === 'degraded' || s2 === 'degraded') return 'degraded';
+    if (s1 === 'up' && s2 === 'up') return 'up';
+    return 'unknown';
+}
+
+function statusFromProbe(probe, strictDown) {
+    if (!probe) return 'unknown';
+    if (probe.ok) return 'up';
+    if (probe.reachable && probe.corsBlocked) return 'degraded';
+    if (probe.reachable && (probe.status === 401 || probe.status === 403)) return 'degraded';
+    if (probe.reachable) return strictDown ? 'down' : 'degraded';
+    return 'down';
+}
+
+async function fetchArchitectureProbe(url, options) {
+    options = options || {};
+    var expectJson = options.expectJson !== false;
+    var timeoutMs = Number(options.timeoutMs) || 4500;
+    var method = options.method || 'GET';
+    var allowNoCorsFallback = options.allowNoCorsFallback !== false;
+
+    function doFetch(fetchOptions) {
+        var controller = new AbortController();
+        var timeout = setTimeout(function() { controller.abort(); }, timeoutMs);
+        return fetch(url, Object.assign({ method: method, cache: 'no-store', signal: controller.signal }, fetchOptions || {}))
+            .then(function(res) {
+                clearTimeout(timeout);
+                return res;
+            })
+            .catch(function(err) {
+                clearTimeout(timeout);
+                throw err;
+            });
+    }
+
+    try {
+        var res = await doFetch({ mode: 'cors', headers: { 'Accept': 'application/json' } });
+        var data = null;
+        if (expectJson) {
+            try {
+                data = await res.json();
+            } catch (jsonErr) {
+                data = null;
+            }
+        }
+        return {
+            ok: !!res.ok,
+            reachable: true,
+            corsBlocked: false,
+            status: Number(res.status) || 0,
+            data: data,
+            error: ''
+        };
+    } catch (err) {
+        if (!allowNoCorsFallback) {
+            return {
+                ok: false,
+                reachable: false,
+                corsBlocked: false,
+                status: 0,
+                data: null,
+                error: String(err && err.message || 'Request failed')
+            };
+        }
+        try {
+            await doFetch({ mode: 'no-cors' });
+            return {
+                ok: false,
+                reachable: true,
+                corsBlocked: true,
+                status: 0,
+                data: null,
+                error: String(err && err.message || 'CORS restricted')
+            };
+        } catch (reachErr) {
+            return {
+                ok: false,
+                reachable: false,
+                corsBlocked: false,
+                status: 0,
+                data: null,
+                error: String(reachErr && reachErr.message || 'Network unreachable')
+            };
+        }
+    }
+}
+
+async function runArchitectureHealthCheck(forceNow) {
+    if (!architectureInitialized) return;
+    if (!forceNow) {
+        var archTab = document.getElementById('architecture');
+        if (archTab && !archTab.classList.contains('active')) return;
+    }
+    if (architectureMonitorRunning && !forceNow) return;
+
+    architectureMonitorRunning = true;
+    var liveProbesEnabled = shouldRunArchitectureLiveProbes();
+    if (!liveProbesEnabled) {
+        var pausedStatuses = {
+            frontend: 'up',
+            backend: 'unknown',
+            postgres: 'unknown',
+            ml: 'unknown',
+            espn: 'unknown',
+            nflverse: 'unknown',
+            s3: 'unknown'
+        };
+
+        applyArchitectureNodeStatus('frontend', pausedStatuses.frontend, 'Dashboard UI is loaded.');
+        applyArchitectureNodeStatus('backend', pausedStatuses.backend, 'Live probe disabled by archLive=off.');
+        applyArchitectureNodeStatus('postgres', pausedStatuses.postgres, 'Live probe disabled by archLive=off.');
+        applyArchitectureNodeStatus('ml', pausedStatuses.ml, 'Live probe disabled by archLive=off.');
+        applyArchitectureNodeStatus('espn', pausedStatuses.espn, 'Live probe disabled by archLive=off.');
+        applyArchitectureNodeStatus('nflverse', pausedStatuses.nflverse, 'Live probe disabled by archLive=off.');
+        applyArchitectureNodeStatus('s3', pausedStatuses.s3, 'S3 browser probe disabled by default.');
+
+        applyArchitectureConnectionStatus('react_flask', resolveArchitectureLinkStatus(pausedStatuses.frontend, pausedStatuses.backend));
+        applyArchitectureConnectionStatus('flask_postgres', resolveArchitectureLinkStatus(pausedStatuses.backend, pausedStatuses.postgres));
+        applyArchitectureConnectionStatus('flask_espn', resolveArchitectureLinkStatus(pausedStatuses.backend, pausedStatuses.espn));
+        applyArchitectureConnectionStatus('ml_flask', resolveArchitectureLinkStatus(pausedStatuses.ml, pausedStatuses.backend));
+        applyArchitectureConnectionStatus('nflverse_postgres', resolveArchitectureLinkStatus(pausedStatuses.nflverse, pausedStatuses.postgres));
+        applyArchitectureConnectionStatus('postgres_s3', resolveArchitectureLinkStatus(pausedStatuses.postgres, pausedStatuses.s3));
+
+        setArchitectureSummary(
+            'Live probes are disabled.',
+            'Enable with ?archLive=on · Optional S3 probe: ?archS3Probe=1'
+        );
+        architectureMonitorRunning = false;
+        return;
+    }
+
+    var apiBase = getArchitectureApiBase();
+    setArchitectureSummary('Checking live topology connections...', 'Polling endpoint: ' + apiBase);
+
+    try {
+        var healthProbe = await fetchArchitectureProbe(apiBase + '/health', { expectJson: true, timeoutMs: 4500, allowNoCorsFallback: false });
+        var backendStatus = statusFromProbe(healthProbe, true);
+        var dbStatus = 'unknown';
+
+        if (healthProbe.ok && healthProbe.data && String(healthProbe.data.database || '').toLowerCase() === 'connected') {
+            dbStatus = 'up';
+        } else if (backendStatus === 'down') {
+            dbStatus = 'down';
+        } else if (backendStatus === 'degraded') {
+            dbStatus = 'degraded';
+        }
+
+        var mlProbe = null;
+        var espnProbe = null;
+        var nflverseProbe = null;
+        if (backendStatus !== 'down') {
+            mlProbe = await fetchArchitectureProbe(apiBase + '/api/ml/model-info', { expectJson: true, timeoutMs: 5500, allowNoCorsFallback: false });
+            espnProbe = await fetchArchitectureProbe(apiBase + '/api/live-scores', { expectJson: true, timeoutMs: 5500, allowNoCorsFallback: false });
+            nflverseProbe = await fetchArchitectureProbe(apiBase + '/api/hcl/teams', { expectJson: true, timeoutMs: 5500, allowNoCorsFallback: false });
+        }
+        var s3ProbeEnabled = shouldProbeArchitectureS3();
+        var s3Probe = null;
+        if (s3ProbeEnabled) {
+            s3Probe = await fetchArchitectureProbe(window.ARCHITECTURE_S3_URL || ARCH_S3_BACKUP_URL, { expectJson: false, timeoutMs: 5500 });
+        }
+
+        var nodeStatuses = {
+            frontend: 'up',
+            backend: backendStatus,
+            postgres: dbStatus,
+            ml: backendStatus === 'down' ? 'down' : statusFromProbe(mlProbe, false),
+            espn: backendStatus === 'down' ? 'down' : statusFromProbe(espnProbe, false),
+            nflverse: backendStatus === 'down' ? 'down' : statusFromProbe(nflverseProbe, false),
+            s3: s3ProbeEnabled ? (s3Probe.reachable ? 'up' : 'down') : 'unknown'
+        };
+
+        var s3Reason = s3ProbeEnabled
+            ? (s3Probe.reachable
+                ? (s3Probe.corsBlocked ? 'Reachable (CORS-limited response from browser).' : 'Reachable via HTTPS endpoint.')
+                : (s3Probe.error || 'S3 endpoint unreachable from browser.'))
+            : 'S3 browser probe disabled to avoid CORS console noise. Use ?archS3Probe=1 to enable.';
+
+        applyArchitectureNodeStatus('frontend', nodeStatuses.frontend, 'Dashboard UI is loaded.');
+        applyArchitectureNodeStatus('backend', nodeStatuses.backend, healthProbe.error || 'Checked /health');
+        applyArchitectureNodeStatus('postgres', nodeStatuses.postgres, 'Derived from Flask health database state.');
+        applyArchitectureNodeStatus('ml', nodeStatuses.ml, backendStatus === 'down' ? 'Skipped because backend health is down.' : (mlProbe.error || 'Checked /api/ml/model-info'));
+        applyArchitectureNodeStatus('espn', nodeStatuses.espn, backendStatus === 'down' ? 'Skipped because backend health is down.' : (espnProbe.error || 'Checked /api/live-scores'));
+        applyArchitectureNodeStatus('nflverse', nodeStatuses.nflverse, backendStatus === 'down' ? 'Skipped because backend health is down.' : (nflverseProbe.error || 'Checked /api/hcl/teams data path'));
+        applyArchitectureNodeStatus('s3', nodeStatuses.s3, s3Reason);
+
+        applyArchitectureConnectionStatus('react_flask', resolveArchitectureLinkStatus(nodeStatuses.frontend, nodeStatuses.backend));
+        applyArchitectureConnectionStatus('flask_postgres', resolveArchitectureLinkStatus(nodeStatuses.backend, nodeStatuses.postgres));
+        applyArchitectureConnectionStatus('flask_espn', resolveArchitectureLinkStatus(nodeStatuses.backend, nodeStatuses.espn));
+        applyArchitectureConnectionStatus('ml_flask', resolveArchitectureLinkStatus(nodeStatuses.ml, nodeStatuses.backend));
+        applyArchitectureConnectionStatus('nflverse_postgres', resolveArchitectureLinkStatus(nodeStatuses.nflverse, nodeStatuses.postgres));
+        applyArchitectureConnectionStatus('postgres_s3', resolveArchitectureLinkStatus(nodeStatuses.postgres, nodeStatuses.s3));
+
+        var keys = Object.keys(nodeStatuses);
+        var upCount = keys.filter(function(k) { return nodeStatuses[k] === 'up'; }).length;
+        var degradedCount = keys.filter(function(k) { return nodeStatuses[k] === 'degraded'; }).length;
+        var downCount = keys.filter(function(k) { return nodeStatuses[k] === 'down'; }).length;
+        var stamp = new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', second: '2-digit' });
+
+        setArchitectureSummary(
+            upCount + '/' + keys.length + ' nodes up · ' + degradedCount + ' degraded · ' + downCount + ' down',
+            'Last checked ' + stamp + ' · Polling every ' + Math.round(ARCH_MONITOR_INTERVAL_MS / 1000) + 's · Source ' + apiBase
+        );
+    } catch (err) {
+        setArchitectureSummary('Live monitor encountered an error.', String(err && err.message || err));
+    } finally {
+        architectureMonitorRunning = false;
+    }
+}
+
+function startArchitectureHealthMonitor() {
+    if (architectureMonitorTimer) return;
+    runArchitectureHealthCheck(true);
+    if (!shouldRunArchitectureLiveProbes()) return;
+    architectureMonitorTimer = setInterval(function() {
+        runArchitectureHealthCheck(false);
+    }, ARCH_MONITOR_INTERVAL_MS);
+}
 
 function init3DArchitecture() {
     if (architectureInitialized) return;
     architectureInitialized = true;
+    architectureNodes = {};
+    architectureConnections = [];
+    architectureNodeState = {};
 
     const container = document.getElementById('canvas-container');
     const canvas = document.getElementById('architecture-canvas');
+    setArchitectureSummary('Live topology monitor is initializing...', 'Checks run every ' + Math.round(ARCH_MONITOR_INTERVAL_MS / 1000) + ' seconds.');
 
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0x020510);
@@ -4837,6 +5568,26 @@ function init3DArchitecture() {
     createArchitecture();
     setupHoverInteractions();
 
+    var refreshBtn = document.getElementById('arch-refresh-btn');
+    if (refreshBtn && !refreshBtn.dataset.bound) {
+        refreshBtn.dataset.bound = '1';
+        refreshBtn.addEventListener('click', function() {
+            runArchitectureHealthCheck(true);
+        });
+    }
+
+    if (!document.body.dataset.archMonitorVisibilityBound) {
+        document.body.dataset.archMonitorVisibilityBound = '1';
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) return;
+            if (document.getElementById('architecture') && document.getElementById('architecture').classList.contains('active')) {
+                runArchitectureHealthCheck(true);
+            }
+        });
+    }
+
+    startArchitectureHealthMonitor();
+
     let animationTime = 0;
     let autoRotate = true;
     controls.addEventListener('start', () => { autoRotate = false; });
@@ -4848,8 +5599,23 @@ function init3DArchitecture() {
         // Pulse node emissive intensity
         scene.traverse((object) => {
             if (object.userData && object.userData.material && object.userData.pulsePhase !== undefined) {
-                const pulse = Math.sin(animationTime + object.userData.pulsePhase) * 0.3 + 0.7;
+                const nodeStatus = object.userData.nodeKey && architectureNodeState[object.userData.nodeKey]
+                    ? architectureNodeState[object.userData.nodeKey].status
+                    : 'up';
+                const statusScale = nodeStatus === 'down' ? 0.25 : nodeStatus === 'degraded' ? 0.55 : nodeStatus === 'unknown' ? 0.45 : 0.9;
+                const pulse = (Math.sin(animationTime + object.userData.pulsePhase) * 0.25 + 0.75) * statusScale;
                 object.userData.material.emissiveIntensity = pulse;
+            }
+        });
+
+        architectureConnections.forEach((link) => {
+            if (link.line && link.line.material && typeof link.line.material.dashOffset === 'number') {
+                link.line.material.dashOffset -= (link.dashSpeed || 0.01);
+            }
+            if (link.tube && link.tube.material) {
+                const style = getArchitectureLinkStyle(link.status || 'unknown');
+                const breath = 0.82 + Math.sin(animationTime * 2.2 + (link.phase || 0)) * 0.18;
+                link.tube.material.opacity = Math.max(0.07, style.tubeOpacity * breath);
             }
         });
 
@@ -4910,7 +5676,8 @@ function createArchitecture() {
     scene.add(frontend);
     const frontendEdges = new THREE.EdgesGeometry(frontendGeo);
     frontend.add(new THREE.LineSegments(frontendEdges, new THREE.LineBasicMaterial({ color: 0x6bb6ff, linewidth: 2 })));
-    addLabel('React<br><small>AWS Amplify</small>', frontend, 'label-frontend');
+    registerArchitectureNode('frontend', frontend);
+    addLabel('React Frontend<br><small>S12-S16 Runtime</small>', frontend, 'label-frontend');
 
     // ── NODE 2: Flask Backend (server rack, gray) ──────────────
     const backendGroup = new THREE.Group();
@@ -4934,7 +5701,8 @@ function createArchitecture() {
     };
     backendGroup.position.set(0, 2, 0);
     scene.add(backendGroup);
-    addLabel('Flask API<br><small>EC2 · Port 5000</small>', backendGroup, 'label-backend');
+    registerArchitectureNode('backend', backendGroup);
+    addLabel('Flask API<br><small>S12-S16 Runtime</small>', backendGroup, 'label-backend');
 
     // ── NODE 3: PostgreSQL (cylinder, teal) ───────────────────
     const dbGroup = new THREE.Group();
@@ -4959,7 +5727,8 @@ function createArchitecture() {
     };
     dbGroup.position.set(-35, 2, 15);
     scene.add(dbGroup);
-    addLabel('PostgreSQL<br><small>Port 5432</small>', dbGroup, 'label-database');
+    registerArchitectureNode('postgres', dbGroup);
+    addLabel('PostgreSQL<br><small>S12-S16 Runtime</small>', dbGroup, 'label-database');
 
     // ── NODE 4: ESPN API (cloud, light blue) ──────────────────
     const apiGroup = new THREE.Group();
@@ -4982,7 +5751,8 @@ function createArchitecture() {
     };
     apiGroup.position.set(35, 2, 15);
     scene.add(apiGroup);
-    addLabel('ESPN API<br><small>External · HTTPS</small>', apiGroup, 'label-api');
+    registerArchitectureNode('espn', apiGroup);
+    addLabel('ESPN API<br><small>Live Feed</small>', apiGroup, 'label-api');
 
     // ── NODE 5: ML Engine (octagon tower, red) ────────────────
     const mlGroup = new THREE.Group();
@@ -5022,7 +5792,8 @@ function createArchitecture() {
     mlGroup.position.set(35, 2, -15);
     mlGroup.name = 'mlEngine';
     scene.add(mlGroup);
-    addLabel('ML Engine<br><small>XGBoost + Elo</small>', mlGroup, 'label-ml');
+    registerArchitectureNode('ml', mlGroup);
+    addLabel('ML Engine<br><small>S13-S16 Models</small>', mlGroup, 'label-ml');
 
     // ── NODE 6: NFLverse (historical data source, gold) ──────────
     const nflverseGroup = new THREE.Group();
@@ -5061,56 +5832,124 @@ function createArchitecture() {
     nflverseGroup.position.set(0, 2, 40);
     nflverseGroup.name = 'nflverse';
     scene.add(nflverseGroup);
-    addLabel('NFLverse<br><small>Historical Data</small>', nflverseGroup, 'label-nflverse');
+    registerArchitectureNode('nflverse', nflverseGroup);
+    addLabel('NFLverse<br><small>Historical Baseline</small>', nflverseGroup, 'label-nflverse');
+
+    // ── NODE 7: AWS S3 Backup (bucket, sky blue) ──────────────────
+    const s3Group = new THREE.Group();
+    const s3Mat = new THREE.MeshPhongMaterial({ color: 0x38bdf8, emissive: 0x38bdf8, emissiveIntensity: 0.65, shininess: 130, transparent: true, opacity: 0.95 });
+    const bucketBody = new THREE.Mesh(new THREE.CylinderGeometry(2.0, 1.7, 3.2, 26, 1, true), s3Mat);
+    s3Group.add(bucketBody);
+    const bucketBase = new THREE.Mesh(new THREE.CircleGeometry(1.7, 26), new THREE.MeshPhongMaterial({ color: 0x1d4ed8, emissive: 0x1d4ed8, emissiveIntensity: 0.45 }));
+    bucketBase.position.y = -1.6;
+    bucketBase.rotation.x = -Math.PI / 2;
+    s3Group.add(bucketBase);
+    const bucketTopRing = new THREE.Mesh(new THREE.TorusGeometry(2.0, 0.16, 10, 36), new THREE.MeshPhongMaterial({ color: 0x7dd3fc, emissive: 0x7dd3fc, emissiveIntensity: 0.95 }));
+    bucketTopRing.position.y = 1.6;
+    bucketTopRing.rotation.x = Math.PI / 2;
+    s3Group.add(bucketTopRing);
+    s3Group.userData = {
+        pulsePhase: Math.PI * 3 / 2,
+        material: s3Mat,
+        name: 'AWS S3 Backup',
+        tier: 'Infrastructure Continuity Layer',
+        port: 'HTTPS (443)',
+        technology: 'Amazon S3 · Versioned Object Storage',
+        features: [
+            'Bucket: hcl-lombardo-backups-563960656132-us-east-2',
+            'Stores app backups and nfl_analytics SQL exports',
+            'Supports restore and rollback workflows',
+            'Referenced in Sprint 14 recovery process'
+        ],
+        communication: 'Receives backup artifacts from EC2 and local export jobs',
+        files: 'scripts backup/restore workflows + SQL snapshots'
+    };
+    s3Group.position.set(-5, 2, -40);
+    s3Group.name = 's3Backup';
+    scene.add(s3Group);
+    registerArchitectureNode('s3', s3Group);
+    addLabel('AWS S3 Backup<br><small>S14 Continuity</small>', s3Group, 'label-api');
 
     // ── CONNECTIONS ───────────────────────────────────────────
-    createConnection(frontend.position, backendGroup.position, 0x4a90e2, 0x5a6c7d);
-    createConnection(backendGroup.position, dbGroup.position, 0x5a6c7d, 0x2a9d8f);
-    createConnection(backendGroup.position, apiGroup.position, 0x5a6c7d, 0x7fb3d5);
-    createConnection(mlGroup.position, backendGroup.position, 0xe63946, 0x5a6c7d);
-    createConnection(nflverseGroup.position, dbGroup.position, 0xd4a017, 0x2a9d8f);
+    createConnection('react_flask', 'frontend', 'backend', frontend.position, backendGroup.position, 0x4a90e2, 0x5a6c7d);
+    createConnection('flask_postgres', 'backend', 'postgres', backendGroup.position, dbGroup.position, 0x5a6c7d, 0x2a9d8f);
+    createConnection('flask_espn', 'backend', 'espn', backendGroup.position, apiGroup.position, 0x5a6c7d, 0x7fb3d5);
+    createConnection('ml_flask', 'ml', 'backend', mlGroup.position, backendGroup.position, 0xe63946, 0x5a6c7d);
+    createConnection('nflverse_postgres', 'nflverse', 'postgres', nflverseGroup.position, dbGroup.position, 0xd4a017, 0x2a9d8f);
+    createConnection('postgres_s3', 'postgres', 's3', dbGroup.position, s3Group.position, 0x2a9d8f, 0x38bdf8);
 }
 
-function createConnection(start, end, color1, color2) {
-    const pts = [start.clone(), end.clone()];
-    scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({ color: color1, opacity: 0.7, transparent: true, linewidth: 2 })));
+function createConnection(linkId, fromKey, toKey, start, end, color1, color2) {
+    const mid = start.clone().add(end).multiplyScalar(0.5);
+    mid.y += Math.max(4.5, start.distanceTo(end) * 0.13);
+    const curve = new THREE.CatmullRomCurve3([start.clone(), mid, end.clone()]);
+    const pts = curve.getPoints(48);
 
-    const dir = new THREE.Vector3().subVectors(end, start);
-    const len = dir.length();
-    const tubeGeo = new THREE.CylinderGeometry(0.18, 0.18, len, 8);
-    const tubeMat = new THREE.MeshBasicMaterial({ color: color1, transparent: true, opacity: 0.5 });
+    const line = new THREE.Line(
+        new THREE.BufferGeometry().setFromPoints(pts),
+        new THREE.LineDashedMaterial({
+            color: color1,
+            transparent: true,
+            opacity: 0.52,
+            linewidth: 2,
+            dashSize: ARCH_LINK_STYLE.unknown.dashSize,
+            gapSize: ARCH_LINK_STYLE.unknown.gapSize
+        })
+    );
+    line.computeLineDistances();
+    scene.add(line);
+
+    const tubeGeo = new THREE.TubeGeometry(curve, 64, 0.16, 12, false);
+    const tubeMat = new THREE.MeshPhongMaterial({
+        color: color1,
+        emissive: color1,
+        emissiveIntensity: 0.48,
+        transparent: true,
+        opacity: 0.24,
+        shininess: 120
+    });
     const tube = new THREE.Mesh(tubeGeo, tubeMat);
-    tube.position.copy(start).add(end).multiplyScalar(0.5);
-    tube.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir.normalize());
     tube.userData.pulsePhase = Math.random() * Math.PI * 2;
     tube.userData.material = tubeMat;
     scene.add(tube);
 
-    for (let i = 0; i < 3; i++) {
-        setTimeout(() => {
-            createParticle(start, end, color1, 1.5);
-            createParticle(end, start, color2, 1.5);
-        }, i * 500);
+    const particles = [];
+    for (let i = 0; i < 4; i++) {
+        const t = (i / 4 + Math.random() * 0.08) % 1;
+        particles.push(createParticle(curve, color1, 1.15 + i * 0.07, t, 1));
+        particles.push(createParticle(curve, color2, 1.15 + i * 0.07, (t + 0.47) % 1, -1));
     }
+
+    registerArchitectureConnection(linkId, fromKey, toKey, line, tube, particles);
 }
 
-function createParticle(start, end, color, speed) {
+function createParticle(curve, color, speed, initialProgress, direction) {
     const mat = new THREE.MeshPhongMaterial({ color, emissive: color, emissiveIntensity: 1.2, transparent: true, opacity: 0.9 });
-    const particle = new THREE.Mesh(new THREE.SphereGeometry(0.35, 16, 16), mat);
-    const glow = new THREE.Mesh(new THREE.SphereGeometry(0.6, 16, 16), new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.3 }));
+    const particle = new THREE.Mesh(new THREE.SphereGeometry(0.3, 14, 14), mat);
+    const glowMaterial = new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.3 });
+    const glow = new THREE.Mesh(new THREE.SphereGeometry(0.52, 14, 14), glowMaterial);
     particle.add(glow);
-    particle.userData = { start: start.clone(), end: end.clone(), progress: Math.random(), speed };
+    particle.userData = {
+        curve: curve,
+        progress: typeof initialProgress === 'number' ? initialProgress : Math.random(),
+        speed: speed,
+        baseSpeed: speed,
+        direction: direction === -1 ? -1 : 1,
+        glowMaterial: glowMaterial
+    };
     scene.add(particle);
 
     function loop() {
-        particle.userData.progress += 0.01 * particle.userData.speed;
-        if (particle.userData.progress > 1) particle.userData.progress = 0;
-        particle.position.lerpVectors(particle.userData.start, particle.userData.end, particle.userData.progress);
-        const s = 1 + Math.sin(particle.userData.progress * Math.PI) * 0.3;
+        particle.userData.progress += 0.0038 * particle.userData.speed * particle.userData.direction;
+        if (particle.userData.progress > 1) particle.userData.progress -= 1;
+        if (particle.userData.progress < 0) particle.userData.progress += 1;
+        particle.position.copy(particle.userData.curve.getPointAt(particle.userData.progress));
+        const s = 0.88 + Math.sin((particle.userData.progress * Math.PI * 2) + (particle.userData.direction > 0 ? 0 : Math.PI)) * 0.18;
         particle.scale.set(s, s, s);
         requestAnimationFrame(loop);
     }
     loop();
+    return particle;
 }
 
 function addLabel(text, mesh, className) {
@@ -5149,6 +5988,13 @@ function setupHoverInteractions() {
                 html += `<div class="detail-row"><span class="detail-label">Tier:</span><span class="detail-value">${d.tier}</span></div>`;
                 html += `<div class="detail-row"><span class="detail-label">Port:</span><span class="detail-value">${d.port}</span></div>`;
                 html += `<div class="detail-row"><span class="detail-label">Tech:</span><span class="detail-value">${d.technology}</span></div>`;
+                if (d.nodeKey && architectureNodeState[d.nodeKey]) {
+                    const live = architectureNodeState[d.nodeKey];
+                    html += `<div class="detail-row"><span class="detail-label">Status:</span><span class="detail-value">${getArchitectureStatusLabel(live.status)}</span></div>`;
+                    if (live.reason) {
+                        html += `<div class="detail-row"><span class="detail-label">Monitor:</span><span class="detail-value">${live.reason}</span></div>`;
+                    }
+                }
                 if (d.features) {
                     html += `<div style="margin-top:8px;"><strong>Features:</strong></div><ul style="margin:4px 0;padding-left:16px;">`;
                     d.features.forEach(f => html += `<li style="margin:2px 0;color:#94a3b8">${f}</li>`);
@@ -5717,6 +6563,7 @@ var DASHBOARD_API_DISABLED_REASON = '';
 
 function shouldUseLocalDashboardApi() {
     if (window.DASHBOARD_API_FORCE_LOCAL === true) return true;
+    if (window.DASHBOARD_API_FORCE_LOCAL === false) return false;
     try {
         var params = new URLSearchParams(window.location && window.location.search ? window.location.search : '');
         var mode = String(params.get('dashboardApi') || '').trim().toLowerCase();
@@ -5725,6 +6572,18 @@ function shouldUseLocalDashboardApi() {
     } catch (e) {
         // Keep default behavior when URL parsing is unavailable.
     }
+
+    var loc = window.location || {};
+    var host = String(loc.hostname || '').toLowerCase();
+    var port = String(loc.port || '');
+    var isLocalHost = host === '127.0.0.1' || host === 'localhost';
+
+    // For local static preview (for example 127.0.0.1:5500), prefer localhost
+    // dashboard API sync by default so Apply actions persist without extra flags.
+    if (loc.protocol === 'file:' || (isLocalHost && port && port !== '5000')) {
+        return true;
+    }
+
     return false;
 }
 
@@ -5737,9 +6596,8 @@ function getDashboardApiBase() {
     var port = String(loc.port || '');
     var isLocalHost = host === '127.0.0.1' || host === 'localhost';
 
-    // In local static preview (for example 127.0.0.1:5500), default to
-    // local-fallback mode to avoid noisy connection-refused errors when the
-    // dashboard API server is not running. Opt in with ?dashboardApi=local.
+    // In local static preview (for example 127.0.0.1:5500), default to the
+    // localhost dashboard API. Use ?dashboardApi=off to force local-only mode.
     if (loc.protocol === 'file:' || (isLocalHost && port && port !== '5000')) {
         if (shouldUseLocalDashboardApi()) {
             return 'http://127.0.0.1:5000/api/dashboard/v1';
@@ -5754,10 +6612,17 @@ function buildDashboardApiUrl(path) {
 }
 
 function logDashboardApiError(err) {
+    var message = err && err.message ? String(err.message) : String(err || '');
+    // Local static preview mode intentionally disables dashboard API sync.
+    // Keep console clean so real runtime issues are easier to spot.
+    if (message.indexOf('Dashboard API disabled for local static preview.') === 0) {
+        return;
+    }
+
     var now = Date.now();
     if (now - DASHBOARD_API_LAST_ERROR_TS < 15000) return;
     DASHBOARD_API_LAST_ERROR_TS = now;
-    console.warn('[dashboard-api]', err && err.message ? err.message : err);
+    console.warn('[dashboard-api]', message || err);
 }
 
 async function dashboardApiRequest(method, path, payload, options) {
@@ -5767,7 +6632,7 @@ async function dashboardApiRequest(method, path, payload, options) {
     var apiBase = getDashboardApiBase();
     if (!apiBase) {
         DASHBOARD_API_DISABLED = true;
-        DASHBOARD_API_DISABLED_REASON = 'Dashboard API disabled for local static preview. Add ?dashboardApi=local to enable localhost:5000 sync.';
+        DASHBOARD_API_DISABLED_REASON = 'Dashboard API sync disabled for local static preview. Add ?dashboardApi=local to enable localhost:5000 sync.';
         throw new Error(DASHBOARD_API_DISABLED_REASON);
     }
 
@@ -5818,6 +6683,12 @@ function mapUiStatusToApi(status) {
     if (normalized === 'blocked') return 'blocked';
     if (normalized === 'in progress' || normalized === 'in sprint' || normalized === 'in_progress') return 'in_progress';
     return 'todo';
+}
+
+function isDashboardApiLocalSyncDisabledError(err) {
+    var message = err && err.message ? String(err.message) : '';
+    return message.indexOf('Dashboard API sync disabled for local static preview.') === 0
+        || message.indexOf('Dashboard API disabled for local static preview.') === 0;
 }
 
 function mapApiStatusToUi(status) {
@@ -8816,8 +9687,8 @@ initTasks();
         { num:2,  dates:'Apr 13 – Apr 19', sprint:'S12', hours:17,  notes:'Sprint 12 close + inter-sprint planning. Verified EC2, PostgreSQL, and frontend walkthrough complete. Published project to Handshake AI Showcase. Fixed production meta description. Sprint board audit — TA-001, TA-002, TA-004, TA-009 confirmed done. Apr 19: PM dashboard — Product Backlog Tracker redesign, sprint filter automation, print/download export, sprint selector, S13 pre-planning and backlog cleanup.' },
         { num:3,  dates:'Apr 20 – Apr 26', sprint:'S13', hours:22,  notes:'S13 kickoff. Built Project Logbook system — gen_devlog.py (372 commits, 17,121 log lines), log_watcher.py (real-time file watcher, daily archive, HTTP server port 8765), embed_devlog.py (split-screen dashboard embed), START-DEV.bat updated. Renamed AI Log tab to Project Logbook. Fixed environment startup process — START-DEV.bat required before any local testing. +10 hrs: Dashboard nav bar crisis — JS SyntaxError, global CSS override, background watcher overwriting file. Full repair: nav bar, Sprint 13 activation, task board, metrics automation, fonts, sprint selector, logbook split-screen §1–§12 panel. Apr 21 +8 hrs: TA-068 elo_ratings.py created (EloRatingSystem class), TA-057 schema fix (hcl_test→hcl), TA-058 SQL WINDOW clause fix, TA-059 hardcoded season=2025 removed (api_routes_hcl.py), TA-063 EC2 SSH confirmed + disk at 90% recorded. Dashboard fully updated: burndown, RAG, metrics, hours log. Apr 24–27: PM4 transition finalized for teacher review — deploy source switched to pmforge_dashboard/index.html, legacy dashboard archived, importer/docs aligned, and DSH-011 marked DONE.' },
         { num:4,  dates:'Apr 27 – May 2',  sprint:'S13', hours:20,  notes:'Week opened with PM4 closeout on Apr 27: dashboard publish path switched to pmforge_dashboard/index.html, legacy dashboard archived under backups/legacy_dashboard, importer legacy target aligned, and release-note evidence recorded in commit c2056abd. +20 hours logged for Sprint 13 closeout/governance synchronization.' },
-        { num:5,  dates:'May 4 – May 10',  sprint:'S14', hours:0,   notes:'' },
-        { num:6,  dates:'May 11 – May 16', sprint:'S14', hours:0,   notes:'' },
+        { num:5,  dates:'May 4 – May 10',  sprint:'S14', hours:24,  notes:'Sprint 14 kickoff execution. TA-075 completed with verifiable Option A/B/C effort-point model research and Option A selected as canonical stakeholder metric. Burndown, burnup, and velocity were aligned to effort points (not raw subtask counts), sprint workday math was capacity-adjusted for weekends and planned no-work days, and Decision Log + Sprint 14 DoD acceptance criteria were synchronized.' },
+        { num:6,  dates:'May 11 – May 16', sprint:'S14', hours:23,  notes:'Sprint 14 closeout stabilization and governance pass. Applied P1 tracker fixes, reduced architecture motion blur, and fixed non-cycling live updates. Implemented and polished live architecture health monitoring with status-reactive connection visuals, repaired local dashboard/API CORS + probe behavior for reliable localhost operation, and finalized Sprint 14 retrospective plus DoD evidence alignment.' },
         { num:7,  dates:'May 18 – May 24', sprint:'S15', hours:0,   notes:'' },
         { num:8,  dates:'May 25 – May 30', sprint:'S15', hours:0,   notes:'' },
         { num:9,  dates:'Jun 1 – Jun 7',   sprint:'S16', hours:0,   notes:'' },
@@ -9408,6 +10279,13 @@ function showSprintView(view, btn) {
             considered: 'Option B flow-time model, Option C deliverable-value model',
             why: 'For a solo student workflow with uneven daily availability, effort points provide the most accurate and comparable unit across sprints. This avoids distortion from variable subtask splitting and does not require budget or hours tracking. Burndown timing excludes weekends and planned no-work days so schedule views reflect real capacity rather than a fictional full-time team cadence.',
         },
+        {
+            id: 'D-09', date: 'May 2026', sprint: 'S14',
+            title: 'Sprint identifier notation standardized to S# across governance artifacts',
+            chosen: 'Use canonical sprint keys in S# format (S12, S13, S14, S15, S16) across dashboard logs and evidence',
+            considered: 'Mixed naming ("Sprint 14" only), ad-hoc labels, or non-standard aliases per section',
+            why: 'A single S# convention improves traceability across Decision Log, Hours Log, Weekly Report, DoD, ticket history, and API records. This reduces ambiguity during closeout reviews and keeps local/UI labels aligned with persisted dashboard data fields.',
+        },
     ];
     var decisions = DEFAULT_DECISIONS.map(function(d) { return Object.assign({}, d); });
 
@@ -9431,6 +10309,36 @@ function showSprintView(view, btn) {
             considered: String(entry && entry.considered || ''),
             why: String(entry && (entry.rationale || entry.why) || '')
         };
+    }
+
+    function buildDecisionIdSet(rows) {
+        var idSet = {};
+        (rows || []).forEach(function(row) {
+            var id = String(row && row.id || '').trim();
+            if (id) idSet[id] = true;
+        });
+        return idSet;
+    }
+
+    function mergeDefaultAndApiDecisions(defaultRows, apiRows) {
+        var normalizedDefaults = (defaultRows || []).map(normalizeDecisionEntry);
+        var normalizedApi = (apiRows || []).map(normalizeDecisionEntry);
+        var apiById = {};
+
+        normalizedApi.forEach(function(row) {
+            if (row.id) apiById[row.id] = row;
+        });
+
+        var merged = normalizedDefaults.map(function(row) {
+            return apiById[row.id] ? apiById[row.id] : row;
+        });
+
+        var defaultIds = buildDecisionIdSet(normalizedDefaults);
+        normalizedApi.forEach(function(row) {
+            if (row.id && !defaultIds[row.id]) merged.push(row);
+        });
+
+        return merged;
     }
 
     function renderDecisionRows(rows) {
@@ -9462,9 +10370,27 @@ function showSprintView(view, btn) {
     window.dashboardApiLoadDecisions().then(function(items) {
         var cleanItems = dropSmokeSystemRecords(items);
         if (cleanItems && cleanItems.length) {
-            decisions = cleanItems.map(normalizeDecisionEntry);
+            var apiRows = cleanItems.map(normalizeDecisionEntry);
+            var apiIds = buildDecisionIdSet(apiRows);
+            var normalizedDefaults = DEFAULT_DECISIONS.map(normalizeDecisionEntry);
+            var missingDefaults = normalizedDefaults.filter(function(row) {
+                return row.id && !apiIds[row.id];
+            });
+
+            decisions = mergeDefaultAndApiDecisions(DEFAULT_DECISIONS, apiRows);
             window.DECISION_DATA = decisions;
             renderDecisionRows(decisions);
+
+            if (missingDefaults.length && typeof window.dashboardApiSeedDecisions === 'function') {
+                setDecisionSyncStatus('Decision log loaded from dashboard API. Syncing ' + missingDefaults.length + ' new baseline decision' + (missingDefaults.length === 1 ? '' : 's') + '...');
+                window.dashboardApiSeedDecisions(missingDefaults).then(function() {
+                    setDecisionSyncStatus('Decision log loaded from dashboard API. Added ' + missingDefaults.length + ' new baseline decision' + (missingDefaults.length === 1 ? '' : 's') + '.');
+                }).catch(function(err) {
+                    setDecisionSyncStatus('Decision log loaded from dashboard API, but baseline sync failed: ' + (err && err.message ? err.message : 'unknown error'), true);
+                });
+                return;
+            }
+
             setDecisionSyncStatus('Decision log loaded from dashboard API.');
             return;
         }
@@ -9488,16 +10414,16 @@ function showSprintView(view, btn) {
 /* ── WEEKLY REPORT GENERATOR ── */
 (function() {
     const WEEK_META = [
-        { num:1,  dates:'Apr 6–12, 2026',    sprint:'Sprint 12 — Diagnose & Restore', sprintKey:'S12', sprintDates:'Apr 6–19' },
-        { num:2,  dates:'Apr 13–19, 2026',   sprint:'Sprint 12 — Diagnose & Restore', sprintKey:'S12', sprintDates:'Apr 6–19' },
-        { num:3,  dates:'Apr 20–26, 2026',   sprint:'Sprint 13 — Data & Clean',        sprintKey:'S13', sprintDates:'Apr 20–May 2' },
-        { num:4,  dates:'Apr 27–May 2, 2026',sprint:'Sprint 13 — Data & Clean',        sprintKey:'S13', sprintDates:'Apr 20–May 2' },
-        { num:5,  dates:'May 4–10, 2026',    sprint:'Sprint 14 — ML Retrain',          sprintKey:'S14', sprintDates:'May 4–16' },
-        { num:6,  dates:'May 11–16, 2026',   sprint:'Sprint 14 — ML Retrain',          sprintKey:'S14', sprintDates:'May 4–16' },
-        { num:7,  dates:'May 18–24, 2026',   sprint:'Sprint 15 — UI & UX Polish',      sprintKey:'S15', sprintDates:'May 18–30' },
-        { num:8,  dates:'May 25–30, 2026',   sprint:'Sprint 15 — UI & UX Polish',      sprintKey:'S15', sprintDates:'May 18–30' },
-        { num:9,  dates:'Jun 1–7, 2026',     sprint:'Sprint 16 — Hardening & Release', sprintKey:'S16', sprintDates:'Jun 1–13' },
-        { num:10, dates:'Jun 8–13, 2026',    sprint:'Sprint 16 — Hardening & Release', sprintKey:'S16', sprintDates:'Jun 1–13' },
+        { num:1,  dates:'Apr 6–12, 2026',    start:'2026-04-06', end:'2026-04-12', sprint:'Sprint 12 — Diagnose & Restore', sprintKey:'S12', sprintDates:'Apr 6–19' },
+        { num:2,  dates:'Apr 13–19, 2026',   start:'2026-04-13', end:'2026-04-19', sprint:'Sprint 12 — Diagnose & Restore', sprintKey:'S12', sprintDates:'Apr 6–19' },
+        { num:3,  dates:'Apr 20–26, 2026',   start:'2026-04-20', end:'2026-04-26', sprint:'Sprint 13 — Data & Clean',        sprintKey:'S13', sprintDates:'Apr 20–May 2' },
+        { num:4,  dates:'Apr 27–May 2, 2026',start:'2026-04-27', end:'2026-05-02', sprint:'Sprint 13 — Data & Clean',        sprintKey:'S13', sprintDates:'Apr 20–May 2' },
+        { num:5,  dates:'May 4–10, 2026',    start:'2026-05-04', end:'2026-05-10', sprint:'Sprint 14 — ML Retrain',          sprintKey:'S14', sprintDates:'May 4–16' },
+        { num:6,  dates:'May 11–16, 2026',   start:'2026-05-11', end:'2026-05-16', sprint:'Sprint 14 — ML Retrain',          sprintKey:'S14', sprintDates:'May 4–16' },
+        { num:7,  dates:'May 18–24, 2026',   start:'2026-05-18', end:'2026-05-24', sprint:'Sprint 15 — UI & UX Polish',      sprintKey:'S15', sprintDates:'May 18–30' },
+        { num:8,  dates:'May 25–30, 2026',   start:'2026-05-25', end:'2026-05-30', sprint:'Sprint 15 — UI & UX Polish',      sprintKey:'S15', sprintDates:'May 18–30' },
+        { num:9,  dates:'Jun 1–7, 2026',     start:'2026-06-01', end:'2026-06-07', sprint:'Sprint 16 — Hardening & Release', sprintKey:'S16', sprintDates:'Jun 1–13' },
+        { num:10, dates:'Jun 8–13, 2026',    start:'2026-06-08', end:'2026-06-13', sprint:'Sprint 16 — Hardening & Release', sprintKey:'S16', sprintDates:'Jun 1–13' },
     ];
 
     const NEXT_SPRINT_GOALS = {
@@ -9536,6 +10462,218 @@ function showSprintView(view, btn) {
             result['w' + w.num] = { hours: w.hours || '', notes: w.notes || '' };
         });
         return result;
+    }
+
+    function parseDateSafe(value) {
+        var raw = String(value || '').trim();
+        if (!raw) return null;
+        var normalized = /^\d{4}-\d{2}-\d{2}$/.test(raw) ? (raw + 'T00:00:00') : raw;
+        var d = new Date(normalized);
+        return isNaN(d.getTime()) ? null : d;
+    }
+
+    function formatDateTimeShort(value) {
+        var d = parseDateSafe(value);
+        if (!d) return '';
+        return d.toLocaleString('en-US', {
+            month: 'short', day: 'numeric', year: 'numeric',
+            hour: 'numeric', minute: '2-digit'
+        });
+    }
+
+    function getWeekBounds(weekNum) {
+        var meta = WEEK_META[parseInt(weekNum, 10) - 1];
+        if (!meta) return null;
+        var start = parseDateSafe(meta.start);
+        var end = parseDateSafe(meta.end);
+        if (!start || !end) return null;
+        start.setHours(0, 0, 0, 0);
+        end.setHours(23, 59, 59, 999);
+        return { start: start, end: end };
+    }
+
+    function isTimestampInBounds(value, bounds) {
+        var d = parseDateSafe(value);
+        if (!d || !bounds || !bounds.start || !bounds.end) return false;
+        return d >= bounds.start && d <= bounds.end;
+    }
+
+    function compactReportText(text, maxLen) {
+        var clean = String(text || '').replace(/\s+/g, ' ').trim();
+        if (!clean) return '';
+        if (!maxLen || clean.length <= maxLen) return clean;
+        return clean.slice(0, Math.max(0, maxLen - 3)).trim() + '...';
+    }
+
+    function normalizeSprintCode(value) {
+        var raw = String(value || '').trim().toUpperCase();
+        if (!raw) return 'TBD';
+        if (/^S\d+$/.test(raw)) return raw;
+        if (/^\d+$/.test(raw)) return 'S' + raw;
+        return raw;
+    }
+
+    function getSprintDodSummary(sprintKey) {
+        var key = String(sprintKey || '').replace(/^S/i, '');
+        var host = document.querySelector('[data-dod-list="' + key + '"]');
+        if (!host) return { count: 0, preview: 'DoD list not found in current page context.' };
+
+        var lines = Array.prototype.slice.call(host.querySelectorAll('.dod-item')).map(function(el) {
+            return compactReportText(el.textContent || '', 140);
+        }).filter(function(line) {
+            return !!line && line.indexOf('No DoD criteria entered yet.') === -1;
+        });
+
+        return {
+            count: lines.length,
+            preview: lines.length ? lines.slice(0, 2).join(' | ') : 'No active DoD criteria captured.'
+        };
+    }
+
+    function getSprintDecisionSummary(sprintKey) {
+        var target = normalizeSprintCode(sprintKey);
+        var decisions = (window.DECISION_DATA || []).filter(function(entry) {
+            return normalizeSprintCode(entry && (entry.sprint || entry.sprint_code)) === target;
+        });
+
+        var ids = decisions.map(function(entry) {
+            return String(entry && entry.id || '').trim();
+        }).filter(function(id) { return !!id; });
+
+        return {
+            count: decisions.length,
+            ids: ids.length ? ids.join(', ') : 'None recorded'
+        };
+    }
+
+    function getSprintRiskSummary(sprintKey) {
+        var target = normalizeSprintCode(sprintKey);
+        var risks = (window.RISK_DATA || []).filter(function(entry) {
+            var sprint = normalizeSprintCode(entry && (entry.sprint || entry.sprint_code));
+            return sprint === target || sprint === 'ALL';
+        });
+
+        var open = 0;
+        var resolved = 0;
+        risks.forEach(function(entry) {
+            var status = String(entry && entry.status || '').trim().toLowerCase();
+            if (status === 'resolved') resolved += 1;
+            else open += 1;
+        });
+
+        return { total: risks.length, open: open, resolved: resolved };
+    }
+
+    function getAutomatedWeekActivity(weekNum, sprintKey) {
+        var bounds = getWeekBounds(weekNum);
+        var target = normalizeSprintCode(sprintKey);
+        var items = (window.PB_ITEMS || []).filter(function(item) {
+            return normalizeSprintCode(item && item.sprint) === target;
+        });
+        var itemById = {};
+        items.forEach(function(item) {
+            var id = String(item && item.id || '').trim().toUpperCase();
+            if (id) itemById[id] = item;
+        });
+
+        var updatedSet = {};
+        var doneSet = {};
+        var blockedSet = {};
+        var commentCount = 0;
+        var evidenceCount = 0;
+        var events = [];
+        var latestTs = '';
+
+        function pushEvent(ts, text) {
+            if (!ts || !text) return;
+            events.push({ at: ts, text: compactReportText(text, 160) });
+            var parsed = parseDateSafe(ts);
+            if (parsed) {
+                if (!latestTs || parsed > parseDateSafe(latestTs)) latestTs = parsed.toISOString();
+            }
+        }
+
+        items.forEach(function(item) {
+            if (!item) return;
+            var id = String(item.id || '').trim();
+            if (!id) return;
+            var status = String(item.status || '').trim();
+
+            if (status === 'Blocked') blockedSet[id] = true;
+
+            if (isTimestampInBounds(item.updatedAt, bounds)) {
+                updatedSet[id] = true;
+                if (status === 'Done') doneSet[id] = true;
+                pushEvent(item.updatedAt, id + ' updated (' + (status || 'status unknown') + ')');
+            }
+
+            (item.history || []).forEach(function(entry) {
+                var at = String(entry && entry.at || '').trim();
+                if (!isTimestampInBounds(at, bounds)) return;
+
+                updatedSet[id] = true;
+                var note = compactReportText(entry && entry.note || '', 130);
+                if (note) pushEvent(at, id + ': ' + note);
+
+                if (/status changed\s*:\s*.*->\s*done/i.test(note)) doneSet[id] = true;
+                if (/status changed\s*:\s*.*->\s*blocked/i.test(note)) blockedSet[id] = true;
+            });
+
+            (item.comments || []).forEach(function(comment) {
+                var at = String(comment && comment.at || '').trim();
+                if (!isTimestampInBounds(at, bounds)) return;
+
+                commentCount += 1;
+                updatedSet[id] = true;
+                var note = compactReportText(comment && comment.text || '', 100);
+                pushEvent(at, id + ': comment added' + (note ? ' — ' + note : ''));
+            });
+        });
+
+        if (typeof TASK_DETAILS !== 'undefined' && TASK_DETAILS
+            && typeof TASK_TA_MAP !== 'undefined' && TASK_TA_MAP) {
+            Object.keys(TASK_DETAILS).forEach(function(taskKey) {
+                var detail = TASK_DETAILS[taskKey];
+                if (!detail) return;
+
+                var mappedTicket = String(TASK_TA_MAP[taskKey] || '').trim().toUpperCase();
+                if (!mappedTicket) return;
+
+                var item = itemById[mappedTicket];
+                if (!item) return;
+
+                var stamp = String(detail.timestamp || detail.dateInput || detail.date || '').trim();
+                if (!isTimestampInBounds(stamp, bounds)) return;
+
+                updatedSet[mappedTicket] = true;
+                if (String(item.status || '').trim() === 'Done') doneSet[mappedTicket] = true;
+                if (String(item.status || '').trim() === 'Blocked') blockedSet[mappedTicket] = true;
+
+                evidenceCount += 1;
+                var resolution = compactReportText(detail.resolution || '', 120);
+                pushEvent(stamp, mappedTicket + ' evidence update (' + taskKey + ')' + (resolution ? ': ' + resolution : ''));
+            });
+        }
+
+        events.sort(function(a, b) {
+            var ad = parseDateSafe(a.at);
+            var bd = parseDateSafe(b.at);
+            return (bd ? bd.getTime() : 0) - (ad ? ad.getTime() : 0);
+        });
+
+        return {
+            bounds: bounds,
+            sprintTicketCount: items.length,
+            updatedCount: Object.keys(updatedSet).length,
+            doneIds: Object.keys(doneSet).sort(),
+            blockedCount: Object.keys(blockedSet).length,
+            commentCount: commentCount,
+            evidenceCount: evidenceCount,
+            eventLines: events.slice(0, 8).map(function(entry) {
+                return formatDateTimeShort(entry.at) + ' - ' + entry.text;
+            }),
+            latestTs: latestTs
+        };
     }
 
     // Get completed sprint 12 task labels from the board
@@ -9634,47 +10772,78 @@ function showSprintView(view, btn) {
     };
 
     function buildReportData(weekNum) {
-        var meta      = WEEK_META[weekNum - 1];
+        var selectedWeek = parseInt(weekNum, 10);
+        if (isNaN(selectedWeek) || selectedWeek < 1 || selectedWeek > WEEK_META.length) {
+            selectedWeek = getCurrentWeekNum();
+        }
+
+        var meta      = WEEK_META[selectedWeek - 1];
         var hoursData = getHoursData();
-        var weekKey   = 'w' + weekNum;
+        var weekKey   = 'w' + selectedWeek;
         var hoursThisWeek = parseFloat((hoursData[weekKey] || {}).hours || 0) || 0;
         var weekNotes = (hoursData[weekKey] || {}).notes || '';
         var totalHours = 0;
-        for (var i = 1; i <= weekNum; i++) totalHours += parseFloat((hoursData['w'+i] || {}).hours || 0) || 0;
+        for (var i = 1; i <= selectedWeek; i++) totalHours += parseFloat((hoursData['w' + i] || {}).hours || 0) || 0;
 
-        // Completed tasks (Sprint 12 reads live checkboxes; future sprints use hours notes)
+        var activity = getAutomatedWeekActivity(selectedWeek, meta.sprintKey);
+        var dodSummary = getSprintDodSummary(meta.sprintKey);
+        var decisionSummary = getSprintDecisionSummary(meta.sprintKey);
+        var riskSummary = getSprintRiskSummary(meta.sprintKey);
+
+        // Completed tasks (Sprint 12 reads board checkboxes; all other sprints use
+        // dated Done transitions from the automated week activity window)
         var completedTasks = [];
         if (meta.sprint.indexOf('Sprint 12') !== -1) {
             completedTasks = getSprint12Tasks().done;
+        } else if (activity.doneIds.length) {
+            completedTasks = activity.doneIds.map(function(id) {
+                return id + ' moved to Done within this week reporting window.';
+            });
         }
 
         // Expected this week
         var currentGoals   = NEXT_SPRINT_GOALS[meta.sprint] || [];
         var currentIsTBD   = currentGoals.length === 1 && currentGoals[0].indexOf('TBD') !== -1;
-        var expectedThisWk = EXPECTED_THIS_WEEK[weekNum]
+        var expectedThisWk = EXPECTED_THIS_WEEK[selectedWeek]
             || (currentIsTBD ? 'Sprint goals will be defined at planning session after the previous sprint closes.'
                 : currentGoals.slice(0, 3).join('; '));
 
         // Next week goals
-        var nextMeta  = WEEK_META[Math.min(weekNum, 9)];
+        var nextMeta  = WEEK_META[Math.min(selectedWeek, 9)];
         var nextGoals = NEXT_SPRINT_GOALS[nextMeta.sprint] || [];
         var nextIsTBD = nextGoals.length === 1 && nextGoals[0].indexOf('TBD') !== -1;
+
         // Optional week-specific override; default to auto summary from sprint ticket state.
         var taskSummary = getSprintTicketSummary(meta.sprintKey);
         var issuesData = ISSUES_DATA[weekKey] || {};
-        var issues     = issuesData.issues     || taskSummary.issues || '';
-        var prevention = issuesData.prevention || taskSummary.prevention || '';
+        var deltaSummary = 'Automated weekly scan: ' + activity.updatedCount + ' ticket(s) with dated updates, '
+            + activity.doneIds.length + ' moved to Done, ' + activity.commentCount + ' comment event(s), and '
+            + activity.evidenceCount + ' task-evidence update(s) in this week window.';
+        var issues = issuesData.issues || ((taskSummary.issues || 'No sprint ticket updates recorded for this reporting period.') + ' ' + deltaSummary);
 
-        // Notes / narrative (for non-S12 actual progress)
-        var narrative = weekNotes || '';
+        var basePrevention = taskSummary.prevention || 'No prevention notes logged for this reporting period.';
+        var blockerWatch = activity.blockedCount > 0
+            ? ('Week-window blocker watch: ' + activity.blockedCount + ' blocked ticket(s) are still active in this sprint scope.')
+            : 'Week-window blocker watch: no blocked tickets detected in this sprint scope.';
+        var prevention = issuesData.prevention || (basePrevention + ' ' + blockerWatch);
+
+        // Narrative anchors from week notes and automated event stream
+        var narrative = weekNotes || (activity.eventLines.length
+            ? 'Automated timeline is based on dated ticket history/comments captured in this week window.'
+            : 'No weekly narrative note has been entered yet.');
 
         return {
-            meta: meta, weekNum: weekNum,
+            meta: meta, weekNum: selectedWeek,
             hoursThisWeek: hoursThisWeek, totalHours: totalHours,
             completedTasks: completedTasks, narrative: narrative,
             expectedThisWk: expectedThisWk,
             nextGoals: nextGoals, nextIsTBD: nextIsTBD,
             issues: issues, prevention: prevention,
+            activity: activity,
+            dodSummary: dodSummary,
+            decisionSummary: decisionSummary,
+            riskSummary: riskSummary,
+            generatedAt: new Date().toISOString(),
         };
     }
 
@@ -9686,23 +10855,83 @@ function showSprintView(view, btn) {
         if (!el) return;
         var brand = getBrandingSnapshot();
 
-        // ── Completed tasks as prose list (no checkmarks) ──
-        var completedBody = '';
-        if (d.completedTasks.length) {
-            completedBody = '<ul style="margin:0;padding-left:1.4rem;color:#1e293b;line-height:1.9;">'
-                + d.completedTasks.map(function(t){ return '<li style="margin-bottom:0.15rem;">' + t + '</li>'; }).join('')
-                + '</ul>';
-        } else if (d.meta.sprint.indexOf('Sprint 12') !== -1) {
-            completedBody = '<p style="color:#64748b;margin:0;">No sprint board tasks marked complete for this reporting period.</p>';
-        } else {
-            completedBody = '<p style="color:#1e293b;margin:0;">' + (d.narrative || 'See hours log for details.') + '</p>';
+        var weekRangeLabel = d.activity.bounds
+            ? (d.activity.bounds.start.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                + ' - '
+                + d.activity.bounds.end.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }))
+            : d.meta.dates;
+        var generatedLabel = formatDateTimeShort(d.generatedAt) || new Date().toLocaleString();
+        var latestActivityLabel = formatDateTimeShort(d.activity.latestTs) || 'No dated activity captured yet.';
+
+        // ── Automated week metrics (all weeks, no manual per-week coding) ──
+        function metricCell(value, label) {
+            return '<div style="min-width:140px;">'
+                + '<div style="font-size:1.25rem;font-weight:800;color:#0f172a;line-height:1;">' + escapeHtmlLite(String(value || '0')) + '</div>'
+                + '<div style="font-size:0.68rem;color:#64748b;margin-top:0.15rem;text-transform:uppercase;letter-spacing:0.06em;">' + escapeHtmlLite(label) + '</div>'
+                + '</div>';
         }
+
+        var automatedMetricsBody =
+            '<div style="display:flex;gap:1.5rem;flex-wrap:wrap;padding:0.75rem 1rem;background:#f8fafc;border-radius:0.4rem;border:1px solid #e2e8f0;">'
+            + metricCell(d.activity.sprintTicketCount, 'Sprint Tickets In Scope')
+            + metricCell(d.activity.updatedCount, 'Tickets Updated This Week')
+            + metricCell(d.activity.doneIds.length, 'Moved To Done This Week')
+            + metricCell(d.activity.commentCount, 'Comments Logged This Week')
+            + metricCell(d.activity.evidenceCount, 'Evidence Updates This Week')
+            + '</div>'
+            + '<p style="margin:0.6rem 0 0;color:#64748b;font-size:0.78rem;">Week window: ' + escapeHtmlLite(weekRangeLabel) + '</p>';
+
+        // ── Actual progress body ──
+        var completedChunks = [];
+        completedChunks.push('<p style="color:#1e293b;margin:0 0 0.5rem;line-height:1.75;">' + escapeHtmlLite(d.narrative || 'No weekly narrative note has been entered yet.') + '</p>');
+
+        if (d.completedTasks.length) {
+            completedChunks.push('<ul style="margin:0 0 0.65rem;padding-left:1.4rem;color:#1e293b;line-height:1.9;">'
+                + d.completedTasks.map(function(t) { return '<li style="margin-bottom:0.15rem;">' + escapeHtmlLite(t) + '</li>'; }).join('')
+                + '</ul>');
+        }
+
+        if (d.activity.eventLines.length) {
+            completedChunks.push('<div style="margin-top:0.45rem; padding:0.55rem 0.7rem; border:1px solid #e2e8f0; border-radius:0.35rem; background:#f8fafc;">'
+                + '<div style="font-size:0.72rem; text-transform:uppercase; letter-spacing:0.08em; color:#64748b; font-weight:700; margin-bottom:0.35rem;">Automated Dated Activity</div>'
+                + '<ul style="margin:0; padding-left:1.2rem; color:#1e293b; line-height:1.75;">'
+                + d.activity.eventLines.map(function(line) { return '<li style="margin-bottom:0.2rem;">' + escapeHtmlLite(line) + '</li>'; }).join('')
+                + '</ul>'
+                + '</div>');
+        } else {
+            completedChunks.push('<p style="color:#64748b;margin:0;">No dated ticket-history or comment events were captured in this week window.</p>');
+        }
+
+        var completedBody = completedChunks.join('');
+
+        var taskDeltaLine = d.activity.updatedCount + ' ticket(s) updated, '
+            + d.activity.doneIds.length + ' moved to Done, '
+            + d.activity.commentCount + ' comment event(s), and '
+            + d.activity.evidenceCount + ' task-evidence update(s).';
+        var tasksBody = '<p style="margin:0;color:' + (d.issues ? '#1e293b' : '#64748b') + ';line-height:1.75;">' + escapeHtmlLite(d.issues || 'No tasks logged for this reporting period.') + '</p>'
+            + '<p style="margin:0.55rem 0 0; font-size:0.8rem; color:#475569;"><strong>Automated weekly delta:</strong> ' + escapeHtmlLite(taskDeltaLine) + '</p>';
+
+        var preventionBody = '<p style="margin:0;color:' + (d.prevention ? '#1e293b' : '#64748b') + ';line-height:1.75;">' + escapeHtmlLite(d.prevention || 'No prevention notes logged for this reporting period.') + '</p>'
+            + '<p style="margin:0.55rem 0 0; font-size:0.8rem; color:#475569;"><strong>Latest dated sprint activity:</strong> ' + escapeHtmlLite(latestActivityLabel) + '</p>';
+
+        var evidenceRows = [
+            'Week reporting window: ' + weekRangeLabel,
+            'DoD criteria active for ' + d.meta.sprintKey + ': ' + d.dodSummary.count,
+            'Decision log entries for ' + d.meta.sprintKey + ': ' + d.decisionSummary.count + ' (' + d.decisionSummary.ids + ')',
+            'Risk snapshot (' + d.meta.sprintKey + ' + All): total ' + d.riskSummary.total + ', open ' + d.riskSummary.open + ', resolved ' + d.riskSummary.resolved,
+            'DoD preview: ' + d.dodSummary.preview,
+            'Report generated at: ' + generatedLabel
+        ];
+
+        var evidenceBody = '<ul style="margin:0;padding-left:1.35rem;color:#1e293b;line-height:1.8;">'
+            + evidenceRows.map(function(line) { return '<li style="margin-bottom:0.15rem;">' + escapeHtmlLite(line) + '</li>'; }).join('')
+            + '</ul>';
 
         // ── Next week goals ──
         var nextBody = d.nextIsTBD
-            ? '<p style="color:#64748b;margin:0;">' + d.nextGoals[0] + '</p>'
+            ? '<p style="color:#64748b;margin:0;">' + escapeHtmlLite(d.nextGoals[0]) + '</p>'
             : '<ul style="margin:0;padding-left:1.4rem;color:#1e293b;line-height:1.9;">'
-              + d.nextGoals.map(function(g){ return '<li style="margin-bottom:0.15rem;">' + g + '</li>'; }).join('')
+              + d.nextGoals.map(function(g){ return '<li style="margin-bottom:0.15rem;">' + escapeHtmlLite(g) + '</li>'; }).join('')
               + '</ul>';
 
         // ── Section builder ──
@@ -9755,15 +10984,17 @@ function showSprintView(view, btn) {
         + sec('Hours Logged', hoursBody)
 
         + sec('Expected Progress This Week',
-            '<p style="margin:0;color:#1e293b;line-height:1.75;">' + d.expectedThisWk + '</p>')
+            '<p style="margin:0;color:#1e293b;line-height:1.75;">' + escapeHtmlLite(d.expectedThisWk) + '</p>')
+
+        + sec('Automated Week Snapshot', automatedMetricsBody)
 
         + sec('Actual Progress This Week', completedBody)
 
-        + sec('Tasks &amp; How Addressed',
-            '<p style="margin:0;color:' + (d.issues ? '#1e293b' : '#64748b') + ';line-height:1.75;">' + (d.issues || 'No tasks logged for this reporting period.') + '</p>')
+        + sec('Tasks &amp; How Addressed', tasksBody)
 
-        + sec('Prevention / Mitigation',
-            '<p style="margin:0;color:' + (d.prevention ? '#1e293b' : '#64748b') + ';line-height:1.75;">' + (d.prevention || 'No prevention notes logged for this reporting period.') + '</p>')
+        + sec('Prevention / Mitigation', preventionBody)
+
+        + sec('Governance &amp; Evidence Snapshot', evidenceBody)
 
         + sec('Expected Progress Next Week', nextBody)
 
@@ -9788,17 +11019,35 @@ function showSprintView(view, btn) {
     + 'Project: ' + brand.projectTitle + '\n'
 + 'Week ' + d.meta.num + ' of 10  |  ' + d.meta.dates + '\n'
 + 'Current Sprint: ' + d.meta.sprint + ' (' + d.meta.sprintDates + ')\n'
++ 'Week Window: ' + weekRangeLabel + '\n'
++ 'Generated At: ' + generatedLabel + '\n'
 + '─'.repeat(50) + '\n\n'
 + 'HOURS\n'
 + 'Hours worked this week: ' + (d.hoursThisWeek || '—') + '\n'
-+ 'Total hours this term:  ' + (d.totalHours    || '—') + '\n\n'
++ 'Total hours this term:  ' + (d.totalHours || '—') + '\n\n'
++ 'AUTOMATED WEEK SNAPSHOT\n'
++ 'Sprint tickets in scope: ' + d.activity.sprintTicketCount + '\n'
++ 'Tickets updated this week: ' + d.activity.updatedCount + '\n'
++ 'Moved to Done this week: ' + d.activity.doneIds.length + '\n'
++ 'Comments logged this week: ' + d.activity.commentCount + '\n'
++ 'Evidence updates this week: ' + d.activity.evidenceCount + '\n\n'
 + 'EXPECTED PROGRESS THIS WEEK\n' + d.expectedThisWk + '\n\n'
 + 'ACTUAL PROGRESS THIS WEEK\n'
++ (d.narrative || '(no narrative note)') + '\n'
 + (d.completedTasks.length
-    ? d.completedTasks.map(function(t){ return '  ✓ ' + t; }).join('\n')
-    : (d.narrative || '(see hours log for details)')) + '\n\n'
+    ? ('\nDone transitions:\n' + d.completedTasks.map(function(t){ return '  ✓ ' + t; }).join('\n'))
+    : '') + '\n'
++ (d.activity.eventLines.length
+    ? ('\nDated activity:\n' + d.activity.eventLines.map(function(line){ return '  - ' + line; }).join('\n'))
+    : '\nNo dated ticket/comment events captured in this week window.') + '\n\n'
 + 'TASKS & HOW ADDRESSED\n' + (d.issues || '(none logged)') + '\n\n'
-+ 'PREVENTION / MITIGATION\n' + (d.prevention || '(none logged)') + '\n\n'
++ 'PREVENTION / MITIGATION\n' + (d.prevention || '(none logged)') + '\n'
++ 'Latest dated sprint activity: ' + latestActivityLabel + '\n\n'
++ 'GOVERNANCE & EVIDENCE SNAPSHOT\n'
++ '- DoD criteria active (' + d.meta.sprintKey + '): ' + d.dodSummary.count + '\n'
++ '- Decision entries (' + d.meta.sprintKey + '): ' + d.decisionSummary.count + ' (' + d.decisionSummary.ids + ')\n'
++ '- Risk snapshot (' + d.meta.sprintKey + ' + All): total ' + d.riskSummary.total + ', open ' + d.riskSummary.open + ', resolved ' + d.riskSummary.resolved + '\n'
++ '- DoD preview: ' + d.dodSummary.preview + '\n\n'
 + 'EXPECTED PROGRESS NEXT WEEK\n'
 + (d.nextIsTBD ? d.nextGoals[0] : d.nextGoals.map(function(g){ return '  • ' + g; }).join('\n')) + '\n\n'
 + 'RELATION TO ORIGINAL OBJECTIVES\n'
@@ -9863,11 +11112,30 @@ function showSprintView(view, btn) {
         var sprintDates = weeks[0].sprintDates;
         var totalHours = 0;
         var allNotes = [];
+        var weeklySnapshots = [];
+
         weeks.forEach(function(w) {
             var d = hoursData['w' + w.num] || {};
+            var activity = getAutomatedWeekActivity(w.num, sprintKey);
             totalHours += parseFloat(d.hours || 0) || 0;
             if (d.notes) allNotes.push('Week ' + w.num + ' (' + w.dates + '): ' + d.notes);
+
+            weeklySnapshots.push({
+                num: w.num,
+                dates: w.dates,
+                hours: parseFloat(d.hours || 0) || 0,
+                updated: activity.updatedCount,
+                done: activity.doneIds.length,
+                comments: activity.commentCount,
+                evidence: activity.evidenceCount,
+                latest: activity.latestTs ? formatDateTimeShort(activity.latestTs) : ''
+            });
         });
+
+        var dodSummary = getSprintDodSummary(sprintKey);
+        var decisionSummary = getSprintDecisionSummary(sprintKey);
+        var riskSummary = getSprintRiskSummary(sprintKey);
+
         var lines = [
             '═══════════════════════════════════════════════',
             'SPRINT SUMMARY REPORT',
@@ -9886,6 +11154,28 @@ function showSprintView(view, btn) {
             'Total hours this sprint: ' + totalHours,
             '',
         ];
+
+        lines.push('WEEKLY AUTOMATION SNAPSHOT');
+        lines.push('───────────────────────────────────────────────');
+        weeklySnapshots.forEach(function(row) {
+            lines.push('Week ' + row.num + ' (' + row.dates + '): '
+                + row.hours + ' hrs · '
+                + row.updated + ' tickets updated · '
+                + row.done + ' moved to Done · '
+                + row.comments + ' comments · '
+                + row.evidence + ' evidence updates');
+            if (row.latest) lines.push('  Latest activity: ' + row.latest);
+        });
+        lines.push('');
+
+        lines.push('GOVERNANCE SNAPSHOT');
+        lines.push('───────────────────────────────────────────────');
+        lines.push('Decision entries (' + sprintKey + '): ' + decisionSummary.count + ' (' + decisionSummary.ids + ')');
+        lines.push('DoD criteria active (' + sprintKey + '): ' + dodSummary.count);
+        lines.push('Risk snapshot (' + sprintKey + ' + All): total ' + riskSummary.total + ', open ' + riskSummary.open + ', resolved ' + riskSummary.resolved);
+        lines.push('DoD preview: ' + dodSummary.preview);
+        lines.push('');
+
         if (allNotes.length) {
             lines.push('WORK LOG');
             lines.push('───────────────────────────────────────────────');
@@ -11127,6 +12417,9 @@ function showSprintView(view, btn) {
             }
         }).catch(function(err) {
             logDashboardApiError(err);
+            if (DASHBOARD_API_DISABLED) {
+                return;
+            }
             if (attempt < maxAttempts) {
                 var retryDelayMs = attempt * 2000;
                 setTimeout(function() {
