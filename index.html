@@ -5145,6 +5145,15 @@ function shouldProbeArchitectureS3() {
     return s3Probe === 'on' || s3Probe === '1' || s3Probe === 'true';
 }
 
+function getHostedProductionApiOrigin() {
+    if (window.HOSTED_PRODUCTION_API_ORIGIN) {
+        return String(window.HOSTED_PRODUCTION_API_ORIGIN).replace(/\/+$/, '');
+    }
+
+    // API Gateway endpoint with CORS enabled for GitHub Pages.
+    return 'https://9dkkj5n2rc.execute-api.us-east-2.amazonaws.com';
+}
+
 function getArchitectureApiBase() {
     if (window.ARCHITECTURE_API_BASE) {
         return String(window.ARCHITECTURE_API_BASE).replace(/\/+$/, '');
@@ -5158,7 +5167,7 @@ function getArchitectureApiBase() {
 
         var mode = String(params.get('archApi') || '').trim().toLowerCase();
         if (mode === 'local') return 'http://127.0.0.1:5000';
-        if (mode === 'prod' || mode === 'production') return 'https://api.aprilsykes.dev';
+        if (mode === 'prod' || mode === 'production') return getHostedProductionApiOrigin();
     }
 
     // Prefer local API target when running static local preview.
@@ -5169,10 +5178,10 @@ function getArchitectureApiBase() {
     // For hosted static dashboards (for example GitHub Pages), route probes to
     // the production backend instead of probing the static host origin.
     if (isArchitectureStaticHostedDashboard()) {
-        return 'https://api.aprilsykes.dev';
+        return getHostedProductionApiOrigin();
     }
 
-    return window.location ? window.location.origin : 'https://api.aprilsykes.dev';
+    return window.location ? window.location.origin : getHostedProductionApiOrigin();
 }
 
 function updateArchitectureHealthPill(nodeKey, status) {
@@ -6628,8 +6637,8 @@ function getDashboardApiBase() {
         if (explicitBase) return explicitBase.replace(/\/+$/, '');
 
         var mode = String(params.get('dashboardApi') || '').trim().toLowerCase();
-        if (mode === 'prod' || mode === 'production') return 'https://api.aprilsykes.dev/api/dashboard/v1';
-        if (mode === 'on' || mode === '1' || mode === 'true') return 'https://api.aprilsykes.dev/api/dashboard/v1';
+        if (mode === 'prod' || mode === 'production') return getHostedProductionApiOrigin() + '/api/dashboard/v1';
+        if (mode === 'on' || mode === '1' || mode === 'true') return getHostedProductionApiOrigin() + '/api/dashboard/v1';
         if (mode === 'off' || mode === '0' || mode === 'false') return '';
     }
 
