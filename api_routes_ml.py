@@ -84,6 +84,25 @@ def get_latest_completed_season():
             conn.close()
 
 
+def table_exists(conn, schema_name, table_name):
+    """Return True if the given table exists."""
+    cur = conn.cursor()
+    cur.execute(
+        """
+        SELECT EXISTS (
+            SELECT 1
+            FROM information_schema.tables
+            WHERE table_schema = %s
+              AND table_name = %s
+        )
+        """,
+        (schema_name, table_name)
+    )
+    exists = bool(cur.fetchone()[0])
+    cur.close()
+    return exists
+
+
 @ml_api.route('/api/ml/predict-week/<int:season>/<int:week>', methods=['GET'])
 def predict_week(season, week):
     """
@@ -877,19 +896,28 @@ def get_available_weeks():
     """
     try:
         conn = psycopg2.connect(**get_predictor().db_config)
+        elo_table_ready = table_exists(conn, 'hcl', 'ml_predictions_elo')
         cur = conn.cursor(cursor_factory=RealDictCursor)
         
         # Get all weeks with predictions from either table
-        cur.execute("""
-            SELECT DISTINCT season, week, COUNT(*) as game_count
-            FROM (
-                SELECT season, week, game_id FROM hcl.ml_predictions
-                UNION
-                SELECT season, week, game_id FROM hcl.ml_predictions_elo
-            ) combined
-            GROUP BY season, week
-            ORDER BY season DESC, week DESC
-        """)
+        if elo_table_ready:
+            cur.execute("""
+                SELECT DISTINCT season, week, COUNT(*) as game_count
+                FROM (
+                    SELECT season, week, game_id FROM hcl.ml_predictions
+                    UNION
+                    SELECT season, week, game_id FROM hcl.ml_predictions_elo
+                ) combined
+                GROUP BY season, week
+                ORDER BY season DESC, week DESC
+            """)
+        else:
+            cur.execute("""
+                SELECT season, week, COUNT(*) as game_count
+                FROM hcl.ml_predictions
+                GROUP BY season, week
+                ORDER BY season DESC, week DESC
+            """)
         
         weeks = [dict(row) for row in cur.fetchall()]
         
@@ -899,7 +927,8 @@ def get_available_weeks():
         return jsonify({
             'success': True,
             'weeks': weeks,
-            'total': len(weeks)
+            'total': len(weeks),
+            'elo_table_ready': elo_table_ready
         })
         
     except Exception as e:
@@ -1010,6 +1039,39 @@ def predict_week_elo(season, week):
             host=os.getenv('DB_HOST', 'localhost'),
             port=os.getenv('DB_PORT', '5432')
         )
+
+        elo_table_ready = table_exists(conn, 'hcl', 'ml_predictions_elo')
+
+        if not elo_table_ready:
+            conn.close()
+
+            # Fallback for environments where Elo storage has not been migrated yet.
+            elo_pred = get_elo_predictor()
+            predictions = elo_pred.predict_week(season, week, save_to_db=False)
+
+            if not predictions:
+                return jsonify({
+                    'success': False,
+                    'message': f'No games found for {season} Week {week}'
+                })
+
+            avg_conf = sum(p['confidence'] for p in predictions) / len(predictions)
+            split_count = sum(1 for p in predictions if p['split_prediction'])
+
+            return jsonify({
+                'success': True,
+                'season': season,
+                'week': week,
+                'total_games': len(predictions),
+                'predictions': predictions,
+                'summary': {
+                    'avg_confidence': round(avg_conf, 3),
+                    'split_predictions': split_count
+                },
+                'model': 'FiveThirtyEight-style Elo',
+                'accuracy': '60-65% (proven)',
+                'elo_table_ready': False
+            })
         
         cur = conn.cursor(cursor_factory=RealDictCursor)
         cur.execute("""
@@ -1055,7 +1117,8 @@ def predict_week_elo(season, week):
                     'split_predictions': split_count
                 },
                 'model': 'FiveThirtyEight-style Elo',
-                'accuracy': '60-65% (proven)'
+                'accuracy': '60-65% (proven)',
+                'elo_table_ready': True
             })
         
         # If no predictions found, generate them
@@ -1083,7 +1146,8 @@ def predict_week_elo(season, week):
                 'split_predictions': split_count
             },
             'model': 'FiveThirtyEight-style Elo',
-            'accuracy': '60-65% (proven)'
+            'accuracy': '60-65% (proven)',
+            'elo_table_ready': True
         })
         
     except Exception as e:
@@ -1107,6 +1171,8 @@ def get_combined_predictions(season, week):
             host=os.getenv('DB_HOST', 'localhost'),
             port=os.getenv('DB_PORT', '5432')
         )
+
+        elo_table_ready = table_exists(conn, 'hcl', 'ml_predictions_elo')
         
         cur = conn.cursor(cursor_factory=RealDictCursor)
         
@@ -1123,18 +1189,20 @@ def get_combined_predictions(season, week):
         """, (season, week))
         xgb_predictions = {row['game_id']: dict(row) for row in cur.fetchall()}
         
-        # Get Elo predictions WITH Vegas spread from games table
-        cur.execute("""
-            SELECT 
-                e.*,
-                g.spread_line as vegas_spread,
-                g.total_line as vegas_total
-            FROM hcl.ml_predictions_elo e
-            LEFT JOIN hcl.games g ON e.game_id = g.game_id
-            WHERE e.season = %s AND e.week = %s
-            ORDER BY e.game_id
-        """, (season, week))
-        elo_predictions = {row['game_id']: dict(row) for row in cur.fetchall()}
+        # Get Elo predictions WITH Vegas spread from games table (if available)
+        elo_predictions = {}
+        if elo_table_ready:
+            cur.execute("""
+                SELECT 
+                    e.*,
+                    g.spread_line as vegas_spread,
+                    g.total_line as vegas_total
+                FROM hcl.ml_predictions_elo e
+                LEFT JOIN hcl.games g ON e.game_id = g.game_id
+                WHERE e.season = %s AND e.week = %s
+                ORDER BY e.game_id
+            """, (season, week))
+            elo_predictions = {row['game_id']: dict(row) for row in cur.fetchall()}
         
         cur.close()
         conn.close()
@@ -1219,7 +1287,8 @@ def get_combined_predictions(season, week):
                 'both_models': len([p for p in combined if p['xgb'] and p['elo']]),
                 'xgb_only': len([p for p in combined if p['xgb'] and not p['elo']]),
                 'elo_only': len([p for p in combined if p['elo'] and not p['xgb']])
-            }
+            },
+            'elo_table_ready': elo_table_ready
         })
         
     except Exception as e:
