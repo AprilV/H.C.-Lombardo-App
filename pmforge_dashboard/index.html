@@ -5123,10 +5123,10 @@ function shouldRunArchitectureLiveProbes() {
         if (params.get('archApiBase') || params.get('archApi')) return true;
     }
 
-    // Hosted static dashboards should default to passive mode to avoid
-    // repeated console noise when backend routing/CORS is unavailable.
+    // Hosted static dashboards should default to live mode so production
+    // health is visible without requiring query flags.
     if (isArchitectureStaticHostedDashboard()) {
-        return false;
+        return true;
     }
 
     // Default to live probes. Local static preview routes to local API by default.
@@ -6656,12 +6656,11 @@ function getDashboardApiBase() {
         return '';
     }
 
-    // For static hosted dashboards (for example GitHub Pages), use the
-    // passive fallback by default to avoid repeated timeout noise.
-    // Explicit opt-in remains available via ?dashboardApi=prod or
-    // ?dashboardApiBase=<full-url>.
+    // For static hosted dashboards (for example GitHub Pages), default to
+    // the production dashboard API so persistence works out of the box.
+    // Use ?dashboardApi=off to force local-only mode.
     if (isDashboardStaticHostedSite()) {
-        return '';
+        return getHostedProductionApiOrigin() + '/api/dashboard/v1';
     }
 
     return '/api/dashboard/v1';
