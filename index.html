@@ -5715,6 +5715,19 @@ var DASHBOARD_API_LAST_ERROR_TS = 0;
 var DASHBOARD_API_DISABLED = false;
 var DASHBOARD_API_DISABLED_REASON = '';
 
+function shouldUseLocalDashboardApi() {
+    if (window.DASHBOARD_API_FORCE_LOCAL === true) return true;
+    try {
+        var params = new URLSearchParams(window.location && window.location.search ? window.location.search : '');
+        var mode = String(params.get('dashboardApi') || '').trim().toLowerCase();
+        if (mode === 'local' || mode === 'on' || mode === '1' || mode === 'true') return true;
+        if (mode === 'off' || mode === '0' || mode === 'false') return false;
+    } catch (e) {
+        // Keep default behavior when URL parsing is unavailable.
+    }
+    return false;
+}
+
 function getDashboardApiBase() {
     if (window.DASHBOARD_API_BASE) {
         return String(window.DASHBOARD_API_BASE).replace(/\/+$/, '');
@@ -5724,10 +5737,14 @@ function getDashboardApiBase() {
     var port = String(loc.port || '');
     var isLocalHost = host === '127.0.0.1' || host === 'localhost';
 
-    // When served from a local static dev server (for example 127.0.0.1:5500),
-    // point dashboard API calls to the Flask backend on port 5000.
+    // In local static preview (for example 127.0.0.1:5500), default to
+    // local-fallback mode to avoid noisy connection-refused errors when the
+    // dashboard API server is not running. Opt in with ?dashboardApi=local.
     if (loc.protocol === 'file:' || (isLocalHost && port && port !== '5000')) {
-        return 'http://127.0.0.1:5000/api/dashboard/v1';
+        if (shouldUseLocalDashboardApi()) {
+            return 'http://127.0.0.1:5000/api/dashboard/v1';
+        }
+        return '';
     }
     return '/api/dashboard/v1';
 }
@@ -5747,6 +5764,13 @@ async function dashboardApiRequest(method, path, payload, options) {
     options = options || {};
     var allowStatuses = Array.isArray(options.allowStatuses) ? options.allowStatuses : [];
 
+    var apiBase = getDashboardApiBase();
+    if (!apiBase) {
+        DASHBOARD_API_DISABLED = true;
+        DASHBOARD_API_DISABLED_REASON = 'Dashboard API disabled for local static preview. Add ?dashboardApi=local to enable localhost:5000 sync.';
+        throw new Error(DASHBOARD_API_DISABLED_REASON);
+    }
+
     if (DASHBOARD_API_DISABLED) {
         throw new Error(DASHBOARD_API_DISABLED_REASON || 'Dashboard API sync is temporarily disabled.');
     }
@@ -5762,10 +5786,10 @@ async function dashboardApiRequest(method, path, payload, options) {
 
     var response;
     try {
-        response = await fetch(buildDashboardApiUrl(path), req);
+        response = await fetch(apiBase + path, req);
     } catch (networkErr) {
         DASHBOARD_API_DISABLED = true;
-        DASHBOARD_API_DISABLED_REASON = 'Dashboard API unreachable at ' + getDashboardApiBase() + '. Using local fallback data.';
+        DASHBOARD_API_DISABLED_REASON = 'Dashboard API unreachable at ' + apiBase + '. Using local fallback data.';
         throw new Error(DASHBOARD_API_DISABLED_REASON);
     }
 
@@ -5780,7 +5804,7 @@ async function dashboardApiRequest(method, path, payload, options) {
         var apiMessage = body && (body.error || body.message);
         if (response.status === 404 || response.status === 502 || response.status === 503) {
             DASHBOARD_API_DISABLED = true;
-            DASHBOARD_API_DISABLED_REASON = 'Dashboard API endpoint unavailable (' + response.status + ') at ' + getDashboardApiBase() + '. Using local fallback data.';
+            DASHBOARD_API_DISABLED_REASON = 'Dashboard API endpoint unavailable (' + response.status + ') at ' + apiBase + '. Using local fallback data.';
         }
         throw new Error(apiMessage || DASHBOARD_API_DISABLED_REASON || ('Dashboard API request failed (' + response.status + ')'));
     }
