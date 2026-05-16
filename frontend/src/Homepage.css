@@ -185,7 +185,7 @@
   height: 50px;
 }
 
-.ticker-content {
+.predictions-ticker-container .ticker-content {
   display: flex;
   align-items: center;
   animation: scroll-ticker 30s linear infinite;
@@ -202,7 +202,7 @@
   }
 }
 
-.ticker-content:hover {
+.predictions-ticker-container .ticker-content:hover {
   animation-play-state: paused;
 }
 

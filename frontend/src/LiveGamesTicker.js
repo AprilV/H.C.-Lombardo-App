@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './LiveGamesTicker.css';
 
-const API_URL = process.env.REACT_APP_API_URL || 'https://api.aprilsykes.dev';
+const API_URL = process.env.REACT_APP_API_URL ?? '';
+const TICKER_SCROLL_STEP_PX = 1;
+const TICKER_SCROLL_INTERVAL_MS = 11;
+const TICKER_RESUME_DELAY_MS = 1500;
 
 // Map team abbreviations to logo filenames
 const teamLogoMap = {
@@ -49,12 +52,12 @@ function LiveGamesTicker() {
     scrollIntervalRef.current = setInterval(() => {
       if (isPausedRef.current || !scrollContainerRef.current) return;
       const container = scrollContainerRef.current;
-      container.scrollLeft += 1;
+      container.scrollLeft += TICKER_SCROLL_STEP_PX;
       // Seamless loop: when we've scrolled through the first set, reset to 0
       if (container.scrollLeft >= container.scrollWidth / 2) {
         container.scrollLeft = 0;
       }
-    }, 16); // ~60fps
+    }, TICKER_SCROLL_INTERVAL_MS); // intentionally slow autoplay pace
   };
 
   const stopAutoScroll = () => {
@@ -75,7 +78,19 @@ function LiveGamesTicker() {
 
   const handleMouseUp = () => {
     setIsDragging(false);
-    setTimeout(() => setIsPaused(false), 3000);
+    setTimeout(() => setIsPaused(false), TICKER_RESUME_DELAY_MS);
+  };
+
+  const handleMouseEnter = () => {
+    setIsPaused(true);
+  };
+
+  const handleMouseLeave = () => {
+    if (isDragging) {
+      handleMouseUp();
+      return;
+    }
+    setIsPaused(false);
   };
 
   const handleMouseMove = (e) => {
@@ -104,7 +119,7 @@ function LiveGamesTicker() {
 
   const handleTouchEnd = () => {
     setIsDragging(false);
-    setTimeout(() => setIsPaused(false), 3000);
+    setTimeout(() => setIsPaused(false), TICKER_RESUME_DELAY_MS);
   };
 
   const scrollLeftBtn = () => {
@@ -112,7 +127,7 @@ function LiveGamesTicker() {
       const container = scrollContainerRef.current;
       container.scrollLeft = Math.max(0, container.scrollLeft - 300);
       setIsPaused(true);
-      setTimeout(() => setIsPaused(false), 3000);
+      setTimeout(() => setIsPaused(false), TICKER_RESUME_DELAY_MS);
     }
   };
 
@@ -122,7 +137,7 @@ function LiveGamesTicker() {
       const halfWidth = container.scrollWidth / 2;
       container.scrollLeft = Math.min(halfWidth - 1, container.scrollLeft + 300);
       setIsPaused(true);
-      setTimeout(() => setIsPaused(false), 3000);
+      setTimeout(() => setIsPaused(false), TICKER_RESUME_DELAY_MS);
     }
   };
 
@@ -225,9 +240,10 @@ function LiveGamesTicker() {
       <div
         className="ticker-scroll"
         ref={scrollContainerRef}
+        onMouseEnter={useScroller ? handleMouseEnter : undefined}
         onMouseDown={useScroller ? handleMouseDown : undefined}
         onMouseUp={useScroller ? handleMouseUp : undefined}
-        onMouseLeave={useScroller ? handleMouseUp : undefined}
+        onMouseLeave={useScroller ? handleMouseLeave : undefined}
         onMouseMove={useScroller ? handleMouseMove : undefined}
         onTouchStart={useScroller ? handleTouchStart : undefined}
         onTouchMove={useScroller ? handleTouchMove : undefined}
