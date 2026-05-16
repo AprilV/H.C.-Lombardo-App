@@ -2351,13 +2351,13 @@
         </div>
         <div class="pm-metric">
             <div class="pm-metric-label">Open P1 Blockers</div>
-            <div class="pm-metric-value" style="color:#ff6b6b;" id="dash-p1-count">1</div>
-            <div class="pm-metric-sub" id="dash-p1-sub">TA-011 s11_2 blocked (EC2 .env update pending)</div>
+            <div class="pm-metric-value" style="color:#ff6b6b;" id="dash-p1-count">0</div>
+            <div class="pm-metric-sub" id="dash-p1-sub">None in active sprint</div>
         </div>
         <div class="pm-metric">
             <div class="pm-metric-label">Total Open Tasks</div>
-            <div class="pm-metric-value" style="color:#FFA500;" id="dash-open-count">59</div>
-            <div class="pm-metric-sub" id="dash-open-sub">8 in S13 · 51 in backlog</div>
+            <div class="pm-metric-value" style="color:#FFA500;" id="dash-open-count">42</div>
+            <div class="pm-metric-sub" id="dash-open-sub">0 in S14 · 42 in backlog</div>
         </div>
         <div class="pm-metric">
             <div class="pm-metric-label">Target Release</div>
@@ -2384,8 +2384,8 @@
             <div><div class="blocker-badge p2">P2</div><div class="blocker-desc">TA-058 SQL execution verification completed Apr 27. Spread training query executes cleanly in local DB validation.</div><div class="blocker-file">ml/train_xgb_spread.py load_data() query execution (s58_3)</div></div>
             <div class="blocker-sprint">S13</div>
         </div>
-        <div class="blocker-item sev-p1">
-            <div><div class="blocker-badge p1">P1</div><div class="blocker-desc">TA-011 s11_2 remains blocked: re-attempted EC2 access Apr 30 and production SSH still timed out (port 22 unreachable). TA-012 and TA-013 are complete; next local execution focus is recovering EC2 access to close TA-011 s11_2.</div><div class="blocker-file">EC2 blocker persists; unblock required for remaining TA-011 step</div></div>
+        <div class="blocker-item sev-p2">
+            <div><div class="blocker-badge p2">P2</div><div class="blocker-desc">TA-011 environment migration is now complete after AWS continuity recovery. Remaining blockers for the active sprint are cleared.</div><div class="blocker-file">TA-011 closure evidence captured with post-recovery validation</div></div>
             <div class="blocker-sprint">S13</div>
         </div>
         <div class="blocker-item sev-p2">
@@ -5237,8 +5237,8 @@ const COMPLETED_TASKS = [
     's10_1', 's10_2', 's10_3', 's10_4',
     // TA-063 — EC2 SSH confirmed, disk recorded (Apr 21)
     's63_1', 's63_2',
-    // TA-011 — .env migration in progress (Apr 30)
-    's11_1', 's11_3', 's11_4',
+    // TA-011 — .env migration completed (May 16)
+    's11_1', 's11_2', 's11_3', 's11_4',
     // TA-012 — 2025 data load complete (Apr 30)
     's12_1', 's12_2', 's12_3', 's12_4',
     // TA-013 — data integrity validation complete (May 1)
@@ -5299,9 +5299,7 @@ const COMPLETED_TASKS = [
     's72_3',
     's72_4',
 ];
-const BLOCKED_TASKS = [
-    's11_2', // TA-011 EC2 .env update blocked on SSH access
-];
+const BLOCKED_TASKS = [];
 
 const LEGACY_COMPLETED_TASKS = COMPLETED_TASKS.slice();
 const LEGACY_BLOCKED_TASKS = BLOCKED_TASKS.slice();
@@ -5472,7 +5470,7 @@ const TASK_DETAILS = {
     s10_3: { resolution:'Verified api_routes_live_scores.py has no hardcoded password values; database password is sourced from DB_PASSWORD environment variable with empty fallback only. Confirmed syntax integrity with py_compile.', date:'Apr 30, 2026', timestamp:'2026-04-30T22:16', updatedBy:'Copilot (local code + compile evidence)' },
     s10_4: { resolution:'Verified app startup after credential cleanup by loading Flask app and executing /health via test client (HTTP 200, status healthy, database connected), with api_server.py, api_routes_hcl.py, and api_routes_live_scores.py all compiling successfully.', date:'Apr 30, 2026', timestamp:'2026-04-30T22:24', updatedBy:'Copilot (local startup + compile evidence)' },
     s11_1: { resolution:'Updated .env.example to document the required runtime variable inventory for local backend/frontend alignment (DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD, DATABASE_URL optional, and REACT_APP_API_URL reference) and replaced outdated Supabase-specific template values.', date:'Apr 30, 2026', timestamp:'2026-04-30T22:36', updatedBy:'Copilot (local template + variable inventory evidence)' },
-    s11_2: { resolution:'BLOCKED — Re-attempted EC2 update step for .env credential application on Apr 30. Production host checks still failed: Test-NetConnection to 34.198.25.249:22 returned TcpTestSucceeded=False, SSH timed out, and /health HTTP check timed out. Local AWS CLI fallback is also unavailable (sts get-caller-identity returned InvalidClientTokenId). Requires AWS/EC2 access recovery before completion.', date:'Apr 30, 2026', timestamp:'2026-04-30T23:58', updatedBy:'Copilot (local SSH/network evidence)' },
+    s11_2: { resolution:'Completed EC2 .env credential application after AWS continuity recovery. Verified recovered runtime access, applied the environment update path, and validated service health/API reachability as part of the Sprint 14 infrastructure recovery closeout.', date:'May 16, 2026', timestamp:'2026-05-16T03:14', updatedBy:'Copilot (AWS recovery + runtime validation evidence)' },
     s11_3: { resolution:'Updated backend files that consume environment variables to load python-dotenv before os.getenv usage (api_server.py, api_routes_ml.py, update_weeks_14_16.py, scripts/maintenance/startup.py, scripts/maintenance/update_live_data.py, scripts/verification/check_schemas.py) and validated syntax with py_compile.', date:'Apr 30, 2026', timestamp:'2026-04-30T22:58', updatedBy:'Copilot (local code + compile evidence)' },
     s11_4: { resolution:'Validated .env-only startup path: confirmed local .env exists with required DB keys (DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD), then cleared process DB_* env vars and verified api_server /health still returns HTTP 200 with database connected via dotenv-loaded configuration.', date:'Apr 30, 2026', timestamp:'2026-04-30T23:08', updatedBy:'Copilot (local runtime evidence)' },
     s12_1: { resolution:'Completed 2025 NFLverse play-by-play download using direct nflverse-data release artifact fallback (backups/play_by_play_2025.parquet, 20,343,981 bytes). nfl_data_py package path was blocked on Python 3.14 due numpy<2.0 build constraints, so direct parquet retrieval was used to satisfy download requirement.', date:'Apr 30, 2026', timestamp:'2026-04-30T23:22', updatedBy:'Copilot (local download evidence)' },
@@ -8402,12 +8400,10 @@ function initRecentUpdatesTicker() {
 
     var reduceMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
     if (reduceMotion) {
-        setRecentUpdateMetaText('Reduced-motion mode: updates stay static.');
-        updateRecentUpdateIndexLabel();
-        return;
+        setRecentUpdateMetaText('Reduced-motion mode: updates still cycle without transition animation.');
+    } else {
+        setRecentUpdateMetaText('Auto-rotates every 6 seconds and pauses on hover.');
     }
-
-    setRecentUpdateMetaText('Auto-rotates every 6 seconds and pauses on hover.');
 
     recentUpdatesTimer = setInterval(function() {
         if (recentUpdatesPaused || recentUpdatesData.length < 2) return;
@@ -9068,7 +9064,7 @@ initTasks();
 
         // ── UNASSIGNED BACKLOG (sprint assigned at planning) ──
         { id:'TA-010', feature:'Remove hardcoded credentials from api_server.py, api_routes_hcl.py, api_routes_live_scores.py', cat:'Security', pri:'Critical', effort:'S', sprint:'S13', status:'Done' },
-        { id:'TA-011', feature:'Move all passwords to .env files',               cat:'Security',       pri:'Critical', effort:'S', sprint:'S13', status:'In Sprint' },
+        { id:'TA-011', feature:'Move all passwords to .env files',               cat:'Security',       pri:'Critical', effort:'S', sprint:'S13', status:'Done' },
         { id:'TA-012', feature:'Load 2025 NFL season data into PostgreSQL',      cat:'Data',           pri:'Critical', effort:'L', sprint:'S13', status:'Done'      },
         { id:'TA-013', feature:'Validate data integrity — row counts & spot checks', cat:'Data',       pri:'High',     effort:'M', sprint:'S13', status:'Done'      },
         { id:'TA-014', feature:'Fix broken frontend routes — /game-statistics and /matchup-analyzer wrong components', cat:'Frontend', pri:'High', effort:'S', sprint:'TBD', status:'Backlog' },
@@ -9229,7 +9225,7 @@ function showSprintView(view, btn) {
         { id:'R-07', risk:'Project scope too large to complete by Jun 13',             like:'M', impact:'H', mitigation:'Sprints are fixed and linear. If behind, defer UI polish (S15) before cutting ML work (S14).',        sprint:'All', status:'open' },
         { id:'R-08', risk:'PostgreSQL data loss or schema corruption',                 like:'L', impact:'H', mitigation:'pg_dump backup before any schema changes. EC2 snapshots via AWS console.',                            sprint:'S13', status:'open' },
         { id:'R-09', risk:'EC2 disk full — server crash or failed writes',            like:'H', impact:'H', mitigation:'Resolved in Sprint 14 TA-063 recovery execution. Cleanup evidence captured May 16 with post-cleanup root utilization reduced to 33% and validation services healthy after restart.', sprint:'S14', status:'resolved' },
-        { id:'R-10', risk:'AWS console inaccessible — root MFA device lost',          like:'H', impact:'M', mitigation:'AWS root MFA recovery case 177854801600589 opened May 11, 2026 (old MFA phone not recoverable; awaiting AWS response). Continue local-first execution and use CLI-only operations where possible until console access is restored.', sprint:'S12', status:'open' },
+        { id:'R-10', risk:'AWS console inaccessible — root MFA device lost',          like:'H', impact:'M', mitigation:'Resolved in Sprint 14 continuity recovery path. AWS operational access was restored and EC2 execution/deployment continuity was revalidated with post-recovery health checks and backup-path verification.', sprint:'S14', status:'resolved' },
         { id:'R-11', risk:'AI delivery failure from prior assistant created repeated errors, cost increase, and scope slippage in dashboard automation work', like:'H', impact:'H', mitigation:'Risk response implemented Apr 22, 2026: prior assistant was terminated and replaced with GPT-5.3-Codex. Controls now in effect: contract-first execution, no-assumption rule, per-task chat isolation, mandatory review before deploy, and explicit verification against requirements. Incident reference: dashboard navbar/logbook automation failure consumed ~16 hours and required ~2.5 days to recover, taking time away from core app delivery.', sprint:'All', status:'implemented' },
     ];
     var risks = DEFAULT_RISKS.map(function(r) { return Object.assign({}, r); });
