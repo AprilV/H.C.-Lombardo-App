@@ -5123,6 +5123,12 @@ function shouldRunArchitectureLiveProbes() {
         if (params.get('archApiBase') || params.get('archApi')) return true;
     }
 
+    // Hosted static dashboards should default to passive mode to avoid
+    // repeated console noise when backend routing/CORS is unavailable.
+    if (isArchitectureStaticHostedDashboard()) {
+        return false;
+    }
+
     // Default to live probes. Local static preview routes to local API by default.
     return true;
 }
@@ -6623,6 +6629,7 @@ function getDashboardApiBase() {
 
         var mode = String(params.get('dashboardApi') || '').trim().toLowerCase();
         if (mode === 'prod' || mode === 'production') return 'https://api.aprilsykes.dev/api/dashboard/v1';
+        if (mode === 'on' || mode === '1' || mode === 'true') return 'https://api.aprilsykes.dev/api/dashboard/v1';
         if (mode === 'off' || mode === '0' || mode === 'false') return '';
     }
 
@@ -6641,9 +6648,11 @@ function getDashboardApiBase() {
     }
 
     // For static hosted dashboards (for example GitHub Pages), use the
-    // production dashboard API instead of same-origin /api paths.
+    // passive fallback by default to avoid repeated timeout noise.
+    // Explicit opt-in remains available via ?dashboardApi=prod or
+    // ?dashboardApiBase=<full-url>.
     if (isDashboardStaticHostedSite()) {
-        return 'https://api.aprilsykes.dev/api/dashboard/v1';
+        return '';
     }
 
     return '/api/dashboard/v1';
@@ -6674,7 +6683,7 @@ async function dashboardApiRequest(method, path, payload, options) {
     var apiBase = getDashboardApiBase();
     if (!apiBase) {
         DASHBOARD_API_DISABLED = true;
-        DASHBOARD_API_DISABLED_REASON = 'Dashboard API sync is disabled for this dashboard mode.';
+        DASHBOARD_API_DISABLED_REASON = 'Dashboard API sync is disabled for this dashboard mode. Add ?dashboardApi=prod to enable hosted API calls.';
         throw new Error(DASHBOARD_API_DISABLED_REASON);
     }
 
