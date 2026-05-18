@@ -3491,13 +3491,13 @@
             <div class="retro-card retro-improve">
                 <div class="retro-label">What will we do differently next sprint?</div>
                 <div class="retro-text">
-                    <p style="margin:0 0 0.6rem;">Sprint 15 will focus on proactive quality gates and maintainability so UI/UX polish is not slowed by infrastructure drift.</p>
+                    <p style="margin:0 0 0.6rem;">Sprint 15 will prioritize core ML evaluation: multi-season prediction verification and AI-versus-Vegas comparisons, with reliability gates before any completion claims.</p>
                     <ul style="margin:0; padding-left:1.25rem; line-height:1.9;">
-                        <li>Add a pre-close smoke checklist for dashboard tabs, architecture monitor, and local/staging link behavior</li>
-                        <li>Separate visualization and monitor logic into clearer modules to reduce single-file edit risk</li>
-                        <li>Keep explicit probe profiles for local, staging, and production to prevent accidental noisy defaults</li>
-                        <li>Capture CORS and endpoint assumptions in one reference block and validate them at sprint kickoff</li>
-                        <li>Finalize retro, DoD, and governance text in the same closeout commit window to avoid documentation lag</li>
+                        <li>Lock an evaluation contract for seasons 2021-2025 with explicit pass-fail thresholds for winner, spread, totals, MAE, and coverage</li>
+                        <li>Run AI-versus-Vegas comparison outputs by bet type (head-to-head winner, ATS spread, totals) with per-season and aggregate summaries</li>
+                        <li>Enforce leakage and timestamp-validity gates so only pre-game predictions are counted as live predictive performance</li>
+                        <li>Stabilize model-performance and ELO prediction routes before scoring so verification runs are reproducible</li>
+                        <li>Publish evidence for each subtask and close Sprint 15 tasks only through closure-gate bookkeeping</li>
                     </ul>
                 </div>
             </div>
@@ -10106,11 +10106,139 @@ initTasks();
         { id:'TA-023', feature:'Verify no data leakage in feature pipeline',      cat:'ML',             pri:'High',     effort:'M', sprint:'S14', status:'Done' },
         { id:'TA-024', feature:'ML Predictions page showing live results in prod', cat:'Frontend',       pri:'High',     effort:'M', sprint:'S14', status:'Done' },
         { id:'TA-025', feature:'Record model accuracy metrics in ModelPerformance', cat:'ML',            pri:'Medium',   effort:'S', sprint:'S14', status:'Done' },
-        { id:'TA-026', feature:'Mobile-responsive pass — all pages at 375px',     cat:'Frontend',       pri:'High',     effort:'L', sprint:'TBD', status:'Backlog'   },
-        { id:'TA-027', feature:'Fix all broken layouts and overflow problems',       cat:'Frontend',       pri:'High',     effort:'M', sprint:'TBD', status:'Backlog'   },
-        { id:'TA-028', feature:'Loading states and error states on all pages',     cat:'Frontend',       pri:'Medium',   effort:'M', sprint:'TBD', status:'Backlog'   },
+        {
+            id:'TA-026',
+            feature:'Mobile-responsive pass — all pages at 375px',
+            cat:'Frontend',
+            pri:'High',
+            effort:'L',
+            sprint:'S15',
+            status:'In Sprint',
+            assignee:'GitHub Copilot (Developer)',
+            description:'Ensure core app pages remain usable at mobile breakpoints, with no clipped content, unusable controls, or broken card and table layouts.',
+            dueDate:'2026-05-30',
+            createdAt:'2026-05-18T09:05:00',
+            updatedAt:'2026-05-18T18:12:00',
+            updatedBy:'GitHub Copilot (Developer)',
+            manualSubtasks:[
+                { id:'m_ta_026_1', title:'Step 01 - Lock breakpoint matrix and page scope for 375px 390px 414px and 768px validation' },
+                { id:'m_ta_026_2', title:'Step 02 - Capture baseline screenshots and create a route-by-route mobile defect ledger' },
+                { id:'m_ta_026_3', title:'Step 03 - Patch global container widths overflow rules and safe-area spacing for small screens' },
+                { id:'m_ta_026_4', title:'Step 04 - Fix header nav and tab wrapping so controls remain visible and tappable at mobile widths' },
+                { id:'m_ta_026_5', title:'Step 05 - Correct card table and chart panel clipping on predictions analytics and model pages' },
+                { id:'m_ta_026_6', title:'Step 06 - Increase touch target sizing and spacing for filters buttons and interactive controls' },
+                { id:'m_ta_026_7', title:'Step 07 - Tune typography line length and vertical rhythm for readable mobile content density' },
+                { id:'m_ta_026_8', title:'Step 08 - Run regression pass on all scoped routes in portrait and landscape orientations' },
+                { id:'m_ta_026_9', title:'Step 09 - Capture after-fix screenshots and compare against baseline defect ledger' },
+                { id:'m_ta_026_10', title:'Step 10 - Publish resolution evidence with any residual blockers and explicit follow-up owners' }
+            ],
+            comments:[],
+            history:[
+                { at:'2026-05-18T09:05:00', by:'Scrum Master', note:'Ticket moved into Sprint 15 as part of UI readiness baseline.' },
+                { at:'2026-05-18T17:45:00', by:'GitHub Copilot (Developer)', note:'Expanded ticket with detailed manual subtasks for local-first execution and validation tracking.' },
+                { at:'2026-05-18T18:12:00', by:'GitHub Copilot (Developer)', note:'Reworked manual subtasks into an explicit 10-step execution sequence to support ordered completion tracking.' }
+            ]
+        },
+        {
+            id:'TA-027',
+            feature:'Fix all broken layouts and overflow problems',
+            cat:'Frontend',
+            pri:'High',
+            effort:'M',
+            sprint:'S15',
+            status:'In Sprint',
+            assignee:'GitHub Copilot (Developer)',
+            description:'Correct structural layout defects and horizontal overflow issues across app views so primary workflows are visually stable before advisor demo.',
+            dueDate:'2026-05-30',
+            createdAt:'2026-05-18T09:06:00',
+            updatedAt:'2026-05-18T18:12:00',
+            updatedBy:'GitHub Copilot (Developer)',
+            manualSubtasks:[
+                { id:'m_ta_027_1', title:'Step 01 - Reproduce every known layout break and overflow defect across Sprint 15 target pages' },
+                { id:'m_ta_027_2', title:'Step 02 - Classify defects by severity and identify shared-style versus route-specific root causes' },
+                { id:'m_ta_027_3', title:'Step 03 - Patch shared grid flex and container utilities to remove recurring overflow behavior' },
+                { id:'m_ta_027_4', title:'Step 04 - Fix page-level card and table wrappers where local CSS still causes clipping' },
+                { id:'m_ta_027_5', title:'Step 05 - Correct chart canvas legend and metric tile sizing in constrained viewport widths' },
+                { id:'m_ta_027_6', title:'Step 06 - Resolve modal drawer and sticky section overlap issues in nested layouts' },
+                { id:'m_ta_027_7', title:'Step 07 - Validate corrected layouts at desktop tablet and mobile breakpoints' },
+                { id:'m_ta_027_8', title:'Step 08 - Run regression checks on ML predictions live scores and model performance routes' },
+                { id:'m_ta_027_9', title:'Step 09 - Verify no new console layout warnings or horizontal scroll regressions were introduced' },
+                { id:'m_ta_027_10', title:'Step 10 - Publish defect closure matrix with route-level before-after evidence and pass status' }
+            ],
+            comments:[],
+            history:[
+                { at:'2026-05-18T09:06:00', by:'Scrum Master', note:'Ticket moved into Sprint 15 as a high-priority UI stabilization task.' },
+                { at:'2026-05-18T17:45:00', by:'GitHub Copilot (Developer)', note:'Added explicit subtasks to track diagnostics fixes regression checks and evidence capture.' },
+                { at:'2026-05-18T18:12:00', by:'GitHub Copilot (Developer)', note:'Expanded into a 10-step ordered remediation checklist for clearer execution sequencing.' }
+            ]
+        },
+        {
+            id:'TA-028',
+            feature:'Loading states and error states on all pages',
+            cat:'Frontend',
+            pri:'Medium',
+            effort:'M',
+            sprint:'S15',
+            status:'In Sprint',
+            assignee:'GitHub Copilot (Developer)',
+            description:'Add consistent loading and error-state handling across key pages so users receive clear feedback when data requests are pending or fail.',
+            dueDate:'2026-05-30',
+            createdAt:'2026-05-18T09:07:00',
+            updatedAt:'2026-05-18T18:12:00',
+            updatedBy:'GitHub Copilot (Developer)',
+            manualSubtasks:[
+                { id:'m_ta_028_1', title:'Step 01 - Audit API-backed pages for missing loading error and empty-state behavior' },
+                { id:'m_ta_028_2', title:'Step 02 - Define standard loading error and empty-state copy plus retry interaction rules' },
+                { id:'m_ta_028_3', title:'Step 03 - Implement shared loading component patterns for cards tables and section fetches' },
+                { id:'m_ta_028_4', title:'Step 04 - Wire loading-state handling into each scoped route and asynchronous data block' },
+                { id:'m_ta_028_5', title:'Step 05 - Implement standardized error-state component with clear failure context and retry action' },
+                { id:'m_ta_028_6', title:'Step 06 - Add guarded retry handlers and ensure state reset between sequential API attempts' },
+                { id:'m_ta_028_7', title:'Step 07 - Add explicit empty-state messaging for valid no-data scenarios' },
+                { id:'m_ta_028_8', title:'Step 08 - Simulate timeout network and server failures locally to verify behavior consistency' },
+                { id:'m_ta_028_9', title:'Step 09 - Validate accessibility feedback including aria-live updates for loading and errors' },
+                { id:'m_ta_028_10', title:'Step 10 - Capture route-level proof and publish completion notes with unresolved edge cases' }
+            ],
+            comments:[],
+            history:[
+                { at:'2026-05-18T09:07:00', by:'Scrum Master', note:'Ticket moved into Sprint 15 to improve operational UX quality and reliability feedback.' },
+                { at:'2026-05-18T17:45:00', by:'GitHub Copilot (Developer)', note:'Added manual subtasks for implementation order and local failure-mode validation.' },
+                { at:'2026-05-18T18:12:00', by:'GitHub Copilot (Developer)', note:'Expanded to a 10-step ordered checklist to make completion flow explicit and auditable.' }
+            ]
+        },
         { id:'TA-029', feature:'Zero console errors in production',                cat:'Frontend',       pri:'High',     effort:'M', sprint:'TBD', status:'Backlog'   },
-        { id:'TA-030', feature:'Full production walkthrough — advisor demo-ready', cat:'QA',             pri:'Critical', effort:'M', sprint:'TBD', status:'Backlog'   },
+        {
+            id:'TA-030',
+            feature:'Full production walkthrough — advisor demo-ready',
+            cat:'QA',
+            pri:'Critical',
+            effort:'M',
+            sprint:'S15',
+            status:'In Sprint',
+            assignee:'GitHub Copilot (Developer)',
+            description:'Execute a complete production-readiness walkthrough across critical app routes and ML features, then document results for advisor demo confidence.',
+            dueDate:'2026-05-30',
+            createdAt:'2026-05-18T09:08:00',
+            updatedAt:'2026-05-18T18:12:00',
+            updatedBy:'GitHub Copilot (Developer)',
+            manualSubtasks:[
+                { id:'m_ta_030_1', title:'Step 01 - Define advisor walkthrough script with required demo flows and acceptance checkpoints' },
+                { id:'m_ta_030_2', title:'Step 02 - Validate local environment readiness including API health and required data preconditions' },
+                { id:'m_ta_030_3', title:'Step 03 - Execute navigation smoke test across all primary routes and menu transitions' },
+                { id:'m_ta_030_4', title:'Step 04 - Run ML workflow checks for winner spread totals and model-performance views' },
+                { id:'m_ta_030_5', title:'Step 05 - Validate live scores historical data and team comparison flows for demo reliability' },
+                { id:'m_ta_030_6', title:'Step 06 - Run targeted endpoint checks for every route used in the advisor walkthrough' },
+                { id:'m_ta_030_7', title:'Step 07 - Log all defects by severity and assign immediate owners for any blocking issues' },
+                { id:'m_ta_030_8', title:'Step 08 - Re-run failed walkthrough segments after fixes and confirm regression closure' },
+                { id:'m_ta_030_9', title:'Step 09 - Package screenshots endpoint outputs and walkthrough notes into a single evidence bundle' },
+                { id:'m_ta_030_10', title:'Step 10 - Publish advisor-ready runbook with final go no-go readiness recommendation' }
+            ],
+            comments:[],
+            history:[
+                { at:'2026-05-18T09:08:00', by:'Scrum Master', note:'Ticket moved into Sprint 15 as critical acceptance gate for demo readiness.' },
+                { at:'2026-05-18T17:45:00', by:'GitHub Copilot (Developer)', note:'Added detailed subtasks to enforce structured QA execution and evidence publication.' },
+                { at:'2026-05-18T18:12:00', by:'GitHub Copilot (Developer)', note:'Expanded into a 10-step demo-readiness walkthrough sequence for explicit ordered completion.' }
+            ]
+        },
         { id:'TA-031', feature:'Fix /game-statistics and /matchup-analyzer routes', cat:'Frontend',      pri:'High',     effort:'S', sprint:'TBD', status:'Backlog'   },
         { id:'TA-032', feature:'Rate limiting on Flask API',                       cat:'Security',       pri:'High',     effort:'S', sprint:'TBD', status:'Backlog'   },
         { id:'TA-033', feature:'HTTPS confirmed — all traffic encrypted',          cat:'Security',       pri:'Critical', effort:'S', sprint:'TBD', status:'Backlog'   },
@@ -10134,8 +10262,72 @@ initTasks();
         { id:'TA-051', feature:'Rotate GitHub webhook secret — GitHub disclosed Sep–Dec 2025 bug exposed secrets in X-Github-Encoded-Secret header; rotate Amplify webhook secret as precaution', cat:'Security', pri:'Low', effort:'XS', sprint:'TBD', status:'Backlog' },
         { id:'TA-052', feature:'Fix /api/hcl/teams returning 4 teams instead of 32 — discovered during TA-003 API audit Apr 17', cat:'Backend', pri:'High', effort:'S', sprint:'TBD', status:'Backlog' },
         { id:'TA-053', feature:'Add missing /api/hcl/summary endpoint — route not found during TA-003 API audit Apr 17', cat:'Backend', pri:'Medium', effort:'S', sprint:'TBD', status:'Backlog' },
-        { id:'TA-054', feature:'Fix /api/ml/model-performance returning empty response — endpoint exists but no data returned, discovered TA-003 audit Apr 17', cat:'Backend', pri:'High', effort:'S', sprint:'TBD', status:'Backlog' },
-        { id:'TA-055', feature:'Fix /api/elo/predict-week/2024/18 returning no games found — ELO data gap for Week 18, discovered TA-003 audit Apr 17', cat:'Backend', pri:'Medium', effort:'S', sprint:'TBD', status:'Backlog' },
+        {
+            id:'TA-054',
+            feature:'Fix /api/ml/model-performance returning empty response — endpoint exists but no data returned, discovered TA-003 audit Apr 17',
+            cat:'Backend',
+            pri:'High',
+            effort:'S',
+            sprint:'S15',
+            status:'In Sprint',
+            assignee:'GitHub Copilot (Developer)',
+            description:'Restore reliable /api/ml/model-performance output so model accuracy and MAE views are populated for local testing and Sprint 15 evaluation runs.',
+            dueDate:'2026-05-30',
+            createdAt:'2026-04-17T12:30:00',
+            updatedAt:'2026-05-18T18:12:00',
+            updatedBy:'GitHub Copilot (Developer)',
+            manualSubtasks:[
+                { id:'m_ta_054_1', title:'Step 01 - Reproduce empty /api/ml/model-performance response locally and record failing request evidence' },
+                { id:'m_ta_054_2', title:'Step 02 - Capture raw response body and correlate with backend log lines for the same request' },
+                { id:'m_ta_054_3', title:'Step 03 - Trace endpoint handler path and identify query or serialization breakpoints' },
+                { id:'m_ta_054_4', title:'Step 04 - Validate schema assumptions against current database tables views and joins' },
+                { id:'m_ta_054_5', title:'Step 05 - Implement data-path fix that returns non-empty and schema-valid model metrics payloads' },
+                { id:'m_ta_054_6', title:'Step 06 - Add defensive handling for no-row scenarios with explicit diagnostics instead of silent empties' },
+                { id:'m_ta_054_7', title:'Step 07 - Run endpoint checks across multiple seasons to confirm stable non-empty responses' },
+                { id:'m_ta_054_8', title:'Step 08 - Validate frontend model-performance components consume and render repaired payload fields' },
+                { id:'m_ta_054_9', title:'Step 09 - Compare repaired output against TA-070 and TA-077 expected metric structure' },
+                { id:'m_ta_054_10', title:'Step 10 - Publish root-cause summary fix diff and verification evidence for closure gate review' }
+            ],
+            comments:[],
+            history:[
+                { at:'2026-04-17T12:30:00', by:'Scrum Master', note:'Ticket created from API audit after model-performance endpoint returned empty response.' },
+                { at:'2026-05-18T17:45:00', by:'GitHub Copilot (Developer)', note:'Added structured subtasks for local reproduction fix verification and frontend contract validation.' },
+                { at:'2026-05-18T18:12:00', by:'GitHub Copilot (Developer)', note:'Expanded to a 10-step backend remediation and validation sequence with explicit evidence checkpoints.' }
+            ]
+        },
+        {
+            id:'TA-055',
+            feature:'Fix /api/elo/predict-week/2024/18 returning no games found — ELO data gap for Week 18, discovered TA-003 audit Apr 17',
+            cat:'Backend',
+            pri:'Medium',
+            effort:'S',
+            sprint:'S15',
+            status:'In Sprint',
+            assignee:'GitHub Copilot (Developer)',
+            description:'Fix ELO predict-week behavior for historical week lookup so endpoint responses can support reliable prediction verification workflows.',
+            dueDate:'2026-05-30',
+            createdAt:'2026-04-17T12:35:00',
+            updatedAt:'2026-05-18T18:12:00',
+            updatedBy:'GitHub Copilot (Developer)',
+            manualSubtasks:[
+                { id:'m_ta_055_1', title:'Step 01 - Reproduce /api/elo/predict-week/2024/18 no-games-found behavior in local environment' },
+                { id:'m_ta_055_2', title:'Step 02 - Capture request parameters response payload and log trail for failing scenario' },
+                { id:'m_ta_055_3', title:'Step 03 - Audit ELO source data coverage for season week and postseason boundaries' },
+                { id:'m_ta_055_4', title:'Step 04 - Trace endpoint filter logic and identify where valid rows are being excluded' },
+                { id:'m_ta_055_5', title:'Step 05 - Implement week-resolution fix including deterministic fallback for edge calendar mapping' },
+                { id:'m_ta_055_6', title:'Step 06 - Validate repaired endpoint returns expected game set for 2024 week 18' },
+                { id:'m_ta_055_7', title:'Step 07 - Run regression checks for neighboring weeks and additional seasons' },
+                { id:'m_ta_055_8', title:'Step 08 - Verify frontend and downstream consumers parse repaired ELO week payload correctly' },
+                { id:'m_ta_055_9', title:'Step 09 - Confirm TA-076 and TA-077 dependency checks now pass for ELO week data availability' },
+                { id:'m_ta_055_10', title:'Step 10 - Publish closure evidence with root cause fix notes and residual risk callouts' }
+            ],
+            comments:[],
+            history:[
+                { at:'2026-04-17T12:35:00', by:'Scrum Master', note:'Ticket created from API audit after ELO week endpoint returned no games found for a valid week.' },
+                { at:'2026-05-18T17:45:00', by:'GitHub Copilot (Developer)', note:'Added manual subtasks for deterministic local repro query-fix validation and regression proof.' },
+                { at:'2026-05-18T18:12:00', by:'GitHub Copilot (Developer)', note:'Expanded into a 10-step endpoint recovery sequence with ordered repro diagnosis fix and regression gates.' }
+            ]
+        },
         { id:'TA-056', feature:'Restore nfl.aprilsykes.dev custom domain — was working before Amplify migration, broken during transfer, needs DNS and Amplify domain config', cat:'Infrastructure', pri:'High', effort:'M', sprint:'TBD', status:'Backlog' },
         { id:'TA-057', feature:'Fix train_xgb_winner.py schema — change hcl_test to hcl (line 255) so model trains on production data', cat:'ML', pri:'Critical', effort:'S', sprint:'S13', status:'Done' },
         { id:'TA-058', feature:'Fix broken SQL WINDOW clause in train_xgb_spread.py (lines 95-116) — missing closing paren causes duplicate OVER definitions, SQL fails on execution', cat:'ML', pri:'Critical', effort:'S', sprint:'S13', status:'Done' },
@@ -10190,6 +10382,75 @@ initTasks();
                 { at:'2026-05-04T20:53:00', by:'GitHub Copilot (Developer)', note:'Implemented Option A in dashboard runtime: burndown now uses effort points and sprint workdays exclude configured no-work dates for capacity realism.' },
                 { at:'2026-05-04T20:56:00', by:'GitHub Copilot (Developer)', note:'Updated Decision Log and Sprint 14 Definition of Done to record metric-model decision, acceptance criteria, and delivery evidence.' },
                 { at:'2026-05-04T20:58:00', by:'GitHub Copilot (Developer)', note:'Ticket closed as Done after research, PM decision, implementation, and governance artifact updates were completed in one pass.' }
+            ]
+        },
+        {
+            id:'TA-076',
+            feature:'Restore ML output reliability and verification gate — resolve empty /api/ml/model-performance and ELO predict-week no-data gaps, then run end-to-end winner/spread/model-performance smoke checks with evidence pack for sprint planning signoff',
+            cat:'ML',
+            pri:'Critical',
+            effort:'M',
+            sprint:'S15',
+            status:'In Sprint',
+            assignee:'GitHub Copilot (Developer)',
+            description:'Coordinate ML output recovery and verification gates by closing TA-054 and TA-055 dependencies, then executing end-to-end smoke tests with publishable evidence.',
+            dueDate:'2026-05-30',
+            createdAt:'2026-05-16T12:34:00',
+            updatedAt:'2026-05-18T18:12:00',
+            updatedBy:'GitHub Copilot (Developer)',
+            manualSubtasks:[
+                { id:'m_ta_076_1', title:'Step 01 - Confirm TA-054 and TA-055 current status and collect latest dependency evidence snapshots' },
+                { id:'m_ta_076_2', title:'Step 02 - Verify dependency fixes locally before starting integrated ML reliability validation' },
+                { id:'m_ta_076_3', title:'Step 03 - Execute winner prediction smoke tests using current Sprint 15 validation commands' },
+                { id:'m_ta_076_4', title:'Step 04 - Execute spread prediction smoke tests and capture accuracy plus error distributions' },
+                { id:'m_ta_076_5', title:'Step 05 - Validate model-performance endpoint payload integrity and frontend consumption contract' },
+                { id:'m_ta_076_6', title:'Step 06 - Run AI-versus-Vegas comparison checks for all evaluable scenarios in scope' },
+                { id:'m_ta_076_7', title:'Step 07 - Score results against Sprint 15 pass-fail gates and flag blockers with owner assignment' },
+                { id:'m_ta_076_8', title:'Step 08 - Build consolidated evidence bundle with logs payloads metrics and command transcripts' },
+                { id:'m_ta_076_9', title:'Step 09 - Update ticket history plus residual risk notes using evidence-backed acceptance language' },
+                { id:'m_ta_076_10', title:'Step 10 - Publish signoff-ready summary with go no-go recommendation for sprint planning review' }
+            ],
+            comments:[],
+            history:[
+                { at:'2026-05-16T12:34:00', by:'Scrum Master', note:'Ticket created to centralize ML output reliability and verification gates before sprint planning signoff.' },
+                { at:'2026-05-18T17:45:00', by:'GitHub Copilot (Developer)', note:'Expanded ticket with execution subtasks aligned to TA-054 and TA-055 dependency handling and smoke-test evidence requirements.' },
+                { at:'2026-05-18T18:12:00', by:'GitHub Copilot (Developer)', note:'Expanded to a 10-step integrated verification sequence with explicit dependency and signoff checkpoints.' }
+            ]
+        },
+        {
+            id:'TA-077',
+            feature:'Multi-season AI model evaluation and Vegas comparison framework — verify winner, spread, and totals performance across 2021-2025 with evidence-grade reporting',
+            cat:'ML',
+            pri:'Critical',
+            effort:'L',
+            sprint:'S15',
+            status:'In Sprint',
+            assignee:'GitHub Copilot (Developer)',
+            description:'Core Sprint 15 ML execution ticket. Build and run a multi-season evaluation pipeline for prior completed NFL seasons to verify prediction quality and compare AI outcomes versus Vegas baselines. Scope includes head-to-head winner accuracy, ATS spread performance, totals over-under evaluability and accuracy, MAE/RMSE reporting, leakage checks, and publishable evidence artifacts. TA-076, TA-054, and TA-055 are operational dependencies for reliable API and model-performance route behavior.',
+            dueDate:'2026-05-30',
+            createdAt:'2026-05-18T09:30:00',
+            updatedAt:'2026-05-18T18:12:00',
+            updatedBy:'GitHub Copilot (Developer)',
+            manualSubtasks:[
+                { id:'m_ta_077_1', title:'Step 01 - Lock evaluation contract for 2021-2025 seasons and finalize metric definitions by bet type' },
+                { id:'m_ta_077_2', title:'Step 02 - Pin extraction commands data sources and reproducibility settings for repeatable reruns' },
+                { id:'m_ta_077_3', title:'Step 03 - Execute baseline extraction for each in-scope season and persist raw artifacts' },
+                { id:'m_ta_077_4', title:'Step 04 - Compute per-season winner spread and totals metrics with deterministic scoring logic' },
+                { id:'m_ta_077_5', title:'Step 05 - Generate AI-versus-Vegas comparison tables for winner ATS spread and totals performance' },
+                { id:'m_ta_077_6', title:'Step 06 - Run leakage line-lock and timestamp-validity guardrails on all evaluated predictions' },
+                { id:'m_ta_077_7', title:'Step 07 - Validate model-performance and season comparison endpoints against computed evaluation outputs' },
+                { id:'m_ta_077_8', title:'Step 08 - Produce aggregate MAE RMSE coverage and confidence-calibration summary with threshold checks' },
+                { id:'m_ta_077_9', title:'Step 09 - Publish advisor-ready evidence pack including JSON CSV markdown and run manifest files' },
+                { id:'m_ta_077_10', title:'Step 10 - Write Sprint 15 recommendation memo defining next tuning cycle priorities from findings' }
+            ],
+            comments:[],
+            history:[
+                { at:'2026-05-18T09:20:00', by:'Scrum Master', note:'Ticket opened after Sprint 15 kickoff to cover core multi-season ML verification and Vegas comparison scope.' },
+                { at:'2026-05-18T09:25:00', by:'Scrum Master', note:'Assigned to Sprint 15 as highest-value app outcome and marked In Sprint.' },
+                { at:'2026-05-18T09:30:00', by:'GitHub Copilot (Developer)', note:'Implementation plan attached with phased evaluation contract and evidence gates; execution started.' },
+                { at:'2026-05-18T17:26:00', by:'GitHub Copilot (Developer)', note:'Added scripts/verification/ta077_multi_season_evaluation.py and docs/sprints/ta077_multi_season_eval/TA077_EVALUATION_PLAN.md, then executed baseline run for season 2024. Evidence artifacts created under docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172536 with baseline metrics (winner 53.31%, spread 67.9%, margin MAE 12.084) and expected gate failures logged for leakage, line-lock, and totals coverage.' },
+                { at:'2026-05-18T17:26:20', by:'GitHub Copilot (Developer)', note:'Executed full TA-077 multi-season run for 2021-2025. Evidence artifacts published under docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620 with aggregate metrics winner 54.92%, spread 67.3%, margin MAE 11.891, AI-vs-Vegas 111 to 65 (21.68% vs 12.7%). Gate summary: 0 of 5 seasons passed overall due to leakage, line-lock, and totals coverage failures.' },
+                { at:'2026-05-18T18:12:00', by:'GitHub Copilot (Developer)', note:'Refined TA-077 manual subtasks into explicit Step 01 through Step 10 ordering to support strict execution tracking and audit sequencing.' }
             ]
         },
         { id:'DSH-011', feature:'PM4 dashboard source-of-truth transition complete — publish path moved to pmforge_dashboard/index.html, legacy Dashboard/index.html archived, and PM4 docs/release/backlog alignment verified', cat:'Dashboard', pri:'High', effort:'M', sprint:'S13', status:'Done' },
@@ -10560,7 +10821,10 @@ function showSprintView(view, btn) {
             'TA-063 EC2 disk cleanup remains in Sprint 14 backlog and is dependency-tracked against account/access recovery',
         ],
         'Sprint 15 — UI & UX Polish': [
-            'Goals TBD — assigned at sprint planning after Sprint 14 closes',
+            'Core ML evaluation execution: TA-077 multi-season verification of winner spread and totals predictions versus Vegas baselines with evidence-grade reporting',
+            'Dependency chain: TA-076 with TA-054 and TA-055 remediation to restore model output paths and keep evaluation endpoints usable',
+            'UI polish baseline: TA-026 mobile-responsive pass, TA-027 layout/overflow fixes, and TA-028 loading/error-state coverage',
+            'Sprint acceptance: publish TA-077 results package plus TA-030 production walkthrough for advisor demo readiness after ML and UI checks pass',
         ],
         'Sprint 16 — Hardening & Release': [
             'Goals TBD — assigned at sprint planning after Sprint 15 closes',
