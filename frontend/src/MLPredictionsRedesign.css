@@ -1143,6 +1143,21 @@
     grid-template-columns: 1fr;
   }
 
+  .legend-header h2,
+  .model-header h2,
+  .how-header h2 {
+    font-size: 1.9rem;
+  }
+
+  .legend-card,
+  .model-card,
+  .strength-card,
+  .step-card,
+  .accuracy-section,
+  .strengths-section {
+    padding: 18px;
+  }
+
   .strengths-grid {
     grid-template-columns: 1fr;
   }
@@ -1164,8 +1179,23 @@
   }
 
   .ml-predictions-tabs .tab {
+    width: 100%;
+    max-width: 360px;
     padding: 12px 20px;
     font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .legend-header h2,
+  .model-header h2,
+  .how-header h2 {
+    font-size: 1.55rem;
+  }
+
+  .step-content h3,
+  .strengths-section h3 {
+    font-size: 1.3rem;
   }
 }
 

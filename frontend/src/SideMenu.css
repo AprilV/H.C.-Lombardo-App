@@ -186,15 +186,15 @@
 /* Responsive Design */
 @media (max-width: 768px) {
   .side-menu {
-    width: 80%;
-    max-width: 300px;
-    left: -100%;
+    width: min(88vw, 320px);
+    max-width: 320px;
+    left: -100vw;
   }
 }
 
 @media (max-width: 480px) {
   .side-menu {
-    width: 85%;
+    width: min(92vw, 320px);
   }
   
   .hamburger-btn {

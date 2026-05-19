@@ -60,6 +60,14 @@ body {
   min-height: 100vh;
 }
 
+html,
+body,
+#root {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
 [data-theme="executive-dark"] body {
   background: linear-gradient(135deg, #0A0F1E 0%, #0F172A 100%);
 }
@@ -792,8 +800,19 @@ body {
    =================================== */
 
 @media (max-width: 768px) {
+  .App-header {
+    padding: 1.25rem 0.75rem;
+  }
+
   .App-header h1 {
     font-size: 1.75rem;
+  }
+
+  .status-bar-content {
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 0.85rem 1rem;
+    border-radius: 16px;
   }
   
   .selection-card,
@@ -833,8 +852,21 @@ body {
 }
 
 @media (max-width: 480px) {
+  .App-main {
+    padding: 0.75rem;
+  }
+
   .selection-title {
     font-size: 1.25rem;
+  }
+
+  .status-bar-content {
+    gap: 0.65rem;
+    padding: 0.7rem 0.85rem;
+  }
+
+  .status-text {
+    font-size: 0.9rem;
   }
   
   .view-stats-btn {
@@ -863,8 +895,9 @@ body {
 
 .fire-animation {
   position: absolute;
-  width: 800px;
-  height: 400px;
+  width: clamp(260px, 90vw, 800px);
+  height: auto;
+  aspect-ratio: 2 / 1;
   top: -120px;
   left: 50%;
   transform: translateX(-50%);
@@ -900,6 +933,38 @@ body {
   filter: drop-shadow(2px 2px 3px rgba(0, 0, 0, 0.6))
           drop-shadow(0 1px 2px rgba(0, 0, 0, 0.8));
   animation: goldShine 4.5s linear infinite;
+}
+
+@media (max-width: 768px) {
+  .fire-title h1 {
+    font-size: 2.4rem;
+    letter-spacing: 0.05em;
+  }
+
+  .fire-quote {
+    font-size: 1.1rem;
+    letter-spacing: 0.03em;
+  }
+
+  .fire-animation {
+    top: -55px;
+  }
+}
+
+@media (max-width: 480px) {
+  .fire-title h1 {
+    font-size: 1.9rem;
+    letter-spacing: 0.02em;
+  }
+
+  .fire-quote {
+    font-size: 0.95rem;
+  }
+
+  .fire-animation {
+    width: min(92vw, 440px);
+    top: -30px;
+  }
 }
 
 @keyframes goldShine {
