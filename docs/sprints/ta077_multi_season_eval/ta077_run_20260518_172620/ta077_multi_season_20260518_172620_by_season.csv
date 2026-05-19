@@ -1,0 +1,6 @@
+season,row_count,winner_accuracy_pct,spread_accuracy_pct,total_accuracy_pct,margin_mae_points,total_mae_points,winner_coverage_pct,spread_coverage_pct,total_coverage_pct,predicted_total_equals_vegas_total_pct,total_pick_evaluable_rows,predicted_after_game_date_pct,ai_vs_vegas_total_games,ai_vs_vegas_ai_wins,ai_vs_vegas_vegas_wins,ai_vs_vegas_ties,ai_vs_vegas_ai_win_pct,ai_vs_vegas_vegas_win_pct,ai_vs_vegas_tie_pct,finding_ids,leakage_pass,line_lock_pass,total_coverage_pass,overall_pass
+2021,0,,,,,,,,,,0,,0,0,0,0,,,,F4,False,False,False,False
+2022,0,,,,,,,,,,0,,0,0,0,0,,,,F4,False,False,False,False
+2023,256,56.64,66.67,,11.698,10.338,100.0,98.44,0.0,100.0,0,100.0,256,59,31,166,23.05,12.11,64.84,"F1,F2,F3,F4",False,False,False,False
+2024,272,53.31,67.9,,12.084,9.723,100.0,99.63,0.0,100.0,0,94.12,256,52,34,170,20.31,13.28,66.41,"F1,F2,F3,F4",False,False,False,False
+2025,0,,,,,,,,,,0,,0,0,0,0,,,,F4,False,False,False,False

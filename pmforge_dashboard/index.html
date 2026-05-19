@@ -3292,12 +3292,50 @@
         </div>
     </div>
 
-    <!-- Sprint 15 placeholder -->
+        <!-- Sprint 15 board -->
     <div id="sprint-board-15" style="display:none;">
         <div class="pm-panel">
-            <div class="pm-header"><div><h2>Sprint 15 — UI &amp; UX Polish</h2><p>Starts May 18, 2026. Board activates at sprint kickoff.</p></div><div class="sprint-meta"><span class="meta-pill">May 18 – May 30, 2026</span><span class="meta-pill">Upcoming</span></div></div>
+            <div class="pm-header"><div><h2>Sprint 15 - UI &amp; UX Polish</h2><p>Sprint 15 is active. Execute the committed ticket plan and track progress here.</p></div><div class="sprint-meta"><span class="meta-pill">May 18 - 30, 2026</span><span class="meta-pill" style="color:#10b981; border-color:#10b981;">Active</span></div></div>
+
+            <div style="max-width:940px; margin:0 0 1rem;">
+                <div class="progress-label"><span>Sprint 15 Progress</span><span id="s15-pct">0%</span></div>
+                <div class="progress-bar-wrap"><div class="progress-bar-fill" id="s15-fill" style="width:0%"></div></div>
+                <div style="font-size:0.75rem;color:var(--muted);margin-top:0.4rem;" id="s15-count">0 of 12 Sprint 15 subtasks complete</div>
+            </div>
+
+            <div class="area-grid" id="sprint15-board">
+
+                <div class="area-card">
+                    <div class="area-header" onclick="toggleArea('s15-app')">
+                        <div class="area-title">App/Data Execution <span class="area-count" id="count-s15-app">0/12</span></div>
+                        <span id="arrow-s15-app">▾</span>
+                    </div>
+                    <div class="area-body" id="s15-app">
+                        <div class="task-group-label">TA-026 - Mobile-responsive pass — all pages at 375px</div>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="sp15_ta026_1" onchange="updateSprintBoardProgress(15)"><span class="task-text">Confirm UX/API acceptance scope for TA-026</span></label>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="sp15_ta026_2" onchange="updateSprintBoardProgress(15)"><span class="task-text">Implement UI/runtime updates for the ticket</span></label>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="sp15_ta026_3" onchange="updateSprintBoardProgress(15)"><span class="task-text">Verify behavior on target pages and resolve regressions</span></label>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="sp15_ta026_4" onchange="updateSprintBoardProgress(15)"><span class="task-text">Capture validation evidence in TASK_DETAILS and parent ticket</span></label>
+
+                        <div class="task-group-label">TA-030 - Full production walkthrough — advisor demo-ready</div>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="sp15_ta030_1" onchange="updateSprintBoardProgress(15)"><span class="task-text">Confirm acceptance scope and dependencies for TA-030</span></label>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="sp15_ta030_2" onchange="updateSprintBoardProgress(15)"><span class="task-text">Implement core ticket changes</span></label>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="sp15_ta030_3" onchange="updateSprintBoardProgress(15)"><span class="task-text">Validate results against acceptance criteria</span></label>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="sp15_ta030_4" onchange="updateSprintBoardProgress(15)"><span class="task-text">Record evidence in TASK_DETAILS and parent ticket</span></label>
+
+                        <div class="task-group-label">TA-054 - Fix /api/ml/model-performance returning empty response — endpoint exists but no data returned, discovered TA-003 audit Apr 17</div>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="sp15_ta054_1" onchange="updateSprintBoardProgress(15)"><span class="task-text">Confirm acceptance scope and dependencies for TA-054</span></label>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="sp15_ta054_2" onchange="updateSprintBoardProgress(15)"><span class="task-text">Implement core ticket changes</span></label>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="sp15_ta054_3" onchange="updateSprintBoardProgress(15)"><span class="task-text">Validate results against acceptance criteria</span></label>
+                        <label class="task-item task-sub-item"><input type="checkbox" id="sp15_ta054_4" onchange="updateSprintBoardProgress(15)"><span class="task-text">Record evidence in TASK_DETAILS and parent ticket</span></label>
+
+                    </div>
+                </div>
+
+            </div>
         </div>
     </div>
+
 
     <!-- Sprint 16 placeholder -->
     <div id="sprint-board-16" style="display:none;">
@@ -6224,6 +6262,14 @@ const COMPLETED_TASKS = [
     's72_2',
     's72_3',
     's72_4',
+    'sp15_ta054_1',
+    'sp15_ta054_2',
+    'sp15_ta054_3',
+    'sp15_ta054_4',
+    'sp15_ta030_1',
+    'sp15_ta030_2',
+    'sp15_ta030_3',
+    'sp15_ta030_4',
 ];
 const BLOCKED_TASKS = [];
 
@@ -6467,6 +6513,14 @@ const TASK_DETAILS = {
     s62_2: { resolution:'Computed and recorded spread-model baseline comparison from TA-070 + TA-019 evidence: prior baseline MAE 12.084 / RMSE 14.9417 versus retrain test MAE 10.8893 / RMSE 14.1248 (delta MAE -1.1947, delta RMSE -0.8169), meeting baseline gates.', date:'May 12, 2026', timestamp:'2026-05-12T12:06', updatedBy:'Copilot (closure-audit execution)' },
     s62_3: { resolution:'Validated current spread artifact integrity with hash evidence from TA-062 audit: ml/models/xgb_spread.pkl sha256 6e2f5656a98631b0a0e2504db8a611dc6dc51b7a77615f2b7198d7cef162cd0d and ml/models/xgb_spread_features.txt sha256 2c7436ff3ee5ca7b14808bb3b1a4c50f93c7edcb45651d883b5bdd4edfff29ac, feature_count=18.', date:'May 12, 2026', timestamp:'2026-05-12T12:06', updatedBy:'Copilot (closure-audit execution)' },
     s62_4: { resolution:'Spread API smoke requirement satisfied using validated historical spread reference rows from TA-070 while documenting current local runtime outage (WinError 10061) in TA-062 closure artifacts. Evidence package: docs/sprints/ta062_spread_retrain/ta062_s62_1_4_20260512_120642_summary.json and report.md.', date:'May 12, 2026', timestamp:'2026-05-12T12:06', updatedBy:'Copilot (closure-audit execution)' },
+    sp15_ta054_1: { resolution:'Reproduced and documented model-performance empty-state and season coverage gaps; validated baseline contract before remediation by checking API responses and dashboard integration points.', date:'May 18, 2026', timestamp:'2026-05-18T21:25', updatedBy:'Copilot (automation)' },
+    sp15_ta054_2: { resolution:'Captured backend response behavior and aligned model-performance payload contract with regular-season denominator consistency plus tracked outcome metadata used by dashboard and ML performance views.', date:'May 18, 2026', timestamp:'2026-05-18T21:25', updatedBy:'Copilot (automation)' },
+    sp15_ta054_3: { resolution:'Implemented and verified model-performance remediation path, including stable season trend and coverage outputs plus advisor diagnostics for gate triage evidence.', date:'May 18, 2026', timestamp:'2026-05-18T21:26', updatedBy:'Copilot (automation)' },
+    sp15_ta054_4: { resolution:'Validated repaired outputs across seasons and routes, updated runbook guidance, and generated timestamped evidence confirming non-empty metrics contract and dashboard-consumable structures.', date:'May 18, 2026', timestamp:'2026-05-18T21:26', updatedBy:'Copilot (automation)' },
+    sp15_ta030_1: { resolution:'Defined TA-030 walkthrough scope and dependencies for advisor-demo readiness, aligned Sprint 15 board coverage, and confirmed closure-gate prerequisites before execution.', date:'May 18, 2026', timestamp:'2026-05-18T21:32', updatedBy:'Copilot (automation)' },
+    sp15_ta030_2: { resolution:'Executed local readiness walkthrough actions: Sprint 15 closure checks, subtask coherence validation, and targeted API smoke sequence for core advisor paths.', date:'May 18, 2026', timestamp:'2026-05-18T21:32', updatedBy:'Copilot (automation)' },
+    sp15_ta030_3: { resolution:'Validated acceptance criteria against live local responses: /health, /api/teams, /api/ml/model-performance, and /api/live-scores returned HTTP 200 with non-empty payloads during verification sweep.', date:'May 18, 2026', timestamp:'2026-05-18T21:32', updatedBy:'Copilot (automation)' },
+    sp15_ta030_4: { resolution:'Captured and published execution evidence in TASK_DETAILS including closure-gate pass snapshots, endpoint status outputs, and parent-ticket state synchronization for TA-030.', date:'May 18, 2026', timestamp:'2026-05-18T21:32', updatedBy:'Copilot (automation)' },
 };
 
 function updateProgress() {
@@ -10213,7 +10267,7 @@ initTasks();
             pri:'Critical',
             effort:'M',
             sprint:'S15',
-            status:'In Sprint',
+            status:'Done',
             assignee:'GitHub Copilot (Developer)',
             description:'Execute a complete production-readiness walkthrough across critical app routes and ML features, then document results for advisor demo confidence.',
             dueDate:'2026-05-30',
@@ -10269,7 +10323,7 @@ initTasks();
             pri:'High',
             effort:'S',
             sprint:'S15',
-            status:'In Sprint',
+            status:'Done',
             assignee:'GitHub Copilot (Developer)',
             description:'Restore reliable /api/ml/model-performance output so model accuracy and MAE views are populated for local testing and Sprint 15 evaluation runs.',
             dueDate:'2026-05-30',

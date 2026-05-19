@@ -8,9 +8,20 @@ from bs4 import BeautifulSoup
 import psycopg2
 from dotenv import load_dotenv
 import os
+import sys
 from datetime import datetime
-from logging_config import setup_logging, log_activity
-from team_abbreviations import to_canonical_abbr
+from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+try:
+    from logging_config import setup_logging, log_activity
+except ModuleNotFoundError:
+    from scripts.maintenance.logging_config import setup_logging, log_activity
+
+from team_abbreviations import to_canonical_abbr, to_hcl_abbr
 
 # Load environment variables
 load_dotenv()
@@ -79,7 +90,7 @@ def scrape_defense_stats():
                 pa = float(cells[2].get_text(strip=True))
                 teams.append({'name': team_name, 'pa': pa})
     
-    print(f"✓ Scraped {len(teams)} teams - Defense (PA)")
+    print(f"[OK] Scraped {len(teams)} teams - Defense (PA)")
     return teams
 
 def scrape_standings():
@@ -118,12 +129,12 @@ def scrape_standings():
         
         teams_list = list(teams.values())
         log_activity('scraper', 'info', f'Scraped standings for {len(teams_list)} teams')
-        print(f"✓ Scraped {len(teams_list)} teams - Standings (W-L) from ESPN")
+        print(f"[OK] Scraped {len(teams_list)} teams - Standings (W-L) from ESPN")
         return teams_list
     
     except Exception as e:
         log_activity('scraper', 'error', f'Standings scrape failed: {str(e)}')
-        print(f"⚠️  Standings scrape failed: {e}")
+        print(f"[WARN] Standings scrape failed: {e}")
         return []
 
 def combine_stats():
@@ -160,7 +171,7 @@ def combine_stats():
                 'losses': stand_team['losses'] if stand_team else 0
             })
     
-    print(f"\n✓ Combined data for {len(combined)} teams")
+    print(f"\n[OK] Combined data for {len(combined)} teams")
     return combined
 
 def normalize_team_name(short_name):
@@ -223,12 +234,12 @@ def update_database():
     teams = combine_stats()
     
     if not teams:
-        print("❌ No data scraped, database not updated")
+        print("[ERROR] No data scraped, database not updated")
         return False
     
     if len(teams) < MIN_EXPECTED_TEAMS:
         print(
-            f"❌ Safety stop: scraped {len(teams)} teams "
+            f"[ERROR] Safety stop: scraped {len(teams)} teams "
             f"(< {MIN_EXPECTED_TEAMS}); keeping existing database data"
         )
         return False
@@ -240,33 +251,22 @@ def update_database():
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        cursor.execute("SELECT id, abbreviation, name FROM teams")
-        existing_rows = cursor.fetchall()
-
-        existing_by_abbr = {}
-        existing_by_name = {}
-        for existing_id, existing_abbr, existing_name in existing_rows:
-            canonical_abbr = to_canonical_abbr(existing_abbr)
-            if canonical_abbr:
-                existing_by_abbr[canonical_abbr] = existing_id
-            if existing_name:
-                existing_by_name[existing_name.strip().lower()] = existing_id
-
         updated_count = 0
-        unmatched_count = 0
+        inserted_count = 0
+        skipped_count = 0
 
         for team in teams:
-            abbreviation = to_canonical_abbr(get_team_abbreviation(team['name']))
+            canonical_abbreviation = to_canonical_abbr(get_team_abbreviation(team['name']))
+            db_abbreviation = to_hcl_abbr(canonical_abbreviation) or canonical_abbreviation
+            if not canonical_abbreviation:
+                skipped_count += 1
+                continue
+
             wins = int(team.get('wins', 0))
             losses = int(team.get('losses', 0))
             ppg = round(float(team.get('ppg', 0.0)), 1)
             pa = round(float(team.get('pa', 0.0)), 1)
             games_played = wins + losses
-
-            team_id = existing_by_abbr.get(abbreviation) or existing_by_name.get(team['name'].strip().lower())
-            if team_id is None:
-                unmatched_count += 1
-                continue
 
             cursor.execute(
                 """
@@ -278,17 +278,31 @@ def update_database():
                     ppg = %s,
                     pa = %s,
                     games_played = %s
-                WHERE id = %s
+                WHERE abbreviation IN (%s, %s)
                 """,
-                (team['name'], abbreviation, wins, losses, ppg, pa, games_played, team_id),
+                (team['name'], canonical_abbreviation, wins, losses, ppg, pa, games_played, canonical_abbreviation, db_abbreviation),
             )
-            updated_count += cursor.rowcount
 
-        if updated_count < MIN_EXPECTED_TEAMS:
+            if cursor.rowcount > 0:
+                updated_count += 1
+                continue
+
+            cursor.execute(
+                """
+                INSERT INTO teams (name, abbreviation, wins, losses, ppg, pa, games_played)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
+                """,
+                (team['name'], canonical_abbreviation, wins, losses, ppg, pa, games_played),
+            )
+            inserted_count += 1
+
+        processed_count = updated_count + inserted_count
+
+        if processed_count < MIN_EXPECTED_TEAMS:
             conn.rollback()
             print(
-                f"❌ Safety rollback: only {updated_count} teams matched existing rows "
-                f"({unmatched_count} unmatched)"
+                f"[ERROR] Safety rollback: only {processed_count} teams processed "
+                f"({updated_count} updated, {inserted_count} inserted, {skipped_count} skipped)"
             )
             return False
 
@@ -298,7 +312,7 @@ def update_database():
         if total_count < MIN_EXPECTED_TEAMS:
             conn.rollback()
             print(
-                f"❌ Safety rollback: teams table has {total_count} rows "
+                f"[ERROR] Safety rollback: teams table has {total_count} rows "
                 f"(< {MIN_EXPECTED_TEAMS})"
             )
             return False
@@ -306,8 +320,8 @@ def update_database():
         conn.commit()
 
         print(
-            f"\n✅ Database updated: {len(teams)} processed "
-            f"({updated_count} updated, {unmatched_count} unmatched), total={total_count}"
+            f"\n[OK] Database updated: {len(teams)} processed "
+            f"({updated_count} updated, {inserted_count} inserted, {skipped_count} skipped), total={total_count}"
         )
         print("="*70 + "\n")
 
@@ -319,7 +333,7 @@ def update_database():
     except Exception as e:
         if conn:
             conn.rollback()
-        print(f"❌ Database update failed: {e}")
+        print(f"[ERROR] Database update failed: {e}")
         return False
     finally:
         if cursor:
@@ -350,14 +364,14 @@ def record_update():
         conn.close()
         
     except Exception as e:
-        print(f"⚠️  Error recording update: {e}")
+        print(f"[WARN] Error recording update: {e}")
 
 if __name__ == "__main__":
     # Update database with fresh data
     success = update_database()
     
     if success:
-        print("✅ TeamRankings data refresh complete!")
+        print("[OK] TeamRankings data refresh complete!")
     else:
-        print("❌ Data refresh failed!")
+        print("[ERROR] Data refresh failed!")
 

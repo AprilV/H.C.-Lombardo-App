@@ -1,7 +1,9 @@
 # SYSTEM TOPOLOGY
 
 **Authority Level:** Architecture Reference  
-**Last Updated:** December 20, 2025
+**Last Updated:** May 14, 2026
+
+**Startup Control Note:** For local operation, use `python startup.py` to start services and `python shutdown.py` to stop services.
 
 ## PURPOSE
 
@@ -19,7 +21,7 @@ This document explains the complete network topology of the HC Lombardo App in b
            ↓
 ┌─────────────────────────────────────────────┐
 │      AWS AMPLIFY - Frontend Website         │
-│  https://master.d2tamnlcbzo0d5.amplifyapp.com/│
+│  Current live frontend host (verify current)│
 │                                             │
 │  • React application (JavaScript)           │
 │  • Source: GitHub master branch             │
@@ -54,8 +56,8 @@ This document explains the complete network topology of the HC Lombardo App in b
 ```
 
 **Production URLs:**
-- Frontend: https://master.d2tamnlcbzo0d5.amplifyapp.com/
-- API: http://34.198.25.249:5000
+- Frontend: Verify current live host in deployment/dashboard config
+- API: Verify current live API host in deployment docs
 - Database: localhost:5432 (on EC2)
 
 **Production Git Branch:** `master`
@@ -76,23 +78,21 @@ This document explains the complete network topology of the HC Lombardo App in b
 │           npm start (port 3000)             │
 │                                             │
 │  • EXACT SAME React code as production      │
-│  • Source: c:\IS330\H.C Lombardo App\frontend│
+│  • Source: c:\ReactGitEC2\IS330\H.C Lombardo App\frontend│
 │  • Runs on developer's PC                   │
 │  • Environment variable points to test API  │
-│  • REACT_APP_API_URL=http://100.48.43.144:5000│
+│  • REACT_APP_API_URL=http://127.0.0.1:5000  │
 └──────────┬──────────────────────────────────┘
            │ HTTP API calls
            ↓
 ┌─────────────────────────────────────────────┐
-│    AWS EC2 (100.48.43.144:5000)            │
-│           Test API Server                   │
+│    Local Flask API (127.0.0.1:5000)        │
+│         Development API Server              │
 │                                             │
-│  • EXACT SAME Python code as production     │
-│  • Source: GitHub test branch               │
-│  • Manual deployment via deploy_to_test.sh  │
-│  • Service: systemd (hc-lombardo-test.service)│
-│  • 2 Gunicorn workers, 120s timeout         │
-│  • IDENTICAL configuration to production    │
+│  • Same backend codebase as production      │
+│  • Source: local workspace                  │
+│  • Started via startup.py / START-DEV.bat   │
+│  • Local dev runtime configuration           │
 └──────────┬──────────────────────────────────┘
            │ SQL queries
            ↓
@@ -108,7 +108,7 @@ This document explains the complete network topology of the HC Lombardo App in b
 
 **Test URLs:**
 - Frontend: http://localhost:3000 (on developer PC)
-- API: http://100.48.43.144:5000
+- API: http://127.0.0.1:5000
 - Database: localhost:5432 (on test EC2)
 
 **Test Git Branch:** `test`
@@ -120,10 +120,10 @@ This document explains the complete network topology of the HC Lombardo App in b
 | Component | Production | Test |
 |-----------|-----------|------|
 | **Frontend Hosting** | AWS Amplify | Developer's PC (npm start) |
-| **Frontend URL** | https://master.d2tamnlcbzo0d5.amplifyapp.com/ | http://localhost:3000 |
-| **Frontend Source** | GitHub master | Local filesystem (c:\IS330\...\frontend) |
+| **Frontend URL** | Current live host (verify) | http://localhost:3000 |
+| **Frontend Source** | GitHub master | Local filesystem (c:\ReactGitEC2\...\frontend) |
 | **Frontend Deployment** | Auto (Amplify watches master) | Manual (npm start) |
-| **API Server IP** | 34.198.25.249 | 100.48.43.144 |
+| **API Server Host** | Current production host (verify) | 127.0.0.1 |
 | **API Source** | GitHub master | GitHub test branch |
 | **API Deployment** | Manual SSH | bash deploy_to_test.sh |
 | **Service Name** | hc-lombardo.service | hc-lombardo-test.service |
@@ -187,20 +187,20 @@ React app displays data in browser
 ```
 User clicks button in browser (localhost:3000)
   ↓
-React app (npm start on PC) sends HTTP request to 100.48.43.144:5000/api/...
+React app (npm start on PC) sends HTTP request to 127.0.0.1:5000/api/...
   ↓
-Flask app (api_server.py on test EC2) receives request
+Flask app (api_server.py locally) receives request
   ↓
 Routes to api_routes_hcl.py or api_routes_ml.py
   ↓
-Queries PostgreSQL database (localhost:5432 on test EC2)
+Queries PostgreSQL database (localhost:5432)
   ↓
 Returns JSON response
   ↓
 React app displays data in browser
 ```
 
-**Key Point:** The data flow is IDENTICAL. Only the server IPs differ.
+**Key Point:** The data flow is IDENTICAL. Only runtime hosts differ by mode.
 
 ---
 
@@ -223,7 +223,7 @@ React app displays data in browser
 4. **Run frontend locally:**
    ```powershell
    cd frontend
-   $env:REACT_APP_API_URL="http://100.48.43.144:5000"
+  $env:REACT_APP_API_URL="http://127.0.0.1:5000"
    npm start
    ```
 5. **Test in browser:** http://localhost:3000
@@ -274,7 +274,7 @@ React app displays data in browser
 ### Access Control
 
 - **Production EC2:** SSH via hc-lombardo-key.pem (34.198.25.249)
-- **Test EC2:** SSH via hc-lombardo-key.pem (100.48.43.144)
+- **Test EC2:** Verify current host before SSH (environment may be local-only)
 - **Both EC2s:** Security group allows SSH (22), HTTP (80), Custom TCP (5000)
 
 ---
@@ -329,12 +329,12 @@ Test environment is expendable - can be rebuilt from scratch using setup_test_en
 
 **Diagnosis:**
 1. Check which API URL frontend is using (browser DevTools Network tab)
-2. Verify API server is running: `curl http://100.48.43.144:5000/health`
+2. Verify API server is running: `curl http://127.0.0.1:5000/health`
 3. Check REACT_APP_API_URL environment variable
 
 **Solution:**
-- Production: Frontend should call 34.198.25.249:5000
-- Test: Set `$env:REACT_APP_API_URL="http://100.48.43.144:5000"` before npm start
+- Production: Frontend should call the currently configured production API host
+- Test: Set `$env:REACT_APP_API_URL="http://127.0.0.1:5000"` before npm start
 
 ### "Changes not showing up after deployment"
 
@@ -372,6 +372,6 @@ Test environment is expendable - can be rebuilt from scratch using setup_test_en
 - **Setup Script:** setup_test_environment.sh
 - **Deployment Script:** deploy_to_test.sh
 - **User Guide:** TEST_ENVIRONMENT_GUIDE.md
-- **Production API:** 34.198.25.249:5000
-- **Test API:** 100.48.43.144:5000
+- **Production API:** Verify current production host
+- **Test API:** 127.0.0.1:5000
 - **GitHub Repo:** https://github.com/AprilV/H.C.-Lombardo-App

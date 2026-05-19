@@ -1,0 +1,57 @@
+{
+  "generated_at_utc": "2026-05-18T17:26:22.773484+00:00",
+  "source_combined_csv": "docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2022/ta070_s70_1_20260518_172622_combined.csv",
+  "seasons": [],
+  "total_line_lock": {
+    "rows_with_predicted_total_and_vegas_total": 0,
+    "rows_predicted_total_equals_vegas_total": 0,
+    "predicted_total_equals_vegas_total_pct": null,
+    "total_pick_evaluable_rows": 0
+  },
+  "drift": {
+    "weekly_winner_accuracy_pct_stddev": null,
+    "weekly_winner_accuracy_pct_min": null,
+    "weekly_winner_accuracy_pct_max": null,
+    "early_weeks_1_9": {
+      "correct": 0,
+      "total": 0,
+      "accuracy_pct": null
+    },
+    "late_weeks_10_18": {
+      "correct": 0,
+      "total": 0,
+      "accuracy_pct": null
+    },
+    "worst_weeks": [],
+    "best_weeks": []
+  },
+  "db_diagnostics": {
+    "timing_and_margin": {
+      "rows_total": 0,
+      "predicted_at_null": 0,
+      "predicted_after_game_date": 0,
+      "predicted_on_game_date": 0,
+      "predicted_before_game_date": 0,
+      "predicted_after_game_date_pct": null,
+      "min_predicted_at": null,
+      "max_predicted_at": null,
+      "min_game_date": null,
+      "max_game_date": null,
+      "negative_actual_margin_rows": 0,
+      "away_win_games_in_hcl_games": 0
+    },
+    "confidence_bins": []
+  },
+  "findings": [
+    {
+      "finding_id": "F4",
+      "category": "data_drift_or_instability",
+      "severity": "medium",
+      "title": "Weekly winner performance is highly volatile without clear directional drift",
+      "evidence": "weekly winner accuracy min=None%, max=None%, stddev=None; early_weeks=None%, late_weeks=None%",
+      "code_refs": [
+        "docs/sprints/ta070_audit_data/ta070_s70_2_20260504_230454_by_week.csv:2"
+      ]
+    }
+  ]
+}

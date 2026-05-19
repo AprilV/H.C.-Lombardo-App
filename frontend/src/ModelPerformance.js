@@ -6,7 +6,7 @@ const API_URL = process.env.REACT_APP_API_URL ?? '';
 
 function ModelPerformance() {
   const defaultSeason = getDefaultSeason();
-  const seasonOptions = getRecentSeasons(3, 1999, defaultSeason);
+  const seasonOptions = getRecentSeasons(6, 1999, defaultSeason);
 
   const [performanceData, setPerformanceData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -19,10 +19,14 @@ function ModelPerformance() {
     return () => clearInterval(interval);
   }, [selectedSeason]);
 
+  const fetchPerformanceForSeason = async (season) => {
+    const response = await fetch(`${API_URL}/api/ml/performance-stats?season=${season}`);
+    return response.json();
+  };
+
   const fetchPerformance = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/ml/performance-stats?season=${selectedSeason}`);
-      const data = await response.json();
+      const data = await fetchPerformanceForSeason(selectedSeason);
       
       if (data.success) {
         setPerformanceData(data);
@@ -61,22 +65,73 @@ function ModelPerformance() {
     );
   }
 
-  if (!performanceData || !performanceData.overall || performanceData.overall.total_games === 0) {
+  const modelBreakdown = performanceData?.model_breakdown || {};
+  const seasonTrend = performanceData?.season_trend || [];
+  const integrity = performanceData?.integrity || {};
+  const warnings = performanceData?.warnings || [];
+  const xgbSummary = modelBreakdown?.xgb || {};
+  const eloSummary = modelBreakdown?.elo || {};
+  const agreementSummary = modelBreakdown?.agreement || {};
+  const vegasSummary = modelBreakdown?.vegas || {};
+  const completedGames = Number(performanceData?.completed_games || 0);
+
+  const xgbGames = Number(xgbSummary?.scored_games || 0);
+  const eloGames = Number(eloSummary?.scored_games || 0);
+  const hasAnyPerformanceData = xgbGames > 0 || eloGames > 0;
+
+  const getModelDataStatus = (modelName, summary) => {
+    const predictedGames = Number(summary?.predicted_games || 0);
+    const scoredGames = Number(summary?.scored_games || 0);
+
+    if (completedGames === 0) {
+      return `No completed regular-season games are available for ${selectedSeason}.`;
+    }
+
+    if (predictedGames === 0) {
+      return `${modelName} has no tracked prediction rows for this season.`;
+    }
+
+    if (scoredGames === 0) {
+      return `${modelName} predictions exist but no rows are scored yet.`;
+    }
+
+    if (scoredGames < completedGames) {
+      return `${modelName} has partial scored coverage (${scoredGames}/${completedGames}).`;
+    }
+
+    return `${modelName} has full scored coverage (${scoredGames}/${completedGames}).`;
+  };
+
+  const sortedSeasonTrend = seasonTrend
+    .filter((row) => Number(row?.season || 0) >= 2021)
+    .sort((a, b) => {
+      const seasonA = Number(a?.season || 0);
+      const seasonB = Number(b?.season || 0);
+      return seasonA - seasonB;
+    });
+
+  if (!hasAnyPerformanceData) {
+    const completedGames = Number(performanceData?.completed_games || 0);
+
     return (
       <div className="performance-container">
         <div className="no-data-message">
           <span className="info-icon">📊</span>
-          <h3>No Performance Data Yet</h3>
-          <p>Performance stats will appear once {selectedSeason} games are predicted and results are recorded.</p>
-          <p className="hint">Visit the ML Predictions page to generate predictions for upcoming games.</p>
+          <h3>No Scored Model Data For {selectedSeason}</h3>
+          <p>Completed games: {completedGames}</p>
+          <p>XGBoost scored predictions: {xgbGames}</p>
+          <p>Elo scored predictions: {eloGames}</p>
+          <p className="hint">This season is selected correctly; data is not being hidden by auto-fallback.</p>
         </div>
       </div>
     );
   }
 
   const { overall, by_week } = performanceData;
-  const winRate = parseFloat(overall.win_accuracy) || 0;
-  const avgError = parseFloat(overall.avg_margin_error) || 0;
+  const primaryModel = overall?.model === 'elo' ? 'elo' : 'xgb';
+  const primarySummary = primaryModel === 'elo' ? eloSummary : xgbSummary;
+  const winRate = parseFloat(primarySummary?.win_accuracy ?? overall?.win_accuracy) || 0;
+  const avgError = parseFloat(primarySummary?.avg_margin_error ?? overall?.avg_margin_error) || 0;
 
   // Calculate performance tier
   const getPerformanceTier = (accuracy) => {
@@ -90,7 +145,7 @@ function ModelPerformance() {
   const perfTier = getPerformanceTier(winRate);
 
   // Vegas comparison
-  const vegasAccuracy = 52.5; // Industry standard
+  const vegasAccuracy = parseFloat(vegasSummary?.win_accuracy) || 52.5;
   const beatVegas = winRate - vegasAccuracy;
   const vegasStatus = winRate >= vegasAccuracy ? 'BEATING' : 'BELOW';
 
@@ -114,10 +169,10 @@ function ModelPerformance() {
 
       {/* HERO - AI vs Vegas Comparison */}
       <div className="vegas-hero">
-        <h2 className="hero-title">🎯 AI vs Vegas Performance - {selectedSeason} Season</h2>
+        <h2 className="hero-title">🎯 {primaryModel === 'elo' ? 'Elo' : 'AI'} vs Vegas Performance - {selectedSeason} Season</h2>
         <div className="hero-comparison">
           <div className="comparison-side ai-side">
-            <div className="side-label">H.C. LOMBARDO AI</div>
+            <div className="side-label">{primaryModel === 'elo' ? 'H.C. LOMBARDO ELO' : 'H.C. LOMBARDO AI'}</div>
             <div className="side-number ai-number">{winRate.toFixed(1)}%</div>
             <div className="side-detail">{overall.correct_predictions}/{overall.total_games} wins</div>
             <div className="side-tier" style={{ color: perfTier.color }}>
@@ -140,7 +195,7 @@ function ModelPerformance() {
           <div className="comparison-side vegas-side">
             <div className="side-label">VEGAS SPREADS</div>
             <div className="side-number vegas-number">{vegasAccuracy.toFixed(1)}%</div>
-            <div className="side-detail">Industry Standard</div>
+            <div className="side-detail">{vegasSummary?.evaluable_games || 0} evaluable games</div>
             <div className="side-tier" style={{ color: '#6b7280' }}>
               📈 Benchmark
             </div>
@@ -153,7 +208,7 @@ function ModelPerformance() {
         <div className="quick-stat">
           <div className="stat-icon-big">🎲</div>
           <div className="stat-value-big">{overall.total_games}</div>
-          <div className="stat-label-small">Games Tracked</div>
+          <div className="stat-label-small">Primary Model Games</div>
         </div>
         <div className="quick-stat">
           <div className="stat-icon-big">✅</div>
@@ -172,9 +227,175 @@ function ModelPerformance() {
         </div>
       </div>
 
+      <div className="performance-insights">
+        <h3>🤖 Model Coverage & Accuracy</h3>
+        <div className="insights-grid">
+          <div className="insight-card">
+            <div className="insight-icon">🧠</div>
+            <div className="insight-content">
+              <h4>XGBoost</h4>
+              <p>
+                Accuracy: {xgbGames > 0 ? `${(parseFloat(xgbSummary?.win_accuracy) || 0).toFixed(1)}%` : 'N/A'}
+                {' '}| Scored: {xgbGames}
+                {' '}| Coverage: {(parseFloat(xgbSummary?.coverage_pct) || 0).toFixed(1)}%
+              </p>
+              <p className="data-availability">{getModelDataStatus('XGBoost', xgbSummary)}</p>
+            </div>
+          </div>
+
+          <div className="insight-card">
+            <div className="insight-icon">📈</div>
+            <div className="insight-content">
+              <h4>Elo</h4>
+              <p>
+                Accuracy: {eloGames > 0 ? `${(parseFloat(eloSummary?.win_accuracy) || 0).toFixed(1)}%` : 'N/A'}
+                {' '}| Scored: {eloGames}
+                {' '}| Coverage: {(parseFloat(eloSummary?.coverage_pct) || 0).toFixed(1)}%
+              </p>
+              <p className="data-availability">{getModelDataStatus('Elo', eloSummary)}</p>
+            </div>
+          </div>
+
+          <div className="insight-card">
+            <div className="insight-icon">🤝</div>
+            <div className="insight-content">
+              <h4>Head-to-Head Agreement</h4>
+              <p>
+                Agreement: {(parseFloat(agreementSummary?.agreement_rate) || 0).toFixed(1)}%
+                {' '}| Both Models: {agreementSummary?.both_models_games || 0}
+                {' '}| Splits: {agreementSummary?.split_games || 0}
+              </p>
+              <p className="data-availability">
+                Head-to-head on splits: XGBoost {agreementSummary?.xgb_head_to_head_wins || 0}
+                {' '}| Elo {agreementSummary?.elo_head_to_head_wins || 0}
+                {' '}| Ties {agreementSummary?.head_to_head_ties || 0}
+              </p>
+            </div>
+          </div>
+
+          <div className="insight-card">
+            <div className="insight-icon">🎰</div>
+            <div className="insight-content">
+              <h4>Vegas Benchmark</h4>
+              <p>
+                Accuracy: {(parseFloat(vegasSummary?.win_accuracy) || 0).toFixed(1)}%
+                {' '}| Correct: {vegasSummary?.correct_predictions || 0}
+                {' '}| Evaluable: {vegasSummary?.evaluable_games || 0}
+              </p>
+              <p className="data-availability">
+                Evaluable spread rows: {vegasSummary?.evaluable_games || 0}/{completedGames}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {sortedSeasonTrend.length > 0 && (
+        <div className="season-trend-section">
+          <h3>📈 Multi-Season Trend</h3>
+          <p className="season-trend-subtitle">
+            Accuracy and scored coverage by season across XGBoost, Elo, and Vegas benchmark.
+          </p>
+
+          <div className="season-trend-grid">
+            {sortedSeasonTrend.map((seasonRow) => {
+              const trendSeason = seasonRow?.season;
+              const trendXgb = seasonRow?.xgb || {};
+              const trendElo = seasonRow?.elo || {};
+              const trendVegas = seasonRow?.vegas || {};
+
+              const trendXgbAcc = Number(trendXgb?.win_accuracy || 0);
+              const trendEloAcc = Number(trendElo?.win_accuracy || 0);
+              const trendVegasAcc = Number(trendVegas?.win_accuracy || 0);
+
+              return (
+                <div key={trendSeason} className="season-trend-card">
+                  <h4>{trendSeason} Season</h4>
+                  <p className="season-trend-meta">Completed games: {seasonRow?.completed_games || 0}</p>
+
+                  <div className="trend-row">
+                    <span className="trend-label">XGBoost</span>
+                    <div className="trend-bar-bg">
+                      <div className="trend-bar trend-bar-xgb" style={{ width: `${trendXgbAcc}%` }}></div>
+                    </div>
+                    <span className="trend-value">{trendXgbAcc.toFixed(1)}%</span>
+                  </div>
+                  <p className="trend-coverage">Coverage: {Number(trendXgb?.coverage_pct || 0).toFixed(1)}%</p>
+
+                  <div className="trend-row">
+                    <span className="trend-label">Elo</span>
+                    <div className="trend-bar-bg">
+                      <div className="trend-bar trend-bar-elo" style={{ width: `${trendEloAcc}%` }}></div>
+                    </div>
+                    <span className="trend-value">{trendEloAcc.toFixed(1)}%</span>
+                  </div>
+                  <p className="trend-coverage">Coverage: {Number(trendElo?.coverage_pct || 0).toFixed(1)}%</p>
+
+                  <div className="trend-row">
+                    <span className="trend-label">Vegas</span>
+                    <div className="trend-bar-bg">
+                      <div className="trend-bar trend-bar-vegas" style={{ width: `${trendVegasAcc}%` }}></div>
+                    </div>
+                    <span className="trend-value">{trendVegasAcc.toFixed(1)}%</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {warnings.length > 0 && (
+        <div className="performance-insights">
+          <h3>⚠️ Data Integrity Warnings</h3>
+          <div className="insights-grid">
+            {warnings.map((warningText, idx) => (
+              <div key={idx} className="insight-card">
+                <div className="insight-icon">🧪</div>
+                <div className="insight-content">
+                  <h4>Quality Check</h4>
+                  <p>{warningText}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {integrity?.leakage && integrity?.totals_line_lock && (
+        <div className="performance-insights">
+          <h3>🔍 Integrity Snapshot</h3>
+          <div className="insights-grid">
+            <div className="insight-card">
+              <div className="insight-icon">⏱️</div>
+              <div className="insight-content">
+                <h4>Prediction Timing</h4>
+                <p>Predicted after game date: {(parseFloat(integrity?.leakage?.predicted_after_game_date_pct) || 0).toFixed(1)}%</p>
+              </div>
+            </div>
+
+            <div className="insight-card">
+              <div className="insight-icon">➕➖</div>
+              <div className="insight-content">
+                <h4>Margin Sign Consistency</h4>
+                <p>Inconsistent actual margin sign: {(parseFloat(integrity?.margin_sign?.inconsistent_pct) || 0).toFixed(1)}%</p>
+              </div>
+            </div>
+
+            <div className="insight-card">
+              <div className="insight-icon">🎯</div>
+              <div className="insight-content">
+                <h4>Totals Line Lock</h4>
+                <p>Predicted total = Vegas total: {(parseFloat(integrity?.totals_line_lock?.line_locked_pct) || 0).toFixed(1)}%</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Accuracy Progress Bar */}
       <div className="accuracy-visualization">
-        <h3>Win/Loss Accuracy</h3>
+        <h3>Win/Loss Accuracy ({primaryModel === 'elo' ? 'Elo' : 'XGBoost'})</h3>
         <div className="progress-bar-container">
           <div className="progress-bar-bg">
             <div 
@@ -222,7 +443,7 @@ function ModelPerformance() {
       {/* Week-by-Week Performance */}
       {by_week && by_week.length > 0 && (
         <div className="weekly-performance">
-          <h3>📅 Week-by-Week Results</h3>
+          <h3>📅 Week-by-Week Results ({primaryModel === 'elo' ? 'Elo' : 'XGBoost'})</h3>
 
           <div className="weekly-chart">
             {/* Actual tracked weeks */}
@@ -251,26 +472,7 @@ function ModelPerformance() {
               );
             })}
 
-            {/* Week 1 Placeholder - ONLY show for 2023 season */}
-            {selectedSeason === 2023 && (
-              <div className="week-bar-container week-excluded">
-                <div className="week-label">Week 1</div>
-                <div className="week-bar-wrapper">
-                  <div className="week-bar-excluded">
-                    <span className="excluded-label">⚠️ Not Tracked - No prior 2023 data</span>
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
-
-          {/* Week 1 Note - ONLY show for 2023 season */}
-          {selectedSeason === 2023 && (
-            <div className="week1-note">
-              💡 <strong>Note:</strong> ML model requires current season rolling averages. 
-              Week 1 2023 cannot use 2022 data (not available in dataset).
-            </div>
-          )}
         </div>
       )}
 

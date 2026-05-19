@@ -75,7 +75,29 @@ function MLPredictionsRedesign() {
   };
 
   const getTeamLogo = (team) => {
+    if (!team) return '';
     return `https://a.espncdn.com/i/teamlogos/nfl/500/${team}.png`;
+  };
+
+  const formatSpreadForHome = (team, spread) => {
+    if (!team || spread === null || spread === undefined || Number.isNaN(Number(spread))) {
+      return 'N/A';
+    }
+
+    const value = Number(spread);
+    return `${team} ${value > 0 ? '+' : ''}${value.toFixed(1)}`;
+  };
+
+  const getModelResultMeta = (correct, label) => {
+    if (correct === true) {
+      return { className: 'correct', text: `${label} Correct`, icon: '✅' };
+    }
+
+    if (correct === false) {
+      return { className: 'wrong', text: `${label} Missed`, icon: '❌' };
+    }
+
+    return { className: 'unknown', text: `${label} Pending`, icon: '⏳' };
   };
 
   const renderWinnerPicks = () => {
@@ -90,12 +112,20 @@ function MLPredictionsRedesign() {
 
         <div className="picks-grid">
           {combinedData.map((game, idx) => {
+            const hasElo = !!game.elo;
+            const hasXgb = !!game.xgb;
             const eloWinner = game.elo?.predicted_winner;
             const xgbWinner = game.xgb?.predicted_winner;
-            const agreement = game.agreement;
+            const agreement = hasElo && hasXgb ? game.agreement : null;
 
-            const eloConf = game.elo?.confidence || 0;
-            const xgbConf = game.xgb?.confidence || 0;
+            const isFinal = game.game_status === 'final';
+            const actual = game.actual || {};
+            const modelResults = game.model_results || {};
+            const xgbResultMeta = hasXgb ? getModelResultMeta(modelResults.xgb_correct, 'AI') : null;
+            const eloResultMeta = hasElo ? getModelResultMeta(modelResults.elo_correct, 'Elo') : null;
+
+            const eloConf = hasElo ? (game.elo?.confidence || 0) : null;
+            const xgbConf = hasXgb ? (game.xgb?.confidence || 0) : null;
             const avgConf = (eloConf + xgbConf) / 2;
 
             return (
@@ -111,7 +141,7 @@ function MLPredictionsRedesign() {
                 </div>
 
                 <div className="pick-body">
-                  {agreement ? (
+                  {hasElo && hasXgb && agreement ? (
                     <>
                       <div className="consensus-pick">
                         <div className="consensus-badge">✓ CONSENSUS</div>
@@ -137,14 +167,12 @@ function MLPredictionsRedesign() {
                         <div className="model-conf vegas">
                           <span className="model-label">🎰 Vegas:</span>
                           <span className="conf-value">
-                            {game.vegas_spread !== null ? 
-                              `${game.home_team} ${game.vegas_spread > 0 ? '+' : ''}${game.vegas_spread.toFixed(1)}` : 
-                              'Not available'}
+                            {formatSpreadForHome(game.home_team, game.vegas_spread)}
                           </span>
                         </div>
                       </div>
                     </>
-                  ) : (
+                  ) : hasElo && hasXgb ? (
                     <>
                       <div className="split-badge">⚠️ SPLIT PREDICTION</div>
                       <div className="split-picks">
@@ -172,14 +200,73 @@ function MLPredictionsRedesign() {
                         <div className="model-conf vegas">
                           <span className="model-label">🎰 Vegas Line:</span>
                           <span className="conf-value">
-                            {game.vegas_spread !== null ? 
-                              `${game.home_team} ${game.vegas_spread > 0 ? '+' : ''}${game.vegas_spread.toFixed(1)}` : 
-                              'Not available'}
+                            {formatSpreadForHome(game.home_team, game.vegas_spread)}
                           </span>
                         </div>
                       </div>
                     </>
+                  ) : (
+                    <>
+                      <div className="split-badge">ℹ️ SINGLE MODEL AVAILABLE</div>
+                      <div className="split-picks">
+                        <div className="split-pick">
+                          <div className="split-model">{hasElo ? '📈 Elo' : '🤖 AI'}</div>
+                          <div className="split-winner">
+                            <img
+                              src={getTeamLogo(hasElo ? eloWinner : xgbWinner)}
+                              alt={hasElo ? eloWinner : xgbWinner}
+                              className="split-logo"
+                            />
+                            <span>{hasElo ? eloWinner : xgbWinner}</span>
+                          </div>
+                          <div className="split-conf">
+                            {hasElo ? `${(eloConf * 100).toFixed(0)}%` : `${(xgbConf * 100).toFixed(0)}%`}
+                          </div>
+                        </div>
+                        <div className="vs-divider">vs</div>
+                        <div className="split-pick">
+                          <div className="split-model">{hasElo ? '🤖 AI' : '📈 Elo'}</div>
+                          <div className="split-winner">
+                            <span>{hasElo ? 'Pending' : 'Pending'}</span>
+                          </div>
+                          <div className="split-conf">N/A</div>
+                        </div>
+                      </div>
+
+                      <div className="model-breakdown split-info">
+                        <div className="split-note">One model is available for this matchup right now</div>
+                        <div className="model-conf vegas">
+                          <span className="model-label">🎰 Vegas Line:</span>
+                          <span className="conf-value">{formatSpreadForHome(game.home_team, game.vegas_spread)}</span>
+                        </div>
+                      </div>
+                    </>
                   )}
+
+                  <div className={`pick-outcome-strip ${isFinal ? 'final' : 'scheduled'}`}>
+                    {isFinal ? (
+                      <>
+                        <div className="final-result-line">
+                          Final: {game.away_team} {actual.away_score} - {game.home_team} {actual.home_score}
+                          {' '}| Winner: {actual.winner}
+                        </div>
+                        <div className="model-results-line">
+                          {xgbResultMeta && (
+                            <span className={`model-result-badge ${xgbResultMeta.className}`}>
+                              {xgbResultMeta.icon} {xgbResultMeta.text}
+                            </span>
+                          )}
+                          {eloResultMeta && (
+                            <span className={`model-result-badge ${eloResultMeta.className}`}>
+                              {eloResultMeta.icon} {eloResultMeta.text}
+                            </span>
+                          )}
+                        </div>
+                      </>
+                    ) : (
+                      <div className="final-result-line">Scheduled - final result pending</div>
+                    )}
+                  </div>
                 </div>
               </div>
             );
@@ -209,15 +296,19 @@ function MLPredictionsRedesign() {
           </div>
 
           {combinedData.map((game, idx) => {
-            const eloSpread = game.elo?.spread || 0;
-            const xgbSpread = game.xgb?.spread || 0;
+            const eloSpread = game.elo?.spread;
+            const xgbSpread = game.xgb?.spread;
             const vegasSpread = game.vegas_spread;
 
-            const eloEdge = vegasSpread !== null && vegasSpread !== undefined ? Math.abs(eloSpread - vegasSpread) : 0;
-            const xgbEdge = vegasSpread !== null && vegasSpread !== undefined ? Math.abs(xgbSpread - vegasSpread) : 0;
+            const hasVegas = vegasSpread !== null && vegasSpread !== undefined;
+            const hasEloSpread = eloSpread !== null && eloSpread !== undefined;
+            const hasXgbSpread = xgbSpread !== null && xgbSpread !== undefined;
+
+            const eloEdge = hasVegas && hasEloSpread ? Math.abs(eloSpread - vegasSpread) : 0;
+            const xgbEdge = hasVegas && hasXgbSpread ? Math.abs(xgbSpread - vegasSpread) : 0;
             const maxEdge = Math.max(eloEdge, xgbEdge);
 
-            const hasValue = vegasSpread !== null && vegasSpread !== undefined && maxEdge >= 3.0;
+            const hasValue = hasVegas && maxEdge >= 3.0;
 
             return (
               <div key={idx} className={`table-row ${hasValue ? 'value-play' : ''}`}>
@@ -230,22 +321,20 @@ function MLPredictionsRedesign() {
                 </div>
 
                 <div className="col-spread">
-                  <span className={`spread-value ${eloEdge >= 3 ? 'edge-highlight' : ''}`}>
-                    {game.home_team} {eloSpread > 0 ? '+' : ''}{eloSpread.toFixed(1)}
+                  <span className={`spread-value ${hasEloSpread && eloEdge >= 3 ? 'edge-highlight' : ''}`}>
+                    {formatSpreadForHome(game.home_team, eloSpread)}
                   </span>
                 </div>
 
                 <div className="col-spread">
-                  <span className={`spread-value ${xgbEdge >= 3 ? 'edge-highlight' : ''}`}>
-                    {game.home_team} {xgbSpread > 0 ? '+' : ''}{xgbSpread.toFixed(1)}
+                  <span className={`spread-value ${hasXgbSpread && xgbEdge >= 3 ? 'edge-highlight' : ''}`}>
+                    {formatSpreadForHome(game.home_team, xgbSpread)}
                   </span>
                 </div>
 
                 <div className="col-spread vegas-col">
                   <span className="spread-value">
-                    {vegasSpread !== null && vegasSpread !== undefined ? 
-                      `${game.home_team} ${vegasSpread > 0 ? '+' : ''}${vegasSpread.toFixed(1)}` : 
-                      'N/A'}
+                    {formatSpreadForHome(game.home_team, vegasSpread)}
                   </span>
                 </div>
 

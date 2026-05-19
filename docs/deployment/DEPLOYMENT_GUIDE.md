@@ -568,11 +568,16 @@ python api_server.py  # http://localhost:5000
 #### 3. Commit to Git
 ```bash
 git add .
-git commit -m "Descriptive message about changes"
+git commit -m "Bundle release: TA-XXX, TA-YYY, TA-ZZZ"
 git push origin master
 ```
 
-#### 4. Automatic Deployments
+Bundle policy:
+- Production pushes must be batched release bundles.
+- Minimum bundle size is 3 TA tickets (3+ rule).
+- No per-subtask production pushes.
+
+#### 4. Controlled Deployments (Bundle Release)
 
 **Frontend (AWS Amplify):**
 - Detects push automatically
@@ -592,10 +597,16 @@ ssh -i ~/.ssh/hc-lombardo-key.pem ubuntu@34.198.25.249 \
    nohup gunicorn --bind 0.0.0.0:5000 --workers 2 --timeout 120 api_server:app > gunicorn.log 2>&1 &"
 ```
 
+**Production data update workflow:**
+- Manual trigger only via `workflow_dispatch` in `.github/workflows/nfl-data-update.yml`.
+- No automatic weekly production schedule.
+
 ### Deployment Checklist
 
 **Before Pushing:**
 - [ ] Test changes locally
+- [ ] Bundle contains at least 3 TA tickets (3+ rule)
+- [ ] Bundle approval is recorded
 - [ ] Check for console errors
 - [ ] Verify API endpoints work
 - [ ] Review git diff
@@ -740,10 +751,10 @@ nohup gunicorn --bind 0.0.0.0:5000 --workers 2 --timeout 120 api_server:app > gu
 
 ### 5. Automatic Deployments
 **Why it matters:**
-- Amplify: Push to git = auto-deploy
-- Reduces human error
-- Faster iteration
-- Always know what's deployed
+- Amplify builds should run only on approved release bundles
+- Bundle gating reduces accidental credit burn
+- Fewer, larger releases improve traceability and rollback control
+- Manual production data workflow prevents unintended backend update runs
 
 ### 6. Documentation
 **Why it matters:**

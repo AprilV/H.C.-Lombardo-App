@@ -5,7 +5,7 @@
 ## Architecture
 
 - **Frontend**: React → AWS Amplify (auto-deploy from GitHub)
-- **Backend**: Flask API → EC2 (auto-pull from GitHub)  
+- **Backend**: Flask API → EC2 (manual, approved deployments)  
 - **Database**: PostgreSQL on EC2 localhost
 - **Data Source**: NFLverse (free NFL play-by-play data)
 
@@ -39,19 +39,23 @@ H.C Lombardo App/
 
 ### Local Development
 ```powershell
-# Start development mode (React hot reload + Flask API)
-START-DEV.bat
+# Primary control commands (recommended)
+python startup.py
 
 # Stop all services
+python shutdown.py
+
+# Convenience wrappers (optional)
+START-DEV.bat
 STOP.bat
 ```
 
 ### Testing Before Deployment
 1. Make changes in local environment
-2. Test thoroughly with `START-DEV.bat`
+2. Test thoroughly with `python startup.py` (or `START-DEV.bat`)
 3. Open a pull request and review changes
 4. Merge to `master`
-5. Dashboard changes in `Dashboard/index.html` auto-publish to `gh-pages` via GitHub Actions
+5. Dashboard changes in `pmforge_dashboard/index.html` auto-publish to `gh-pages` via GitHub Actions
 
 ## Core Files
 
@@ -77,11 +81,16 @@ STOP.bat
 
 ## GitHub Actions
 
-Automated weekly data updates (Mondays 2 AM UTC):
-1. SSH into EC2
-2. Update Python packages (nfl-data-py)
-3. Load latest NFL game data
-4. Calculate EPA and advanced stats
+Manual production data update workflow (approval required):
+1. Run the production workflow using `workflow_dispatch`
+2. Pull latest approved code on EC2
+3. Load selected season data into production schema (`hcl`)
+4. Verify production counts/health before release sign-off
+
+Release cadence guardrail:
+1. Production releases are batched by ticket bundle only
+2. Minimum bundle size is 3 TA tickets (3+ rule)
+3. No per-subtask production pushes
 
 ## Database
 

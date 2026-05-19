@@ -1,0 +1,9 @@
+{
+  "xgb_winner_accuracy_floor": 5.0,
+  "xgb_spread_mae_ceiling": 4.5,
+  "ai_vs_vegas_delta_floor": 4.0,
+  "elo_winner_accuracy_floor": 3.5,
+  "elo_spread_mae_ceiling": 3.0,
+  "xgb_coverage_min": 2.0,
+  "elo_coverage_min": 1.5
+}

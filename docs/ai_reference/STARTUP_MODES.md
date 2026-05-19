@@ -1,142 +1,87 @@
 # H.C. Lombardo - Startup Guide
 
-## Two Startup Modes
+Last Updated: May 14, 2026
 
-### 🔧 **START-DEV.bat** - Development Mode (Recommended for Development)
-**Use this when actively coding and making changes**
+## Primary Start/Stop Commands (Canonical)
 
-- **Ports**: React on 3000, Flask on 5000
-- **Hot Reload**: ✅ YES - Changes appear instantly (1-2 seconds)
-- **Startup Time**: ~20-30 seconds
-- **Speed**: Moderate (dev server overhead)
-- **Perfect for**:
-  - Writing new features
-  - Testing UI changes
-  - Debugging
-  - Active development
+Use these commands from project root:
 
-**How it works:**
-```
-React Dev Server → Hot reload → See changes instantly
-Flask API → Provides data
+```powershell
+python startup.py
+python shutdown.py
 ```
 
-**To use:**
-1. Double-click `START-DEV.bat`
-2. Wait 20-30 seconds for compilation
-3. Browser opens to `http://localhost:3000`
-4. Edit code → Save → See changes in 1-2 seconds!
+These are the authoritative local control commands.
 
 ---
 
-### 🚀 **START.bat** - Production Mode (Recommended for Testing/Demos)
-**Use this for final testing, demos, or deployment**
+## Launch Options
 
-- **Ports**: Everything on 5000 (single server)
-- **Hot Reload**: ❌ NO - Must rebuild to see changes
-- **Startup Time**: ~30-60 seconds (builds once, then fast)
-- **Speed**: FAST (optimized, minified code)
-- **Perfect for**:
-  - Showing someone the app
-  - Testing final performance
-  - Production deployment
-  - When finished with features
+### 1) `startup.py` (recommended default)
 
-**How it works:**
-```
-npm run build → Optimized static files → Flask serves everything
-```
+- Starts Flask API on port 5000
+- Starts React dev server on port 3000
+- Starts live data updater
+- Starts dev log watcher on port 8765
+- Opens browser to `http://localhost:3000`
 
-**To use:**
-1. Double-click `START.bat`
-2. Wait 30-60 seconds for build
-3. Browser opens to `http://localhost:5000`
-4. App loads instantly!
+### 2) `START-DEV.bat` (convenience wrapper)
 
-**To make changes in production mode:**
-1. Run `STOP.bat`
-2. Edit your code
-3. Run `START.bat` again (rebuilds automatically)
+- Convenience launcher for development workflow
+- Uses the same dev ports: 3000 (React), 5000 (API), 8765 (log watcher)
+- Stop with either `STOP.bat` or `python shutdown.py`
+
+### 3) `START.bat` (production-like local run)
+
+- Builds React production bundle
+- Serves frontend + API through Flask on port 5000
+- No hot reload
+- Best for demo/performance validation
 
 ---
 
 ## Quick Comparison
 
-| Feature | START-DEV.bat | START.bat |
-|---------|---------------|-----------|
-| **Ports** | 3000 & 5000 | 5000 only |
-| **Hot Reload** | ✅ YES | ❌ NO |
-| **Startup** | 20-30 sec | 30-60 sec (first time) |
-| **Speed** | Moderate | FAST |
-| **File Size** | Large | Small (optimized) |
-| **Use Case** | Development | Testing/Production |
-
----
-
-## Stopping the App
-
-**Both modes:** Run `STOP.bat` to stop all services
+| Feature | `startup.py` | `START-DEV.bat` | `START.bat` |
+|---------|---------------|------------------|-------------|
+| Startup type | Python orchestrator | Dev wrapper | Production-like wrapper |
+| Ports | 3000, 5000, 8765 | 3000, 5000, 8765 | 5000 |
+| Hot reload | Yes | Yes | No |
+| Includes updater/log watcher | Yes | Yes | Updater only |
+| Best use | Daily local work | Double-click local work | Demos/testing |
 
 ---
 
 ## Typical Workflow
 
-### While Building Features (Development)
-```bash
-1. START-DEV.bat      # Start with hot reload
-2. Edit code          # Make your changes
-3. Save file          # See changes in 1-2 seconds
-4. Repeat steps 2-3   # Keep developing
-5. STOP.bat           # When done for the day
+### Development
+
+```powershell
+python startup.py
+# edit/test with hot reload
+python shutdown.py
 ```
 
-### When Ready to Test/Demo (Production)
-```bash
-1. STOP.bat           # Stop dev mode if running
-2. START.bat          # Build and run production mode
-3. Show/test app      # Fast, optimized version
-4. STOP.bat           # When done
+### Production-like local test
+
+```powershell
+START.bat
+STOP.bat
 ```
-
-### Making Changes After Production Build
-```bash
-1. STOP.bat           # Stop production mode
-2. START-DEV.bat      # Switch to dev mode for changes
-3. Edit & test        # Use hot reload
-4. STOP.bat           # Stop dev mode
-5. START.bat          # Rebuild production when satisfied
-```
-
----
-
-## Pro Tips
-
-- 💡 **Use START-DEV.bat 90% of the time** - hot reload is your friend!
-- 💡 **Use START.bat before showing someone** - looks professional, loads fast
-- 💡 **Never run both at the same time** - stop one before starting the other
-- 💡 **Production build is required for PWA installation** - START.bat enables app installation
 
 ---
 
 ## Troubleshooting
 
-**"Can't reach this page"**
-- Make sure the correct server is running
-- Dev mode: Check `http://localhost:3000`
-- Production mode: Check `http://localhost:5000`
-
-**Changes not appearing**
-- Dev mode: Check that hot reload is working (should be automatic)
-- Production mode: You must run `STOP.bat` then `START.bat` again
-
-**Slow startup**
-- Dev mode: 20-30 seconds is normal
-- Production mode: First build takes 30-60 seconds, subsequent startups are fast
+- Cannot open app: verify `http://localhost:3000` after `python startup.py`
+- API not responding: verify `http://localhost:5000/health`
+- Port collision: run `python shutdown.py` before restarting
 
 ---
 
 ## Summary
 
-🔧 **Developing?** → Use `START-DEV.bat`
-🚀 **Showing off?** → Use `START.bat`
-🛑 **Done?** → Use `STOP.bat`
+- Develop and debug: `python startup.py`
+- Stop everything: `python shutdown.py`
+- Use `START-DEV.bat` and `STOP.bat` as optional wrappers
+- Use `START.bat` for production-like local validation

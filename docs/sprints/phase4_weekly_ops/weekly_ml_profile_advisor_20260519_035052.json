@@ -1,0 +1,230 @@
+{
+  "generated_at_utc": "2026-05-19T03:50:52.232563+00:00",
+  "mode": "profile_advisor",
+  "target": {
+    "season": 2025,
+    "week": 18,
+    "source": "auto_latest"
+  },
+  "snapshot": {
+    "season": 2025,
+    "completed_games": 272,
+    "xgb": {
+      "scored_games": 272,
+      "correct_predictions": 110,
+      "winner_accuracy_pct": 40.44,
+      "spread_mae": 13.75,
+      "coverage_pct": 100.0
+    },
+    "elo": {
+      "scored_games": 272,
+      "correct_predictions": 155,
+      "winner_accuracy_pct": 56.99,
+      "spread_mae": 10.411,
+      "coverage_pct": 100.0
+    },
+    "ai_vs_vegas": {
+      "total_games": 224,
+      "ai_wins": 79,
+      "vegas_wins": 143,
+      "ties": 2,
+      "ai_win_pct": 35.27,
+      "vegas_win_pct": 63.84,
+      "delta_pct": -28.57
+    }
+  },
+  "profiles": {
+    "balanced": {
+      "gate_thresholds": {
+        "profile": "balanced",
+        "xgb_winner_accuracy_floor_pct": 40.25,
+        "xgb_spread_mae_ceiling": 13.9,
+        "xgb_coverage_min_pct": 98.0,
+        "elo_winner_accuracy_floor_pct": 55.0,
+        "elo_spread_mae_ceiling": 11.0,
+        "elo_coverage_min_pct": 98.0,
+        "ai_vs_vegas_min_games": 64,
+        "strict_ai_vs_vegas_sample": false,
+        "ai_vs_vegas_delta_floor_pct": -29.0
+      },
+      "gates": {
+        "evaluated": true,
+        "overall_pass": true,
+        "checks": {
+          "xgb_winner_accuracy_floor": {
+            "threshold": 40.25,
+            "actual": 40.44,
+            "pass": true
+          },
+          "xgb_spread_mae_ceiling": {
+            "threshold": 13.9,
+            "actual": 13.75,
+            "pass": true
+          },
+          "xgb_coverage_min": {
+            "threshold": 98.0,
+            "actual": 100.0,
+            "pass": true
+          },
+          "elo_winner_accuracy_floor": {
+            "threshold": 55.0,
+            "actual": 56.99,
+            "pass": true
+          },
+          "elo_spread_mae_ceiling": {
+            "threshold": 11.0,
+            "actual": 10.411,
+            "pass": true
+          },
+          "elo_coverage_min": {
+            "threshold": 98.0,
+            "actual": 100.0,
+            "pass": true
+          },
+          "ai_vs_vegas_delta_floor": {
+            "threshold": -29.0,
+            "actual": -28.57,
+            "total_games": 224,
+            "min_games": 64,
+            "strict_sample_required": false,
+            "has_sample": true,
+            "pass": true,
+            "reason": null
+          }
+        }
+      },
+      "overall_pass": true,
+      "failed_checks": []
+    },
+    "operational": {
+      "gate_thresholds": {
+        "profile": "operational",
+        "xgb_winner_accuracy_floor_pct": 40.0,
+        "xgb_spread_mae_ceiling": 14.0,
+        "xgb_coverage_min_pct": 95.0,
+        "elo_winner_accuracy_floor_pct": 50.0,
+        "elo_spread_mae_ceiling": 14.0,
+        "elo_coverage_min_pct": 95.0,
+        "ai_vs_vegas_min_games": 32,
+        "strict_ai_vs_vegas_sample": false,
+        "ai_vs_vegas_delta_floor_pct": -30.0
+      },
+      "gates": {
+        "evaluated": true,
+        "overall_pass": true,
+        "checks": {
+          "xgb_winner_accuracy_floor": {
+            "threshold": 40.0,
+            "actual": 40.44,
+            "pass": true
+          },
+          "xgb_spread_mae_ceiling": {
+            "threshold": 14.0,
+            "actual": 13.75,
+            "pass": true
+          },
+          "xgb_coverage_min": {
+            "threshold": 95.0,
+            "actual": 100.0,
+            "pass": true
+          },
+          "elo_winner_accuracy_floor": {
+            "threshold": 50.0,
+            "actual": 56.99,
+            "pass": true
+          },
+          "elo_spread_mae_ceiling": {
+            "threshold": 14.0,
+            "actual": 10.411,
+            "pass": true
+          },
+          "elo_coverage_min": {
+            "threshold": 95.0,
+            "actual": 100.0,
+            "pass": true
+          },
+          "ai_vs_vegas_delta_floor": {
+            "threshold": -30.0,
+            "actual": -28.57,
+            "total_games": 224,
+            "min_games": 32,
+            "strict_sample_required": false,
+            "has_sample": true,
+            "pass": true,
+            "reason": null
+          }
+        }
+      },
+      "overall_pass": true,
+      "failed_checks": []
+    },
+    "strict-research": {
+      "gate_thresholds": {
+        "profile": "strict-research",
+        "xgb_winner_accuracy_floor_pct": 42.0,
+        "xgb_spread_mae_ceiling": 13.5,
+        "xgb_coverage_min_pct": 98.0,
+        "elo_winner_accuracy_floor_pct": 54.0,
+        "elo_spread_mae_ceiling": 12.5,
+        "elo_coverage_min_pct": 98.0,
+        "ai_vs_vegas_min_games": 96,
+        "strict_ai_vs_vegas_sample": true,
+        "ai_vs_vegas_delta_floor_pct": -10.0
+      },
+      "gates": {
+        "evaluated": true,
+        "overall_pass": false,
+        "checks": {
+          "xgb_winner_accuracy_floor": {
+            "threshold": 42.0,
+            "actual": 40.44,
+            "pass": false
+          },
+          "xgb_spread_mae_ceiling": {
+            "threshold": 13.5,
+            "actual": 13.75,
+            "pass": false
+          },
+          "xgb_coverage_min": {
+            "threshold": 98.0,
+            "actual": 100.0,
+            "pass": true
+          },
+          "elo_winner_accuracy_floor": {
+            "threshold": 54.0,
+            "actual": 56.99,
+            "pass": true
+          },
+          "elo_spread_mae_ceiling": {
+            "threshold": 12.5,
+            "actual": 10.411,
+            "pass": true
+          },
+          "elo_coverage_min": {
+            "threshold": 98.0,
+            "actual": 100.0,
+            "pass": true
+          },
+          "ai_vs_vegas_delta_floor": {
+            "threshold": -10.0,
+            "actual": -28.57,
+            "total_games": 224,
+            "min_games": 96,
+            "strict_sample_required": true,
+            "has_sample": true,
+            "pass": false,
+            "reason": null
+          }
+        }
+      },
+      "overall_pass": false,
+      "failed_checks": [
+        "ai_vs_vegas_delta_floor",
+        "xgb_spread_mae_ceiling",
+        "xgb_winner_accuracy_floor"
+      ]
+    }
+  },
+  "recommended_profile": "balanced",
+  "recommendation_reason": "Highest-strictness passing profile selected"
+}

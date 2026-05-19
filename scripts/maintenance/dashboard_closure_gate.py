@@ -219,6 +219,11 @@ def parse_completed_tasks(text: str) -> Set[str]:
     return {m.group(1).strip() for m in re.finditer(r"'([^']+)'", body)}
 
 
+def parse_blocked_tasks(text: str) -> Set[str]:
+    body = extract_enclosed_block(text, "const BLOCKED_TASKS =", "[", "]")
+    return {m.group(1).strip() for m in re.finditer(r"'([^']+)'", body)}
+
+
 def parse_task_details_keys(text: str) -> Set[str]:
     body = extract_enclosed_block(text, "const TASK_DETAILS =", "{", "}")
     keys: Set[str] = set()
@@ -487,14 +492,20 @@ def evaluate_parent_status(
 def check_command(args: argparse.Namespace, text: str) -> int:
     board = parse_sprint_board(text, args.sprint)
     completed = parse_completed_tasks(text)
+    blocked = parse_blocked_tasks(text)
     details = parse_task_details_keys(text)
     pb_status = parse_pb_status_map(text)
 
     board_set = set(board.subtask_ids)
     completed_on_board = sorted(task for task in board.subtask_ids if task in completed)
+    blocked_on_board = sorted(task for task in board.subtask_ids if task in blocked)
     details_on_board = sorted(task for task in board.subtask_ids if task in details)
 
-    details_without_completed = sorted(task for task in board.subtask_ids if task in details and task not in completed)
+    details_without_resolution = sorted(
+        task
+        for task in board.subtask_ids
+        if task in details and task not in completed and task not in blocked
+    )
     completed_without_details = sorted(task for task in board.subtask_ids if task in completed and task not in details)
 
     missing_parent, parent_should_be_done, parent_should_not_be_done = evaluate_parent_status(
@@ -506,13 +517,14 @@ def check_command(args: argparse.Namespace, text: str) -> int:
     print(f"Sprint {args.sprint} closure gate")
     print(f"- Sprint board subtasks: {len(board_set)}")
     print(f"- Completed subtasks on board: {len(completed_on_board)}")
+    print(f"- Blocked subtasks on board: {len(blocked_on_board)}")
     print(f"- TASK_DETAILS entries on board: {len(details_on_board)}")
 
     failed = False
 
-    if details_without_completed:
+    if details_without_resolution:
         failed = True
-        print_list("TASK_DETAILS present but missing from COMPLETED_TASKS", details_without_completed)
+        print_list("TASK_DETAILS present but missing from COMPLETED_TASKS and BLOCKED_TASKS", details_without_resolution)
 
     if completed_without_details:
         failed = True
@@ -546,6 +558,7 @@ def subtask_command(args: argparse.Namespace, text: str) -> int:
     subtask_id = args.subtask.strip()
     board = parse_sprint_board(text, args.sprint)
     completed = parse_completed_tasks(text)
+    blocked = parse_blocked_tasks(text)
     details = parse_task_details_keys(text)
     pb_status = parse_pb_status_map(text)
 
@@ -563,6 +576,7 @@ def subtask_command(args: argparse.Namespace, text: str) -> int:
             parent_ticket = expected_ticket
 
     in_completed = subtask_id in completed
+    in_blocked = subtask_id in blocked
     in_details = subtask_id in details
 
     parent_coherent = False
@@ -587,12 +601,12 @@ def subtask_command(args: argparse.Namespace, text: str) -> int:
 
     print(f"Subtask closure gate: {subtask_id} (Sprint {args.sprint})")
     print(f"- Exists on sprint board: {'PASS' if exists_on_board else 'FAIL'}")
-    print(f"- Present in COMPLETED_TASKS: {'PASS' if in_completed else 'FAIL'}")
+    print(f"- Present in COMPLETED_TASKS or BLOCKED_TASKS: {'PASS' if (in_completed or in_blocked) else 'FAIL'}")
     print(f"- Present in TASK_DETAILS: {'PASS' if in_details else 'FAIL'}")
     print(f"- Parent status coherence: {'PASS' if parent_coherent else 'FAIL'}")
     print(f"  {parent_msg}")
 
-    passed = exists_on_board and in_completed and in_details and parent_coherent
+    passed = exists_on_board and (in_completed or in_blocked) and in_details and parent_coherent
     if not passed:
         print("\nFAIL: Subtask closure gate failed.")
         return 1

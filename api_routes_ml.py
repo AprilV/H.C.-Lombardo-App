@@ -11,6 +11,8 @@ Date: December 19, 2025
 from flask import Blueprint, jsonify, request
 import sys
 import os
+import io
+import contextlib
 import psycopg2
 from psycopg2.extras import RealDictCursor
 import json
@@ -420,48 +422,124 @@ def get_model_performance():
         season: Filter by season (default: latest completed season)
         week: Filter by specific week (optional)
     """
+    conn = None
+    cur = None
     try:
         season = request.args.get('season', type=int)
-        if season is None:
-            season = get_latest_completed_season()
         week = request.args.get('week', type=int)
         
         conn = psycopg2.connect(**get_predictor().db_config)
         cur = conn.cursor(cursor_factory=RealDictCursor)
-        
-        # Build WHERE clause
-        where_conditions = [f"g.season = {season}"]
-        if week:
-            where_conditions.append(f"g.week = {week}")
-        where_clause = " AND " + " AND ".join(where_conditions)
-        
-        # Get completed games with predictions
-        query = f"""
-            WITH predictions AS (
-                SELECT 
-                    g.game_id,
-                    g.home_team,
-                    g.away_team,
-                    g.home_score,
-                    g.away_score,
-                    g.week,
-                    CASE WHEN g.home_score > g.away_score THEN g.home_team
-                         WHEN g.away_score > g.home_score THEN g.away_team
-                         ELSE 'TIE' END as actual_winner,
-                    g.home_score - g.away_score as actual_margin,
-                    g.spread_line as vegas_spread
-                FROM hcl.games g
-                WHERE g.home_score IS NOT NULL 
-                  AND g.away_score IS NOT NULL
-                  {where_clause}
+
+        if season is None:
+            fallback_season = get_latest_completed_season()
+            cur.execute(
+                """
+                SELECT COALESCE(MAX(season), %s) AS season
+                FROM hcl.ml_predictions
+                WHERE result_recorded_at IS NOT NULL
+                """,
+                (fallback_season,)
             )
-            SELECT * FROM predictions
-            ORDER BY week DESC
+            season_row = cur.fetchone() or {}
+            season = int(season_row.get('season') or fallback_season)
+
+        # Primary path: use recorded prediction outcomes from tracking table for stable, fast responses.
+        tracking_where = ["season = %s", "result_recorded_at IS NOT NULL"]
+        tracking_params = [season]
+        if week is not None:
+            tracking_where.append("week = %s")
+            tracking_params.append(week)
+
+        tracking_sql = f"""
+            SELECT
+                COUNT(*) as total_games,
+                COALESCE(SUM(CASE WHEN win_prediction_correct THEN 1 ELSE 0 END), 0) as correct_predictions,
+                COALESCE(CAST(AVG(CASE WHEN win_prediction_correct THEN 100.0 ELSE 0.0 END) AS NUMERIC(10,2)), 0) as win_accuracy,
+                COALESCE(CAST(AVG(margin_prediction_error) AS NUMERIC(10,2)), 0) as avg_margin_error,
+                COALESCE(
+                    SUM(
+                        CASE
+                            WHEN actual_margin IS NULL OR ai_spread IS NULL OR vegas_spread IS NULL THEN 0
+                            WHEN ABS(ai_spread - (-actual_margin)) < ABS(vegas_spread - (-actual_margin)) THEN 1
+                            ELSE 0
+                        END
+                    ),
+                    0
+                ) as ai_covers,
+                COALESCE(
+                    SUM(
+                        CASE
+                            WHEN actual_margin IS NULL OR ai_spread IS NULL OR vegas_spread IS NULL THEN 0
+                            WHEN ABS(vegas_spread - (-actual_margin)) < ABS(ai_spread - (-actual_margin)) THEN 1
+                            ELSE 0
+                        END
+                    ),
+                    0
+                ) as vegas_covers
+            FROM hcl.ml_predictions
+            WHERE {' AND '.join(tracking_where)}
         """
-        
-        cur.execute(query)
+
+        cur.execute(tracking_sql, tuple(tracking_params))
+        tracked = cur.fetchone() or {}
+
+        tracked_total = int(tracked.get('total_games') or 0)
+        if tracked_total > 0:
+            tracked_correct = int(tracked.get('correct_predictions') or 0)
+            tracked_accuracy = float(tracked.get('win_accuracy') or 0)
+            tracked_mae = float(tracked.get('avg_margin_error') or 0)
+            tracked_ai_covers = int(tracked.get('ai_covers') or 0)
+            tracked_vegas_covers = int(tracked.get('vegas_covers') or 0)
+
+            return jsonify({
+                'success': True,
+                'season': season,
+                'week': week,
+                'total_games': tracked_total,
+                'classification': {
+                    'correct': tracked_correct,
+                    'total': tracked_total,
+                    'accuracy': round(tracked_accuracy, 2)
+                },
+                'regression': {
+                    'mae': round(tracked_mae, 2),
+                    'ai_covers': tracked_ai_covers,
+                    'vegas_covers': tracked_vegas_covers,
+                    'total': tracked_total
+                }
+            })
+
+        # Fallback path: compute directly from completed games when tracked rows are unavailable.
+        game_where = ["g.home_score IS NOT NULL", "g.away_score IS NOT NULL", "g.season = %s"]
+        game_params = [season]
+        if week is not None:
+            game_where.append("g.week = %s")
+            game_params.append(week)
+
+        game_sql = f"""
+            SELECT
+                g.game_id,
+                g.home_team,
+                g.away_team,
+                g.home_score,
+                g.away_score,
+                g.week,
+                CASE
+                    WHEN g.home_score > g.away_score THEN g.home_team
+                    WHEN g.away_score > g.home_score THEN g.away_team
+                    ELSE 'TIE'
+                END as actual_winner,
+                g.home_score - g.away_score as actual_margin,
+                g.spread_line as vegas_spread
+            FROM hcl.games g
+            WHERE {' AND '.join(game_where)}
+            ORDER BY g.week DESC
+        """
+
+        cur.execute(game_sql, tuple(game_params))
         games = cur.fetchall()
-        
+
         if not games:
             return jsonify({
                 'success': True,
@@ -469,18 +547,16 @@ def get_model_performance():
                 'week': week,
                 'total_games': 0,
                 'classification': {'accuracy': 0, 'correct': 0, 'total': 0},
-                'regression': {'mae': 0, 'correct_covers': 0, 'total': 0}
+                'regression': {'mae': 0, 'ai_covers': 0, 'vegas_covers': 0, 'total': 0}
             })
-        
-        # Get predictions for these games
+
         pred = get_predictor()
         classification_correct = 0
         regression_errors = []
         ai_covers = 0
         vegas_covers = 0
-        
+
         for game in games:
-            # Generate prediction for this game
             prediction = pred.predict_game(
                 season,
                 game['week'],
@@ -489,38 +565,28 @@ def get_model_performance():
                 game['vegas_spread'],
                 None
             )
-            
-            # Check classification accuracy (did we pick the right winner?)
+
             if prediction.get('predicted_winner') == game['actual_winner']:
                 classification_correct += 1
-            
-            # Check regression accuracy (how close was our spread?)
+
             predicted_margin = prediction.get('predicted_margin')
             actual_margin = game['actual_margin']
             if predicted_margin is not None and actual_margin is not None:
                 regression_errors.append(abs(predicted_margin - actual_margin))
-            
-            # Check spread betting performance
+
             ai_spread = prediction.get('ai_spread')
             vegas_spread = game['vegas_spread']
-            
-            # Did AI spread beat the actual result better than Vegas?
             if ai_spread is not None and vegas_spread is not None and actual_margin is not None:
-                ai_diff = abs(ai_spread - (-actual_margin))  # AI spread is negative of margin
+                ai_diff = abs(ai_spread - (-actual_margin))
                 vegas_diff = abs(vegas_spread - (-actual_margin))
-                
                 if ai_diff < vegas_diff:
                     ai_covers += 1
                 elif vegas_diff < ai_diff:
                     vegas_covers += 1
-        
-        # Calculate statistics
+
         total_games = len(games)
-        mae = sum(regression_errors) / total_games if regression_errors else 0
-        
-        cur.close()
-        conn.close()
-        
+        mae = sum(regression_errors) / len(regression_errors) if regression_errors else 0
+
         return jsonify({
             'success': True,
             'season': season,
@@ -544,6 +610,11 @@ def get_model_performance():
             'success': False,
             'error': str(e)
         }), 500
+    finally:
+        if cur:
+            cur.close()
+        if conn:
+            conn.close()
 
 
 @ml_api.route('/api/ml/explain', methods=['GET'])
@@ -764,11 +835,13 @@ def update_results():
     Update predictions with actual results after games complete
     Automatically called when new game results are loaded
     """
+    conn = None
+    cur = None
     try:
         conn = psycopg2.connect(**get_predictor().db_config)
         cur = conn.cursor()
-        
-        # Update all predictions that have results but haven't been scored yet
+
+        # Update all XGBoost predictions that have results but haven't been scored yet
         update_sql = """
             UPDATE hcl.ml_predictions mp
             SET 
@@ -795,22 +868,62 @@ def update_results():
               AND g.away_score IS NOT NULL
               AND mp.result_recorded_at IS NULL
         """
-        
+
         cur.execute(update_sql)
         updated_count = cur.rowcount
-        
+
+        # Keep Elo tracking rows synchronized with game outcomes.
+        updated_elo_count = 0
+        if table_exists(conn, 'hcl', 'ml_predictions_elo'):
+            update_elo_sql = """
+                UPDATE hcl.ml_predictions_elo e
+                SET
+                    actual_winner = CASE
+                        WHEN g.home_score > g.away_score THEN g.home_team
+                        WHEN g.away_score > g.home_score THEN g.away_team
+                        ELSE 'TIE'
+                    END,
+                    actual_spread = (g.home_score - g.away_score),
+                    prediction_correct = CASE
+                        WHEN g.home_score > g.away_score THEN e.predicted_winner = g.home_team
+                        WHEN g.away_score > g.home_score THEN e.predicted_winner = g.away_team
+                        ELSE FALSE
+                    END,
+                    spread_error = CASE
+                        WHEN e.elo_spread IS NULL THEN NULL
+                        ELSE ABS(e.elo_spread - (g.home_score - g.away_score))
+                    END
+                FROM hcl.games g
+                WHERE e.game_id = g.game_id
+                  AND g.home_score IS NOT NULL
+                  AND g.away_score IS NOT NULL
+                  AND (
+                        e.actual_winner IS NULL
+                     OR e.actual_spread IS NULL
+                     OR e.prediction_correct IS NULL
+                     OR e.spread_error IS NULL
+                  )
+            """
+
+            cur.execute(update_elo_sql)
+            updated_elo_count = cur.rowcount
+
         conn.commit()
-        cur.close()
-        conn.close()
-        
+
         return jsonify({
             'success': True,
             'updated': updated_count,
-            'message': f'Updated {updated_count} predictions with actual results'
+            'updated_elo': updated_elo_count,
+            'message': f'Updated {updated_count} XGBoost and {updated_elo_count} Elo predictions with actual results'
         })
-        
+
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
+    finally:
+        if cur:
+            cur.close()
+        if conn:
+            conn.close()
 
 
 @ml_api.route('/api/ml/performance-stats', methods=['GET'])
@@ -828,61 +941,1011 @@ def get_performance_stats():
         if season is None:
             season = get_latest_completed_season()
         week = request.args.get('week', type=int)
-        
+
         conn = psycopg2.connect(**get_predictor().db_config)
+        elo_table_ready = table_exists(conn, 'hcl', 'ml_predictions_elo')
         cur = conn.cursor(cursor_factory=RealDictCursor)
-        
-        # Build WHERE clause
-        where_conditions = [f"season = {season}", "result_recorded_at IS NOT NULL"]
-        if week:
-            where_conditions.append(f"week = {week}")
-        where_clause = " AND ".join(where_conditions)
-        
-        # Get statistics
-        stats_sql = f"""
-            SELECT 
-                COUNT(*) as total_games,
-                SUM(CASE WHEN win_prediction_correct THEN 1 ELSE 0 END) as correct_predictions,
-                CAST(AVG(CASE WHEN win_prediction_correct THEN 100.0 ELSE 0.0 END) AS NUMERIC(10,2)) as win_accuracy,
-                CAST(AVG(margin_prediction_error) AS NUMERIC(10,2)) as avg_margin_error,
-                CAST(AVG(score_prediction_error_home) AS NUMERIC(10,2)) as avg_home_score_error,
-                CAST(AVG(score_prediction_error_away) AS NUMERIC(10,2)) as avg_away_score_error,
-                MIN(week) as first_week,
-                MAX(week) as latest_week
+
+        def _int(value):
+            return int(value or 0)
+
+        def _float(value):
+            return float(value or 0.0)
+
+        def _pct(numerator, denominator):
+            if not denominator:
+                return 0.0
+            return round((numerator / denominator) * 100.0, 2)
+
+        game_where = [
+            "season = %s",
+            "home_score IS NOT NULL",
+            "away_score IS NOT NULL",
+            "COALESCE(is_postseason, FALSE) = FALSE"
+        ]
+        game_params = [season]
+        if week is not None:
+            game_where.append("week = %s")
+            game_params.append(week)
+
+        cur.execute(
+            f"""
+            SELECT
+                COUNT(*) AS completed_games,
+                MIN(week) AS first_week,
+                MAX(week) AS latest_week
+            FROM hcl.games
+            WHERE {' AND '.join(game_where)}
+            """,
+            tuple(game_params)
+        )
+        games_summary = cur.fetchone() or {}
+        completed_games = _int(games_summary.get('completed_games'))
+
+        xgb_where = ["season = %s"]
+        xgb_params = [season]
+        if week is not None:
+            xgb_where.append("week = %s")
+            xgb_params.append(week)
+
+        cur.execute(
+            f"""
+            SELECT COUNT(*) AS predicted_games
             FROM hcl.ml_predictions
-            WHERE {where_clause}
-        """
-        
-        cur.execute(stats_sql)
-        stats = cur.fetchone()
-        
-        # Get week-by-week breakdown
-        weekly_sql = f"""
-            SELECT 
+            WHERE {' AND '.join(xgb_where)}
+            """,
+            tuple(xgb_params)
+        )
+        xgb_predicted = _int((cur.fetchone() or {}).get('predicted_games'))
+
+        xgb_scored_where = list(xgb_where) + ["result_recorded_at IS NOT NULL"]
+        cur.execute(
+            f"""
+            SELECT
+                COUNT(*) AS scored_games,
+                COALESCE(SUM(CASE WHEN win_prediction_correct THEN 1 ELSE 0 END), 0) AS correct_predictions,
+                COALESCE(CAST(AVG(CASE WHEN win_prediction_correct THEN 100.0 ELSE 0.0 END) AS NUMERIC(10,2)), 0) AS win_accuracy,
+                COALESCE(CAST(AVG(margin_prediction_error) AS NUMERIC(10,2)), 0) AS avg_margin_error,
+                MIN(week) AS first_week,
+                MAX(week) AS latest_week
+            FROM hcl.ml_predictions
+            WHERE {' AND '.join(xgb_scored_where)}
+            """,
+            tuple(xgb_params)
+        )
+        xgb_summary = cur.fetchone() or {}
+
+        cur.execute(
+            f"""
+            SELECT
                 week,
-                COUNT(*) as games,
-                SUM(CASE WHEN win_prediction_correct THEN 1 ELSE 0 END) as correct,
-                CAST(AVG(CASE WHEN win_prediction_correct THEN 100.0 ELSE 0.0 END) AS NUMERIC(10,1)) as accuracy,
-                CAST(AVG(margin_prediction_error) AS NUMERIC(10,1)) as mae
+                COUNT(*) AS scored_games,
+                COALESCE(SUM(CASE WHEN win_prediction_correct THEN 1 ELSE 0 END), 0) AS correct_predictions,
+                COALESCE(CAST(AVG(CASE WHEN win_prediction_correct THEN 100.0 ELSE 0.0 END) AS NUMERIC(10,1)), 0) AS win_accuracy,
+                COALESCE(CAST(AVG(margin_prediction_error) AS NUMERIC(10,1)), 0) AS avg_margin_error
             FROM hcl.ml_predictions
-            WHERE {where_clause}
+            WHERE {' AND '.join(xgb_scored_where)}
             GROUP BY week
-            ORDER BY week DESC
-        """
-        
-        cur.execute(weekly_sql)
-        weekly_stats = cur.fetchall()
-        
+            ORDER BY week ASC
+            """,
+            tuple(xgb_params)
+        )
+        xgb_week_rows = cur.fetchall() or []
+
+        elo_summary = {
+            'predicted_games': 0,
+            'scored_games': 0,
+            'correct_predictions': 0,
+            'win_accuracy': 0,
+            'avg_margin_error': 0,
+            'first_week': None,
+            'latest_week': None
+        }
+        elo_week_rows = []
+
+        if elo_table_ready:
+            elo_where = ["e.season = %s"]
+            elo_params = [season]
+            if week is not None:
+                elo_where.append("e.week = %s")
+                elo_params.append(week)
+
+            cur.execute(
+                f"""
+                SELECT COUNT(*) AS predicted_games
+                FROM hcl.ml_predictions_elo e
+                WHERE {' AND '.join(elo_where)}
+                """,
+                tuple(elo_params)
+            )
+            elo_summary['predicted_games'] = _int((cur.fetchone() or {}).get('predicted_games'))
+
+            elo_scored_where = list(elo_where) + [
+                "e.predicted_winner IS NOT NULL",
+                "g.home_score IS NOT NULL",
+                "g.away_score IS NOT NULL",
+                "COALESCE(g.is_postseason, FALSE) = FALSE"
+            ]
+
+            cur.execute(
+                f"""
+                SELECT
+                    COUNT(*) AS scored_games,
+                    COALESCE(
+                        SUM(
+                            CASE
+                                WHEN (g.home_score > g.away_score AND e.predicted_winner = g.home_team)
+                                  OR (g.away_score > g.home_score AND e.predicted_winner = g.away_team)
+                                THEN 1 ELSE 0
+                            END
+                        ),
+                        0
+                    ) AS correct_predictions,
+                    COALESCE(
+                        CAST(
+                            AVG(
+                                CASE
+                                    WHEN (g.home_score > g.away_score AND e.predicted_winner = g.home_team)
+                                      OR (g.away_score > g.home_score AND e.predicted_winner = g.away_team)
+                                    THEN 100.0 ELSE 0.0
+                                END
+                            ) AS NUMERIC(10,2)
+                        ),
+                        0
+                    ) AS win_accuracy,
+                    COALESCE(CAST(AVG(ABS(e.elo_spread - (g.home_score - g.away_score))) AS NUMERIC(10,2)), 0) AS avg_margin_error,
+                    MIN(e.week) AS first_week,
+                    MAX(e.week) AS latest_week
+                FROM hcl.ml_predictions_elo e
+                JOIN hcl.games g ON g.game_id = e.game_id
+                WHERE {' AND '.join(elo_scored_where)}
+                """,
+                tuple(elo_params)
+            )
+            elo_scored_summary = cur.fetchone() or {}
+
+            elo_summary.update({
+                'scored_games': _int(elo_scored_summary.get('scored_games')),
+                'correct_predictions': _int(elo_scored_summary.get('correct_predictions')),
+                'win_accuracy': _float(elo_scored_summary.get('win_accuracy')),
+                'avg_margin_error': _float(elo_scored_summary.get('avg_margin_error')),
+                'first_week': elo_scored_summary.get('first_week'),
+                'latest_week': elo_scored_summary.get('latest_week')
+            })
+
+            cur.execute(
+                f"""
+                SELECT
+                    e.week,
+                    COUNT(*) AS scored_games,
+                    COALESCE(
+                        SUM(
+                            CASE
+                                WHEN (g.home_score > g.away_score AND e.predicted_winner = g.home_team)
+                                  OR (g.away_score > g.home_score AND e.predicted_winner = g.away_team)
+                                THEN 1 ELSE 0
+                            END
+                        ),
+                        0
+                    ) AS correct_predictions,
+                    COALESCE(
+                        CAST(
+                            AVG(
+                                CASE
+                                    WHEN (g.home_score > g.away_score AND e.predicted_winner = g.home_team)
+                                      OR (g.away_score > g.home_score AND e.predicted_winner = g.away_team)
+                                    THEN 100.0 ELSE 0.0
+                                END
+                            ) AS NUMERIC(10,1)
+                        ),
+                        0
+                    ) AS win_accuracy,
+                    COALESCE(CAST(AVG(ABS(e.elo_spread - (g.home_score - g.away_score))) AS NUMERIC(10,1)), 0) AS avg_margin_error
+                FROM hcl.ml_predictions_elo e
+                JOIN hcl.games g ON g.game_id = e.game_id
+                WHERE {' AND '.join(elo_scored_where)}
+                GROUP BY e.week
+                ORDER BY e.week ASC
+                """,
+                tuple(elo_params)
+            )
+            elo_week_rows = cur.fetchall() or []
+
+        agreement_summary = {
+            'both_models_games': 0,
+            'agreements': 0,
+            'agreement_rate': 0.0,
+            'agreed_correct': 0,
+            'agreed_accuracy': 0.0,
+            'split_games': 0,
+            'xgb_head_to_head_wins': 0,
+            'elo_head_to_head_wins': 0,
+            'head_to_head_ties': 0
+        }
+
+        if elo_table_ready:
+            agreement_where = [
+                "x.season = %s",
+                "x.result_recorded_at IS NOT NULL",
+                "x.predicted_winner IS NOT NULL",
+                "e.predicted_winner IS NOT NULL",
+                "g.home_score IS NOT NULL",
+                "g.away_score IS NOT NULL",
+                "COALESCE(g.is_postseason, FALSE) = FALSE"
+            ]
+            agreement_params = [season]
+            if week is not None:
+                agreement_where.append("x.week = %s")
+                agreement_params.append(week)
+
+            cur.execute(
+                f"""
+                SELECT
+                    COUNT(*) AS both_models_games,
+                    COALESCE(SUM(CASE WHEN x.predicted_winner = e.predicted_winner THEN 1 ELSE 0 END), 0) AS agreements,
+                    COALESCE(
+                        SUM(
+                            CASE
+                                WHEN x.predicted_winner = e.predicted_winner
+                                 AND (
+                                    (g.home_score > g.away_score AND x.predicted_winner = g.home_team)
+                                    OR (g.away_score > g.home_score AND x.predicted_winner = g.away_team)
+                                 )
+                                THEN 1 ELSE 0
+                            END
+                        ),
+                        0
+                    ) AS agreed_correct,
+                    COALESCE(
+                        SUM(
+                            CASE
+                                WHEN x.predicted_winner <> e.predicted_winner
+                                 AND (
+                                    (g.home_score > g.away_score AND x.predicted_winner = g.home_team)
+                                    OR (g.away_score > g.home_score AND x.predicted_winner = g.away_team)
+                                 )
+                                 AND NOT (
+                                    (g.home_score > g.away_score AND e.predicted_winner = g.home_team)
+                                    OR (g.away_score > g.home_score AND e.predicted_winner = g.away_team)
+                                 )
+                                THEN 1 ELSE 0
+                            END
+                        ),
+                        0
+                    ) AS xgb_head_to_head_wins,
+                    COALESCE(
+                        SUM(
+                            CASE
+                                WHEN x.predicted_winner <> e.predicted_winner
+                                 AND (
+                                    (g.home_score > g.away_score AND e.predicted_winner = g.home_team)
+                                    OR (g.away_score > g.home_score AND e.predicted_winner = g.away_team)
+                                 )
+                                 AND NOT (
+                                    (g.home_score > g.away_score AND x.predicted_winner = g.home_team)
+                                    OR (g.away_score > g.home_score AND x.predicted_winner = g.away_team)
+                                 )
+                                THEN 1 ELSE 0
+                            END
+                        ),
+                        0
+                    ) AS elo_head_to_head_wins
+                FROM hcl.ml_predictions x
+                JOIN hcl.ml_predictions_elo e ON e.game_id = x.game_id
+                JOIN hcl.games g ON g.game_id = x.game_id
+                WHERE {' AND '.join(agreement_where)}
+                """,
+                tuple(agreement_params)
+            )
+            agreement_raw = cur.fetchone() or {}
+
+            both_models_games = _int(agreement_raw.get('both_models_games'))
+            agreements = _int(agreement_raw.get('agreements'))
+            agreed_correct = _int(agreement_raw.get('agreed_correct'))
+            split_games = max(0, both_models_games - agreements)
+            xgb_head_to_head_wins = _int(agreement_raw.get('xgb_head_to_head_wins'))
+            elo_head_to_head_wins = _int(agreement_raw.get('elo_head_to_head_wins'))
+            head_to_head_ties = max(0, split_games - (xgb_head_to_head_wins + elo_head_to_head_wins))
+
+            agreement_summary.update({
+                'both_models_games': both_models_games,
+                'agreements': agreements,
+                'agreement_rate': _pct(agreements, both_models_games),
+                'agreed_correct': agreed_correct,
+                'agreed_accuracy': _pct(agreed_correct, agreements),
+                'split_games': split_games,
+                'xgb_head_to_head_wins': xgb_head_to_head_wins,
+                'elo_head_to_head_wins': elo_head_to_head_wins,
+                'head_to_head_ties': head_to_head_ties
+            })
+
+        cur.execute(
+            f"""
+            SELECT
+                COALESCE(SUM(CASE WHEN spread_line IS NOT NULL AND spread_line <> 0 THEN 1 ELSE 0 END), 0) AS evaluable_games,
+                COALESCE(
+                    SUM(
+                        CASE
+                            WHEN spread_line IS NULL OR spread_line = 0 THEN 0
+                            WHEN spread_line > 0 AND home_score > away_score THEN 1
+                            WHEN spread_line < 0 AND away_score > home_score THEN 1
+                            ELSE 0
+                        END
+                    ),
+                    0
+                ) AS correct_predictions
+            FROM hcl.games
+            WHERE {' AND '.join(game_where)}
+            """,
+            tuple(game_params)
+        )
+        vegas_raw = cur.fetchone() or {}
+        vegas_evaluable = _int(vegas_raw.get('evaluable_games'))
+        vegas_correct = _int(vegas_raw.get('correct_predictions'))
+
+        model_breakdown = {
+            'xgb': {
+                'predicted_games': xgb_predicted,
+                'scored_games': _int(xgb_summary.get('scored_games')),
+                'correct_predictions': _int(xgb_summary.get('correct_predictions')),
+                'win_accuracy': _float(xgb_summary.get('win_accuracy')),
+                'avg_margin_error': _float(xgb_summary.get('avg_margin_error')),
+                'coverage_pct': _pct(_int(xgb_summary.get('scored_games')), completed_games),
+                'predicted_coverage_pct': _pct(xgb_predicted, completed_games),
+                'first_week': xgb_summary.get('first_week'),
+                'latest_week': xgb_summary.get('latest_week')
+            },
+            'elo': {
+                'predicted_games': _int(elo_summary.get('predicted_games')),
+                'scored_games': _int(elo_summary.get('scored_games')),
+                'correct_predictions': _int(elo_summary.get('correct_predictions')),
+                'win_accuracy': _float(elo_summary.get('win_accuracy')),
+                'avg_margin_error': _float(elo_summary.get('avg_margin_error')),
+                'coverage_pct': _pct(_int(elo_summary.get('scored_games')), completed_games),
+                'predicted_coverage_pct': _pct(_int(elo_summary.get('predicted_games')), completed_games),
+                'first_week': elo_summary.get('first_week'),
+                'latest_week': elo_summary.get('latest_week')
+            },
+            'agreement': agreement_summary,
+            'vegas': {
+                'evaluable_games': vegas_evaluable,
+                'correct_predictions': vegas_correct,
+                'win_accuracy': _pct(vegas_correct, vegas_evaluable)
+            }
+        }
+
+        xgb_week_map = {
+            _int(row.get('week')): {
+                'week': _int(row.get('week')),
+                'scored_games': _int(row.get('scored_games')),
+                'correct_predictions': _int(row.get('correct_predictions')),
+                'win_accuracy': _float(row.get('win_accuracy')),
+                'avg_margin_error': _float(row.get('avg_margin_error'))
+            }
+            for row in xgb_week_rows
+        }
+        elo_week_map = {
+            _int(row.get('week')): {
+                'week': _int(row.get('week')),
+                'scored_games': _int(row.get('scored_games')),
+                'correct_predictions': _int(row.get('correct_predictions')),
+                'win_accuracy': _float(row.get('win_accuracy')),
+                'avg_margin_error': _float(row.get('avg_margin_error'))
+            }
+            for row in elo_week_rows
+        }
+
+        all_weeks = sorted(set(list(xgb_week_map.keys()) + list(elo_week_map.keys())))
+        by_week_models = []
+        for week_value in all_weeks:
+            by_week_models.append({
+                'week': week_value,
+                'xgb': xgb_week_map.get(week_value),
+                'elo': elo_week_map.get(week_value)
+            })
+
+        xgb_scored_games = model_breakdown['xgb']['scored_games']
+        elo_scored_games = model_breakdown['elo']['scored_games']
+        if xgb_scored_games > 0:
+            primary_model = 'xgb'
+            primary_summary = model_breakdown['xgb']
+            primary_week_map = xgb_week_map
+        elif elo_scored_games > 0:
+            primary_model = 'elo'
+            primary_summary = model_breakdown['elo']
+            primary_week_map = elo_week_map
+        else:
+            primary_model = 'xgb'
+            primary_summary = model_breakdown['xgb']
+            primary_week_map = {}
+
+        by_week = []
+        for week_value in sorted(primary_week_map.keys(), reverse=True):
+            row = primary_week_map[week_value]
+            by_week.append({
+                'week': week_value,
+                'games': row['scored_games'],
+                'correct': row['correct_predictions'],
+                'accuracy': round(row['win_accuracy'], 1),
+                'mae': round(row['avg_margin_error'], 1),
+                'model': primary_model
+            })
+
+        trend_seasons = []
+        season_trend = []
+        if week is None:
+            cur.execute(
+                """
+                SELECT DISTINCT season
+                FROM hcl.games
+                WHERE home_score IS NOT NULL
+                  AND away_score IS NOT NULL
+                                    AND COALESCE(is_postseason, FALSE) = FALSE
+                ORDER BY season DESC
+                LIMIT 6
+                """
+            )
+            trend_seasons = [_int(row.get('season')) for row in (cur.fetchall() or [])]
+
+            if trend_seasons:
+                cur.execute(
+                    """
+                    SELECT season, COUNT(*) AS completed_games
+                    FROM hcl.games
+                    WHERE home_score IS NOT NULL
+                      AND away_score IS NOT NULL
+                                            AND COALESCE(is_postseason, FALSE) = FALSE
+                      AND season = ANY(%s)
+                    GROUP BY season
+                    """,
+                    (trend_seasons,)
+                )
+                trend_games_map = {
+                    _int(row.get('season')): _int(row.get('completed_games'))
+                    for row in (cur.fetchall() or [])
+                }
+
+                cur.execute(
+                    """
+                    SELECT season, COUNT(*) AS predicted_games
+                    FROM hcl.ml_predictions
+                    WHERE season = ANY(%s)
+                    GROUP BY season
+                    """,
+                    (trend_seasons,)
+                )
+                trend_xgb_pred_map = {
+                    _int(row.get('season')): _int(row.get('predicted_games'))
+                    for row in (cur.fetchall() or [])
+                }
+
+                cur.execute(
+                    """
+                    SELECT
+                        season,
+                        COUNT(*) AS scored_games,
+                        COALESCE(SUM(CASE WHEN win_prediction_correct THEN 1 ELSE 0 END), 0) AS correct_predictions
+                    FROM hcl.ml_predictions
+                    WHERE result_recorded_at IS NOT NULL
+                      AND season = ANY(%s)
+                    GROUP BY season
+                    """,
+                    (trend_seasons,)
+                )
+                trend_xgb_scored_map = {
+                    _int(row.get('season')): {
+                        'scored_games': _int(row.get('scored_games')),
+                        'correct_predictions': _int(row.get('correct_predictions'))
+                    }
+                    for row in (cur.fetchall() or [])
+                }
+
+                trend_elo_pred_map = {}
+                trend_elo_scored_map = {}
+                trend_agreement_map = {}
+
+                if elo_table_ready:
+                    cur.execute(
+                        """
+                        SELECT season, COUNT(*) AS predicted_games
+                        FROM hcl.ml_predictions_elo
+                        WHERE season = ANY(%s)
+                        GROUP BY season
+                        """,
+                        (trend_seasons,)
+                    )
+                    trend_elo_pred_map = {
+                        _int(row.get('season')): _int(row.get('predicted_games'))
+                        for row in (cur.fetchall() or [])
+                    }
+
+                    cur.execute(
+                        """
+                        SELECT
+                            e.season,
+                            COUNT(*) AS scored_games,
+                            COALESCE(
+                                SUM(
+                                    CASE
+                                        WHEN (g.home_score > g.away_score AND e.predicted_winner = g.home_team)
+                                          OR (g.away_score > g.home_score AND e.predicted_winner = g.away_team)
+                                        THEN 1 ELSE 0
+                                    END
+                                ),
+                                0
+                            ) AS correct_predictions
+                        FROM hcl.ml_predictions_elo e
+                        JOIN hcl.games g ON g.game_id = e.game_id
+                        WHERE e.predicted_winner IS NOT NULL
+                          AND g.home_score IS NOT NULL
+                          AND g.away_score IS NOT NULL
+                                                    AND COALESCE(g.is_postseason, FALSE) = FALSE
+                          AND e.season = ANY(%s)
+                        GROUP BY e.season
+                        """,
+                        (trend_seasons,)
+                    )
+                    trend_elo_scored_map = {
+                        _int(row.get('season')): {
+                            'scored_games': _int(row.get('scored_games')),
+                            'correct_predictions': _int(row.get('correct_predictions'))
+                        }
+                        for row in (cur.fetchall() or [])
+                    }
+
+                    cur.execute(
+                        """
+                        SELECT
+                            x.season,
+                            COUNT(*) AS both_models_games,
+                            COALESCE(SUM(CASE WHEN x.predicted_winner = e.predicted_winner THEN 1 ELSE 0 END), 0) AS agreements
+                        FROM hcl.ml_predictions x
+                        JOIN hcl.ml_predictions_elo e ON e.game_id = x.game_id
+                        JOIN hcl.games g ON g.game_id = x.game_id
+                        WHERE x.result_recorded_at IS NOT NULL
+                          AND x.predicted_winner IS NOT NULL
+                          AND e.predicted_winner IS NOT NULL
+                          AND g.home_score IS NOT NULL
+                          AND g.away_score IS NOT NULL
+                                                    AND COALESCE(g.is_postseason, FALSE) = FALSE
+                          AND x.season = ANY(%s)
+                        GROUP BY x.season
+                        """,
+                        (trend_seasons,)
+                    )
+                    trend_agreement_map = {
+                        _int(row.get('season')): {
+                            'both_models_games': _int(row.get('both_models_games')),
+                            'agreements': _int(row.get('agreements'))
+                        }
+                        for row in (cur.fetchall() or [])
+                    }
+
+                cur.execute(
+                    """
+                    SELECT
+                        season,
+                        COALESCE(SUM(CASE WHEN spread_line IS NOT NULL AND spread_line <> 0 THEN 1 ELSE 0 END), 0) AS evaluable_games,
+                        COALESCE(
+                            SUM(
+                                CASE
+                                    WHEN spread_line IS NULL OR spread_line = 0 THEN 0
+                                    WHEN spread_line > 0 AND home_score > away_score THEN 1
+                                    WHEN spread_line < 0 AND away_score > home_score THEN 1
+                                    ELSE 0
+                                END
+                            ),
+                            0
+                        ) AS correct_predictions
+                    FROM hcl.games
+                    WHERE home_score IS NOT NULL
+                      AND away_score IS NOT NULL
+                                            AND COALESCE(is_postseason, FALSE) = FALSE
+                      AND season = ANY(%s)
+                    GROUP BY season
+                    """,
+                    (trend_seasons,)
+                )
+                trend_vegas_map = {
+                    _int(row.get('season')): {
+                        'evaluable_games': _int(row.get('evaluable_games')),
+                        'correct_predictions': _int(row.get('correct_predictions'))
+                    }
+                    for row in (cur.fetchall() or [])
+                }
+
+                for trend_season in trend_seasons:
+                    trend_completed = trend_games_map.get(trend_season, 0)
+
+                    trend_xgb = trend_xgb_scored_map.get(trend_season, {'scored_games': 0, 'correct_predictions': 0})
+                    trend_xgb_scored = _int(trend_xgb.get('scored_games'))
+                    trend_xgb_correct = _int(trend_xgb.get('correct_predictions'))
+
+                    trend_elo = trend_elo_scored_map.get(trend_season, {'scored_games': 0, 'correct_predictions': 0})
+                    trend_elo_scored = _int(trend_elo.get('scored_games'))
+                    trend_elo_correct = _int(trend_elo.get('correct_predictions'))
+
+                    trend_agreement = trend_agreement_map.get(trend_season, {'both_models_games': 0, 'agreements': 0})
+                    trend_vegas = trend_vegas_map.get(trend_season, {'evaluable_games': 0, 'correct_predictions': 0})
+
+                    season_trend.append({
+                        'season': trend_season,
+                        'completed_games': trend_completed,
+                        'xgb': {
+                            'predicted_games': trend_xgb_pred_map.get(trend_season, 0),
+                            'scored_games': trend_xgb_scored,
+                            'correct_predictions': trend_xgb_correct,
+                            'win_accuracy': _pct(trend_xgb_correct, trend_xgb_scored),
+                            'coverage_pct': _pct(trend_xgb_scored, trend_completed)
+                        },
+                        'elo': {
+                            'predicted_games': trend_elo_pred_map.get(trend_season, 0),
+                            'scored_games': trend_elo_scored,
+                            'correct_predictions': trend_elo_correct,
+                            'win_accuracy': _pct(trend_elo_correct, trend_elo_scored),
+                            'coverage_pct': _pct(trend_elo_scored, trend_completed)
+                        },
+                        'agreement': {
+                            'both_models_games': _int(trend_agreement.get('both_models_games')),
+                            'agreements': _int(trend_agreement.get('agreements')),
+                            'agreement_rate': _pct(
+                                _int(trend_agreement.get('agreements')),
+                                _int(trend_agreement.get('both_models_games'))
+                            )
+                        },
+                        'vegas': {
+                            'evaluable_games': _int(trend_vegas.get('evaluable_games')),
+                            'correct_predictions': _int(trend_vegas.get('correct_predictions')),
+                            'win_accuracy': _pct(
+                                _int(trend_vegas.get('correct_predictions')),
+                                _int(trend_vegas.get('evaluable_games'))
+                            )
+                        }
+                    })
+
+        coverage_contract = {
+            'start_season': None,
+            'end_season': None,
+            'seasons': [],
+            'totals': {
+                'completed_games': 0,
+                'xgb_predicted_games': 0,
+                'xgb_scored_games': 0,
+                'elo_predicted_games': 0,
+                'elo_scored_games': 0,
+                'both_models_games': 0,
+                'xgb_predicted_coverage_pct': 0.0,
+                'xgb_scored_coverage_pct': 0.0,
+                'elo_predicted_coverage_pct': 0.0,
+                'elo_scored_coverage_pct': 0.0,
+                'both_models_coverage_pct': 0.0
+            }
+        }
+
+        if week is None:
+            coverage_start = request.args.get('coverage_start_season', type=int)
+            coverage_end = request.args.get('coverage_end_season', type=int)
+
+            latest_completed_season = get_latest_completed_season()
+            if coverage_end is None:
+                coverage_end = latest_completed_season
+            if coverage_start is None:
+                coverage_start = max(2021, coverage_end - 4)
+
+            if coverage_start > coverage_end:
+                coverage_start, coverage_end = coverage_end, coverage_start
+
+            coverage_contract['start_season'] = coverage_start
+            coverage_contract['end_season'] = coverage_end
+
+            for coverage_season in range(coverage_start, coverage_end + 1):
+                cur.execute(
+                    """
+                    SELECT COUNT(*) AS completed_games
+                    FROM hcl.games
+                    WHERE season = %s
+                      AND home_score IS NOT NULL
+                      AND away_score IS NOT NULL
+                                            AND COALESCE(is_postseason, FALSE) = FALSE
+                    """,
+                    (coverage_season,)
+                )
+                completed = _int((cur.fetchone() or {}).get('completed_games'))
+
+                cur.execute(
+                    """
+                    SELECT COUNT(*) AS predicted_games
+                    FROM hcl.ml_predictions
+                    WHERE season = %s
+                    """,
+                    (coverage_season,)
+                )
+                xgb_predicted = _int((cur.fetchone() or {}).get('predicted_games'))
+
+                cur.execute(
+                    """
+                    SELECT
+                        COUNT(*) AS scored_games,
+                        COALESCE(SUM(CASE WHEN win_prediction_correct THEN 1 ELSE 0 END), 0) AS correct_predictions
+                    FROM hcl.ml_predictions
+                    WHERE season = %s
+                      AND result_recorded_at IS NOT NULL
+                    """,
+                    (coverage_season,)
+                )
+                xgb_row = cur.fetchone() or {}
+                xgb_scored = _int(xgb_row.get('scored_games'))
+                xgb_correct = _int(xgb_row.get('correct_predictions'))
+
+                elo_predicted = 0
+                elo_scored = 0
+                elo_correct = 0
+                both_models_games = 0
+
+                if elo_table_ready:
+                    cur.execute(
+                        """
+                        SELECT COUNT(*) AS predicted_games
+                        FROM hcl.ml_predictions_elo
+                        WHERE season = %s
+                        """,
+                        (coverage_season,)
+                    )
+                    elo_predicted = _int((cur.fetchone() or {}).get('predicted_games'))
+
+                    cur.execute(
+                        """
+                        SELECT
+                            COUNT(*) AS scored_games,
+                            COALESCE(
+                                SUM(
+                                    CASE
+                                        WHEN (g.home_score > g.away_score AND e.predicted_winner = g.home_team)
+                                          OR (g.away_score > g.home_score AND e.predicted_winner = g.away_team)
+                                        THEN 1 ELSE 0
+                                    END
+                                ),
+                                0
+                            ) AS correct_predictions
+                        FROM hcl.ml_predictions_elo e
+                        JOIN hcl.games g ON g.game_id = e.game_id
+                        WHERE e.season = %s
+                          AND e.predicted_winner IS NOT NULL
+                          AND g.home_score IS NOT NULL
+                          AND g.away_score IS NOT NULL
+                                                    AND COALESCE(g.is_postseason, FALSE) = FALSE
+                        """,
+                        (coverage_season,)
+                    )
+                    elo_row = cur.fetchone() or {}
+                    elo_scored = _int(elo_row.get('scored_games'))
+                    elo_correct = _int(elo_row.get('correct_predictions'))
+
+                    cur.execute(
+                        """
+                        SELECT COUNT(*) AS both_models_games
+                        FROM hcl.ml_predictions x
+                        JOIN hcl.ml_predictions_elo e ON e.game_id = x.game_id
+                        JOIN hcl.games g ON g.game_id = x.game_id
+                        WHERE x.season = %s
+                          AND x.result_recorded_at IS NOT NULL
+                          AND e.predicted_winner IS NOT NULL
+                          AND g.home_score IS NOT NULL
+                          AND g.away_score IS NOT NULL
+                                                    AND COALESCE(g.is_postseason, FALSE) = FALSE
+                        """,
+                        (coverage_season,)
+                    )
+                    both_models_games = _int((cur.fetchone() or {}).get('both_models_games'))
+
+                coverage_contract['seasons'].append({
+                    'season': coverage_season,
+                    'completed_games': completed,
+                    'xgb': {
+                        'predicted_games': xgb_predicted,
+                        'scored_games': xgb_scored,
+                        'correct_predictions': xgb_correct,
+                        'win_accuracy': _pct(xgb_correct, xgb_scored),
+                        'predicted_coverage_pct': _pct(xgb_predicted, completed),
+                        'scored_coverage_pct': _pct(xgb_scored, completed)
+                    },
+                    'elo': {
+                        'predicted_games': elo_predicted,
+                        'scored_games': elo_scored,
+                        'correct_predictions': elo_correct,
+                        'win_accuracy': _pct(elo_correct, elo_scored),
+                        'predicted_coverage_pct': _pct(elo_predicted, completed),
+                        'scored_coverage_pct': _pct(elo_scored, completed)
+                    },
+                    'agreement': {
+                        'both_models_games': both_models_games,
+                        'both_models_coverage_pct': _pct(both_models_games, completed)
+                    }
+                })
+
+            if coverage_contract['seasons']:
+                totals = coverage_contract['totals']
+                totals['completed_games'] = sum(_int(s.get('completed_games')) for s in coverage_contract['seasons'])
+                totals['xgb_predicted_games'] = sum(_int((s.get('xgb') or {}).get('predicted_games')) for s in coverage_contract['seasons'])
+                totals['xgb_scored_games'] = sum(_int((s.get('xgb') or {}).get('scored_games')) for s in coverage_contract['seasons'])
+                totals['elo_predicted_games'] = sum(_int((s.get('elo') or {}).get('predicted_games')) for s in coverage_contract['seasons'])
+                totals['elo_scored_games'] = sum(_int((s.get('elo') or {}).get('scored_games')) for s in coverage_contract['seasons'])
+                totals['both_models_games'] = sum(_int((s.get('agreement') or {}).get('both_models_games')) for s in coverage_contract['seasons'])
+                totals['xgb_predicted_coverage_pct'] = _pct(totals['xgb_predicted_games'], totals['completed_games'])
+                totals['xgb_scored_coverage_pct'] = _pct(totals['xgb_scored_games'], totals['completed_games'])
+                totals['elo_predicted_coverage_pct'] = _pct(totals['elo_predicted_games'], totals['completed_games'])
+                totals['elo_scored_coverage_pct'] = _pct(totals['elo_scored_games'], totals['completed_games'])
+                totals['both_models_coverage_pct'] = _pct(totals['both_models_games'], totals['completed_games'])
+
+        integrity = {
+            'leakage': {
+                'rows_checked': 0,
+                'predicted_after_game_date_count': 0,
+                'predicted_after_game_date_pct': 0.0,
+                'threshold_pct': 5.0
+            },
+            'margin_sign': {
+                'rows_checked': 0,
+                'inconsistent_count': 0,
+                'inconsistent_pct': 0.0,
+                'threshold_pct': 0.0
+            },
+            'totals_line_lock': {
+                'rows_checked': 0,
+                'line_locked_count': 0,
+                'line_locked_pct': 0.0,
+                'threshold_pct': 95.0
+            }
+        }
+
+        warnings = []
+
+        integrity_where = ["mp.season = %s"]
+        integrity_params = [season]
+        if week is not None:
+            integrity_where.append("mp.week = %s")
+            integrity_params.append(week)
+
+        cur.execute(
+            f"""
+            SELECT
+                COUNT(*) AS rows_checked,
+                COALESCE(
+                    SUM(
+                        CASE
+                            WHEN mp.predicted_at IS NOT NULL
+                             AND g.game_date IS NOT NULL
+                             AND mp.predicted_at > g.game_date
+                            THEN 1 ELSE 0
+                        END
+                    ),
+                    0
+                ) AS predicted_after_game_date_count
+            FROM hcl.ml_predictions mp
+            JOIN hcl.games g ON g.game_id = mp.game_id
+            WHERE {' AND '.join(integrity_where)}
+                            AND COALESCE(g.is_postseason, FALSE) = FALSE
+            """,
+            tuple(integrity_params)
+        )
+        leakage_row = cur.fetchone() or {}
+        leakage_checked = _int(leakage_row.get('rows_checked'))
+        leakage_count = _int(leakage_row.get('predicted_after_game_date_count'))
+        leakage_pct = _pct(leakage_count, leakage_checked)
+        integrity['leakage'].update({
+            'rows_checked': leakage_checked,
+            'predicted_after_game_date_count': leakage_count,
+            'predicted_after_game_date_pct': leakage_pct
+        })
+
+        cur.execute(
+            f"""
+            SELECT
+                COUNT(*) AS rows_checked,
+                COALESCE(
+                    SUM(
+                        CASE
+                            WHEN mp.actual_winner = mp.away_team AND mp.actual_margin > 0 THEN 1
+                            WHEN mp.actual_winner = mp.home_team AND mp.actual_margin < 0 THEN 1
+                            ELSE 0
+                        END
+                    ),
+                    0
+                ) AS inconsistent_count
+            FROM hcl.ml_predictions mp
+            WHERE {' AND '.join(integrity_where)}
+              AND mp.result_recorded_at IS NOT NULL
+              AND mp.actual_winner IN (mp.home_team, mp.away_team)
+              AND mp.actual_margin IS NOT NULL
+            """,
+            tuple(integrity_params)
+        )
+        margin_row = cur.fetchone() or {}
+        margin_checked = _int(margin_row.get('rows_checked'))
+        margin_count = _int(margin_row.get('inconsistent_count'))
+        margin_pct = _pct(margin_count, margin_checked)
+        integrity['margin_sign'].update({
+            'rows_checked': margin_checked,
+            'inconsistent_count': margin_count,
+            'inconsistent_pct': margin_pct
+        })
+
+        cur.execute(
+            f"""
+            SELECT
+                COUNT(*) AS rows_checked,
+                COALESCE(
+                    SUM(
+                        CASE
+                            WHEN mp.predicted_home_score IS NULL
+                              OR mp.predicted_away_score IS NULL
+                              OR mp.vegas_total IS NULL THEN 0
+                            WHEN ROUND((mp.predicted_home_score + mp.predicted_away_score)::NUMERIC, 1)
+                               = ROUND(mp.vegas_total::NUMERIC, 1)
+                            THEN 1 ELSE 0
+                        END
+                    ),
+                    0
+                ) AS line_locked_count
+            FROM hcl.ml_predictions mp
+            WHERE {' AND '.join(integrity_where)}
+            """,
+            tuple(integrity_params)
+        )
+        line_lock_row = cur.fetchone() or {}
+        line_lock_checked = _int(line_lock_row.get('rows_checked'))
+        line_lock_count = _int(line_lock_row.get('line_locked_count'))
+        line_lock_pct = _pct(line_lock_count, line_lock_checked)
+        integrity['totals_line_lock'].update({
+            'rows_checked': line_lock_checked,
+            'line_locked_count': line_lock_count,
+            'line_locked_pct': line_lock_pct
+        })
+
+        if leakage_pct > integrity['leakage']['threshold_pct']:
+            warnings.append(
+                f"Integrity warning: {leakage_pct}% of tracked XGBoost rows have predicted_at after game_date"
+            )
+        if margin_pct > integrity['margin_sign']['threshold_pct']:
+            warnings.append(
+                f"Integrity warning: {margin_pct}% of scored XGBoost rows have inconsistent actual_margin sign"
+            )
+        if line_lock_pct >= integrity['totals_line_lock']['threshold_pct']:
+            warnings.append(
+                f"Integrity warning: {line_lock_pct}% of rows have predicted total locked to vegas_total"
+            )
+
+        overall = {
+            'total_games': primary_summary.get('scored_games', 0),
+            'correct_predictions': primary_summary.get('correct_predictions', 0),
+            'win_accuracy': round(_float(primary_summary.get('win_accuracy')), 2),
+            'avg_margin_error': round(_float(primary_summary.get('avg_margin_error')), 2),
+            'avg_home_score_error': None,
+            'avg_away_score_error': None,
+            'first_week': primary_summary.get('first_week'),
+            'latest_week': primary_summary.get('latest_week'),
+            'model': primary_model
+        }
+
         cur.close()
         conn.close()
-        
+
         return jsonify({
             'success': True,
             'season': season,
-            'overall': dict(stats) if stats else {},
-            'by_week': [dict(w) for w in weekly_stats]
+            'week': week,
+            'completed_games': completed_games,
+            'overall': overall,
+            'by_week': by_week,
+            'by_week_models': by_week_models,
+            'model_breakdown': model_breakdown,
+            'season_trend': season_trend,
+            'coverage_contract': coverage_contract,
+            'elo_table_ready': elo_table_ready,
+            'integrity': integrity,
+            'warnings': warnings
         })
-        
+
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
@@ -1031,6 +2094,32 @@ def predict_week_elo(season, week):
     }
     """
     try:
+        def build_all_game_predictions(elo_pred):
+            """Generate Elo predictions for all scheduled games, including completed matchups."""
+            games_df = elo_pred.get_scheduled_games(season, week)
+            if len(games_df) == 0:
+                return []
+
+            predictions = []
+            for _, game in games_df.iterrows():
+                spread_line = game['spread_line']
+                if spread_line is not None and spread_line != spread_line:  # NaN check
+                    spread_line = None
+
+                pred = elo_pred.predict_game(
+                    game['home_team'],
+                    game['away_team'],
+                    spread_line=spread_line,
+                    is_neutral=False
+                )
+                pred['game_id'] = game['game_id']
+                pred['season'] = season
+                pred['week'] = week
+                pred['game_date'] = game['game_date']
+                predictions.append(pred)
+
+            return predictions
+
         # Check if predictions already exist in database
         conn = psycopg2.connect(
             dbname=os.getenv('DB_NAME', 'nfl_analytics'),
@@ -1046,8 +2135,9 @@ def predict_week_elo(season, week):
             conn.close()
 
             # Fallback for environments where Elo storage has not been migrated yet.
-            elo_pred = get_elo_predictor()
-            predictions = elo_pred.predict_week(season, week, save_to_db=False)
+            with contextlib.redirect_stdout(io.StringIO()):
+                elo_pred = get_elo_predictor()
+            predictions = build_all_game_predictions(elo_pred)
 
             if not predictions:
                 return jsonify({
@@ -1121,9 +2211,17 @@ def predict_week_elo(season, week):
                 'elo_table_ready': True
             })
         
-        # If no predictions found, generate them
-        elo_pred = get_elo_predictor()
-        predictions = elo_pred.predict_week(season, week, save_to_db=True)
+        # If no predictions found, generate them directly from scheduled games.
+        with contextlib.redirect_stdout(io.StringIO()):
+            elo_pred = get_elo_predictor()
+        predictions = build_all_game_predictions(elo_pred)
+        if predictions:
+            try:
+                with contextlib.redirect_stdout(io.StringIO()):
+                    elo_pred._save_predictions_to_db(predictions)
+            except Exception:
+                # Prediction delivery should not fail if persistence fails.
+                pass
         
         if not predictions:
             return jsonify({
@@ -1181,7 +2279,9 @@ def get_combined_predictions(season, week):
             SELECT 
                 p.*,
                 g.spread_line as vegas_spread,
-                g.total_line as vegas_total
+                g.total_line as vegas_total,
+                g.home_score,
+                g.away_score
             FROM hcl.ml_predictions p
             LEFT JOIN hcl.games g ON p.game_id = g.game_id
             WHERE p.season = %s AND p.week = %s
@@ -1196,7 +2296,9 @@ def get_combined_predictions(season, week):
                 SELECT 
                     e.*,
                     g.spread_line as vegas_spread,
-                    g.total_line as vegas_total
+                    g.total_line as vegas_total,
+                    g.home_score,
+                    g.away_score
                 FROM hcl.ml_predictions_elo e
                 LEFT JOIN hcl.games g ON e.game_id = g.game_id
                 WHERE e.season = %s AND e.week = %s
@@ -1214,6 +2316,39 @@ def get_combined_predictions(season, week):
         for game_id in sorted(all_game_ids):
             xgb = xgb_predictions.get(game_id)
             elo = elo_predictions.get(game_id)
+
+            base_row = xgb if xgb else elo
+            home_team = base_row['home_team']
+            away_team = base_row['away_team']
+
+            home_score = base_row.get('home_score')
+            away_score = base_row.get('away_score')
+            is_final = home_score is not None and away_score is not None
+
+            actual_winner = None
+            actual_margin = None
+            if is_final:
+                actual_margin = int(home_score) - int(away_score)
+                if home_score > away_score:
+                    actual_winner = home_team
+                elif away_score > home_score:
+                    actual_winner = away_team
+                else:
+                    actual_winner = 'TIE'
+
+            xgb_correct = None
+            if xgb and is_final:
+                if actual_winner == 'TIE':
+                    xgb_correct = False
+                else:
+                    xgb_correct = (xgb.get('predicted_winner') == actual_winner)
+
+            elo_correct = None
+            if elo and is_final:
+                if actual_winner == 'TIE':
+                    elo_correct = False
+                else:
+                    elo_correct = (elo.get('predicted_winner') == actual_winner)
             
             if xgb and elo:
                 # Both predictions available
@@ -1224,6 +2359,17 @@ def get_combined_predictions(season, week):
                     'home_team': xgb['home_team'],
                     'away_team': xgb['away_team'],
                     'game_date': xgb.get('game_date'),
+                    'game_status': 'final' if is_final else 'scheduled',
+                    'actual': {
+                        'home_score': int(home_score) if home_score is not None else None,
+                        'away_score': int(away_score) if away_score is not None else None,
+                        'winner': actual_winner,
+                        'margin': actual_margin
+                    },
+                    'model_results': {
+                        'xgb_correct': xgb_correct,
+                        'elo_correct': elo_correct
+                    },
                     'xgb': {
                         'predicted_winner': xgb['predicted_winner'],
                         'confidence': float(xgb['home_win_prob']) if xgb['predicted_winner'] == xgb['home_team'] else float(xgb['away_win_prob']),
@@ -1246,6 +2392,17 @@ def get_combined_predictions(season, week):
                     'home_team': xgb['home_team'],
                     'away_team': xgb['away_team'],
                     'game_date': xgb.get('game_date'),
+                    'game_status': 'final' if is_final else 'scheduled',
+                    'actual': {
+                        'home_score': int(home_score) if home_score is not None else None,
+                        'away_score': int(away_score) if away_score is not None else None,
+                        'winner': actual_winner,
+                        'margin': actual_margin
+                    },
+                    'model_results': {
+                        'xgb_correct': xgb_correct,
+                        'elo_correct': None
+                    },
                     'xgb': {
                         'predicted_winner': xgb['predicted_winner'],
                         'confidence': float(xgb['home_win_prob']) if xgb['predicted_winner'] == xgb['home_team'] else float(xgb['away_win_prob']),
@@ -1262,6 +2419,17 @@ def get_combined_predictions(season, week):
                     'home_team': elo['home_team'],
                     'away_team': elo['away_team'],
                     'game_date': elo.get('game_date'),
+                    'game_status': 'final' if is_final else 'scheduled',
+                    'actual': {
+                        'home_score': int(home_score) if home_score is not None else None,
+                        'away_score': int(away_score) if away_score is not None else None,
+                        'winner': actual_winner,
+                        'margin': actual_margin
+                    },
+                    'model_results': {
+                        'xgb_correct': None,
+                        'elo_correct': elo_correct
+                    },
                     'xgb': None,
                     'elo': {
                         'predicted_winner': elo['predicted_winner'],

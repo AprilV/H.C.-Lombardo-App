@@ -288,10 +288,11 @@ def set_parent_ticket_status(
     parent_ticket: str,
     desired_status: str,
 ) -> Tuple[str, bool]:
-    line_re = re.compile(
-        rf"(?m)^(\s*\{{\s*id:'{re.escape(parent_ticket)}'[^\n]*?status:')([^']*)('.*)$"
+    status_re = re.compile(
+        rf"(\{{\s*id:'{re.escape(parent_ticket)}'.*?\bstatus:')([^']*)(')",
+        re.S,
     )
-    m = line_re.search(text)
+    m = status_re.search(text)
     if not m:
         raise ValueError(f"Could not find PB item line for parent ticket: {parent_ticket}")
 
@@ -299,7 +300,7 @@ def set_parent_ticket_status(
     if current_status == desired_status:
         return text, False
 
-    updated = line_re.sub(rf"\1{desired_status}\3", text, count=1)
+    updated = status_re.sub(rf"\1{desired_status}\3", text, count=1)
     return updated, True
 
 
@@ -315,10 +316,11 @@ def choose_parent_status(current_status: str, all_done: bool) -> str:
 
 
 def get_parent_status(text: str, parent_ticket: str) -> str:
-    line_re = re.compile(
-        rf"(?m)^\s*\{{\s*id:'{re.escape(parent_ticket)}'[^\n]*?status:'([^']*)'"
+    status_re = re.compile(
+        rf"\{{\s*id:'{re.escape(parent_ticket)}'.*?\bstatus:'([^']*)'",
+        re.S,
     )
-    m = line_re.search(text)
+    m = status_re.search(text)
     if not m:
         raise ValueError(f"Could not read parent status for ticket: {parent_ticket}")
     return m.group(1).strip()

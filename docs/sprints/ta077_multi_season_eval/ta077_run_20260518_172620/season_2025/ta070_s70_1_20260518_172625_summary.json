@@ -1,0 +1,21 @@
+{
+  "generated_at_utc": "2026-05-18T17:26:25.555376+00:00",
+  "database": "nfl_analytics",
+  "schema": "hcl",
+  "seasons": [
+    2025
+  ],
+  "row_count": 0,
+  "by_season": {},
+  "line_coverage": {
+    "rows_with_vegas_spread": 0,
+    "rows_with_vegas_total": 0,
+    "rows_with_predicted_scores": 0
+  },
+  "files": {
+    "combined": "docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2025/ta070_s70_1_20260518_172625_combined.csv",
+    "winner": "docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2025/ta070_s70_1_20260518_172625_winner.csv",
+    "spread": "docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2025/ta070_s70_1_20260518_172625_spread.csv",
+    "total": "docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2025/ta070_s70_1_20260518_172625_total.csv"
+  }
+}

@@ -9,7 +9,7 @@ from psycopg2.extras import RealDictCursor
 from dotenv import load_dotenv
 import os
 from datetime import datetime
-from team_abbreviations import to_canonical_abbr
+from team_abbreviations import to_canonical_abbr, to_hcl_abbr
 
 # Load environment variables
 load_dotenv()
@@ -74,11 +74,11 @@ class ESPNDataFetcher:
                                 'logo': team.get('logos', [{}])[0].get('href', '') if team.get('logos') else ''
                             })
             
-            print(f"✅ Fetched {len(teams)} teams from ESPN API")
+            print(f"[OK] Fetched {len(teams)} teams from ESPN API")
             return teams
             
         except Exception as e:
-            print(f"❌ Error fetching teams: {e}")
+            print(f"[ERROR] Error fetching teams: {e}")
             return []
     
     def fetch_team_stats(self, team_id):
@@ -99,7 +99,7 @@ class ESPNDataFetcher:
             return None
             
         except Exception as e:
-            print(f"⚠️  Error fetching stats for team {team_id}: {e}")
+            print(f"[WARN] Error fetching stats for team {team_id}: {e}")
             return None
     
     def parse_team_stats(self, data):
@@ -137,7 +137,7 @@ class ESPNDataFetcher:
                 stats['games_played'] = stats['wins'] + stats['losses']
         
         except Exception as e:
-            print(f"⚠️  Error parsing stats: {e}")
+            print(f"[WARN] Error parsing stats: {e}")
         
         return stats
     
@@ -156,7 +156,7 @@ class ESPNDataFetcher:
             if 'leagues' in data:
                 for league in data['leagues']:
                     season = league.get('season', {})
-                    print(f"📅 Season: {season.get('year')}, Type: {season.get('type')}")
+                    print(f"[INFO] Season: {season.get('year')}, Type: {season.get('type')}")
             
             # Get teams from recent games to extract current stats
             if 'events' in data:
@@ -203,11 +203,11 @@ class ESPNDataFetcher:
                                     'pa': pa
                                 }
             
-            print(f"✅ Extracted stats for {len(team_stats)} teams from scoreboard")
+            print(f"[OK] Extracted stats for {len(team_stats)} teams from scoreboard")
             return team_stats
             
         except Exception as e:
-            print(f"❌ Error fetching scoreboard: {e}")
+            print(f"[ERROR] Error fetching scoreboard: {e}")
             return {}
     
     def update_database(self):
@@ -222,12 +222,12 @@ class ESPNDataFetcher:
         team_stats = self.fetch_scoreboard_stats()
         
         if not teams:
-            print("❌ Failed to fetch teams from ESPN API")
+            print("[ERROR] Failed to fetch teams from ESPN API")
             return False
         
         # If scoreboard didn't give us stats, we'll use existing data as fallback
         if not team_stats:
-            print("⚠️  No stats from scoreboard, keeping existing database data")
+            print("[WARN] No stats from scoreboard, keeping existing database data")
             return False
         
         conn = None
@@ -269,31 +269,20 @@ class ESPNDataFetcher:
 
             if len(candidate_rows) < self.MIN_EXPECTED_TEAMS:
                 print(
-                    f"❌ Safety stop: parsed {len(candidate_rows)} teams "
+                    f"[ERROR] Safety stop: parsed {len(candidate_rows)} teams "
                     f"(< {self.MIN_EXPECTED_TEAMS}); keeping existing data"
                 )
                 return False
 
-            cursor.execute("SELECT id, abbreviation, name FROM teams")
-            existing_rows = cursor.fetchall()
-
-            existing_by_abbr = {}
-            existing_by_name = {}
-            for existing_id, existing_abbr, existing_name in existing_rows:
-                canonical_abbr = to_canonical_abbr(existing_abbr)
-                if canonical_abbr:
-                    existing_by_abbr[canonical_abbr] = existing_id
-                if existing_name:
-                    existing_by_name[existing_name.strip().lower()] = existing_id
-
             updated_count = 0
-            unmatched_count = 0
+            inserted_count = 0
+            skipped_count = 0
 
             for row in candidate_rows:
-                team_id = existing_by_abbr.get(row[1]) or existing_by_name.get(row[0].strip().lower())
-
-                if team_id is None:
-                    unmatched_count += 1
+                canonical_abbr = row[1]
+                db_abbr = to_hcl_abbr(canonical_abbr) or canonical_abbr
+                if not canonical_abbr:
+                    skipped_count += 1
                     continue
 
                 cursor.execute(
@@ -306,17 +295,30 @@ class ESPNDataFetcher:
                         ppg = %s,
                         pa = %s,
                         games_played = %s
-                    WHERE id = %s
+                    WHERE abbreviation IN (%s, %s)
                     """,
-                    (row[0], row[1], row[2], row[3], row[4], row[5], row[6], team_id),
+                    (row[0], canonical_abbr, row[2], row[3], row[4], row[5], row[6], canonical_abbr, db_abbr),
                 )
-                updated_count += cursor.rowcount
+                if cursor.rowcount > 0:
+                    updated_count += 1
+                    continue
 
-            if updated_count < self.MIN_EXPECTED_TEAMS:
+                cursor.execute(
+                    """
+                    INSERT INTO teams (name, abbreviation, wins, losses, ppg, pa, games_played)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s)
+                    """,
+                    (row[0], canonical_abbr, row[2], row[3], row[4], row[5], row[6]),
+                )
+                inserted_count += 1
+
+            processed_count = updated_count + inserted_count
+
+            if processed_count < self.MIN_EXPECTED_TEAMS:
                 conn.rollback()
                 print(
-                    f"❌ Safety rollback: only {updated_count} teams matched existing rows "
-                    f"({unmatched_count} unmatched)"
+                    f"[ERROR] Safety rollback: only {processed_count} teams processed "
+                    f"({updated_count} updated, {inserted_count} inserted, {skipped_count} skipped)"
                 )
                 return False
 
@@ -326,7 +328,7 @@ class ESPNDataFetcher:
             if total_count < self.MIN_EXPECTED_TEAMS:
                 conn.rollback()
                 print(
-                    f"❌ Safety rollback: teams table has {total_count} rows "
+                    f"[ERROR] Safety rollback: teams table has {total_count} rows "
                     f"(< {self.MIN_EXPECTED_TEAMS})"
                 )
                 return False
@@ -334,8 +336,8 @@ class ESPNDataFetcher:
             conn.commit()
 
             print(
-                f"✅ Database updated: {len(candidate_rows)} processed "
-                f"({updated_count} updated, {unmatched_count} unmatched), total={total_count}"
+                f"[OK] Database updated: {len(candidate_rows)} processed "
+                f"({updated_count} updated, {inserted_count} inserted, {skipped_count} skipped), total={total_count}"
             )
             print("="*70 + "\n")
             return True
@@ -343,7 +345,7 @@ class ESPNDataFetcher:
         except Exception as e:
             if conn:
                 conn.rollback()
-            print(f"❌ Database update failed: {e}")
+            print(f"[ERROR] Database update failed: {e}")
             return False
         finally:
             if cursor:
@@ -383,7 +385,7 @@ class ESPNDataFetcher:
             return result[0] if result else None
             
         except Exception as e:
-            print(f"⚠️  Error checking last update: {e}")
+            print(f"[WARN] Error checking last update: {e}")
             return None
     
     def record_update(self):
@@ -401,7 +403,7 @@ class ESPNDataFetcher:
             conn.close()
             
         except Exception as e:
-            print(f"⚠️  Error recording update: {e}")
+            print(f"[WARN] Error recording update: {e}")
 
 
 def main():
@@ -411,9 +413,9 @@ def main():
     
     if success:
         fetcher.record_update()
-        print("✅ Data update complete!")
+        print("[OK] Data update complete!")
     else:
-        print("❌ Data update failed!")
+        print("[ERROR] Data update failed!")
 
 
 if __name__ == "__main__":

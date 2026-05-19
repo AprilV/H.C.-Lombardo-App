@@ -56,6 +56,10 @@ CORS(app, resources={
             "http://127.0.0.1:3000", 
             "http://localhost:5000", 
             "http://127.0.0.1:5000", 
+            "http://localhost:5500",
+            "http://127.0.0.1:5500",
+            "http://localhost:5501",
+            "http://127.0.0.1:5501",
             "https://master.d2tamnlcbzo0d5.amplifyapp.com",
             "https://nfl.aprilsykes.dev",
             "null"
@@ -492,7 +496,7 @@ def run_server(host='127.0.0.1', port=5000, debug=False):
     logger.info("=" * 60)
     logger.info(f"Server: http://{host}:{port}")
     logger.info(f"Process ID: {os.getpid()}")
-    logger.info(f"CORS Enabled for: http://localhost:3000")
+    logger.info("CORS Enabled for local React/dashboard origins (3000, 5000, 5500, 5501)")
     logger.info("=" * 60)
     
     # Test database connection before starting

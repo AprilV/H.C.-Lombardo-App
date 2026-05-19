@@ -605,6 +605,107 @@
   line-height: 1.6;
 }
 
+.data-availability {
+  margin-top: 8px !important;
+  color: #8fb3d9 !important;
+  font-size: 0.82rem !important;
+}
+
+.season-trend-section {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 25px;
+  margin-bottom: 30px;
+}
+
+.season-trend-section h3 {
+  color: #4a9eff;
+  margin: 0 0 8px 0;
+  font-size: 1.3rem;
+}
+
+.season-trend-subtitle {
+  margin: 0 0 18px 0;
+  color: #9cb6d3;
+  font-size: 0.92rem;
+}
+
+.season-trend-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.season-trend-card {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 16px;
+}
+
+.season-trend-card h4 {
+  margin: 0;
+  color: #dcecff;
+  font-size: 1rem;
+}
+
+.season-trend-meta {
+  margin: 6px 0 12px 0;
+  color: #96abc5;
+  font-size: 0.82rem;
+}
+
+.trend-row {
+  display: grid;
+  grid-template-columns: 66px 1fr 44px;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 5px;
+}
+
+.trend-label {
+  color: #b6cbe5;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.trend-value {
+  color: #d5e4f5;
+  font-size: 0.8rem;
+  text-align: right;
+}
+
+.trend-bar-bg {
+  height: 9px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+}
+
+.trend-bar {
+  height: 100%;
+  border-radius: inherit;
+}
+
+.trend-bar-xgb {
+  background: linear-gradient(90deg, #22c55e, #16a34a);
+}
+
+.trend-bar-elo {
+  background: linear-gradient(90deg, #60a5fa, #2563eb);
+}
+
+.trend-bar-vegas {
+  background: linear-gradient(90deg, #f59e0b, #d97706);
+}
+
+.trend-coverage {
+  margin: 0 0 10px 74px;
+  color: #8ea7c6;
+  font-size: 0.76rem;
+}
+
 /* Loading & Error States */
 .loading-spinner,
 .error-message,

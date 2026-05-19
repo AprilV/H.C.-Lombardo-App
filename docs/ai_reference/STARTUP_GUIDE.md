@@ -1,21 +1,27 @@
 # H.C. Lombardo App - Startup & Shutdown Guide
 
-**Last Updated:** October 14, 2025
+**Last Updated:** May 14, 2026
 
 ---
 
 ## 🚀 Quick Start
 
-### Start Everything
+### Start Everything (Canonical)
 ```powershell
-cd "c:\IS330\H.C Lombardo App"
+cd "c:\ReactGitEC2\IS330\H.C Lombardo App"
 python startup.py
 ```
 
-### Stop Everything
+### Stop Everything (Canonical)
 ```powershell
-cd "c:\IS330\H.C Lombardo App"
+cd "c:\ReactGitEC2\IS330\H.C Lombardo App"
 python shutdown.py
+```
+
+### Optional Wrappers
+```powershell
+START-DEV.bat
+STOP.bat
 ```
 
 ---
@@ -32,7 +38,7 @@ python shutdown.py
 
 ### Application Structure
 ```
-c:\IS330\H.C Lombardo App\
+c:\ReactGitEC2\IS330\H.C Lombardo App\
 ├── startup.py              # Master startup orchestrator
 ├── shutdown.py             # Graceful shutdown manager
 ├── health_check.py         # Service health monitoring
@@ -68,7 +74,7 @@ c:\IS330\H.C Lombardo App\
 ### Step 3: Live Data Update 🔄
 - Fetches current standings from ESPN API
 - Updates team records (wins/losses)
-- **Runs automatically every 6 hours**
+- **Runs automatically every 15 minutes**
 - Gracefully continues if ESPN is down
 
 ### Step 4: Start API Server 🌐
@@ -210,7 +216,7 @@ python espn_data_fetcher.py  # Fetch from ESPN API
 
 ### Reload Database with Fresh Data
 ```powershell
-cd "c:\IS330\H.C Lombardo App"
+cd "c:\ReactGitEC2\IS330\H.C Lombardo App"
 python nfl_database_loader.py
 python update_current_standings.py
 ```
@@ -240,7 +246,7 @@ Before deploying or demonstrating:
 - [ ] Run `python shutdown.py` to clean state
 - [ ] Verify database has 32 teams
 - [ ] Run `python startup.py`
-- [ ] Wait for "✅ ALL SERVICES RUNNING"
+- [ ] Wait for "ALL SERVICES RUNNING"
 - [ ] Verify browser opens to http://localhost:3000
 - [ ] Check that team data appears
 - [ ] Test a few API endpoints manually
@@ -253,6 +259,8 @@ Before deploying or demonstrating:
 # Full System
 python startup.py          # Start everything
 python shutdown.py         # Stop everything
+START-DEV.bat             # Optional wrapper start
+STOP.bat                  # Optional wrapper stop
 
 # Data Management
 python nfl_database_loader.py        # Reset to base 32 teams
@@ -298,4 +306,4 @@ Open Browser
 - Run health checks to isolate problem
 - Verify all prerequisites are met
 
-**Last Test**: October 14, 2025 12:48 PM - All systems operational ✅
+**Last Validation**: May 14, 2026 - Startup/shutdown command flow reviewed.
