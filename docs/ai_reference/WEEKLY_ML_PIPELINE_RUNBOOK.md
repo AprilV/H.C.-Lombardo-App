@@ -23,6 +23,14 @@ python scripts/maintenance/weekly_ml_pipeline.py --fail-on-gate
 
 This uses the `operational` gate profile by default.
 
+Run with TA-078 tuning integration enabled:
+
+```powershell
+python scripts/maintenance/weekly_ml_pipeline.py --ta078-tune
+```
+
+TA-078 integration adds spread-gap calibration diagnostics to the run and writes tuning artifacts under `docs/sprints/ta078_vegas_tuning/`.
+
 ## Optional Target Override
 
 ```powershell
@@ -141,6 +149,48 @@ Per run:
 
 - weekly_ml_pipeline_YYYYMMDD_HHMMSS.json
 - weekly_ml_pipeline_YYYYMMDD_HHMMSS.md
+
+When `--ta078-tune` is enabled, additional artifacts are produced:
+
+- ta078_vegas_tuning_YYYYMMDD_HHMMSS_summary.json
+- ta078_vegas_tuning_YYYYMMDD_HHMMSS_report.md
+- ta078_vegas_tuning_YYYYMMDD_HHMMSS_bias_scan.csv
+- ta078_vegas_tuning_YYYYMMDD_HHMMSS_validation_by_week.csv
+- ta078_vegas_tuning_YYYYMMDD_HHMMSS_validation_by_vegas_bin.csv
+- ta078_vegas_tuning_YYYYMMDD_HHMMSS_validation_game_deltas.csv
+- ta078_vegas_tuning_YYYYMMDD_HHMMSS_targeted_focus_week.csv
+- ta078_vegas_tuning_YYYYMMDD_HHMMSS_targeted_high_spread.csv
+
+TA-078 can be constrained explicitly:
+
+```powershell
+python scripts/maintenance/weekly_ml_pipeline.py --ta078-tune --ta078-seasons 2021,2022,2023,2024,2025 --ta078-validation-seasons 2025
+```
+
+Override targeted diagnostics focus controls if needed:
+
+```powershell
+python scripts/maintenance/weekly_ml_pipeline.py --ta078-tune --ta078-focus-week 2025-W10 --ta078-high-spread-threshold 10
+```
+
+The weekly pipeline report will include the TA-078 recommended runtime calibration values for:
+
+- AI_SPREAD_CAL_BIAS
+- AI_SPREAD_CAL_SCALE
+
+## Local Predictor Opt-In (TA-078)
+
+Use TA-078 calibration for a local one-off prediction run without changing default runtime behavior:
+
+```powershell
+python ml/predict_week.py --season 2025 --week 18 --use-ta078-latest
+```
+
+Use a specific TA-078 summary artifact if needed:
+
+```powershell
+python ml/predict_week.py --season 2025 --week 18 --ta078-summary-path docs/sprints/ta078_vegas_tuning/ta078_vegas_tuning_YYYYMMDD_HHMMSS_summary.json
+```
 
 ## Notes
 

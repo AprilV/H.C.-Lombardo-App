@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import subprocess
 import sys
 from dataclasses import dataclass
 from datetime import UTC, datetime
@@ -27,10 +28,6 @@ import pandas as pd
 import psycopg2
 from psycopg2.extras import RealDictCursor
 
-from db_config import DATABASE_CONFIG
-from ml.predict_elo import EloPredictionSystem
-from ml.predict_week import WeeklyPredictor
-
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 ML_DIR = PROJECT_ROOT / "ml"
 if str(PROJECT_ROOT) not in sys.path:
@@ -38,7 +35,13 @@ if str(PROJECT_ROOT) not in sys.path:
 if str(ML_DIR) not in sys.path:
     sys.path.insert(0, str(ML_DIR))
 
+from db_config import DATABASE_CONFIG
+from ml.predict_elo import EloPredictionSystem
+from ml.predict_week import WeeklyPredictor
+
 DEFAULT_OUT_DIR = PROJECT_ROOT / "docs" / "sprints" / "phase4_weekly_ops"
+DEFAULT_TA078_OUT_DIR = PROJECT_ROOT / "docs" / "sprints" / "ta078_vegas_tuning"
+TA078_TUNING_SCRIPT = PROJECT_ROOT / "scripts" / "verification" / "ta078_vegas_gap_tuning.py"
 
 GATE_PROFILE_DEFAULTS: dict[str, dict[str, Any]] = {
     "operational": {
@@ -858,6 +861,130 @@ def _resolve_gate_thresholds(args: argparse.Namespace) -> tuple[GateThresholds, 
     return thresholds, profile_name
 
 
+def _tail_lines(text: str, max_lines: int = 20) -> str:
+    lines = (text or "").splitlines()
+    if len(lines) <= max_lines:
+        return "\n".join(lines)
+    return "\n".join(lines[-max_lines:])
+
+
+def _run_ta078_tuning(args: argparse.Namespace, target_season: int) -> dict[str, Any]:
+    if not bool(args.ta078_tune):
+        return {
+            "enabled": False,
+            "executed": False,
+            "success": False,
+            "reason": "disabled",
+        }
+
+    if not TA078_TUNING_SCRIPT.exists():
+        return {
+            "enabled": True,
+            "executed": False,
+            "success": False,
+            "reason": "missing_script",
+            "script": str(TA078_TUNING_SCRIPT),
+        }
+
+    if args.ta078_seasons and str(args.ta078_seasons).strip():
+        seasons_arg = str(args.ta078_seasons).strip()
+    else:
+        start = max(1999, int(target_season) - 4)
+        seasons_arg = ",".join(str(s) for s in range(start, int(target_season) + 1))
+
+    validation_arg = (
+        str(args.ta078_validation_seasons).strip()
+        if args.ta078_validation_seasons and str(args.ta078_validation_seasons).strip()
+        else str(target_season)
+    )
+
+    cmd = [
+        sys.executable,
+        str(TA078_TUNING_SCRIPT),
+        "--schema",
+        str(args.ta078_schema),
+        "--seasons",
+        seasons_arg,
+        "--validation-seasons",
+        validation_arg,
+        "--out-dir",
+        str(args.ta078_out_dir),
+        "--focus-week",
+        str(args.ta078_focus_week),
+        "--high-spread-threshold",
+        str(args.ta078_high_spread_threshold),
+    ]
+
+    completed = subprocess.run(
+        cmd,
+        cwd=str(PROJECT_ROOT),
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    result: dict[str, Any] = {
+        "enabled": True,
+        "executed": True,
+        "success": completed.returncode == 0,
+        "exit_code": int(completed.returncode),
+        "command": cmd,
+        "schema": str(args.ta078_schema),
+        "seasons": seasons_arg,
+        "validation_seasons": validation_arg,
+        "focus_week": str(args.ta078_focus_week),
+        "high_spread_threshold": float(args.ta078_high_spread_threshold),
+        "stdout_tail": _tail_lines(completed.stdout or ""),
+        "stderr_tail": _tail_lines(completed.stderr or ""),
+    }
+
+    parsed: dict[str, str] = {}
+    for line in (completed.stdout or "").splitlines():
+        if "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        key = key.strip()
+        value = value.strip()
+        if key in {
+            "summary",
+            "report",
+            "bias_scan",
+            "validation_by_week",
+            "validation_by_vegas_bin",
+            "validation_game_deltas",
+            "targeted_focus_week",
+            "targeted_high_spread",
+            "targeted_focus_week_label",
+            "targeted_high_spread_threshold",
+            "recommended_method",
+            "recommended_runtime",
+        }:
+            parsed[key] = value
+
+    if parsed:
+        result["script_outputs"] = parsed
+
+    summary_path_raw = parsed.get("summary")
+    if summary_path_raw:
+        summary_path = Path(summary_path_raw)
+        if summary_path.exists():
+            try:
+                summary = json.loads(summary_path.read_text(encoding="utf-8"))
+                result["summary_path"] = str(summary_path)
+                result["summary"] = {
+                    "recommended": summary.get("recommended"),
+                    "validation": summary.get("validation"),
+                    "parameters": summary.get("parameters"),
+                    "row_counts": summary.get("row_counts"),
+                    "train_seasons": summary.get("train_seasons"),
+                    "validation_seasons": summary.get("validation_seasons"),
+                }
+            except (ValueError, OSError) as exc:
+                result["summary_error"] = str(exc)
+
+    return result
+
+
 def _write_profile_advisor_markdown(path: Path, report: dict[str, Any]) -> None:
     season = report["target"]["season"]
     week = report["target"]["week"]
@@ -952,6 +1079,48 @@ def _write_markdown(path: Path, report: dict[str, Any]) -> None:
         if not checks["ai_vs_vegas_delta_floor"].get("has_sample"):
             lines.append(f"- AI vs Vegas gate note: {checks['ai_vs_vegas_delta_floor'].get('reason')}")
 
+    ta078 = report.get("ta078_tuning") or {}
+    if ta078.get("enabled"):
+        lines.extend([
+            "",
+            "## TA-078 Tuning",
+            f"- Executed: {ta078.get('executed')}",
+            f"- Success: {ta078.get('success')}",
+            f"- Exit code: {ta078.get('exit_code')}",
+        ])
+
+        summary = ta078.get("summary") or {}
+        recommended = summary.get("recommended") or {}
+        runtime = recommended.get("runtime") or {}
+        if recommended:
+            lines.append(f"- Recommended method: {recommended.get('method')}")
+            lines.append(
+                "- Recommended runtime env: "
+                f"AI_SPREAD_CAL_BIAS={runtime.get('AI_SPREAD_CAL_BIAS')}, "
+                f"AI_SPREAD_CAL_SCALE={runtime.get('AI_SPREAD_CAL_SCALE')}"
+            )
+        if ta078.get("summary_path"):
+            lines.append(f"- Summary artifact: {ta078.get('summary_path')}")
+        outputs = ta078.get("script_outputs") or {}
+        if outputs.get("validation_by_week"):
+            lines.append(f"- Validation by week artifact: {outputs.get('validation_by_week')}")
+        if outputs.get("validation_by_vegas_bin"):
+            lines.append(f"- Validation by vegas bin artifact: {outputs.get('validation_by_vegas_bin')}")
+        if outputs.get("validation_game_deltas"):
+            lines.append(f"- Validation game deltas artifact: {outputs.get('validation_game_deltas')}")
+        if outputs.get("targeted_focus_week"):
+            lines.append(f"- Targeted focus-week artifact: {outputs.get('targeted_focus_week')}")
+        if outputs.get("targeted_high_spread"):
+            lines.append(f"- Targeted high-spread artifact: {outputs.get('targeted_high_spread')}")
+        if outputs.get("targeted_focus_week_label"):
+            lines.append(f"- Targeted focus week label: {outputs.get('targeted_focus_week_label')}")
+        if outputs.get("targeted_high_spread_threshold"):
+            lines.append(
+                f"- Targeted high-spread threshold: {outputs.get('targeted_high_spread_threshold')}"
+            )
+        if ta078.get("stderr_tail"):
+            lines.append(f"- STDERR tail: {ta078.get('stderr_tail')}")
+
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
@@ -967,6 +1136,7 @@ def run_pipeline(args: argparse.Namespace) -> dict[str, Any]:
         snapshot = _season_snapshot(conn, season)
         thresholds, gate_profile = _resolve_gate_thresholds(args)
         gates = _evaluate_gates(snapshot, thresholds)
+        ta078_tuning = _run_ta078_tuning(args, season)
 
         report = {
             "generated_at_utc": datetime.now(UTC).isoformat(),
@@ -981,6 +1151,7 @@ def run_pipeline(args: argparse.Namespace) -> dict[str, Any]:
             "snapshot": snapshot,
             "gate_thresholds": _thresholds_to_dict(gate_profile, thresholds),
             "gates": gates,
+            "ta078_tuning": ta078_tuning,
         }
 
         out_dir = Path(args.out_dir)
@@ -996,6 +1167,20 @@ def run_pipeline(args: argparse.Namespace) -> dict[str, Any]:
             "json": str(json_path),
             "markdown": str(md_path),
         }
+        ta078_summary_path = (report.get("ta078_tuning") or {}).get("summary_path")
+        if ta078_summary_path:
+            report["artifact_paths"]["ta078_summary"] = str(ta078_summary_path)
+        ta078_outputs = (report.get("ta078_tuning") or {}).get("script_outputs") or {}
+        if ta078_outputs.get("validation_by_week"):
+            report["artifact_paths"]["ta078_validation_by_week"] = ta078_outputs["validation_by_week"]
+        if ta078_outputs.get("validation_by_vegas_bin"):
+            report["artifact_paths"]["ta078_validation_by_vegas_bin"] = ta078_outputs["validation_by_vegas_bin"]
+        if ta078_outputs.get("validation_game_deltas"):
+            report["artifact_paths"]["ta078_validation_game_deltas"] = ta078_outputs["validation_game_deltas"]
+        if ta078_outputs.get("targeted_focus_week"):
+            report["artifact_paths"]["ta078_targeted_focus_week"] = ta078_outputs["targeted_focus_week"]
+        if ta078_outputs.get("targeted_high_spread"):
+            report["artifact_paths"]["ta078_targeted_high_spread"] = ta078_outputs["targeted_high_spread"]
         return report
     finally:
         conn.close()
@@ -1129,6 +1314,42 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Exit code 1 when gates are evaluated and fail",
     )
+    parser.add_argument(
+        "--ta078-tune",
+        action="store_true",
+        help="Run TA-078 AI-vs-Vegas spread tuning and attach recommendation artifacts",
+    )
+    parser.add_argument(
+        "--ta078-seasons",
+        default="",
+        help="Optional comma-separated seasons for TA-078 tuning (default: target season and prior 4)",
+    )
+    parser.add_argument(
+        "--ta078-validation-seasons",
+        default="",
+        help="Optional comma-separated validation seasons for TA-078 tuning (default: target season)",
+    )
+    parser.add_argument(
+        "--ta078-schema",
+        default="hcl",
+        help="Schema for TA-078 tuning script",
+    )
+    parser.add_argument(
+        "--ta078-out-dir",
+        default=str(DEFAULT_TA078_OUT_DIR),
+        help="TA-078 artifact output directory",
+    )
+    parser.add_argument(
+        "--ta078-focus-week",
+        default="2025-W10",
+        help="Validation week label for TA-078 targeted diagnostics (example: 2025-W10)",
+    )
+    parser.add_argument(
+        "--ta078-high-spread-threshold",
+        type=float,
+        default=10.0,
+        help="Absolute Vegas spread threshold for TA-078 targeted diagnostics",
+    )
     return parser.parse_args()
 
 
@@ -1233,8 +1454,27 @@ def main() -> int:
     gates = report["gates"]
     print(f"Gate profile: {report['gate_thresholds'].get('profile')}")
     print(f"Gates evaluated: {gates.get('evaluated')} | overall pass: {gates.get('overall_pass')}")
+
+    ta078 = report.get("ta078_tuning") or {}
+    if ta078.get("enabled"):
+        print(
+            "TA-078 tuning: "
+            f"executed={ta078.get('executed')} success={ta078.get('success')} exit_code={ta078.get('exit_code')}"
+        )
+        recommended = ((ta078.get("summary") or {}).get("recommended") or {})
+        runtime = recommended.get("runtime") or {}
+        if recommended:
+            print(f"TA-078 recommended method: {recommended.get('method')}")
+            print(
+                "TA-078 runtime env: "
+                f"AI_SPREAD_CAL_BIAS={runtime.get('AI_SPREAD_CAL_BIAS')}, "
+                f"AI_SPREAD_CAL_SCALE={runtime.get('AI_SPREAD_CAL_SCALE')}"
+            )
+
     print(f"Artifact JSON: {report['artifact_paths']['json']}")
     print(f"Artifact MD:   {report['artifact_paths']['markdown']}")
+    if report["artifact_paths"].get("ta078_summary"):
+        print(f"Artifact TA078: {report['artifact_paths']['ta078_summary']}")
 
     if args.fail_on_gate and gates.get("evaluated") and not gates.get("overall_pass"):
         return 1
