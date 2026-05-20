@@ -7,6 +7,7 @@ It computes rolling features from previous games and generates predictions.
 Usage:
     python ml/predict_week.py --season 2025 --week 10
     python ml/predict_week.py --upcoming  # Next week's games
+    python ml/predict_week.py --season 2025 --week 18 --use-ta078-latest
 
 Sprint 10: XGBoost Model Integration
 Date: December 18, 2025
@@ -18,10 +19,40 @@ import numpy as np
 import joblib
 import os
 import argparse
+import json
 from datetime import datetime
+from pathlib import Path
 from dotenv import load_dotenv
 
 load_dotenv()
+
+
+def _resolve_ta078_runtime(summary_path: str | None = None):
+    """Load TA-078 calibration runtime values from a summary artifact."""
+    root = Path(__file__).resolve().parents[1]
+
+    if summary_path:
+        candidate = Path(summary_path)
+    else:
+        tuning_dir = root / 'docs' / 'sprints' / 'ta078_vegas_tuning'
+        candidates = sorted(tuning_dir.glob('ta078_vegas_tuning_*_summary.json'))
+        if not candidates:
+            raise FileNotFoundError('No TA-078 summary artifacts found')
+        candidate = candidates[-1]
+
+    if not candidate.exists():
+        raise FileNotFoundError(f'TA-078 summary file not found: {candidate}')
+
+    payload = json.loads(candidate.read_text(encoding='utf-8'))
+    recommended = (payload or {}).get('recommended') or {}
+    runtime = recommended.get('runtime') or {}
+    bias = runtime.get('AI_SPREAD_CAL_BIAS')
+    scale = runtime.get('AI_SPREAD_CAL_SCALE')
+
+    if bias is None or scale is None:
+        raise ValueError(f'Missing TA-078 runtime fields in summary: {candidate}')
+
+    return float(bias), float(scale), str(candidate)
 
 class WeeklyPredictor:
     """Predict NFL games for a given week using trained model"""
@@ -47,9 +78,18 @@ class WeeklyPredictor:
         
         with open(f'{model_dir}/xgb_spread_features.txt', 'r') as f:
             self.spread_feature_names = [line.strip() for line in f.readlines()]
+
+        # Optional TA-078 runtime calibration. Defaults preserve current behavior.
+        self.ai_spread_cal_bias = float(os.getenv('AI_SPREAD_CAL_BIAS', '0') or '0')
+        self.ai_spread_cal_scale = float(os.getenv('AI_SPREAD_CAL_SCALE', '1') or '1')
         
         print(f"[OK] Loaded XGBoost win/loss model with {len(self.win_feature_names)} features")
         print(f"[OK] Loaded XGBoost point spread model with {len(self.spread_feature_names)} features")
+        if self.ai_spread_cal_bias != 0.0 or self.ai_spread_cal_scale != 1.0:
+            print(
+                "[OK] Applied AI spread calibration "
+                f"(scale={self.ai_spread_cal_scale}, bias={self.ai_spread_cal_bias})"
+            )
     
     def fetch_schedule(self, season, week):
         """Fetch games scheduled for the given week"""
@@ -217,7 +257,8 @@ class WeeklyPredictor:
         predicted_away_score = round((avg_total - predicted_margin) / 2, 1)
         
         # AI-generated spread (negative means home favored)
-        ai_spread = -predicted_margin
+        raw_ai_spread = -predicted_margin
+        ai_spread = (raw_ai_spread * self.ai_spread_cal_scale) + self.ai_spread_cal_bias
         
         # Winner from POINT SPREAD model (more specific than win/loss model)
         spread_predicted_winner = home_team if predicted_margin > 0 else away_team
@@ -247,6 +288,7 @@ class WeeklyPredictor:
             'predicted_margin': float(predicted_margin),
             
             # Spread analysis
+            'raw_ai_spread': float(raw_ai_spread),
             'ai_spread': float(ai_spread),
             'vegas_spread': float(spread_line) if spread_line is not None else None,
             'spread_difference': float(spread_difference) if spread_difference is not None else None,
@@ -383,8 +425,32 @@ def main():
     parser.add_argument('--season', type=int, help='Season year (e.g., 2025)')
     parser.add_argument('--week', type=int, help='Week number (1-18)')
     parser.add_argument('--upcoming', action='store_true', help='Predict next upcoming week')
+    parser.add_argument(
+        '--use-ta078-latest',
+        action='store_true',
+        help='Apply TA-078 recommended spread calibration from latest summary artifact',
+    )
+    parser.add_argument(
+        '--ta078-summary-path',
+        default=None,
+        help='Use a specific TA-078 summary artifact JSON path for calibration',
+    )
     
     args = parser.parse_args()
+
+    if args.use_ta078_latest or args.ta078_summary_path:
+        try:
+            bias, scale, source = _resolve_ta078_runtime(args.ta078_summary_path)
+        except (FileNotFoundError, ValueError, json.JSONDecodeError) as exc:
+            print(f'[ERROR] Could not load TA-078 calibration: {exc}')
+            return 2
+
+        os.environ['AI_SPREAD_CAL_BIAS'] = str(bias)
+        os.environ['AI_SPREAD_CAL_SCALE'] = str(scale)
+        print(
+            '[OK] Using TA-078 calibration from '
+            f'{source} (AI_SPREAD_CAL_BIAS={bias}, AI_SPREAD_CAL_SCALE={scale})'
+        )
     
     predictor = WeeklyPredictor()
     
@@ -396,7 +462,8 @@ def main():
         print("Usage:")
         print("  python ml/predict_week.py --season 2025 --week 10")
         print("  python ml/predict_week.py --upcoming")
-        return
+        print("  python ml/predict_week.py --season 2025 --week 18 --use-ta078-latest")
+        return 2
     
     # Save predictions to file
     if predictions:
@@ -408,4 +475,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

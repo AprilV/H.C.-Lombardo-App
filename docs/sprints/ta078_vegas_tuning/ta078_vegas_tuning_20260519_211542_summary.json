@@ -1,0 +1,143 @@
+{
+  "generated_at_utc": "2026-05-19T21:15:42.423225+00:00",
+  "schema": "hcl",
+  "seasons": [
+    2021,
+    2022,
+    2023,
+    2024,
+    2025
+  ],
+  "train_seasons": [
+    2021,
+    2022,
+    2023,
+    2024
+  ],
+  "validation_seasons": [
+    2025
+  ],
+  "row_counts": {
+    "all": 1311,
+    "train": 1087,
+    "validation": 224
+  },
+  "parameters": {
+    "bias": -3.1532,
+    "linear_a": -1.5093,
+    "linear_b": -0.5048,
+    "bias_scan_best": -0.7,
+    "bias_scan_range": {
+      "min": -8.0,
+      "max": 8.0,
+      "step": 0.1
+    }
+  },
+  "train": {
+    "baseline": {
+      "method": "baseline",
+      "games": 1087,
+      "mae": 14.143,
+      "rmse": 18.081,
+      "wins_vs_vegas": 363,
+      "vegas_wins": 724,
+      "ties_vs_vegas": 0,
+      "win_pct": 33.39,
+      "vegas_win_pct": 66.61,
+      "delta_pct": -33.22
+    },
+    "bias": {
+      "method": "bias",
+      "games": 1087,
+      "mae": 14.0379,
+      "rmse": 17.8039,
+      "wins_vs_vegas": 359,
+      "vegas_wins": 728,
+      "ties_vs_vegas": 0,
+      "win_pct": 33.03,
+      "vegas_win_pct": 66.97,
+      "delta_pct": -33.94
+    },
+    "linear": {
+      "method": "linear",
+      "games": 1087,
+      "mae": 10.5313,
+      "rmse": 13.6638,
+      "wins_vs_vegas": 460,
+      "vegas_wins": 627,
+      "ties_vs_vegas": 0,
+      "win_pct": 42.32,
+      "vegas_win_pct": 57.68,
+      "delta_pct": -15.36
+    },
+    "bias_scan": {
+      "method": "bias_scan",
+      "games": 1087,
+      "mae": 14.0753,
+      "rmse": 17.9721,
+      "wins_vs_vegas": 371,
+      "vegas_wins": 716,
+      "ties_vs_vegas": 0,
+      "win_pct": 34.13,
+      "vegas_win_pct": 65.87,
+      "delta_pct": -31.74
+    }
+  },
+  "validation": {
+    "baseline": {
+      "method": "baseline",
+      "games": 224,
+      "mae": 14.074,
+      "rmse": 17.7441,
+      "wins_vs_vegas": 79,
+      "vegas_wins": 143,
+      "ties_vs_vegas": 2,
+      "win_pct": 35.27,
+      "vegas_win_pct": 63.84,
+      "delta_pct": -28.57
+    },
+    "bias": {
+      "method": "bias",
+      "games": 224,
+      "mae": 14.0901,
+      "rmse": 17.5608,
+      "wins_vs_vegas": 81,
+      "vegas_wins": 141,
+      "ties_vs_vegas": 2,
+      "win_pct": 36.16,
+      "vegas_win_pct": 62.95,
+      "delta_pct": -26.79
+    },
+    "linear": {
+      "method": "linear",
+      "games": 224,
+      "mae": 10.382,
+      "rmse": 13.3103,
+      "wins_vs_vegas": 102,
+      "vegas_wins": 120,
+      "ties_vs_vegas": 2,
+      "win_pct": 45.54,
+      "vegas_win_pct": 53.57,
+      "delta_pct": -8.03
+    },
+    "bias_scan": {
+      "method": "bias_scan",
+      "games": 224,
+      "mae": 14.0175,
+      "rmse": 17.655,
+      "wins_vs_vegas": 80,
+      "vegas_wins": 142,
+      "ties_vs_vegas": 2,
+      "win_pct": 35.71,
+      "vegas_win_pct": 63.39,
+      "delta_pct": -27.68
+    }
+  },
+  "recommended": {
+    "method": "linear",
+    "runtime": {
+      "AI_SPREAD_CAL_BIAS": -1.5093,
+      "AI_SPREAD_CAL_SCALE": -0.5048
+    }
+  }
+}

@@ -1,0 +1,224 @@
+{
+  "generated_at_utc": "2026-05-19T21:33:43.588487+00:00",
+  "target": {
+    "season": 2025,
+    "week": 18,
+    "source": "explicit"
+  },
+  "xgb_generation": {
+    "generated": 0,
+    "inserted": 0,
+    "skipped_existing_week": true,
+    "existing_rows": 16
+  },
+  "elo_generation": {
+    "generated": 0,
+    "inserted": 0,
+    "skipped_existing_week": true,
+    "existing_rows": 16
+  },
+  "scoring": {
+    "xgb_updated": 0,
+    "elo_updated": 0
+  },
+  "snapshot": {
+    "season": 2025,
+    "completed_games": 272,
+    "xgb": {
+      "scored_games": 272,
+      "correct_predictions": 110,
+      "winner_accuracy_pct": 40.44,
+      "spread_mae": 13.75,
+      "coverage_pct": 100.0
+    },
+    "elo": {
+      "scored_games": 272,
+      "correct_predictions": 155,
+      "winner_accuracy_pct": 56.99,
+      "spread_mae": 10.411,
+      "coverage_pct": 100.0
+    },
+    "ai_vs_vegas": {
+      "total_games": 224,
+      "ai_wins": 79,
+      "vegas_wins": 143,
+      "ties": 2,
+      "ai_win_pct": 35.27,
+      "vegas_win_pct": 63.84,
+      "delta_pct": -28.57
+    }
+  },
+  "gate_thresholds": {
+    "profile": "operational",
+    "xgb_winner_accuracy_floor_pct": 40.0,
+    "xgb_spread_mae_ceiling": 14.0,
+    "xgb_coverage_min_pct": 95.0,
+    "elo_winner_accuracy_floor_pct": 50.0,
+    "elo_spread_mae_ceiling": 14.0,
+    "elo_coverage_min_pct": 95.0,
+    "ai_vs_vegas_min_games": 32,
+    "strict_ai_vs_vegas_sample": false,
+    "ai_vs_vegas_delta_floor_pct": -30.0
+  },
+  "gates": {
+    "evaluated": true,
+    "overall_pass": true,
+    "checks": {
+      "xgb_winner_accuracy_floor": {
+        "threshold": 40.0,
+        "actual": 40.44,
+        "pass": true
+      },
+      "xgb_spread_mae_ceiling": {
+        "threshold": 14.0,
+        "actual": 13.75,
+        "pass": true
+      },
+      "xgb_coverage_min": {
+        "threshold": 95.0,
+        "actual": 100.0,
+        "pass": true
+      },
+      "elo_winner_accuracy_floor": {
+        "threshold": 50.0,
+        "actual": 56.99,
+        "pass": true
+      },
+      "elo_spread_mae_ceiling": {
+        "threshold": 14.0,
+        "actual": 10.411,
+        "pass": true
+      },
+      "elo_coverage_min": {
+        "threshold": 95.0,
+        "actual": 100.0,
+        "pass": true
+      },
+      "ai_vs_vegas_delta_floor": {
+        "threshold": -30.0,
+        "actual": -28.57,
+        "total_games": 224,
+        "min_games": 32,
+        "strict_sample_required": false,
+        "has_sample": true,
+        "pass": true,
+        "reason": null
+      }
+    }
+  },
+  "ta078_tuning": {
+    "enabled": true,
+    "executed": true,
+    "success": true,
+    "exit_code": 0,
+    "command": [
+      "C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\.venv\\Scripts\\python.exe",
+      "C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\scripts\\verification\\ta078_vegas_gap_tuning.py",
+      "--schema",
+      "hcl",
+      "--seasons",
+      "2021,2022,2023,2024,2025",
+      "--validation-seasons",
+      "2025",
+      "--out-dir",
+      "C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta078_vegas_tuning"
+    ],
+    "schema": "hcl",
+    "seasons": "2021,2022,2023,2024,2025",
+    "validation_seasons": "2025",
+    "stdout_tail": "TA-078 tuning analysis complete\nsummary=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta078_vegas_tuning\\ta078_vegas_tuning_20260519_213343_summary.json\nreport=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta078_vegas_tuning\\ta078_vegas_tuning_20260519_213343_report.md\nbias_scan=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta078_vegas_tuning\\ta078_vegas_tuning_20260519_213343_bias_scan.csv\nrecommended_method=linear\nrecommended_runtime=AI_SPREAD_CAL_BIAS=-1.5093,AI_SPREAD_CAL_SCALE=-0.5048",
+    "stderr_tail": "",
+    "script_outputs": {
+      "summary": "C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta078_vegas_tuning\\ta078_vegas_tuning_20260519_213343_summary.json",
+      "report": "C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta078_vegas_tuning\\ta078_vegas_tuning_20260519_213343_report.md",
+      "bias_scan": "C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta078_vegas_tuning\\ta078_vegas_tuning_20260519_213343_bias_scan.csv",
+      "recommended_method": "linear",
+      "recommended_runtime": "AI_SPREAD_CAL_BIAS=-1.5093,AI_SPREAD_CAL_SCALE=-0.5048"
+    },
+    "summary_path": "C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta078_vegas_tuning\\ta078_vegas_tuning_20260519_213343_summary.json",
+    "summary": {
+      "recommended": {
+        "method": "linear",
+        "runtime": {
+          "AI_SPREAD_CAL_BIAS": -1.5093,
+          "AI_SPREAD_CAL_SCALE": -0.5048
+        }
+      },
+      "validation": {
+        "baseline": {
+          "method": "baseline",
+          "games": 224,
+          "mae": 14.074,
+          "rmse": 17.7441,
+          "wins_vs_vegas": 79,
+          "vegas_wins": 143,
+          "ties_vs_vegas": 2,
+          "win_pct": 35.27,
+          "vegas_win_pct": 63.84,
+          "delta_pct": -28.57
+        },
+        "bias": {
+          "method": "bias",
+          "games": 224,
+          "mae": 14.0901,
+          "rmse": 17.5608,
+          "wins_vs_vegas": 81,
+          "vegas_wins": 141,
+          "ties_vs_vegas": 2,
+          "win_pct": 36.16,
+          "vegas_win_pct": 62.95,
+          "delta_pct": -26.79
+        },
+        "linear": {
+          "method": "linear",
+          "games": 224,
+          "mae": 10.382,
+          "rmse": 13.3103,
+          "wins_vs_vegas": 102,
+          "vegas_wins": 120,
+          "ties_vs_vegas": 2,
+          "win_pct": 45.54,
+          "vegas_win_pct": 53.57,
+          "delta_pct": -8.03
+        },
+        "bias_scan": {
+          "method": "bias_scan",
+          "games": 224,
+          "mae": 14.0175,
+          "rmse": 17.655,
+          "wins_vs_vegas": 80,
+          "vegas_wins": 142,
+          "ties_vs_vegas": 2,
+          "win_pct": 35.71,
+          "vegas_win_pct": 63.39,
+          "delta_pct": -27.68
+        }
+      },
+      "parameters": {
+        "bias": -3.1532,
+        "linear_a": -1.5093,
+        "linear_b": -0.5048,
+        "bias_scan_best": -0.7,
+        "bias_scan_range": {
+          "min": -8.0,
+          "max": 8.0,
+          "step": 0.1
+        }
+      },
+      "row_counts": {
+        "all": 1311,
+        "train": 1087,
+        "validation": 224
+      },
+      "train_seasons": [
+        2021,
+        2022,
+        2023,
+        2024
+      ],
+      "validation_seasons": [
+        2025
+      ]
+    }
+  }
+}
