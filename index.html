@@ -10524,6 +10524,36 @@ initTasks();
             sprint:'TBD',
             status:'Backlog'
         },
+        {
+            id:'TA-079',
+            feature:'Configure AWS CloudWatch for EC2 runtime observability — enable logs/metrics collection, health alarms, and notification routing for Flask API operations',
+            cat:'Infrastructure',
+            pri:'High',
+            effort:'S',
+            sprint:'TBD',
+            status:'Backlog',
+            assignee:'Unassigned',
+            description:'Operationalize CloudWatch on the production EC2 runtime by configuring baseline observability, actionable alarms, and evidence-backed notification routing. Scope includes CloudWatch Agent validation, EC2 and Flask service log ingestion, alarm thresholds for CPU/memory/disk and service health, SNS notification linkage, and a short runbook for recurring verification.',
+            dueDate:'2026-05-31',
+            createdAt:'2026-05-19T22:10:00',
+            updatedAt:'2026-05-19T22:10:00',
+            updatedBy:'GitHub Copilot (Developer)',
+            manualSubtasks:[
+                { id:'m_ta_079_1', title:'Step 01 - Confirm CloudWatch Agent is installed and running on EC2 with baseline status evidence' },
+                { id:'m_ta_079_2', title:'Step 02 - Validate agent config for system metrics and add memory/disk coverage where missing' },
+                { id:'m_ta_079_3', title:'Step 03 - Ingest Flask and systemd service logs into CloudWatch Logs with retention policy set' },
+                { id:'m_ta_079_4', title:'Step 04 - Create EC2 health alarms for CPU utilization memory pressure and disk usage thresholds' },
+                { id:'m_ta_079_5', title:'Step 05 - Add application-level alarms for API availability or error-rate signals where telemetry exists' },
+                { id:'m_ta_079_6', title:'Step 06 - Wire alarms to SNS notifications and verify delivery path with a controlled test alert' },
+                { id:'m_ta_079_7', title:'Step 07 - Document CloudWatch dashboard links alarm names thresholds and escalation contacts' },
+                { id:'m_ta_079_8', title:'Step 08 - Publish a short verification checklist and evidence bundle for Sprint planning handoff' }
+            ],
+            comments:[],
+            history:[
+                { at:'2026-05-19T22:08:00', by:'Scrum Master', note:'Ticket opened after CloudWatch was added to EC2 so observability configuration can be completed as backlog execution work.' },
+                { at:'2026-05-19T22:10:00', by:'GitHub Copilot (Developer)', note:'Expanded ticket into execution-ready steps covering agent validation log ingestion alarms SNS notifications and evidence checklist.' }
+            ]
+        },
         { id:'DSH-011', feature:'PM4 dashboard source-of-truth transition complete — publish path moved to pmforge_dashboard/index.html, legacy Dashboard/index.html archived, and PM4 docs/release/backlog alignment verified', cat:'Dashboard', pri:'High', effort:'M', sprint:'S13', status:'Done' },
     ];
 
