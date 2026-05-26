@@ -12,7 +12,7 @@ import statistics
 import sys
 from collections import defaultdict
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 
 import psycopg2
 
@@ -44,6 +44,39 @@ def parse_float(value: str | None) -> float | None:
     if norm in {"", "none", "null", "nan"}:
         return None
     return float(value)
+
+
+def parse_date(value: str | None) -> date | None:
+    if value is None:
+        return None
+    text = value.strip()
+    if not text:
+        return None
+    try:
+        return date.fromisoformat(text[:10])
+    except ValueError:
+        return None
+
+
+def parse_datetime(value: str | None) -> datetime | None:
+    if value is None:
+        return None
+    text = value.strip()
+    if not text:
+        return None
+
+    # Handle trailing Z from ISO timestamps written by upstream scripts.
+    if text.endswith("Z"):
+        text = text[:-1] + "+00:00"
+
+    try:
+        parsed = datetime.fromisoformat(text)
+    except ValueError:
+        return None
+
+    if parsed.tzinfo is None:
+        return parsed
+    return parsed.astimezone(UTC).replace(tzinfo=None)
 
 
 def pct(numerator: int, denominator: int) -> float | None:
@@ -192,6 +225,67 @@ def analyze_drift(rows: list[dict[str, str]]) -> dict:
     }
 
 
+def analyze_cohort_timing(rows: list[dict[str, str]]) -> dict:
+    rows_total = len(rows)
+    predicted_at_null = 0
+    predicted_before_game_date = 0
+    predicted_on_game_date = 0
+    predicted_after_game_date = 0
+    rows_with_kickoff = 0
+    predicted_on_or_before_kickoff = 0
+    predicted_after_kickoff = 0
+    benchmark_pregame_rows = 0
+
+    provenance_counts: dict[str, int] = defaultdict(int)
+
+    for row in rows:
+        provenance = str(row.get("prediction_provenance") or "unknown")
+        provenance_counts[provenance] += 1
+
+        benchmark_include = parse_bool(row.get("benchmark_pregame_include"))
+        if benchmark_include:
+            benchmark_pregame_rows += 1
+
+        predicted_at = parse_datetime(row.get("predicted_at"))
+        game_date = parse_date(row.get("game_date"))
+        kickoff_time = parse_datetime(row.get("kickoff_time_utc"))
+
+        if predicted_at is None:
+            predicted_at_null += 1
+            continue
+
+        if game_date is not None:
+            if predicted_at.date() < game_date:
+                predicted_before_game_date += 1
+            elif predicted_at.date() == game_date:
+                predicted_on_game_date += 1
+            else:
+                predicted_after_game_date += 1
+
+        if kickoff_time is not None:
+            rows_with_kickoff += 1
+            if predicted_at <= kickoff_time:
+                predicted_on_or_before_kickoff += 1
+            else:
+                predicted_after_kickoff += 1
+
+    return {
+        "rows_total": rows_total,
+        "predicted_at_null": predicted_at_null,
+        "predicted_before_game_date": predicted_before_game_date,
+        "predicted_on_game_date": predicted_on_game_date,
+        "predicted_after_game_date": predicted_after_game_date,
+        "predicted_after_game_date_pct": pct(predicted_after_game_date, rows_total),
+        "rows_with_kickoff": rows_with_kickoff,
+        "predicted_on_or_before_kickoff": predicted_on_or_before_kickoff,
+        "predicted_after_kickoff": predicted_after_kickoff,
+        "predicted_after_kickoff_pct": pct(predicted_after_kickoff, rows_with_kickoff),
+        "benchmark_pregame_rows": benchmark_pregame_rows,
+        "benchmark_pregame_rows_pct": pct(benchmark_pregame_rows, rows_total),
+        "prediction_provenance_counts": dict(sorted(provenance_counts.items())),
+    }
+
+
 def fetch_db_diagnostics(seasons: list[int]) -> dict:
     with psycopg2.connect(**DATABASE_CONFIG) as conn:
         with conn.cursor() as cur:
@@ -306,8 +400,12 @@ def build_findings(analysis: dict) -> list[dict]:
             }
         )
 
-    timing = analysis["db_diagnostics"]["timing_and_margin"]
-    if (timing["predicted_after_game_date_pct"] or 0) >= 50:
+    cohort_timing = analysis.get("cohort_diagnostics", {})
+    leakage_pct = cohort_timing.get("predicted_after_kickoff_pct")
+    if leakage_pct is None:
+        leakage_pct = cohort_timing.get("predicted_after_game_date_pct")
+
+    if (leakage_pct or 0) > 0:
         findings.append(
             {
                 "finding_id": "F2",
@@ -315,9 +413,12 @@ def build_findings(analysis: dict) -> list[dict]:
                 "severity": "high",
                 "title": "Prediction timestamps indicate retrospective generation for evaluated rows",
                 "evidence": (
-                    f"predicted_at::date > game_date for {timing['predicted_after_game_date']}/"
-                    f"{timing['rows_total']} rows ({timing['predicted_after_game_date_pct']}%); "
-                    f"predicted_at range {timing['min_predicted_at']} to {timing['max_predicted_at']}"
+                    f"cohort predicted_after_kickoff={cohort_timing.get('predicted_after_kickoff')}/"
+                    f"{cohort_timing.get('rows_with_kickoff')} "
+                    f"({cohort_timing.get('predicted_after_kickoff_pct')}%), "
+                    f"predicted_after_game_date={cohort_timing.get('predicted_after_game_date')}/"
+                    f"{cohort_timing.get('rows_total')} "
+                    f"({cohort_timing.get('predicted_after_game_date_pct')}%)"
                 ),
                 "code_refs": [
                     "scripts/maintenance/backfill_historical_seasons.py:48",
@@ -328,6 +429,7 @@ def build_findings(analysis: dict) -> list[dict]:
             }
         )
 
+    timing = analysis["db_diagnostics"]["timing_and_margin"]
     if timing["away_win_games_in_hcl_games"] > 0 and timing["negative_actual_margin_rows"] == 0:
         findings.append(
             {
@@ -382,6 +484,7 @@ def format_week_entries(entries: list[dict]) -> str:
 
 def write_markdown_report(path: pathlib.Path, analysis: dict) -> None:
     drift = analysis["drift"]
+    cohort_timing = analysis.get("cohort_diagnostics", {})
     timing = analysis["db_diagnostics"]["timing_and_margin"]
     total_lock = analysis["total_line_lock"]
 
@@ -400,6 +503,18 @@ def write_markdown_report(path: pathlib.Path, analysis: dict) -> None:
     )
     lines.append(
         f"- Evaluable total-pick rows: {total_lock['total_pick_evaluable_rows']}"
+    )
+    lines.append(
+        f"- Cohort predicted_at after kickoff: {cohort_timing.get('predicted_after_kickoff')}/"
+        f"{cohort_timing.get('rows_with_kickoff')} ({cohort_timing.get('predicted_after_kickoff_pct')}%)"
+    )
+    lines.append(
+        f"- Cohort predicted_at after game_date: {cohort_timing.get('predicted_after_game_date')}/"
+        f"{cohort_timing.get('rows_total')} ({cohort_timing.get('predicted_after_game_date_pct')}%)"
+    )
+    lines.append(
+        f"- Cohort benchmark_pregame rows: {cohort_timing.get('benchmark_pregame_rows')}/"
+        f"{cohort_timing.get('rows_total')} ({cohort_timing.get('benchmark_pregame_rows_pct')}%)"
     )
     lines.append(
         f"- predicted_at after game_date: {timing['predicted_after_game_date']}/"
@@ -474,6 +589,7 @@ def main() -> int:
         "seasons": seasons,
         "total_line_lock": analyze_total_line_lock(rows),
         "drift": analyze_drift(rows),
+        "cohort_diagnostics": analyze_cohort_timing(rows),
         "db_diagnostics": fetch_db_diagnostics(seasons),
     }
     analysis["findings"] = build_findings(analysis)

@@ -9,7 +9,8 @@ import json
 import pathlib
 import re
 import sys
-from datetime import datetime, UTC
+from collections import Counter
+from datetime import UTC, date, datetime
 
 import psycopg2
 from psycopg2.extras import RealDictCursor
@@ -63,6 +64,45 @@ def safe_abs_delta(a: float | int | None, b: float | int | None) -> float | None
     return abs(float(a) - float(b))
 
 
+def to_utc_naive(value: datetime | None) -> datetime | None:
+    if value is None:
+        return None
+    if value.tzinfo is None:
+        return value
+    return value.astimezone(UTC).replace(tzinfo=None)
+
+
+def infer_prediction_provenance(
+    predicted_at: datetime | None,
+    kickoff_time_utc: datetime | None,
+    game_date_value: date | datetime | None,
+) -> tuple[str, bool]:
+    if predicted_at is None:
+        return "missing_timestamp", False
+
+    normalized_predicted_at = to_utc_naive(predicted_at)
+    normalized_kickoff = to_utc_naive(kickoff_time_utc)
+
+    if normalized_kickoff is not None:
+        if normalized_predicted_at <= normalized_kickoff:
+            return "pregame_before_kickoff", True
+        return "postgame_after_kickoff", False
+
+    if isinstance(game_date_value, datetime):
+        game_date_only = game_date_value.date()
+    else:
+        game_date_only = game_date_value
+
+    if game_date_only is None:
+        return "missing_game_date", False
+
+    if normalized_predicted_at.date() < game_date_only:
+        return "pregame_date_only_no_kickoff", True
+    if normalized_predicted_at.date() == game_date_only:
+        return "same_day_no_kickoff_assumed_pregame", True
+    return "postgame_after_game_date", False
+
+
 def write_csv(path: pathlib.Path, rows: list[dict], fieldnames: list[str]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", newline="", encoding="utf-8") as handle:
@@ -72,7 +112,7 @@ def write_csv(path: pathlib.Path, rows: list[dict], fieldnames: list[str]) -> No
             writer.writerow({key: row.get(key) for key in fieldnames})
 
 
-def extract_rows(schema: str, seasons: list[int]) -> tuple[str, list[dict]]:
+def extract_rows(schema: str, seasons: list[int], cohort: str) -> tuple[str, list[dict], dict]:
     if not SCHEMA_PATTERN.match(schema):
         raise ValueError(f"Invalid schema name: {schema}")
 
@@ -91,6 +131,8 @@ def extract_rows(schema: str, seasons: list[int]) -> tuple[str, list[dict]]:
             p.ai_spread,
             COALESCE(p.vegas_spread, g.spread_line) AS vegas_spread,
             COALESCE(p.vegas_total, g.total_line) AS vegas_total,
+            p.predicted_at,
+            g.kickoff_time_utc,
             g.home_score,
             g.away_score,
             CASE
@@ -117,11 +159,19 @@ def extract_rows(schema: str, seasons: list[int]) -> tuple[str, list[dict]]:
             cur.execute(sql, (seasons,))
             records = cur.fetchall()
 
-    rows: list[dict] = []
+    all_rows: list[dict] = []
     for rec in records:
         predicted_total = None
         if rec["predicted_home_score"] is not None and rec["predicted_away_score"] is not None:
             predicted_total = float(rec["predicted_home_score"]) + float(rec["predicted_away_score"])
+
+        predicted_at = rec.get("predicted_at")
+        kickoff_time_utc = rec.get("kickoff_time_utc")
+        prediction_provenance, benchmark_pregame_include = infer_prediction_provenance(
+            predicted_at=predicted_at,
+            kickoff_time_utc=kickoff_time_utc,
+            game_date_value=rec.get("game_date"),
+        )
 
         vegas_spread = rec["vegas_spread"]
         predicted_margin = rec["predicted_margin"]
@@ -173,6 +223,10 @@ def extract_rows(schema: str, seasons: list[int]) -> tuple[str, list[dict]]:
             "margin_abs_error": safe_abs_delta(predicted_margin, actual_margin),
             "ai_spread": rec["ai_spread"],
             "vegas_spread": vegas_spread,
+            "predicted_at": predicted_at.isoformat() if predicted_at else None,
+            "kickoff_time_utc": kickoff_time_utc.isoformat() if kickoff_time_utc else None,
+            "prediction_provenance": prediction_provenance,
+            "benchmark_pregame_include": benchmark_pregame_include,
             "predicted_cover_outcome": predicted_cover_outcome,
             "actual_cover_outcome": actual_cover_outcome,
             "spread_pick_correct": spread_pick_correct,
@@ -182,9 +236,23 @@ def extract_rows(schema: str, seasons: list[int]) -> tuple[str, list[dict]]:
             "total_pick_correct": total_pick_correct,
             "total_abs_error": safe_abs_delta(predicted_total, actual_total),
         }
-        rows.append(row)
+        all_rows.append(row)
 
-    return db_name, rows
+    if cohort == "pregame":
+        rows = [row for row in all_rows if bool(row.get("benchmark_pregame_include"))]
+    else:
+        rows = all_rows
+
+    provenance_counts = Counter(str(row.get("prediction_provenance") or "unknown") for row in all_rows)
+    extraction_meta = {
+        "cohort": cohort,
+        "rows_before_cohort_filter": len(all_rows),
+        "rows_after_cohort_filter": len(rows),
+        "rows_excluded_by_cohort_filter": len(all_rows) - len(rows),
+        "prediction_provenance_counts": dict(sorted(provenance_counts.items())),
+    }
+
+    return db_name, rows, extraction_meta
 
 
 def main() -> int:
@@ -192,11 +260,17 @@ def main() -> int:
     parser.add_argument("--schema", default="hcl", help="Database schema containing games + ml_predictions")
     parser.add_argument("--seasons", nargs="+", type=int, default=[2024, 2025], help="Seasons to extract")
     parser.add_argument("--out-dir", default=str(DEFAULT_OUT_DIR), help="Output directory for CSV/JSON artifacts")
+    parser.add_argument(
+        "--cohort",
+        choices=["all", "pregame"],
+        default="all",
+        help="Row cohort mode: all rows or benchmark pregame-only rows",
+    )
     args = parser.parse_args()
 
     load_env_if_available()
 
-    db_name, rows = extract_rows(args.schema, args.seasons)
+    db_name, rows, extraction_meta = extract_rows(args.schema, args.seasons, args.cohort)
 
     out_dir = pathlib.Path(args.out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -225,6 +299,10 @@ def main() -> int:
         "margin_abs_error",
         "ai_spread",
         "vegas_spread",
+        "predicted_at",
+        "kickoff_time_utc",
+        "prediction_provenance",
+        "benchmark_pregame_include",
         "predicted_cover_outcome",
         "actual_cover_outcome",
         "spread_pick_correct",
@@ -259,6 +337,10 @@ def main() -> int:
         "margin_abs_error",
         "ai_spread",
         "vegas_spread",
+        "predicted_at",
+        "kickoff_time_utc",
+        "prediction_provenance",
+        "benchmark_pregame_include",
         "predicted_cover_outcome",
         "actual_cover_outcome",
         "spread_pick_correct",
@@ -275,6 +357,10 @@ def main() -> int:
         "actual_total",
         "total_abs_error",
         "vegas_total",
+        "predicted_at",
+        "kickoff_time_utc",
+        "prediction_provenance",
+        "benchmark_pregame_include",
         "predicted_total_outcome",
         "actual_total_outcome",
         "total_pick_correct",
@@ -301,7 +387,9 @@ def main() -> int:
         "database": db_name,
         "schema": args.schema,
         "seasons": args.seasons,
+        "cohort": args.cohort,
         "row_count": len(rows),
+        "extraction_meta": extraction_meta,
         "by_season": by_season,
         "line_coverage": {
             "rows_with_vegas_spread": sum(1 for r in rows if r["vegas_spread"] is not None),
@@ -326,6 +414,7 @@ def main() -> int:
     print(f"database={db_name}")
     print(f"schema={args.schema}")
     print(f"seasons={args.seasons}")
+    print(f"cohort={args.cohort}")
     print(f"rows={len(rows)}")
     print(f"combined={combined_path}")
     print(f"winner={winner_path}")

@@ -90,6 +90,39 @@ class WeeklyPredictor:
                 "[OK] Applied AI spread calibration "
                 f"(scale={self.ai_spread_cal_scale}, bias={self.ai_spread_cal_bias})"
             )
+
+    def estimate_independent_total(self, features):
+        """Estimate game total from team performance features, independent of vegas_total."""
+        home_ppg = float(features.get('home_ppg', 20.0))
+        away_ppg = float(features.get('away_ppg', 20.0))
+        home_ypp = float(features.get('home_ypp', 5.0))
+        away_ypp = float(features.get('away_ypp', 5.0))
+        home_success = float(features.get('home_success', 45.0))
+        away_success = float(features.get('away_success', 45.0))
+        home_epa = float(features.get('home_epa', 0.0))
+        away_epa = float(features.get('away_epa', 0.0))
+        home_explosive = float(features.get('home_explosive', 10.0))
+        away_explosive = float(features.get('away_explosive', 10.0))
+        home_turnovers = float(features.get('home_turnovers', 1.0))
+        away_turnovers = float(features.get('away_turnovers', 1.0))
+
+        offense_total = home_ppg + away_ppg
+        ypp_component = ((home_ypp + away_ypp) - 10.0) * 2.4
+        success_component = ((home_success + away_success) - 90.0) * 0.18
+        epa_component = (home_epa + away_epa) * 20.0
+        explosive_component = ((home_explosive + away_explosive) - 20.0) * 0.15
+        turnover_drag = ((home_turnovers + away_turnovers) - 2.0) * 1.6
+
+        total_estimate = (
+            offense_total
+            + ypp_component
+            + success_component
+            + epa_component
+            + explosive_component
+            - turnover_drag
+        )
+
+        return float(np.clip(total_estimate, 28.0, 62.0))
     
     def fetch_schedule(self, season, week):
         """Fetch games scheduled for the given week"""
@@ -251,10 +284,17 @@ class WeeklyPredictor:
         
         predicted_margin = self.spread_model.predict(X_spread)[0]  # Positive = home favored
         
-        # Calculate predicted scores using point spread + total line
-        avg_total = total_line if total_line is not None else 47.0
-        predicted_home_score = round((avg_total + predicted_margin) / 2, 1)
-        predicted_away_score = round((avg_total - predicted_margin) / 2, 1)
+        # Derive total from model features instead of anchoring to vegas_total.
+        independent_total = round(self.estimate_independent_total(features), 1)
+        predicted_home_score = round((independent_total + predicted_margin) / 2, 1)
+        predicted_away_score = round((independent_total - predicted_margin) / 2, 1)
+
+        # Keep both team scores non-negative while preserving score differential.
+        min_score = min(predicted_home_score, predicted_away_score)
+        if min_score < 0:
+            predicted_home_score = round(predicted_home_score - min_score, 1)
+            predicted_away_score = round(predicted_away_score - min_score, 1)
+            independent_total = round(predicted_home_score + predicted_away_score, 1)
         
         # AI-generated spread (negative means home favored)
         raw_ai_spread = -predicted_margin
@@ -285,6 +325,7 @@ class WeeklyPredictor:
             # Score predictions
             'predicted_home_score': float(predicted_home_score),
             'predicted_away_score': float(predicted_away_score),
+            'predicted_total': float(independent_total),
             'predicted_margin': float(predicted_margin),
             
             # Spread analysis

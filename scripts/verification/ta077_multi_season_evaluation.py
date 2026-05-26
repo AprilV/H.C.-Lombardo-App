@@ -153,6 +153,7 @@ def run_for_season(
     season: int,
     schema: str,
     season_dir: pathlib.Path,
+    cohort: str,
     max_leakage_pct: float,
     max_line_lock_pct: float,
     min_total_coverage_pct: float,
@@ -160,7 +161,18 @@ def run_for_season(
     season_dir.mkdir(parents=True, exist_ok=True)
 
     commands = [
-        [sys.executable, str(S70_1_SCRIPT), "--schema", schema, "--seasons", str(season), "--out-dir", str(season_dir)],
+        [
+            sys.executable,
+            str(S70_1_SCRIPT),
+            "--schema",
+            schema,
+            "--seasons",
+            str(season),
+            "--out-dir",
+            str(season_dir),
+            "--cohort",
+            cohort,
+        ],
         [sys.executable, str(S70_2_SCRIPT), "--out-dir", str(season_dir)],
         [sys.executable, str(S70_3_SCRIPT), "--out-dir", str(season_dir)],
         [sys.executable, str(S70_4_SCRIPT), "--out-dir", str(season_dir)],
@@ -183,7 +195,9 @@ def run_for_season(
 
     overall = s70_2.get("overall", {})
     total_line_lock = s70_3.get("total_line_lock", {})
-    timing = s70_3.get("db_diagnostics", {}).get("timing_and_margin", {})
+    timing = s70_3.get("cohort_diagnostics", {})
+    if not timing:
+        timing = s70_3.get("db_diagnostics", {}).get("timing_and_margin", {})
     findings = s70_3.get("findings", [])
 
     ai_vs_vegas = compute_ai_vs_vegas_from_combined(s70_1_combined_path)
@@ -199,9 +213,12 @@ def run_for_season(
         "winner_coverage_pct": overall.get("winner_coverage_pct"),
         "spread_coverage_pct": overall.get("spread_coverage_pct"),
         "total_coverage_pct": overall.get("total_coverage_pct"),
+        "cohort_mode": cohort,
         "predicted_total_equals_vegas_total_pct": total_line_lock.get("predicted_total_equals_vegas_total_pct"),
         "total_pick_evaluable_rows": total_line_lock.get("total_pick_evaluable_rows"),
+        "predicted_after_kickoff_pct": timing.get("predicted_after_kickoff_pct"),
         "predicted_after_game_date_pct": timing.get("predicted_after_game_date_pct"),
+        "benchmark_pregame_rows": timing.get("benchmark_pregame_rows"),
         "finding_ids": ",".join(f.get("finding_id", "") for f in findings if f.get("finding_id")),
         "ai_vs_vegas_total_games": ai_vs_vegas.get("total_games"),
         "ai_vs_vegas_ai_wins": ai_vs_vegas.get("ai_wins"),
@@ -212,8 +229,12 @@ def run_for_season(
         "ai_vs_vegas_tie_pct": ai_vs_vegas.get("tie_pct"),
     }
 
+    leakage_pct = safe_float(season_row.get("predicted_after_kickoff_pct"))
+    if leakage_pct is None:
+        leakage_pct = safe_float(season_row.get("predicted_after_game_date_pct"))
+
     gates = gate_status(
-        leakage_pct=safe_float(season_row.get("predicted_after_game_date_pct")),
+        leakage_pct=leakage_pct,
         line_lock_pct=safe_float(season_row.get("predicted_total_equals_vegas_total_pct")),
         total_coverage_pct=safe_float(season_row.get("total_coverage_pct")),
         max_leakage_pct=max_leakage_pct,
@@ -221,6 +242,19 @@ def run_for_season(
         min_total_coverage_pct=min_total_coverage_pct,
     )
     season_row.update(gates)
+
+    if cohort == "pregame":
+        assert_leakage_pct = safe_float(season_row.get("predicted_after_kickoff_pct"))
+        if assert_leakage_pct is None:
+            assert_leakage_pct = safe_float(season_row.get("predicted_after_game_date_pct"))
+        if assert_leakage_pct is None:
+            raise RuntimeError(
+                f"TA-077 leakage assertion unavailable for season {season} in pregame cohort mode"
+            )
+        if assert_leakage_pct > 0:
+            raise RuntimeError(
+                f"TA-077 leakage assertion failed for season {season}: {assert_leakage_pct}% > 0 in pregame cohort mode"
+            )
 
     return {
         "season": season,
@@ -306,6 +340,7 @@ def write_report(path: pathlib.Path, run_summary: dict) -> None:
     lines.append("")
     lines.append(f"Generated (UTC): {run_summary['generated_at_utc']}")
     lines.append(f"Schema: {run_summary['schema']}")
+    lines.append(f"Cohort mode: {run_summary['cohort']}")
     lines.append(f"Seasons: {', '.join(str(s) for s in run_summary['seasons'])}")
     lines.append("")
     lines.append("## Aggregate Summary")
@@ -346,6 +381,12 @@ def main() -> int:
     parser.add_argument("--schema", default="hcl", help="Database schema containing games + ml_predictions")
     parser.add_argument("--seasons", nargs="+", type=int, default=[2021, 2022, 2023, 2024, 2025], help="Seasons to evaluate")
     parser.add_argument("--out-dir", default=str(DEFAULT_OUT_DIR), help="Root output directory for TA-077 artifacts")
+    parser.add_argument(
+        "--cohort",
+        choices=["all", "pregame"],
+        default="pregame",
+        help="Evaluation cohort mode passed to TA-070 extraction",
+    )
     parser.add_argument("--max-leakage-pct", type=float, default=5.0, help="Pass threshold for predicted_after_game_date_pct")
     parser.add_argument("--max-line-lock-pct", type=float, default=95.0, help="Pass threshold for predicted_total_equals_vegas_total_pct")
     parser.add_argument("--min-total-coverage-pct", type=float, default=5.0, help="Pass threshold for total_coverage_pct")
@@ -366,6 +407,7 @@ def main() -> int:
             season=season,
             schema=args.schema,
             season_dir=season_dir,
+            cohort=args.cohort,
             max_leakage_pct=args.max_leakage_pct,
             max_line_lock_pct=args.max_line_lock_pct,
             min_total_coverage_pct=args.min_total_coverage_pct,
@@ -388,6 +430,7 @@ def main() -> int:
     run_summary = {
         "generated_at_utc": datetime.now(UTC).isoformat(),
         "schema": args.schema,
+        "cohort": args.cohort,
         "seasons": args.seasons,
         "run_dir": run_dir.relative_to(ROOT_DIR).as_posix(),
         "gate_thresholds": {
@@ -422,8 +465,10 @@ def main() -> int:
         "spread_coverage_pct",
         "total_coverage_pct",
         "predicted_total_equals_vegas_total_pct",
+        "predicted_after_kickoff_pct",
         "total_pick_evaluable_rows",
         "predicted_after_game_date_pct",
+        "benchmark_pregame_rows",
         "ai_vs_vegas_total_games",
         "ai_vs_vegas_ai_wins",
         "ai_vs_vegas_vegas_wins",
