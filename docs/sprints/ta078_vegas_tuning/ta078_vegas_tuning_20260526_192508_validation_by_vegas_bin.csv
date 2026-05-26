@@ -1,0 +1,9 @@
+method,group,games,mae,rmse,wins_vs_vegas,vegas_wins,ties_vs_vegas,win_pct,vegas_win_pct,delta_pct
+baseline,abs_vegas_lt3,57,10.2681,13.1765,21,36,0,36.84,63.16,-26.32
+baseline,abs_vegas_3_to_7,103,9.6638,12.6029,52,51,0,50.49,49.51,0.98
+baseline,abs_vegas_7_to_10,41,12.6769,15.7974,20,21,0,48.78,51.22,-2.44
+baseline,abs_vegas_ge10,23,9.7897,11.7898,9,12,2,39.13,52.17,-13.04
+bias,abs_vegas_lt3,57,10.268,13.1764,21,36,0,36.84,63.16,-26.32
+bias,abs_vegas_3_to_7,103,9.6638,12.6029,52,51,0,50.49,49.51,0.98
+bias,abs_vegas_7_to_10,41,12.6768,15.7974,20,21,0,48.78,51.22,-2.44
+bias,abs_vegas_ge10,23,9.7898,11.7899,9,12,2,39.13,52.17,-13.04

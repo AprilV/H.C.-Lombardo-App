@@ -1,0 +1,92 @@
+{
+  "generated_at_utc": "2026-05-26T19:54:56.491150+00:00",
+  "scope": "historical recalculation",
+  "start_season": 2021,
+  "end_season": 2025,
+  "ta078": {
+    "summary_path": "docs/sprints/ta078_vegas_tuning/ta078_vegas_tuning_20260526_192508_summary.json",
+    "bias": -0.0001,
+    "scale": 0.9999
+  },
+  "xgb_rows_upserted": 1359,
+  "elo_rows_upserted": 0,
+  "xgb_rows_scored": 1359,
+  "elo_rows_scored": 1359,
+  "by_season": [
+    {
+      "season": 2021,
+      "xgb_scored_games": 272,
+      "xgb_correct": 107,
+      "xgb_win_accuracy": 39.34,
+      "xgb_margin_mae": 15.47,
+      "elo_scored_games": 272,
+      "elo_correct": 129,
+      "elo_win_accuracy": 47.43,
+      "elo_spread_mae": 12.38,
+      "ai_vs_vegas_compared_games": 272,
+      "ai_vs_vegas_ai_wins": 95,
+      "ai_vs_vegas_vegas_wins": 177,
+      "ai_vs_vegas_ties": 0
+    },
+    {
+      "season": 2022,
+      "xgb_scored_games": 271,
+      "xgb_correct": 94,
+      "xgb_win_accuracy": 34.69,
+      "xgb_margin_mae": 12.81,
+      "elo_scored_games": 271,
+      "elo_correct": 153,
+      "elo_win_accuracy": 56.46,
+      "elo_spread_mae": 9.74,
+      "ai_vs_vegas_compared_games": 271,
+      "ai_vs_vegas_ai_wins": 90,
+      "ai_vs_vegas_vegas_wins": 181,
+      "ai_vs_vegas_ties": 0
+    },
+    {
+      "season": 2023,
+      "xgb_scored_games": 272,
+      "xgb_correct": 114,
+      "xgb_win_accuracy": 41.91,
+      "xgb_margin_mae": 14.21,
+      "elo_scored_games": 272,
+      "elo_correct": 143,
+      "elo_win_accuracy": 52.57,
+      "elo_spread_mae": 10.92,
+      "ai_vs_vegas_compared_games": 272,
+      "ai_vs_vegas_ai_wins": 96,
+      "ai_vs_vegas_vegas_wins": 176,
+      "ai_vs_vegas_ties": 0
+    },
+    {
+      "season": 2024,
+      "xgb_scored_games": 272,
+      "xgb_correct": 104,
+      "xgb_win_accuracy": 38.24,
+      "xgb_margin_mae": 14.08,
+      "elo_scored_games": 272,
+      "elo_correct": 168,
+      "elo_win_accuracy": 61.76,
+      "elo_spread_mae": 10.21,
+      "ai_vs_vegas_compared_games": 272,
+      "ai_vs_vegas_ai_wins": 82,
+      "ai_vs_vegas_vegas_wins": 190,
+      "ai_vs_vegas_ties": 0
+    },
+    {
+      "season": 2025,
+      "xgb_scored_games": 272,
+      "xgb_correct": 110,
+      "xgb_win_accuracy": 40.44,
+      "xgb_margin_mae": 13.75,
+      "elo_scored_games": 272,
+      "elo_correct": 178,
+      "elo_win_accuracy": 65.44,
+      "elo_spread_mae": 9.74,
+      "ai_vs_vegas_compared_games": 272,
+      "ai_vs_vegas_ai_wins": 81,
+      "ai_vs_vegas_vegas_wins": 143,
+      "ai_vs_vegas_ties": 48
+    }
+  ]
+}

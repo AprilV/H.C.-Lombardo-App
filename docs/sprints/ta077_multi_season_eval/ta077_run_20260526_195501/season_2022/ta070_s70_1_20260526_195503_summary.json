@@ -1,0 +1,33 @@
+{
+  "generated_at_utc": "2026-05-26T19:55:03.197380+00:00",
+  "database": "nfl_analytics",
+  "schema": "hcl",
+  "seasons": [
+    2022
+  ],
+  "cohort": "pregame",
+  "row_count": 271,
+  "extraction_meta": {
+    "cohort": "pregame",
+    "rows_before_cohort_filter": 271,
+    "rows_after_cohort_filter": 271,
+    "rows_excluded_by_cohort_filter": 0,
+    "prediction_provenance_counts": {
+      "same_day_no_kickoff_assumed_pregame": 271
+    }
+  },
+  "by_season": {
+    "2022": 271
+  },
+  "line_coverage": {
+    "rows_with_vegas_spread": 271,
+    "rows_with_vegas_total": 271,
+    "rows_with_predicted_scores": 271
+  },
+  "files": {
+    "combined": "docs/sprints/ta077_multi_season_eval/ta077_run_20260526_195501/season_2022/ta070_s70_1_20260526_195503_combined.csv",
+    "winner": "docs/sprints/ta077_multi_season_eval/ta077_run_20260526_195501/season_2022/ta070_s70_1_20260526_195503_winner.csv",
+    "spread": "docs/sprints/ta077_multi_season_eval/ta077_run_20260526_195501/season_2022/ta070_s70_1_20260526_195503_spread.csv",
+    "total": "docs/sprints/ta077_multi_season_eval/ta077_run_20260526_195501/season_2022/ta070_s70_1_20260526_195503_total.csv"
+  }
+}

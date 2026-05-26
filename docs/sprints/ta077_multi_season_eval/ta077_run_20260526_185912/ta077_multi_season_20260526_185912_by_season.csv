@@ -1,0 +1,6 @@
+season,row_count,winner_accuracy_pct,spread_accuracy_pct,total_accuracy_pct,margin_mae_points,total_mae_points,winner_coverage_pct,spread_coverage_pct,total_coverage_pct,predicted_total_equals_vegas_total_pct,predicted_after_kickoff_pct,total_pick_evaluable_rows,predicted_after_game_date_pct,benchmark_pregame_rows,ai_vs_vegas_total_games,ai_vs_vegas_ai_wins,ai_vs_vegas_vegas_wins,ai_vs_vegas_ties,ai_vs_vegas_ai_win_pct,ai_vs_vegas_vegas_win_pct,ai_vs_vegas_tie_pct,finding_ids,leakage_pass,line_lock_pass,total_coverage_pass,overall_pass
+2021,272,39.34,50.37,73.33,15.472,10.789,100.0,98.53,5.51,94.49,,15,0.0,272,272,34,31,207,12.5,11.4,76.1,F4,True,True,True,True
+2022,271,34.69,54.79,52.63,12.807,10.395,100.0,96.31,7.01,92.99,,19,0.0,271,271,43,32,196,15.87,11.81,72.32,F4,True,True,True,True
+2023,272,41.91,48.84,45.16,14.208,10.239,100.0,94.85,11.4,88.24,,31,0.0,272,272,40,45,187,14.71,16.54,68.75,F4,True,True,True,True
+2024,272,38.24,47.01,71.43,14.081,9.73,100.0,98.53,5.15,94.85,,14,0.0,272,272,43,47,182,15.81,17.28,66.91,F4,True,True,True,True
+2025,272,40.44,52.73,36.36,13.75,10.637,100.0,80.88,4.04,95.05,,11,0.0,272,222,39,29,154,17.57,13.06,69.37,F4,True,False,False,False

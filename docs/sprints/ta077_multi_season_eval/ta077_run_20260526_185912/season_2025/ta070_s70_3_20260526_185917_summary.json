@@ -1,0 +1,173 @@
+{
+  "generated_at_utc": "2026-05-26T18:59:17.112139+00:00",
+  "source_combined_csv": "docs/sprints/ta077_multi_season_eval/ta077_run_20260526_185912/season_2025/ta070_s70_1_20260526_185916_combined.csv",
+  "seasons": [
+    2025
+  ],
+  "total_line_lock": {
+    "rows_with_predicted_total_and_vegas_total": 222,
+    "rows_predicted_total_equals_vegas_total": 211,
+    "predicted_total_equals_vegas_total_pct": 95.05,
+    "total_pick_evaluable_rows": 11
+  },
+  "drift": {
+    "weekly_winner_accuracy_pct_stddev": 13.1,
+    "weekly_winner_accuracy_pct_min": 14.29,
+    "weekly_winner_accuracy_pct_max": 64.29,
+    "early_weeks_1_9": {
+      "correct": 54,
+      "total": 135,
+      "accuracy_pct": 40.0
+    },
+    "late_weeks_10_18": {
+      "correct": 56,
+      "total": 137,
+      "accuracy_pct": 40.88
+    },
+    "worst_weeks": [
+      {
+        "season": 2025,
+        "week": 12,
+        "correct": 2,
+        "total": 14,
+        "accuracy_pct": 14.29
+      },
+      {
+        "season": 2025,
+        "week": 8,
+        "correct": 3,
+        "total": 13,
+        "accuracy_pct": 23.08
+      },
+      {
+        "season": 2025,
+        "week": 18,
+        "correct": 4,
+        "total": 16,
+        "accuracy_pct": 25.0
+      },
+      {
+        "season": 2025,
+        "week": 2,
+        "correct": 5,
+        "total": 16,
+        "accuracy_pct": 31.25
+      },
+      {
+        "season": 2025,
+        "week": 4,
+        "correct": 5,
+        "total": 16,
+        "accuracy_pct": 31.25
+      }
+    ],
+    "best_weeks": [
+      {
+        "season": 2025,
+        "week": 5,
+        "correct": 9,
+        "total": 14,
+        "accuracy_pct": 64.29
+      },
+      {
+        "season": 2025,
+        "week": 17,
+        "correct": 10,
+        "total": 16,
+        "accuracy_pct": 62.5
+      },
+      {
+        "season": 2025,
+        "week": 14,
+        "correct": 8,
+        "total": 14,
+        "accuracy_pct": 57.14
+      },
+      {
+        "season": 2025,
+        "week": 9,
+        "correct": 7,
+        "total": 14,
+        "accuracy_pct": 50.0
+      },
+      {
+        "season": 2025,
+        "week": 10,
+        "correct": 7,
+        "total": 14,
+        "accuracy_pct": 50.0
+      }
+    ]
+  },
+  "cohort_diagnostics": {
+    "rows_total": 272,
+    "predicted_at_null": 0,
+    "predicted_before_game_date": 0,
+    "predicted_on_game_date": 272,
+    "predicted_after_game_date": 0,
+    "predicted_after_game_date_pct": 0.0,
+    "rows_with_kickoff": 0,
+    "predicted_on_or_before_kickoff": 0,
+    "predicted_after_kickoff": 0,
+    "predicted_after_kickoff_pct": null,
+    "benchmark_pregame_rows": 272,
+    "benchmark_pregame_rows_pct": 100.0,
+    "prediction_provenance_counts": {
+      "same_day_no_kickoff_assumed_pregame": 272
+    }
+  },
+  "db_diagnostics": {
+    "timing_and_margin": {
+      "rows_total": 272,
+      "predicted_at_null": 0,
+      "predicted_after_game_date": 0,
+      "predicted_on_game_date": 272,
+      "predicted_before_game_date": 0,
+      "predicted_after_game_date_pct": 0.0,
+      "min_predicted_at": "2025-09-04T12:00:00",
+      "max_predicted_at": "2026-01-04T12:00:00",
+      "min_game_date": "2025-09-04",
+      "max_game_date": "2026-01-04",
+      "negative_actual_margin_rows": 125,
+      "away_win_games_in_hcl_games": 125
+    },
+    "confidence_bins": [
+      {
+        "confidence_bin": "55to65",
+        "total_rows": 59,
+        "correct_rows": 22,
+        "accuracy_pct": 37.29
+      },
+      {
+        "confidence_bin": "65to75",
+        "total_rows": 31,
+        "correct_rows": 9,
+        "accuracy_pct": 29.03
+      },
+      {
+        "confidence_bin": "gte75",
+        "total_rows": 68,
+        "correct_rows": 22,
+        "accuracy_pct": 32.35
+      },
+      {
+        "confidence_bin": "lt55",
+        "total_rows": 114,
+        "correct_rows": 57,
+        "accuracy_pct": 50.0
+      }
+    ]
+  },
+  "findings": [
+    {
+      "finding_id": "F4",
+      "category": "data_drift_or_instability",
+      "severity": "medium",
+      "title": "Weekly winner performance is highly volatile without clear directional drift",
+      "evidence": "weekly winner accuracy min=14.29%, max=64.29%, stddev=13.1; early_weeks=40.0%, late_weeks=40.88%",
+      "code_refs": [
+        "docs/sprints/ta070_audit_data/ta070_s70_2_20260504_230454_by_week.csv:2"
+      ]
+    }
+  ]
+}
