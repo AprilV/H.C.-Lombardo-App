@@ -4586,6 +4586,9 @@ function renderSprint16BoardFromBacklog(options) {
     items.forEach(function(item) {
         var ticketId = String(item && item.id || '').toUpperCase();
         var feature = String(item && item.feature || 'Untitled ticket');
+        var ticketStatus = normalizeBacklogStatus(item && item.status);
+        var isTicketDone = ticketStatus === 'done';
+        var isTicketBlocked = ticketStatus === 'blocked';
         html.push('<div class="task-group-label">' + escapeHtmlLite(ticketId + ' — ' + feature) + '</div>');
 
         var manualSubtasks = Array.isArray(item && item.manualSubtasks) ? item.manualSubtasks : [];
@@ -4602,7 +4605,10 @@ function renderSprint16BoardFromBacklog(options) {
             var fallbackId = 'm_' + String(ticketId || 'ta000').toLowerCase().replace(/[^a-z0-9]+/g, '_') + '_' + String(idx + 1);
             var sid = String(subtask && subtask.id || fallbackId);
             var title = String(subtask && subtask.title || ('Subtask ' + String(idx + 1)));
-            var isDone = Array.isArray(window.COMPLETED_TASKS) && window.COMPLETED_TASKS.indexOf(sid) !== -1;
+            var isDone = !isTicketBlocked && (
+                isTicketDone
+                || (Array.isArray(window.COMPLETED_TASKS) && window.COMPLETED_TASKS.indexOf(sid) !== -1)
+            );
             if (typeof TASK_TA_MAP !== 'undefined' && TASK_TA_MAP && !TASK_TA_MAP[sid]) TASK_TA_MAP[sid] = ticketId;
 
             html.push('<label class="task-item task-sub-item' + (isDone ? ' done' : '') + '"><input type="checkbox" id="' + escapeHtmlLite(sid) + '" onchange="updateS16Progress()"' + (isDone ? ' checked' : '') + '><span class="task-text">' + escapeHtmlLite(title) + '</span></label>');
@@ -9138,7 +9144,15 @@ function getBoardCompletionCounts(sprintNum) {
     var total = included.length;
     var done = 0;
     included.forEach(function(cb) {
-        if (cb.checked) done++;
+        if (cb.checked) {
+            done++;
+            return;
+        }
+
+        // Keep progress aligned with ticket-level closure when subtasks are generated at runtime.
+        var ticketId = getTaForTaskId(cb && cb.id);
+        var ticket = getBacklogTicketById(ticketId);
+        if (normalizeBacklogStatus(ticket && ticket.status) === 'done') done++;
     });
     var remaining = Math.max(0, total - done);
     var pct = total > 0 ? Math.round((done / total) * 100) : 0;
