@@ -5137,8 +5137,9 @@ function syncDashMetrics() {
 (function() {
     var today = new Date(); today.setHours(0,0,0,0);
     var releaseDate = new Date('2026-06-13');
+    var activeSprintNum = getCurrentSprint();
     var activeSprint = (window.SPRINT_SCHEDULE || []).find(function(s) {
-        return today >= new Date(s.start) && today <= new Date(s.end);
+        return s && s.num === activeSprintNum;
     });
     var sprintCtx = activeSprint ? getSprintDayContext(activeSprint.num, today) : null;
     var sprintDiff = sprintCtx ? sprintCtx.remainingDays : 0;
@@ -8571,19 +8572,58 @@ var SPRINT_SCHEDULE = [
     { num: 16, start: '2026-05-28', end: '2026-06-13', theme: 'Hardening & Release',   displayDates: 'May 28 – Jun 13'   }
 ];
 
+// Manual override requested by PM: Sprint 16 is active immediately.
+var MANUAL_CURRENT_SPRINT_OVERRIDE = 16;
+
+function parseIsoDateLocal(value, endOfDay) {
+    var raw = String(value || '').trim();
+    var m = raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (m) {
+        return new Date(
+            parseInt(m[1], 10),
+            parseInt(m[2], 10) - 1,
+            parseInt(m[3], 10),
+            endOfDay ? 23 : 0,
+            endOfDay ? 59 : 0,
+            endOfDay ? 59 : 0,
+            endOfDay ? 999 : 0
+        );
+    }
+    var d = new Date(raw);
+    if (isNaN(d.getTime())) return d;
+    if (endOfDay) d.setHours(23,59,59,999);
+    else d.setHours(0,0,0,0);
+    return d;
+}
+
+function getManualCurrentSprintOverride() {
+    var n = parseInt(MANUAL_CURRENT_SPRINT_OVERRIDE, 10);
+    if (isNaN(n)) return null;
+    if (!Array.isArray(SPRINT_SCHEDULE) || !SPRINT_SCHEDULE.length) return n;
+    var exists = (SPRINT_SCHEDULE || []).some(function(s) { return s && s.num === n; });
+    return exists ? n : null;
+}
+
 var DASH_SPRINT_STORAGE_KEY = 'pmforge_dashboard_selected_sprint_v1';
 var DASH_SPRINT_FOLLOW_CURRENT_KEY = 'pmforge_dashboard_follow_current_sprint_v1';
 
 function getCurrentSprint() {
+    if (!Array.isArray(SPRINT_SCHEDULE) || !SPRINT_SCHEDULE.length) {
+        var earlyManual = getManualCurrentSprintOverride();
+        return earlyManual !== null ? earlyManual : 12;
+    }
+
+    var manual = getManualCurrentSprintOverride();
+    if (manual !== null) return manual;
+
     var today = new Date();
     today.setHours(0,0,0,0);
     // Return the sprint whose date range contains today, or the most recent past sprint
     var current = SPRINT_SCHEDULE[0].num;
     for (var i = 0; i < SPRINT_SCHEDULE.length; i++) {
         var s = SPRINT_SCHEDULE[i];
-        var start = new Date(s.start);
-        var end = new Date(s.end);
-        end.setHours(23,59,59,999);
+        var start = parseIsoDateLocal(s.start, false);
+        var end = parseIsoDateLocal(s.end, true);
         if (today >= start && today <= end) return s.num;
         if (today > end) current = s.num;
         if (today < start) break;
@@ -8648,12 +8688,16 @@ function getSprintStatusByDate(sprintNum, referenceDate) {
     var sprint = (SPRINT_SCHEDULE || []).find(function(s) { return s.num === n; });
     if (!sprint) return 'upcoming';
 
+    var manual = getManualCurrentSprintOverride();
+    if (manual !== null) {
+        if (n === manual) return 'active';
+        return n < manual ? 'completed' : 'upcoming';
+    }
+
     var today = referenceDate ? new Date(referenceDate) : new Date();
     today.setHours(0,0,0,0);
-    var start = new Date(sprint.start);
-    start.setHours(0,0,0,0);
-    var end = new Date(sprint.end);
-    end.setHours(23,59,59,999);
+    var start = parseIsoDateLocal(sprint.start, false);
+    var end = parseIsoDateLocal(sprint.end, true);
 
     if (today < start) return 'upcoming';
     if (today > end) return 'completed';
@@ -9141,10 +9185,8 @@ function buildIdealBurndownSeries(totalTasks, pointCount) {
 function getSprintDayContext(sprintNum, referenceDate) {
     var sprint = SPRINT_SCHEDULE.find(function(sp) { return sp.num === sprintNum; });
     if (!sprint) return null;
-    var start = new Date(sprint.start);
-    start.setHours(0,0,0,0);
-    var end = new Date(sprint.end);
-    end.setHours(0,0,0,0);
+    var start = parseIsoDateLocal(sprint.start, false);
+    var end = parseIsoDateLocal(sprint.end, false);
     var today = referenceDate ? new Date(referenceDate) : new Date();
     today.setHours(0,0,0,0);
 
@@ -9463,15 +9505,13 @@ function initSprintBoardTab() {
     var grid = document.getElementById('sprint-cards-grid');
     if (grid) {
         grid.innerHTML = SPRINT_SCHEDULE.map(function(s) {
-            var start = new Date(s.start);
-            var end = new Date(s.end);
-            end.setHours(23,59,59,999);
+            var status = getSprintStatusByDate(s.num, today);
             var cardClass, statusClass, statusLabel;
-            if (today > end) {
+            if (status === 'completed') {
                 cardClass = 'sprint-card completed';
                 statusClass = 'sprint-status status-completed';
                 statusLabel = 'Completed';
-            } else if (today >= start && today <= end) {
+            } else if (status === 'active') {
                 cardClass = 'sprint-card active';
                 statusClass = 'sprint-status status-active';
                 statusLabel = 'Active Now';
@@ -9512,13 +9552,11 @@ var recentUpdatesPaused = false;
 var recentUpdateSwapTimeout = null;
 
 function getNextSprintMeta() {
-    var today = new Date();
-    today.setHours(0,0,0,0);
-    return (SPRINT_SCHEDULE || []).find(function(sp) {
-        var start = new Date(sp.start);
-        start.setHours(0,0,0,0);
-        return start > today;
-    }) || null;
+    var cur = getCurrentSprint();
+    var next = (SPRINT_SCHEDULE || []).find(function(sp) {
+        return sp && sp.num > cur;
+    });
+    return next || null;
 }
 
 function buildRecentUpdatesForSprint(sprintNum, snapshot) {
@@ -9695,9 +9733,9 @@ function loadSprintDashboard(num, options) {
     if (ragDetail) {
         var lastMod = new Date(document.lastModified);
         var updatedStr = lastMod.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
-        var today = new Date(); today.setHours(0,0,0,0);
+        var currentNum = getCurrentSprint();
         var nextSprint = (window.SPRINT_SCHEDULE || []).find(function(sp) {
-            return new Date(sp.start) > today;
+            return sp && sp.num > currentNum;
         });
         var nextReviewStr = nextSprint
             ? 'Next sprint: S' + nextSprint.num + ' — ' + nextSprint.theme + ' (' + nextSprint.displayDates + ')'
@@ -9721,9 +9759,9 @@ function loadSprintDashboard(num, options) {
     // days-remaining — computed from SPRINT_SCHEDULE workdays (Mon–Fri)
     (function() {
         var today2 = new Date(); today2.setHours(0,0,0,0);
+        var activeSpNum = getCurrentSprint();
         var activeSp = SPRINT_SCHEDULE.find(function(sp) {
-            var st = new Date(sp.start), en = new Date(sp.end); en.setHours(23,59,59,999);
-            return today2 >= st && today2 <= en;
+            return sp && sp.num === activeSpNum;
         });
         var daysEl = document.getElementById('days-remaining');
         var subEl  = document.getElementById('dash-days-remaining-sub');
@@ -9763,10 +9801,9 @@ function loadSprintDashboard(num, options) {
     if (lu) {
         var lastMod = new Date(document.lastModified);
         var updDate = lastMod.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+        var activeSprintNum = getCurrentSprint();
         var activeSprint = (window.SPRINT_SCHEDULE || []).find(function(sp) {
-            var s = new Date(sp.start), e = new Date(sp.end);
-            var now = new Date(); now.setHours(0,0,0,0);
-            return now >= s && now <= e;
+            return sp && sp.num === activeSprintNum;
         });
         lu.textContent = updDate + (activeSprint ? ' — S' + activeSprint.num + ': ' + activeSprint.theme : '');
     }
@@ -12280,7 +12317,7 @@ function showSprintView(view, btn) {
         return items.filter(function(item) {
             if (item.sprint !== 'TBD' && item.sprint !== 'all') {
                 var sp = (window.SPRINT_SCHEDULE || []).find(function(s) { return 'S' + s.num === item.sprint; });
-                if (sp && new Date(sp.start) > today) return false;
+                if (sp && getSprintStatusByDate(sp.num, today) === 'upcoming') return false;
             }
             if (ttFilters.sprint !== 'all' && item.sprint !== ttFilters.sprint) return false;
             if (ttFilters.pri !== 'all' && item.pri !== ttFilters.pri) return false;
@@ -12334,8 +12371,7 @@ function showSprintView(view, btn) {
         var html = '<button class="filter-btn active" onclick="setTTFilter(\'sprint\',\'all\',this)">All</button>';
         (window.SPRINT_SCHEDULE || []).forEach(function(s) {
             var key = 'S' + s.num;
-            var sprintStart = new Date(s.start);
-            if (sprintStart > today) {
+            if (getSprintStatusByDate(s.num, today) === 'upcoming') {
                 html += '<button class="filter-btn" disabled title="Sprint starts ' + s.displayDates.split('–')[0].trim() + '" style="opacity:0.35;cursor:not-allowed;">' + key + '</button>';
             } else {
                 html += '<button class="filter-btn" onclick="setTTFilter(\'sprint\',\'' + key + '\',this)">' + key + '</button>';
