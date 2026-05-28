@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import os
 """Check ALL columns in local database to see what nflverse data we have"""
 
 import psycopg2
@@ -11,7 +12,7 @@ print("="*80)
 local_conn = psycopg2.connect(
     dbname='nfl_analytics',
     user='postgres',
-    password='aprilv120',
+    password=os.getenv('DB_PASSWORD'),
     host='localhost',
     port='5432'
 )

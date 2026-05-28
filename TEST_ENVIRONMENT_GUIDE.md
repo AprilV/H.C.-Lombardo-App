@@ -131,13 +131,13 @@ ssh -i ~/.ssh/hc-lombardo-key.pem ubuntu@34.198.25.249 "sudo systemctl restart h
 **Test:**
 ```bash
 ssh -i ~/.ssh/hc-lombardo-key.pem ubuntu@100.48.43.144
-PGPASSWORD=aprilv120 psql -U nfl_user -d nfl_analytics -h localhost
+PGPASSWORD=$DB_PASSWORD psql -U nfl_user -d nfl_analytics -h localhost
 ```
 
 **Production:**
 ```bash
 ssh -i ~/.ssh/hc-lombardo-key.pem ubuntu@34.198.25.249
-PGPASSWORD=aprilv120 psql -U nfl_user -d nfl_analytics -h localhost
+PGPASSWORD=$DB_PASSWORD psql -U nfl_user -d nfl_analytics -h localhost
 ```
 
 ## Troubleshooting
@@ -169,4 +169,4 @@ ssh -i ~/.ssh/hc-lombardo-key.pem ubuntu@100.48.43.144 "cd /home/ubuntu/H.C.-Lom
 - Test database is a CLONE of production (not live-synced)
 - To refresh test database with latest production data, re-run step 6 of setup script
 - Always test changes on Test environment before deploying to Production
-- Both environments use same database credentials (nfl_user / aprilv120)
+- Both environments use the same DB user and require DB_PASSWORD from environment

@@ -10,7 +10,7 @@ load_dotenv()
 conn = psycopg2.connect(
     dbname=os.getenv('DB_NAME', 'nfl_analytics'),
     user=os.getenv('DB_USER', 'postgres'), 
-    password=os.getenv('DB_PASSWORD', 'aprilv120'),
+    password=os.getenv('DB_PASSWORD'),
     host=os.getenv('DB_HOST', 'localhost'),
     port=int(os.getenv('DB_PORT', '5432'))
 )

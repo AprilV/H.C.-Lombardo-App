@@ -1,3 +1,4 @@
+import os
 import psycopg2
 from datetime import datetime
 
@@ -6,7 +7,7 @@ conn = psycopg2.connect(
     port=5432,
     database='nfl_analytics',
     user='postgres',
-    password='aprilv120'
+    password=os.getenv('DB_PASSWORD')
 )
 
 cursor = conn.cursor()

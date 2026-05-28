@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import os
 """
 Export the LOCAL database schema to SQL file
 This captures the CORRECT schema with EPA columns
@@ -8,7 +9,7 @@ import psycopg2
 LOCAL_CONN = {
     'dbname': 'nfl_analytics',
     'user': 'postgres',
-    'password': 'aprilv120',
+    'password': os.getenv('DB_PASSWORD'),
     'host': 'localhost',
     'port': '5432'
 }

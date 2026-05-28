@@ -48,7 +48,7 @@ try:
     import psycopg2
     conn = psycopg2.connect(
         host='localhost', port=5432,
-        database='nfl_analytics', user='postgres', password='aprilv120'
+        database='nfl_analytics', user='postgres', password=os.getenv('DB_PASSWORD')
     )
     cur = conn.cursor()
     cur.execute('SELECT COUNT(*) FROM teams')

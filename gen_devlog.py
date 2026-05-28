@@ -41,7 +41,7 @@ KEY_COMMITS = {
     '2969e68e': 'RENDER ATTEMPT #8  — remove all Render refs, SSH heredoc still broken',
     '6b28364a': 'EC2 FIX — all Render/Railway removed, 19 files deleted, THIS IS THE ARCH TODAY',
     '6587f437': 'XGBOOST #1 — update ML scripts to 2020-2025 seasons',
-    'e15d4d9c': 'XGBOOST #2 — FIX: hardcoded password aprilv120 replaced with db_config',
+    'e15d4d9c': 'XGBOOST #2 — FIX: hardcoded DB password literal replaced with db_config',
     '73c2e67e': 'XGBOOST #3 — add sys.path for db_config import',
     '87c40faf': 'XGBOOST #4 — fix import order for db_config',
     '7607e3a6': 'XGBOOST #5 — FIX: spread training script encoding error',

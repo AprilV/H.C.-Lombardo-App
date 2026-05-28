@@ -1,3 +1,4 @@
+import os
 import psycopg2
 from psycopg2.extras import RealDictCursor
 
@@ -5,7 +6,7 @@ try:
     conn = psycopg2.connect(
         dbname='nfl_analytics',
         user='postgres',
-        password='aprilv120',
+        password=os.getenv('DB_PASSWORD'),
         host='localhost'
     )
     cur = conn.cursor(cursor_factory=RealDictCursor)

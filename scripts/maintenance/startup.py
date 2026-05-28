@@ -119,7 +119,7 @@ class StartupManager:
                 port=os.getenv('DB_PORT', '5432'),
                 database=os.getenv('DB_NAME', 'nfl_analytics'),
                 user=os.getenv('DB_USER', 'postgres'),
-                password=os.getenv('DB_PASSWORD', 'aprilv120')
+                password=os.getenv('DB_PASSWORD')
             )
             cursor = conn.cursor()
             

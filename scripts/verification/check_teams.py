@@ -1,3 +1,4 @@
+import os
 import psycopg2
 
 # Connect to database
@@ -5,7 +6,7 @@ conn = psycopg2.connect(
     host='localhost',
     database='nfl_analytics',
     user='postgres',
-    password='aprilv120'
+    password=os.getenv('DB_PASSWORD')
 )
 
 cur = conn.cursor()

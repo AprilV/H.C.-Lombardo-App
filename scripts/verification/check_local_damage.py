@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import os
 """
 Check if local database is intact or if I damaged it
 """
@@ -8,7 +9,7 @@ import psycopg2
 conn = psycopg2.connect(
     dbname='nfl_analytics',
     user='postgres',
-    password='aprilv120',
+    password=os.getenv('DB_PASSWORD'),
     host='localhost',
     port='5432'
 )

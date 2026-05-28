@@ -1,3 +1,4 @@
+import os
 """
 Simple API Server for Dashboard Testing
 """
@@ -12,7 +13,7 @@ def get_db_connection():
     return psycopg2.connect(
         dbname='nfl_analytics',
         user='postgres',
-        password='aprilv120',
+        password=os.getenv('DB_PASSWORD'),
         host='localhost',
         port='5432'
     )

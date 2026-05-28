@@ -5,6 +5,8 @@
 
 set -e  # Exit on any error
 
+: "${DB_PASSWORD:?Set DB_PASSWORD before running setup_test_environment.sh}"
+
 TEST_IP="100.48.43.144"
 PROD_IP="34.198.25.249"
 
@@ -35,7 +37,7 @@ ssh -i ~/.ssh/hc-lombardo-key.pem ubuntu@$TEST_IP "cd /home/ubuntu/H.C.-Lombardo
 # Step 5: Setup PostgreSQL database
 echo "[5/9] Setting up PostgreSQL database..."
 ssh -i ~/.ssh/hc-lombardo-key.pem ubuntu@$TEST_IP "sudo -u postgres psql -c \"CREATE DATABASE nfl_analytics;\""
-ssh -i ~/.ssh/hc-lombardo-key.pem ubuntu@$TEST_IP "sudo -u postgres psql -c \"CREATE USER nfl_user WITH PASSWORD 'aprilv120';\""
+ssh -i ~/.ssh/hc-lombardo-key.pem ubuntu@$TEST_IP "sudo -u postgres psql -c \"CREATE USER nfl_user WITH PASSWORD '${DB_PASSWORD}';\""
 ssh -i ~/.ssh/hc-lombardo-key.pem ubuntu@$TEST_IP "sudo -u postgres psql -c \"GRANT ALL PRIVILEGES ON DATABASE nfl_analytics TO nfl_user;\""
 ssh -i ~/.ssh/hc-lombardo-key.pem ubuntu@$TEST_IP "sudo -u postgres psql -c \"ALTER DATABASE nfl_analytics OWNER TO nfl_user;\""
 
@@ -48,7 +50,7 @@ echo "  Uploading to test instance..."
 cat /tmp/nfl_analytics_test_backup.sql | ssh -i ~/.ssh/hc-lombardo-key.pem ubuntu@$TEST_IP "cat > /tmp/nfl_analytics_backup.sql"
 
 echo "  Restoring database..."
-ssh -i ~/.ssh/hc-lombardo-key.pem ubuntu@$TEST_IP "PGPASSWORD=aprilv120 psql -U nfl_user -d nfl_analytics -h localhost < /tmp/nfl_analytics_backup.sql"
+ssh -i ~/.ssh/hc-lombardo-key.pem ubuntu@$TEST_IP "PGPASSWORD=${DB_PASSWORD} psql -U nfl_user -d nfl_analytics -h localhost < /tmp/nfl_analytics_backup.sql"
 
 echo "  Cleaning up dump file..."
 rm /tmp/nfl_analytics_test_backup.sql
@@ -60,7 +62,7 @@ ssh -i ~/.ssh/hc-lombardo-key.pem ubuntu@$TEST_IP "cd /home/ubuntu/H.C.-Lombardo
 
 # Step 8: Create systemd service
 echo "[8/9] Creating systemd service..."
-ssh -i ~/.ssh/hc-lombardo-key.pem ubuntu@$TEST_IP "sudo tee /etc/systemd/system/hc-lombardo-test.service > /dev/null" << 'EOF'
+ssh -i ~/.ssh/hc-lombardo-key.pem ubuntu@$TEST_IP "sudo tee /etc/systemd/system/hc-lombardo-test.service > /dev/null" <<EOF
 [Unit]
 Description=HC Lombardo App (TEST)
 After=postgresql.service
@@ -71,7 +73,7 @@ WorkingDirectory=/home/ubuntu/H.C.-Lombardo-App
 Environment="PATH=/home/ubuntu/H.C.-Lombardo-App/venv/bin"
 Environment="DB_NAME=nfl_analytics"
 Environment="DB_USER=nfl_user"
-Environment="DB_PASSWORD=aprilv120"
+Environment="DB_PASSWORD=${DB_PASSWORD}"
 Environment="DB_HOST=localhost"
 ExecStart=/home/ubuntu/H.C.-Lombardo-App/venv/bin/gunicorn --bind 0.0.0.0:5000 --workers 2 --timeout 120 api_server:app
 Restart=always

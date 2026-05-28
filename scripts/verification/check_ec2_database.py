@@ -1,3 +1,4 @@
+import os
 """SSH into EC2 and check what's actually there"""
 import subprocess
 import sys
@@ -19,7 +20,7 @@ conn = psycopg2.connect(
     host='localhost',
     database='nfl_analytics',
     user='nfl_user',
-    password='nfl2024',
+    password=os.getenv('DB_PASSWORD'),
     port='5432'
 )
 cur = conn.cursor()

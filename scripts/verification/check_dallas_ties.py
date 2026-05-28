@@ -1,6 +1,12 @@
+import os
 import psycopg2
 
-conn = psycopg2.connect('dbname=nfl_analytics user=postgres password=aprilv120 host=localhost')
+conn = psycopg2.connect(
+    dbname='nfl_analytics',
+    user='postgres',
+    password=os.getenv('DB_PASSWORD'),
+    host='localhost'
+)
 cur = conn.cursor()
 
 # Check Dallas results

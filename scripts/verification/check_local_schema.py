@@ -1,8 +1,9 @@
+import os
 import psycopg2
 
 # LOCAL database
 print("LOCAL DATABASE (hcl.team_game_stats) columns:")
-conn = psycopg2.connect(dbname='nfl_analytics', user='postgres', password='aprilv120', host='localhost')
+conn = psycopg2.connect(dbname='nfl_analytics', user='postgres', password=os.getenv('DB_PASSWORD'), host='localhost')
 cur = conn.cursor()
 cur.execute("""
     SELECT column_name, data_type 

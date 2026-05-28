@@ -1,6 +1,8 @@
 #!/bin/bash
 # Quick AWS deployment - skip system upgrades
 
+: "${DB_PASSWORD:?Set DB_PASSWORD before running quick_deploy.sh}"
+
 echo "Installing Node.js..."
 curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash - && sudo apt-get install -y nodejs
 
@@ -9,7 +11,7 @@ sudo apt-get install -y postgresql postgresql-contrib python3-pip python3-venv g
 
 echo "Setting up database..."
 sudo -u postgres psql -c "CREATE DATABASE nfl_analytics;" 2>/dev/null || true
-sudo -u postgres psql -c "CREATE USER nfl_user WITH PASSWORD 'aprilv120';" 2>/dev/null || true
+sudo -u postgres psql -c "CREATE USER nfl_user WITH PASSWORD '${DB_PASSWORD}';" 2>/dev/null || true
 sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE nfl_analytics TO nfl_user;"
 sudo -u postgres psql -c "ALTER DATABASE nfl_analytics OWNER TO nfl_user;"
 
@@ -31,7 +33,7 @@ npm run build
 cd ..
 
 echo "Creating service..."
-sudo tee /etc/systemd/system/hc-lombardo.service > /dev/null <<'EOF'
+sudo tee /etc/systemd/system/hc-lombardo.service > /dev/null <<EOF
 [Unit]
 Description=HC Lombardo App
 After=postgresql.service
@@ -42,7 +44,7 @@ WorkingDirectory=/home/ubuntu/H.C.-Lombardo-App
 Environment="PATH=/home/ubuntu/H.C.-Lombardo-App/venv/bin"
 Environment="DB_NAME=nfl_analytics"
 Environment="DB_USER=nfl_user"
-Environment="DB_PASSWORD=aprilv120"
+Environment="DB_PASSWORD=${DB_PASSWORD}"
 Environment="DB_HOST=localhost"
 ExecStart=/home/ubuntu/H.C.-Lombardo-App/venv/bin/gunicorn --bind 0.0.0.0:5000 --workers 2 --timeout 120 api_server:app
 Restart=always

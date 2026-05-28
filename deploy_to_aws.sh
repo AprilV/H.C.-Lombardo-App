@@ -3,6 +3,8 @@
 
 set -e  # Exit on any error
 
+: "${DB_PASSWORD:?Set DB_PASSWORD before running deploy_to_aws.sh}"
+
 echo "==================================="
 echo "HC Lombardo App - AWS Deployment"
 echo "==================================="
@@ -38,7 +40,7 @@ cd H.C.-Lombardo-App
 # Set up PostgreSQL database
 echo "[7/10] Setting up PostgreSQL database..."
 sudo -u postgres psql -c "CREATE DATABASE nfl_analytics;"
-sudo -u postgres psql -c "CREATE USER nfl_user WITH PASSWORD 'aprilv120';"
+sudo -u postgres psql -c "CREATE USER nfl_user WITH PASSWORD '${DB_PASSWORD}';"
 sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE nfl_analytics TO nfl_user;"
 sudo -u postgres psql -c "ALTER DATABASE nfl_analytics OWNER TO nfl_user;"
 
@@ -70,7 +72,7 @@ WorkingDirectory=/home/ubuntu/H.C.-Lombardo-App
 Environment="PATH=/home/ubuntu/H.C.-Lombardo-App/venv/bin"
 Environment="DB_NAME=nfl_analytics"
 Environment="DB_USER=nfl_user"
-Environment="DB_PASSWORD=aprilv120"
+Environment="DB_PASSWORD=${DB_PASSWORD}"
 Environment="DB_HOST=localhost"
 Environment="DB_PORT=5432"
 ExecStart=/home/ubuntu/H.C.-Lombardo-App/venv/bin/gunicorn --bind 0.0.0.0:5000 --workers 2 --timeout 120 api_server:app

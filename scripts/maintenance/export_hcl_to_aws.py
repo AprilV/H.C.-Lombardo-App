@@ -1,3 +1,4 @@
+import os
 """
 Export local hcl schema and data, then import to AWS
 """
@@ -12,7 +13,7 @@ print("=" * 80)
 local_conn = psycopg2.connect(
     dbname="nfl_analytics",
     user="postgres",
-    password="aprilv120",
+    password=os.getenv("DB_PASSWORD"),
     host="localhost"
 )
 
@@ -20,7 +21,7 @@ local_conn = psycopg2.connect(
 aws_conn = psycopg2.connect(
     dbname="nfl_analytics",
     user="nfl_user",
-    password="aprilv120",
+    password=os.getenv("DB_PASSWORD"),
     host="3.239.85.206"
 )
 

@@ -1,3 +1,4 @@
+import os
 """
 Health Check Module - Verifies service availability with retries
 Tests database, API endpoints, and React frontend
@@ -26,7 +27,7 @@ class HealthChecker:
                     port=5432,
                     database='nfl_analytics',
                     user='postgres',
-                    password='aprilv120',
+                    password=os.getenv('DB_PASSWORD'),
                     connect_timeout=3
                 )
                 
