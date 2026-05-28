@@ -6513,6 +6513,7 @@ const COMPLETED_TASKS = [
     'm_ta_036_3',
     'm_ta_037_1',
     'm_ta_038_1',
+    'm_ta_039_1',
 ];
 const BLOCKED_TASKS = [];
 
@@ -10941,12 +10942,20 @@ initTasks();
             pri:'High',
             effort:'S',
             sprint:'S16',
-            status:'Backlog',
+            status:'Blocked',
+            assignee:'GitHub Copilot (Developer)',
+            description:'Blocked because Sprint 16 critical hardening/sign-off gates remain unresolved (TA-034, TA-036, TA-037, TA-038). Readiness checkpoint evidence: docs/sprints/ta039_release_tag/TA039_RELEASE_TAG_BLOCKED_2026-05-27.md',
+            updatedAt:'2026-05-27T23:59:59',
+            updatedBy:'GitHub Copilot (Developer)',
             manualSubtasks:[
                 { id:'m_ta_039_1', title:'Step 01 - Validate release readiness checklist and ensure all Sprint 16 critical blockers are resolved' },
                 { id:'m_ta_039_2', title:'Step 02 - Create annotated v1.0 Git tag with release notes summarizing final deliverable scope' },
                 { id:'m_ta_039_3', title:'Step 03 - Verify tag points to approved commit and release artifact references are reproducible' },
                 { id:'m_ta_039_4', title:'Step 04 - Publish release evidence log including tag hash, notes URL, and rollback reference' }
+            ],
+            comments:[],
+            history:[
+                { at:'2026-05-27T23:59:59', by:'GitHub Copilot (Developer)', note:'Set TA-039 to Blocked after readiness validation found unresolved critical Sprint 16 blockers; v1.0 tag deferred until gates close.' }
             ]
         },
         { id:'TA-042', feature:'2026 NFL season live data integration',            cat:'Data',           pri:'Medium',   effort:'L', sprint:'TBD', status:'Backlog'   },
@@ -11684,7 +11693,7 @@ function showSprintView(view, btn) {
             'Sprint acceptance: publish TA-077 results package plus TA-030 production walkthrough for advisor demo readiness after ML and UI checks pass',
         ],
         'Sprint 16 — Hardening & Release': [
-            'Submission hardening baseline remains open: TA-034 TA-036 TA-037 and TA-038 currently blocked, while TA-039 remains pending verifiable evidence closure',
+            'Submission hardening baseline remains open: TA-034 TA-036 TA-037 TA-038 and TA-039 are blocked pending closure evidence for each external/critical gate',
             'Security + readiness closure: TA-032 rate limiting and TA-035 public README update completed; TA-034 remains blocked pending credential remediation',
             'Route and runtime stability closure: TA-014 TA-031 and TA-029 complete with no blocking regressions before advisor sign-off',
         ],
