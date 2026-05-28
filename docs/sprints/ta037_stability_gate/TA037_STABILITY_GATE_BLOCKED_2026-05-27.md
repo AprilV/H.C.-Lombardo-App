@@ -26,6 +26,7 @@ A successful 48+ hour window should include:
 ## 2026-05-28 Progress Update
 - Monitoring harness implemented: `scripts/verification/ta037_stability_watch.py`
 - Harness evidence/runbook: `docs/sprints/ta037_stability_gate/TA037_MONITORING_HARNESS_2026-05-28.md`
+- Initial smoke checkpoint captured: `docs/sprints/ta037_stability_gate/ta037_stability_checkpoints.jsonl`
 - Gate remains blocked until full 48+ hour run is completed and reviewed.
 
 ## Acceptance Mapping
