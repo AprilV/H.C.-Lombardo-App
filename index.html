@@ -10501,7 +10501,29 @@ initTasks();
                 { id:'m_ta_014_4', title:'Step 04 - Capture before-after evidence and record closure notes for advisor review traceability' }
             ]
         },
-        { id:'TA-015', feature:'Fix background_updater.py missing import',        cat:'Backend',        pri:'High',     effort:'S', sprint:'TBD', status:'Backlog'   },
+        {
+            id:'TA-015',
+            feature:'Fix background_updater.py missing import',
+            cat:'Backend',
+            pri:'High',
+            effort:'S',
+            sprint:'S16',
+            status:'Done',
+            assignee:'GitHub Copilot (Developer)',
+            description:'Verified background_updater import integrity and runtime module load path. Required ESPNDataFetcher import is present and module loads with updater instance. Evidence: docs/sprints/ta015_background_updater_import/TA015_BACKGROUND_UPDATER_IMPORT_2026-05-27.md',
+            updatedAt:'2026-05-27T23:00:00',
+            updatedBy:'GitHub Copilot (Developer)',
+            manualSubtasks:[
+                { id:'m_ta_015_1', title:'Step 01 - Reproduce missing-import failure path for background_updater.py' },
+                { id:'m_ta_015_2', title:'Step 02 - Verify required import statements and module dependencies are present' },
+                { id:'m_ta_015_3', title:'Step 03 - Run import smoke test to confirm module loads and updater instance is available' },
+                { id:'m_ta_015_4', title:'Step 04 - Publish import-verification evidence and closure note' }
+            ],
+            comments:[],
+            history:[
+                { at:'2026-05-27T23:00:00', by:'GitHub Copilot (Developer)', note:'Closed TA-015 after runtime verification confirmed missing-import issue is resolved in current codebase.' }
+            ]
+        },
         { id:'TA-016', feature:'Confirm background updater running in production', cat:'Infrastructure', pri:'High',     effort:'S', sprint:'TBD', status:'Backlog'   },
         { id:'TA-017', feature:'Audit git history for exposed secrets',           cat:'Security',       pri:'High',     effort:'M', sprint:'TBD', status:'Backlog'   },
         { id:'TA-018', feature:'Retrain XGBoost winner classifier on 2025 data', cat:'ML',             pri:'Critical', effort:'L', sprint:'S14', status:'Done' },
