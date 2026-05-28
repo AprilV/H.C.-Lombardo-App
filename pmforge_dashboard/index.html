@@ -10347,7 +10347,21 @@ initTasks();
         { id:'TA-011', feature:'Move all passwords to .env files',               cat:'Security',       pri:'Critical', effort:'S', sprint:'S13', status:'Done' },
         { id:'TA-012', feature:'Load 2025 NFL season data into PostgreSQL',      cat:'Data',           pri:'Critical', effort:'L', sprint:'S13', status:'Done'      },
         { id:'TA-013', feature:'Validate data integrity — row counts & spot checks', cat:'Data',       pri:'High',     effort:'M', sprint:'S13', status:'Done'      },
-        { id:'TA-014', feature:'Fix broken frontend routes — /game-statistics and /matchup-analyzer wrong components', cat:'Frontend', pri:'High', effort:'S', sprint:'S16', status:'Backlog' },
+        {
+            id:'TA-014',
+            feature:'Fix broken frontend routes — /game-statistics and /matchup-analyzer wrong components',
+            cat:'Frontend',
+            pri:'High',
+            effort:'S',
+            sprint:'S16',
+            status:'Backlog',
+            manualSubtasks:[
+                { id:'m_ta_014_1', title:'Step 01 - Reproduce route failures and map expected component bindings for /game-statistics and /matchup-analyzer' },
+                { id:'m_ta_014_2', title:'Step 02 - Apply route mapping fixes and ensure both direct navigation and deep-link loads resolve correctly' },
+                { id:'m_ta_014_3', title:'Step 03 - Validate route transitions from navbar and in-app links with no blank screens or incorrect component renders' },
+                { id:'m_ta_014_4', title:'Step 04 - Capture before-after evidence and record closure notes for advisor review traceability' }
+            ]
+        },
         { id:'TA-015', feature:'Fix background_updater.py missing import',        cat:'Backend',        pri:'High',     effort:'S', sprint:'TBD', status:'Backlog'   },
         { id:'TA-016', feature:'Confirm background updater running in production', cat:'Infrastructure', pri:'High',     effort:'S', sprint:'TBD', status:'Backlog'   },
         { id:'TA-017', feature:'Audit git history for exposed secrets',           cat:'Security',       pri:'High',     effort:'M', sprint:'TBD', status:'Backlog'   },
@@ -10460,7 +10474,21 @@ initTasks();
                 { at:'2026-05-27T21:20:00', by:'GitHub Copilot (Developer)', note:'Sprint 15 close normalization: moved from S15/In Sprint to TBD/Backlog because this frontend stream was not represented in the Sprint 15 board completion set; retained for future planning scope selection.' }
             ]
         },
-        { id:'TA-029', feature:'Zero console errors in production',                cat:'Frontend',       pri:'High',     effort:'M', sprint:'S16', status:'Backlog'   },
+        {
+            id:'TA-029',
+            feature:'Zero console errors in production',
+            cat:'Frontend',
+            pri:'High',
+            effort:'M',
+            sprint:'S16',
+            status:'Backlog',
+            manualSubtasks:[
+                { id:'m_ta_029_1', title:'Step 01 - Run console audit across all primary production routes and log every warning/error with reproducible steps' },
+                { id:'m_ta_029_2', title:'Step 02 - Fix JavaScript runtime errors and noisy warnings that indicate broken app behavior or unstable rendering paths' },
+                { id:'m_ta_029_3', title:'Step 03 - Re-run route sweep in a clean session and confirm zero console errors on advisor-critical flows' },
+                { id:'m_ta_029_4', title:'Step 04 - Publish final console-audit evidence summary with timestamped validation notes' }
+            ]
+        },
         {
             id:'TA-030',
             feature:'Full production walkthrough — advisor demo-ready',
@@ -10494,15 +10522,141 @@ initTasks();
                 { at:'2026-05-18T18:12:00', by:'GitHub Copilot (Developer)', note:'Expanded into a 10-step demo-readiness walkthrough sequence for explicit ordered completion.' }
             ]
         },
-        { id:'TA-031', feature:'Fix /game-statistics and /matchup-analyzer routes', cat:'Frontend',      pri:'High',     effort:'S', sprint:'S16', status:'Backlog'   },
-        { id:'TA-032', feature:'Rate limiting on Flask API',                       cat:'Security',       pri:'High',     effort:'S', sprint:'S16', status:'Backlog'   },
-        { id:'TA-033', feature:'HTTPS confirmed — all traffic encrypted',          cat:'Security',       pri:'Critical', effort:'S', sprint:'S16', status:'Backlog'   },
-        { id:'TA-034', feature:'Final security audit — no exposed credentials',    cat:'Security',       pri:'Critical', effort:'M', sprint:'S16', status:'Backlog'   },
-        { id:'TA-035', feature:'README updated for public audience',               cat:'Documentation',  pri:'Medium',   effort:'S', sprint:'S16', status:'Backlog'   },
-        { id:'TA-036', feature:'Final performance report written & submitted',     cat:'Documentation',  pri:'Critical', effort:'M', sprint:'S16', status:'Backlog'   },
-        { id:'TA-037', feature:'App stable for 48+ hours before submission',       cat:'QA',             pri:'Critical', effort:'M', sprint:'S16', status:'Backlog'   },
-        { id:'TA-038', feature:'Capstone advisor sign-off received',               cat:'Milestone',      pri:'Critical', effort:'S', sprint:'S16', status:'Backlog'   },
-        { id:'TA-039', feature:'Tag v1.0 release on GitHub',                       cat:'Infrastructure', pri:'High',     effort:'S', sprint:'S16', status:'Backlog'   },
+        {
+            id:'TA-031',
+            feature:'Fix /game-statistics and /matchup-analyzer routes',
+            cat:'Frontend',
+            pri:'High',
+            effort:'S',
+            sprint:'S16',
+            status:'Backlog',
+            manualSubtasks:[
+                { id:'m_ta_031_1', title:'Step 01 - Confirm exact route contracts and expected page behavior for /game-statistics and /matchup-analyzer' },
+                { id:'m_ta_031_2', title:'Step 02 - Resolve remaining route-level regressions for refresh, direct URL access, and component mount lifecycle' },
+                { id:'m_ta_031_3', title:'Step 03 - Validate 200-load behavior and user navigation parity between both routes after patch' },
+                { id:'m_ta_031_4', title:'Step 04 - Record fix proof and residual risk notes in ticket evidence fields' }
+            ]
+        },
+        {
+            id:'TA-032',
+            feature:'Rate limiting on Flask API',
+            cat:'Security',
+            pri:'High',
+            effort:'S',
+            sprint:'S16',
+            status:'Backlog',
+            manualSubtasks:[
+                { id:'m_ta_032_1', title:'Step 01 - Define route-level rate-limit policy and exempt internal health-check paths where appropriate' },
+                { id:'m_ta_032_2', title:'Step 02 - Implement limiter configuration in Flask with safe defaults for burst and sustained traffic' },
+                { id:'m_ta_032_3', title:'Step 03 - Validate 429 responses and retry headers using repeatable local request tests' },
+                { id:'m_ta_032_4', title:'Step 04 - Document policy and deployment rollback notes in operations runbook context' }
+            ]
+        },
+        {
+            id:'TA-033',
+            feature:'HTTPS confirmed — all traffic encrypted',
+            cat:'Security',
+            pri:'Critical',
+            effort:'S',
+            sprint:'S16',
+            status:'Backlog',
+            manualSubtasks:[
+                { id:'m_ta_033_1', title:'Step 01 - Verify TLS certificate chain validity and forced HTTP to HTTPS redirect behavior on app endpoints' },
+                { id:'m_ta_033_2', title:'Step 02 - Audit frontend assets and API calls for mixed-content or hardcoded http:// references' },
+                { id:'m_ta_033_3', title:'Step 03 - Re-test key user flows and API requests to confirm end-to-end HTTPS-only transport' },
+                { id:'m_ta_033_4', title:'Step 04 - Publish HTTPS verification evidence bundle with timestamps and test commands' }
+            ]
+        },
+        {
+            id:'TA-034',
+            feature:'Final security audit — no exposed credentials',
+            cat:'Security',
+            pri:'Critical',
+            effort:'M',
+            sprint:'S16',
+            status:'Backlog',
+            manualSubtasks:[
+                { id:'m_ta_034_1', title:'Step 01 - Execute final security checklist covering secrets exposure, dependency risk, and config hardening gaps' },
+                { id:'m_ta_034_2', title:'Step 02 - Remediate audit findings and retest impacted routes, scripts, and environment configs' },
+                { id:'m_ta_034_3', title:'Step 03 - Verify repository and runtime contain no exposed credentials or insecure fallback values' },
+                { id:'m_ta_034_4', title:'Step 04 - Publish signed-off security audit summary with evidence links and residual risk statement' }
+            ]
+        },
+        {
+            id:'TA-035',
+            feature:'README updated for public audience',
+            cat:'Documentation',
+            pri:'Medium',
+            effort:'S',
+            sprint:'S16',
+            status:'Backlog',
+            manualSubtasks:[
+                { id:'m_ta_035_1', title:'Step 01 - Rewrite README overview and setup flow for external/public readers with clear project purpose' },
+                { id:'m_ta_035_2', title:'Step 02 - Add validated run instructions, environment expectations, and known boundary notes' },
+                { id:'m_ta_035_3', title:'Step 03 - Verify all README links commands and file references resolve correctly from a clean clone' },
+                { id:'m_ta_035_4', title:'Step 04 - Capture documentation update evidence and finalize handoff-ready README summary' }
+            ]
+        },
+        {
+            id:'TA-036',
+            feature:'Final performance report written & submitted',
+            cat:'Documentation',
+            pri:'Critical',
+            effort:'M',
+            sprint:'S16',
+            status:'Backlog',
+            manualSubtasks:[
+                { id:'m_ta_036_1', title:'Step 01 - Compile sprint outcomes, model-performance metrics, and governance evidence into report source set' },
+                { id:'m_ta_036_2', title:'Step 02 - Draft final performance narrative with accomplishments, risks, and mitigation actions' },
+                { id:'m_ta_036_3', title:'Step 03 - Review report against advisor rubric and capstone submission requirements checklist' },
+                { id:'m_ta_036_4', title:'Step 04 - Submit final report package and log timestamped submission confirmation evidence' }
+            ]
+        },
+        {
+            id:'TA-037',
+            feature:'App stable for 48+ hours before submission',
+            cat:'QA',
+            pri:'Critical',
+            effort:'M',
+            sprint:'S16',
+            status:'Backlog',
+            manualSubtasks:[
+                { id:'m_ta_037_1', title:'Step 01 - Define 48-hour stability watch criteria and required uptime/error-rate thresholds' },
+                { id:'m_ta_037_2', title:'Step 02 - Run continuous stability monitoring window and capture service-health checkpoints' },
+                { id:'m_ta_037_3', title:'Step 03 - Resolve any runtime incidents and restart watch if thresholds are not met' },
+                { id:'m_ta_037_4', title:'Step 04 - Publish final stability evidence pack proving 48+ hour readiness gate completion' }
+            ]
+        },
+        {
+            id:'TA-038',
+            feature:'Capstone advisor sign-off received',
+            cat:'Milestone',
+            pri:'Critical',
+            effort:'S',
+            sprint:'S16',
+            status:'Backlog',
+            manualSubtasks:[
+                { id:'m_ta_038_1', title:'Step 01 - Prepare advisor sign-off packet including demo checklist, risks, and final evidence references' },
+                { id:'m_ta_038_2', title:'Step 02 - Execute advisor walkthrough and collect approval feedback plus required follow-up actions' },
+                { id:'m_ta_038_3', title:'Step 03 - Complete follow-up items requested during sign-off review and confirm closure' },
+                { id:'m_ta_038_4', title:'Step 04 - Record sign-off outcome date and acceptance evidence in sprint governance artifacts' }
+            ]
+        },
+        {
+            id:'TA-039',
+            feature:'Tag v1.0 release on GitHub',
+            cat:'Infrastructure',
+            pri:'High',
+            effort:'S',
+            sprint:'S16',
+            status:'Backlog',
+            manualSubtasks:[
+                { id:'m_ta_039_1', title:'Step 01 - Validate release readiness checklist and ensure all Sprint 16 critical blockers are resolved' },
+                { id:'m_ta_039_2', title:'Step 02 - Create annotated v1.0 Git tag with release notes summarizing final deliverable scope' },
+                { id:'m_ta_039_3', title:'Step 03 - Verify tag points to approved commit and release artifact references are reproducible' },
+                { id:'m_ta_039_4', title:'Step 04 - Publish release evidence log including tag hash, notes URL, and rollback reference' }
+            ]
+        },
         { id:'TA-040', feature:'Move PM Dashboard to Amplify with admin panel',    cat:'Dashboard',      pri:'High',     effort:'L', sprint:'TBD', status:'Backlog'   },
         { id:'TA-041', feature:'User authentication (public vs admin view)',        cat:'Security',       pri:'High',     effort:'L', sprint:'TBD', status:'Backlog'   },
         { id:'TA-042', feature:'2026 NFL season live data integration',            cat:'Data',           pri:'Medium',   effort:'L', sprint:'TBD', status:'Backlog'   },
