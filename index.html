@@ -6492,6 +6492,10 @@ const COMPLETED_TASKS = [
     'sp15_ta077_8',
     'sp15_ta077_9',
     // Sprint 16 closures
+    'm_ta_032_1',
+    'm_ta_032_2',
+    'm_ta_032_3',
+    'm_ta_032_4',
     'm_ta_033_1',
     'm_ta_033_2',
     'm_ta_033_3',
@@ -10741,12 +10745,20 @@ initTasks();
             pri:'High',
             effort:'S',
             sprint:'S16',
-            status:'Backlog',
+            status:'Done',
+            assignee:'GitHub Copilot (Developer)',
+            description:'Implemented Flask-Limiter with proxy-aware client keys, health-route exemption, and JSON 429 responses with Retry-After fallback. Evidence: docs/sprints/ta032_rate_limiting/TA032_RATE_LIMITING_2026-05-28.md',
+            updatedAt:'2026-05-28T09:35:00',
+            updatedBy:'GitHub Copilot (Developer)',
             manualSubtasks:[
                 { id:'m_ta_032_1', title:'Step 01 - Define route-level rate-limit policy and exempt internal health-check paths where appropriate' },
                 { id:'m_ta_032_2', title:'Step 02 - Implement limiter configuration in Flask with safe defaults for burst and sustained traffic' },
                 { id:'m_ta_032_3', title:'Step 03 - Validate 429 responses and retry headers using repeatable local request tests' },
                 { id:'m_ta_032_4', title:'Step 04 - Document policy and deployment rollback notes in operations runbook context' }
+            ],
+            comments:[],
+            history:[
+                { at:'2026-05-28T09:35:00', by:'GitHub Copilot (Developer)', note:'Closed TA-032 after adding Flask-Limiter enforcement, health-route exemption, and deterministic 429 Retry-After behavior with local verification evidence.' }
             ]
         },
         {
@@ -11598,7 +11610,7 @@ function showSprintView(view, btn) {
         ],
         'Sprint 16 — Hardening & Release': [
             'Submission hardening baseline: TA-033 TA-034 TA-036 TA-037 TA-038 and TA-039 closed with verifiable evidence',
-            'Security + readiness closure: TA-032 rate limiting and TA-035 public README updates completed for final handoff',
+            'Security + readiness closure: TA-032 rate limiting completed; TA-035 public README update remains for final handoff',
             'Route and runtime stability closure: TA-014 TA-031 and TA-029 complete with no blocking regressions before advisor sign-off',
         ],
     };
@@ -12432,13 +12444,11 @@ function showSprintView(view, btn) {
 /* ── TASK TRACKER ── */
 (function initTaskTracker() {
     var ttFilters = { sprint: 'all', pri: 'all', status: 'all', owner: 'all' };
-    var ttSortCol = -1;
     var ttSortAsc = true;
     var activeTicketId = null;
     var TT_ASSIGNEES = ['April (PM)', 'GitHub Copilot (Developer)', 'Unassigned'];
     var TT_ASSIGNEE_ALIASES = {
         'Scrum Master': 'April (PM)',
-        'Developer': 'GitHub Copilot (Developer)',
         'April': 'April (PM)',
         'GitHub Copilot': 'GitHub Copilot (Developer)'
     };
@@ -13119,7 +13129,6 @@ function showSprintView(view, btn) {
 
     function renderEditor(item) {
         if (!item) return;
-        syncTicketStatusFromSprint(item);
         document.getElementById('te-id').textContent = item.id;
         document.getElementById('te-title').value = item.feature || '';
         document.getElementById('te-description').value = item.description || '';
