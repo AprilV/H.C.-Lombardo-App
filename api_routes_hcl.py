@@ -74,27 +74,43 @@ def get_teams():
         cur = conn.cursor(cursor_factory=RealDictCursor)
         season = resolve_request_season(cur)
 
-        team_key_sql = sql_to_canonical_case('tgs.team')
-        
-        # Aggregate stats from team_game_stats table with team names
+        stats_team_key_sql = sql_to_canonical_case('tgs.team')
+        teams_key_sql = sql_to_canonical_case('t.abbreviation')
+
+        # Anchor on public.teams to guarantee full-team coverage even in partial season data.
         query = f"""
-            SELECT 
-            {team_key_sql} as team,
-                t.name as team_name,
-                COUNT(*) as games_played,
-                SUM(CASE WHEN tgs.result = 'W' THEN 1 ELSE 0 END) as wins,
-                SUM(CASE WHEN tgs.result = 'L' THEN 1 ELSE 0 END) as losses,
-                SUM(CASE WHEN tgs.result = 'T' THEN 1 ELSE 0 END) as ties,
-                ROUND(AVG(tgs.points)::numeric, 1) as ppg,
-                ROUND(AVG(tgs.total_yards)::numeric, 1) as yards_per_game,
-                ROUND(AVG(tgs.yards_per_play)::numeric, 2) as yards_per_play,
-                ROUND(AVG(tgs.completion_pct)::numeric, 1) as completion_pct,
-                SUM(tgs.turnovers) as total_turnovers
-            FROM hcl.team_game_stats tgs
-            LEFT JOIN public.teams t ON {team_key_sql} = t.abbreviation
-            WHERE tgs.season = %s
-            GROUP BY {team_key_sql}, t.name
-            ORDER BY wins DESC, ppg DESC
+            WITH season_stats AS (
+                SELECT
+                    {stats_team_key_sql} AS team,
+                    COUNT(*) AS games_played,
+                    SUM(CASE WHEN tgs.result = 'W' THEN 1 ELSE 0 END) AS wins,
+                    SUM(CASE WHEN tgs.result = 'L' THEN 1 ELSE 0 END) AS losses,
+                    SUM(CASE WHEN tgs.result = 'T' THEN 1 ELSE 0 END) AS ties,
+                    ROUND(AVG(tgs.points)::numeric, 1) AS ppg,
+                    ROUND(AVG(tgs.total_yards)::numeric, 1) AS yards_per_game,
+                    ROUND(AVG(tgs.yards_per_play)::numeric, 2) AS yards_per_play,
+                    ROUND(AVG(tgs.completion_pct)::numeric, 1) AS completion_pct,
+                    SUM(tgs.turnovers) AS total_turnovers
+                FROM hcl.team_game_stats tgs
+                WHERE tgs.season = %s
+                GROUP BY {stats_team_key_sql}
+            )
+            SELECT
+                {teams_key_sql} AS team,
+                t.name AS team_name,
+                COALESCE(ss.games_played, 0) AS games_played,
+                COALESCE(ss.wins, 0) AS wins,
+                COALESCE(ss.losses, 0) AS losses,
+                COALESCE(ss.ties, 0) AS ties,
+                COALESCE(ss.ppg, 0) AS ppg,
+                COALESCE(ss.yards_per_game, 0) AS yards_per_game,
+                COALESCE(ss.yards_per_play, 0) AS yards_per_play,
+                COALESCE(ss.completion_pct, 0) AS completion_pct,
+                COALESCE(ss.total_turnovers, 0) AS total_turnovers
+            FROM public.teams t
+            LEFT JOIN season_stats ss
+                ON {teams_key_sql} = ss.team
+            ORDER BY wins DESC, ppg DESC, team ASC
         """
         
         cur.execute(query, (season,))

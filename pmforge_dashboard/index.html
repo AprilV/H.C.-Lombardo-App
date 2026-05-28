@@ -10814,7 +10814,29 @@ initTasks();
         { id:'TA-049', feature:'Cross-browser compatibility audit — dashboard and app tested in Edge, Chrome, Firefox, Safari', cat:'Frontend', pri:'High', effort:'M', sprint:'TBD', status:'Backlog' },
         { id:'TA-050', feature:'Rework Classic Light theme — full redesign for readability and visual consistency', cat:'Dashboard', pri:'Medium', effort:'M', sprint:'TBD', status:'Backlog' },
         { id:'TA-051', feature:'Rotate GitHub webhook secret — GitHub disclosed Sep–Dec 2025 bug exposed secrets in X-Github-Encoded-Secret header; rotate Amplify webhook secret as precaution', cat:'Security', pri:'Low', effort:'XS', sprint:'TBD', status:'Backlog' },
-        { id:'TA-052', feature:'Fix /api/hcl/teams returning 4 teams instead of 32 — discovered during TA-003 API audit Apr 17', cat:'Backend', pri:'High', effort:'S', sprint:'TBD', status:'Backlog' },
+        {
+            id:'TA-052',
+            feature:'Fix /api/hcl/teams returning 4 teams instead of 32 — discovered during TA-003 API audit Apr 17',
+            cat:'Backend',
+            pri:'High',
+            effort:'S',
+            sprint:'S16',
+            status:'Done',
+            assignee:'GitHub Copilot (Developer)',
+            description:'Updated /api/hcl/teams to anchor on public.teams with a left-joined season_stats CTE so the endpoint returns the full 32-team set even when season stats are partial. Evidence: docs/sprints/ta052_teams_endpoint_fix/TA052_TEAMS_ENDPOINT_2026-05-27.md',
+            updatedAt:'2026-05-27T22:52:00',
+            updatedBy:'GitHub Copilot (Developer)',
+            manualSubtasks:[
+                { id:'m_ta_052_1', title:'Step 01 - Reproduce and isolate why /api/hcl/teams can return fewer than 32 teams' },
+                { id:'m_ta_052_2', title:'Step 02 - Refactor query to guarantee full-team coverage via public.teams baseline' },
+                { id:'m_ta_052_3', title:'Step 03 - Validate endpoint now returns 32 teams with season overlay stats' },
+                { id:'m_ta_052_4', title:'Step 04 - Publish evidence bundle with command output and acceptance mapping' }
+            ],
+            comments:[],
+            history:[
+                { at:'2026-05-27T22:52:00', by:'GitHub Copilot (Developer)', note:'Closed TA-052 after landing public.teams-based query fix and verifying /api/hcl/teams returns 32 teams.' }
+            ]
+        },
         { id:'TA-053', feature:'Add missing /api/hcl/summary endpoint — route not found during TA-003 API audit Apr 17', cat:'Backend', pri:'Medium', effort:'S', sprint:'TBD', status:'Backlog' },
         {
             id:'TA-054',
