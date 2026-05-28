@@ -10524,7 +10524,29 @@ initTasks();
                 { at:'2026-05-27T23:00:00', by:'GitHub Copilot (Developer)', note:'Closed TA-015 after runtime verification confirmed missing-import issue is resolved in current codebase.' }
             ]
         },
-        { id:'TA-016', feature:'Confirm background updater running in production', cat:'Infrastructure', pri:'High',     effort:'S', sprint:'TBD', status:'Backlog'   },
+        {
+            id:'TA-016',
+            feature:'Confirm background updater running in production',
+            cat:'Infrastructure',
+            pri:'High',
+            effort:'S',
+            sprint:'S16',
+            status:'Blocked',
+            assignee:'GitHub Copilot (Developer)',
+            description:'Blocked pending explicit AWS/EC2 access authorization for production runtime checks. Prepared runbook: docs/sprints/ta016_production_updater_check/TA016_BLOCKED_PRODUCTION_ACCESS_2026-05-27.md',
+            updatedAt:'2026-05-27T23:05:00',
+            updatedBy:'GitHub Copilot (Developer)',
+            manualSubtasks:[
+                { id:'m_ta_016_1', title:'Step 01 - Access production host and verify updater service/process active state' },
+                { id:'m_ta_016_2', title:'Step 02 - Validate recurring updater log cadence and successful run completion' },
+                { id:'m_ta_016_3', title:'Step 03 - Confirm production data freshness reflects updater execution' },
+                { id:'m_ta_016_4', title:'Step 04 - Publish production verification evidence and close blocker' }
+            ],
+            comments:[],
+            history:[
+                { at:'2026-05-27T23:05:00', by:'GitHub Copilot (Developer)', note:'Blocked due to production access gate. Verification runbook prepared pending AWS/EC2 authorization.' }
+            ]
+        },
         { id:'TA-017', feature:'Audit git history for exposed secrets',           cat:'Security',       pri:'High',     effort:'M', sprint:'TBD', status:'Backlog'   },
         { id:'TA-018', feature:'Retrain XGBoost winner classifier on 2025 data', cat:'ML',             pri:'Critical', effort:'L', sprint:'S14', status:'Done' },
         { id:'TA-019', feature:'Retrain spread regressor — document MAE',         cat:'ML',             pri:'Critical', effort:'L', sprint:'S14', status:'Done' },
@@ -10965,7 +10987,29 @@ initTasks();
                 { at:'2026-05-27T22:54:00', by:'GitHub Copilot (Developer)', note:'Closed TA-073 after path-resolution fix removed missing-fetcher loop behavior in live updater scripts.' }
             ]
         },
-        { id:'TA-074', feature:'Fix log_watcher.py self-recursive archive events — watcher logs its own docs/devlog/archive writes, floods MODIFIED events, and can crash thread on archive/index.json write (Errno 22).', cat:'Dashboard', pri:'High', effort:'S', sprint:'TBD', status:'Backlog' },
+        {
+            id:'TA-074',
+            feature:'Fix log_watcher.py self-recursive archive events — watcher logs its own docs/devlog/archive writes, floods MODIFIED events, and can crash thread on archive/index.json write (Errno 22).',
+            cat:'Dashboard',
+            pri:'High',
+            effort:'S',
+            sprint:'S16',
+            status:'Done',
+            assignee:'GitHub Copilot (Developer)',
+            description:'Hardened log watcher path resolution and repo-relative conversion to prevent archive/index recursion-related crash paths and malformed-path exceptions. Evidence: docs/sprints/ta074_log_watcher_guard_fix/TA074_LOG_WATCHER_GUARD_FIX_2026-05-27.md',
+            updatedAt:'2026-05-27T23:15:00',
+            updatedBy:'GitHub Copilot (Developer)',
+            manualSubtasks:[
+                { id:'m_ta_074_1', title:'Step 01 - Reproduce log flood/crash conditions around archive/index write events' },
+                { id:'m_ta_074_2', title:'Step 02 - Add path-resolution guards to prevent malformed-path exceptions' },
+                { id:'m_ta_074_3', title:'Step 03 - Validate archive/index writes remain excluded from tracked event stream' },
+                { id:'m_ta_074_4', title:'Step 04 - Publish verification evidence and closure notes' }
+            ],
+            comments:[],
+            history:[
+                { at:'2026-05-27T23:15:00', by:'GitHub Copilot (Developer)', note:'Closed TA-074 after landing log watcher guard hardening to stop archive-event recursion/crash patterns.' }
+            ]
+        },
         {
             id:'TA-075',
             feature:'Stakeholder chart metric model completed: Option A effort-point implementation',
