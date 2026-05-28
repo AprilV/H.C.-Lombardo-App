@@ -10817,12 +10817,20 @@ initTasks();
             pri:'Critical',
             effort:'M',
             sprint:'S16',
-            status:'Backlog',
+            status:'Blocked',
+            assignee:'GitHub Copilot (Developer)',
+            description:'Blocked: final security sign-off cannot be issued while credential literals remain in active scripts and historical artifacts. Evidence: docs/sprints/ta034_security_audit/TA034_SECURITY_AUDIT_BLOCKED_2026-05-27.md',
+            updatedAt:'2026-05-27T23:55:00',
+            updatedBy:'GitHub Copilot (Developer)',
             manualSubtasks:[
                 { id:'m_ta_034_1', title:'Step 01 - Execute final security checklist covering secrets exposure, dependency risk, and config hardening gaps' },
                 { id:'m_ta_034_2', title:'Step 02 - Remediate audit findings and retest impacted routes, scripts, and environment configs' },
                 { id:'m_ta_034_3', title:'Step 03 - Verify repository and runtime contain no exposed credentials or insecure fallback values' },
                 { id:'m_ta_034_4', title:'Step 04 - Publish signed-off security audit summary with evidence links and residual risk statement' }
+            ],
+            comments:[],
+            history:[
+                { at:'2026-05-27T23:55:00', by:'GitHub Copilot (Developer)', note:'Set TA-034 to Blocked after TA-017 audit confirmed credential literals still present; published blocked-state security audit evidence and unblock checklist.' }
             ]
         },
         {
@@ -11635,7 +11643,7 @@ function showSprintView(view, btn) {
             'Sprint acceptance: publish TA-077 results package plus TA-030 production walkthrough for advisor demo readiness after ML and UI checks pass',
         ],
         'Sprint 16 — Hardening & Release': [
-            'Submission hardening baseline: TA-033 TA-034 TA-036 TA-037 TA-038 and TA-039 closed with verifiable evidence',
+            'Submission hardening baseline remains open: TA-034 currently blocked and TA-036 TA-037 TA-038 TA-039 still pending verifiable evidence closure',
             'Security + readiness closure: TA-032 rate limiting completed; TA-035 public README update remains for final handoff',
             'Route and runtime stability closure: TA-014 TA-031 and TA-029 complete with no blocking regressions before advisor sign-off',
         ],
