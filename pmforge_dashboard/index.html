@@ -10901,8 +10901,8 @@ initTasks();
             sprint:'S16',
             status:'Blocked',
             assignee:'GitHub Copilot (Developer)',
-            description:'Blocked pending execution of a full 48+ hour stability monitoring window with timestamped evidence. Criteria baseline plus monitoring harness are published: docs/sprints/ta037_stability_gate/TA037_STABILITY_GATE_BLOCKED_2026-05-27.md and docs/sprints/ta037_stability_gate/TA037_MONITORING_HARNESS_2026-05-28.md',
-            updatedAt:'2026-05-28T10:20:00',
+            description:'Blocked while active 48+ hour stability monitoring window is in progress; closure pending full-duration completion and evidence review. Current run evidence: docs/sprints/ta037_stability_gate/TA037_LIVE_WINDOW_START_2026-05-28.md',
+            updatedAt:'2026-05-28T19:17:02',
             updatedBy:'GitHub Copilot (Developer)',
             manualSubtasks:[
                 { id:'m_ta_037_1', title:'Step 01 - Define 48-hour stability watch criteria and required uptime/error-rate thresholds' },
@@ -10912,6 +10912,7 @@ initTasks();
             ],
             comments:[],
             history:[
+                { at:'2026-05-28T19:17:02Z', by:'GitHub Copilot (Developer)', note:'Started active 48-hour TA-037 monitoring run after services were brought online; initial live checkpoint recorded all_ok=true and evidence linked.' },
                 { at:'2026-05-28T18:38:36Z', by:'GitHub Copilot (Developer)', note:'Executed one-snapshot stability harness smoke run and captured checkpoint JSONL output; result correctly reported service-down connection refusals while local services were not running.' },
                 { at:'2026-05-28T10:20:00', by:'GitHub Copilot (Developer)', note:'Added TA-037 monitoring harness script and run instructions; gate remains Blocked until a full 48+ hour checkpoint window is executed and reviewed.' },
                 { at:'2026-05-27T23:59:59', by:'GitHub Copilot (Developer)', note:'Set TA-037 to Blocked after defining stability criteria; 48-hour observation window and final evidence pack still required for closure.' }

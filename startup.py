@@ -11,7 +11,14 @@ import os
 from pathlib import Path
 
 ROOT    = Path(__file__).parent
-VENV_PY = Path('C:/Users/april/AppData/Local/Python/bin/python3.exe')
+VENV_PY = ROOT / '.venv' / 'Scripts' / 'python.exe'
+
+
+def get_python_executable():
+    """Prefer workspace venv python; fall back to current interpreter."""
+    if VENV_PY.exists():
+        return str(VENV_PY)
+    return sys.executable
 
 
 def port_open(port):
@@ -66,7 +73,7 @@ print('\n[2/5] Starting Flask API server...')
 if port_open(5000):
     print('   [OK] API already running on port 5000')
 else:
-    py = str(VENV_PY)
+    py = get_python_executable()
     open_window('H.C. Lombardo API', f"cd '{ROOT}'; & '{py}' api_server.py")
     if not wait_port(5000, 'Flask API', 30):
         print('   [ERROR] API failed to start. Check the API window for errors.')
@@ -78,13 +85,13 @@ print('\n[3/5] Starting Dev Log Watcher...')
 if port_open(8765):
     print('   [OK] Log watcher already running on port 8765')
 else:
-    py = str(VENV_PY)
+    py = get_python_executable()
     open_window('H.C. Lombardo Dev Log', f"cd '{ROOT}'; & '{py}' log_watcher.py")
     wait_port(8765, 'Log Watcher', 15)
 
 # ── Step 4: Live Data Updater ──────────────────────────────────
 print('\n[4/5] Starting Live Data Updater...')
-py = str(VENV_PY)
+py = get_python_executable()
 open_window('H.C. Lombardo Data Updater',
             f"cd '{ROOT}'; & '{py}' live_data_updater.py --continuous 15")
 print('   [OK] Data updater started (updates every 15 minutes)')
