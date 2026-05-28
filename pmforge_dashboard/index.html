@@ -10920,7 +10920,29 @@ initTasks();
         { id:'TA-070', feature:'ML prediction accuracy audit — winner predictions, point spreads, and over/under totals are producing incorrect/unrealistic results. Audit actual 2024–2025 predictions vs outcomes, identify whether root cause is overfitting, data leakage, schema mismatch (hcl_test vs hcl), or feature engineering errors. Must complete after TA-057/068/069 infrastructure fixes.', cat:'ML', pri:'High', effort:'L', sprint:'S14', status:'Done' },
         { id:'TA-071', feature:'Monitoring stack research ticket (future sprint) — define phased observability plan: Phase 1 baseline with AWS CloudWatch + CloudWatch Alarms for EC2 health (CPU, memory, disk), Flask API uptime/latency, error-rate alerts, and deployment event visibility; Phase 2 evaluate Grafana dashboards (CloudWatch datasource) for unified app + dashboard + infrastructure views; Phase 3 evaluate ELK/OpenSearch only if log volume/search needs justify added ops overhead. Deliverable: recommendation matrix (cost, setup complexity, alert quality, maintenance load) and implementation trigger criteria for each phase.', cat:'Infrastructure', pri:'Medium', effort:'M', sprint:'TBD', status:'Backlog' },
         { id:'TA-072', feature:'Create a new AWS account for EC2 continuity and migrate runtime access/deployment operations so Sprint 14 ML execution is not blocked by current AWS account lockout constraints.', cat:'Infrastructure', pri:'Critical', effort:'M', sprint:'S14', status:'Done' },
-        { id:'TA-073', feature:'Fix live_data_updater.py fetcher path mismatch — updater checks root multi_source_data_fetcher.py but file is not present there, causing continuous update loop errors and skipped refresh runs.', cat:'Backend', pri:'High', effort:'S', sprint:'TBD', status:'Backlog' },
+        {
+            id:'TA-073',
+            feature:'Fix live_data_updater.py fetcher path mismatch — updater checks root multi_source_data_fetcher.py but file is not present there, causing continuous update loop errors and skipped refresh runs.',
+            cat:'Backend',
+            pri:'High',
+            effort:'S',
+            sprint:'S16',
+            status:'Done',
+            assignee:'GitHub Copilot (Developer)',
+            description:'Implemented robust fetcher path resolution in both updater entrypoints to locate scripts/maintenance/multi_source_data_fetcher.py and execute from repo-root context. Evidence: docs/sprints/ta073_fetcher_path_fix/TA073_FETCHER_PATH_FIX_2026-05-27.md',
+            updatedAt:'2026-05-27T22:54:00',
+            updatedBy:'GitHub Copilot (Developer)',
+            manualSubtasks:[
+                { id:'m_ta_073_1', title:'Step 01 - Reproduce updater path mismatch and confirm missing-root fetcher lookup' },
+                { id:'m_ta_073_2', title:'Step 02 - Implement candidate-based fetcher path resolver with repo-root fallback' },
+                { id:'m_ta_073_3', title:'Step 03 - Validate updater resolves and invokes scripts/maintenance fetcher in both entrypoints' },
+                { id:'m_ta_073_4', title:'Step 04 - Publish verification evidence and closure notes' }
+            ],
+            comments:[],
+            history:[
+                { at:'2026-05-27T22:54:00', by:'GitHub Copilot (Developer)', note:'Closed TA-073 after path-resolution fix removed missing-fetcher loop behavior in live updater scripts.' }
+            ]
+        },
         { id:'TA-074', feature:'Fix log_watcher.py self-recursive archive events — watcher logs its own docs/devlog/archive writes, floods MODIFIED events, and can crash thread on archive/index.json write (Errno 22).', cat:'Dashboard', pri:'High', effort:'S', sprint:'TBD', status:'Backlog' },
         {
             id:'TA-075',

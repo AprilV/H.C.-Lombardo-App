@@ -13,7 +13,32 @@ class LiveDataUpdater:
     """Fetches and updates NFL data using multi-source approach"""
     
     def __init__(self):
-        self.project_root = Path(__file__).parent
+        self.project_root = Path(__file__).resolve().parent
+        self.repo_root = self._resolve_repo_root()
+
+    def _resolve_repo_root(self) -> Path:
+        """Resolve repository root for consistent script lookup and execution."""
+        if (self.project_root / "api_server.py").exists():
+            return self.project_root
+
+        candidate = self.project_root.parent.parent
+        if (candidate / "api_server.py").exists():
+            return candidate
+
+        return self.project_root
+
+    def _fetcher_candidates(self):
+        return [
+            self.repo_root / "multi_source_data_fetcher.py",
+            self.repo_root / "scripts" / "maintenance" / "multi_source_data_fetcher.py",
+            self.project_root / "multi_source_data_fetcher.py",
+        ]
+
+    def _resolve_fetcher_script(self):
+        for candidate in self._fetcher_candidates():
+            if candidate.exists():
+                return candidate
+        return None
     
     def run_update(self) -> bool:
         """Run multi-source data update"""
@@ -23,16 +48,19 @@ class LiveDataUpdater:
         
         try:
             # Run the multi-source data fetcher
-            fetcher_script = self.project_root / "multi_source_data_fetcher.py"
+            fetcher_script = self._resolve_fetcher_script()
             
-            if not fetcher_script.exists():
-                print(f"\n[ERROR] Multi-source fetcher not found: {fetcher_script}")
+            if not fetcher_script:
+                print("\n[ERROR] Multi-source fetcher not found. Checked:")
+                for candidate in self._fetcher_candidates():
+                    print(f"   - {candidate}")
                 return False
             
             result = subprocess.run(
                 [sys.executable, str(fetcher_script)],
                 capture_output=True,
                 text=True,
+                cwd=str(self.repo_root),
                 timeout=60
             )
             
