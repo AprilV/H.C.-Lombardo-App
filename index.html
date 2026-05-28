@@ -3315,7 +3315,7 @@
         <!-- Sprint 15 board -->
     <div id="sprint-board-15" style="display:none;">
         <div class="pm-panel">
-            <div class="pm-header"><div><h2>Sprint 15 - Prediction Reliability &amp; Validation</h2><p>Sprint 15 is active. Realigned execution order is prediction-first: TA-055 -&gt; TA-076 -&gt; TA-077, with completed foundation tickets retained for traceability.</p></div><div class="sprint-meta"><span class="meta-pill">May 18 - 30, 2026</span><span class="meta-pill" style="color:#10b981; border-color:#10b981;">Active</span></div></div>
+            <div class="pm-header"><div><h2>Sprint 15 - Prediction Reliability &amp; Validation</h2><p>Sprint 15 is active. Realigned execution order is prediction-first: TA-055 -&gt; TA-076 -&gt; TA-077, with completed foundation tickets retained for traceability.</p></div><div class="sprint-meta"><span class="meta-pill">May 18 - 27, 2026</span><span class="meta-pill" style="color:#10b981; border-color:#10b981;">Active</span></div></div>
 
             <div style="max-width:940px; margin:0 0 1rem;">
                 <div class="progress-label"><span>Sprint 15 Progress</span><span id="s15-pct">0%</span></div>
@@ -3383,10 +3383,28 @@
     </div>
 
 
-    <!-- Sprint 16 placeholder -->
+    <!-- Sprint 16 board -->
     <div id="sprint-board-16" style="display:none;">
         <div class="pm-panel">
-            <div class="pm-header"><div><h2>Sprint 16 — Hardening &amp; Release</h2><p>Starts Jun 1, 2026. Board activates at sprint kickoff.</p></div><div class="sprint-meta"><span class="meta-pill">Jun 1 – Jun 13, 2026</span><span class="meta-pill">Upcoming</span></div></div>
+            <div class="pm-header"><div><h2>Sprint 16 — Hardening &amp; Release</h2><p>Board auto-syncs from Sprint 16 backlog tickets and their subtasks. Changes in the tracker are reflected here.</p></div><div class="sprint-meta"><span class="meta-pill">May 28 – Jun 13, 2026</span><span class="meta-pill" style="color:#10b981; border-color:#10b981;">Active</span></div></div>
+
+            <div style="max-width:940px; margin:0 0 1rem;">
+                <div class="progress-label"><span>Sprint 16 Progress</span><span id="s16-pct">0%</span></div>
+                <div class="progress-bar-wrap"><div class="progress-bar-fill" id="s16-fill" style="width:0%"></div></div>
+                <div style="font-size:0.75rem;color:var(--muted);margin-top:0.4rem;" id="s16-count">0 of 0 Sprint 16 subtasks complete</div>
+            </div>
+
+            <div class="area-grid" id="sprint16-board">
+                <div class="area-card">
+                    <div class="area-header" onclick="toggleArea('s16-exec')">
+                        <div class="area-title">Sprint 16 Execution Queue <span class="area-count" id="count-s16-exec">0/0</span></div>
+                        <span id="arrow-s16-exec">▾</span>
+                    </div>
+                    <div class="area-body" id="s16-exec">
+                        <div class="task-item task-sub-item" style="opacity:0.8;"><span class="task-text">Loading Sprint 16 tasks from backlog...</span></div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -3741,7 +3759,7 @@
                 <summary style="padding:0.9rem 1.25rem; cursor:pointer; display:flex; align-items:center; gap:0.75rem; font-weight:700; font-size:0.9rem; color:#f1f5f9; list-style:none; user-select:none;">
                     <span style="background:rgba(16,185,129,0.2); color:#86efac; border:1px solid rgba(16,185,129,0.4); border-radius:9999px; padding:0.1rem 0.65rem; font-size:0.72rem; font-weight:700;">Done</span>
                     Sprint 15
-                    <span style="margin-left:auto; color:var(--muted); font-size:0.8rem;">May 18 – May 30</span>
+                    <span style="margin-left:auto; color:var(--muted); font-size:0.8rem;">May 18 – May 27</span>
                 </summary>
                 <div data-dod-list="15" style="padding:0 1.25rem 1rem; display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:0.4rem; margin-top:0.25rem;">
                     <div class="dod-item">All 29 Sprint 15 board subtasks are complete with closure gate pass (29/29 complete, 0 blocked)</div>
@@ -3758,12 +3776,21 @@
 
             <details id="dod-sprint-16" style="display:none; background:var(--card); border:1px solid var(--border); border-radius:0.6rem; overflow:hidden;">
                 <summary style="padding:0.9rem 1.25rem; cursor:pointer; display:flex; align-items:center; gap:0.75rem; font-weight:700; font-size:0.9rem; color:#f1f5f9; list-style:none; user-select:none;">
-                    <span style="background:rgba(148,163,184,0.2); color:#cbd5e1; border:1px solid rgba(148,163,184,0.35); border-radius:9999px; padding:0.1rem 0.65rem; font-size:0.72rem; font-weight:700;">Planned</span>
+                    <span style="background:rgba(213,10,10,0.25); color:#f87171; border:1px solid rgba(213,10,10,0.4); border-radius:9999px; padding:0.1rem 0.65rem; font-size:0.72rem; font-weight:700;">Active</span>
                     Sprint 16
-                    <span style="margin-left:auto; color:var(--muted); font-size:0.8rem;">Jun 1 – Jun 13</span>
+                    <span style="margin-left:auto; color:var(--muted); font-size:0.8rem;">May 28 – Jun 13</span>
                 </summary>
                 <div data-dod-list="16" style="padding:0 1.25rem 1rem; display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:0.4rem; margin-top:0.25rem;">
-                    <div class="dod-item">No DoD criteria entered yet. Use PM Definition of Done Entry above.</div>
+                    <div class="dod-item">Sprint 16 committed tickets are execution-ready with explicit subtasks for TA-014, TA-029, and TA-031 through TA-039</div>
+                    <div class="dod-item">All Sprint 16 committed tickets reach Done status with no remaining Blocked items</div>
+                    <div class="dod-item">Broken route fixes are verified for /game-statistics and /matchup-analyzer across direct URL load and in-app navigation</div>
+                    <div class="dod-item">Production console audit passes with zero runtime errors on advisor-critical pages and flows</div>
+                    <div class="dod-item">API security hardening is complete: rate limiting enforced and HTTPS-only transport verified end-to-end</div>
+                    <div class="dod-item">Final security audit confirms no exposed credentials in touched source, config, or deployment paths</div>
+                    <div class="dod-item">Public-facing README and capstone performance report are finalized, accurate, and submission-ready</div>
+                    <div class="dod-item">App stability gate passes with at least 48 hours of monitored runtime and no unresolved incidents</div>
+                    <div class="dod-item">Advisor sign-off evidence is recorded and linked to Sprint 16 closure artifacts</div>
+                    <div class="dod-item">GitHub v1.0 release tag is created from approved commit state with release notes and rollback reference</div>
                 </div>
             </details>
         </div>
@@ -4492,6 +4519,10 @@ function showSprintPageView(viewId, btn) {
 }
 
 function showSprintBoard(sprintNum) {
+    var n = parseInt(sprintNum, 10);
+    if (!isNaN(n) && n === 16 && typeof renderSprint16BoardFromBacklog === 'function') {
+        renderSprint16BoardFromBacklog();
+    }
     document.querySelectorAll('[id^="sprint-board-"]').forEach(function(el) { el.style.display = 'none'; });
     var board = document.getElementById('sprint-board-' + sprintNum);
     if (board) board.style.display = '';
@@ -4515,6 +4546,80 @@ function normalizeStatusBucket(status) {
     if (s === 'blocked') return 'blocked';
     if (s === 'in progress' || s === 'in sprint') return 'inprogress';
     return 'todo';
+}
+
+function renderSprint16BoardFromBacklog(options) {
+    options = options || {};
+    var host = document.getElementById('s16-exec');
+    if (!host) return;
+
+    var items = (window.PB_ITEMS || []).filter(function(item) {
+        return String(item && item.sprint || '').trim().toUpperCase() === 'S16';
+    });
+
+    if (!items.length) {
+        host.innerHTML = '<div class="task-item task-sub-item" style="opacity:0.8;"><span class="task-text">No Sprint 16 tickets are currently assigned in backlog data.</span></div>';
+        if (typeof updateAreaCount === 'function') updateAreaCount('s16-exec');
+        if (!options.skipProgress && typeof updateSprintBoardProgress === 'function') {
+            var prevSyncFlag = !!window.__TASK_STATE_SYNC_ACTIVE;
+            window.__TASK_STATE_SYNC_ACTIVE = true;
+            try {
+                updateSprintBoardProgress(16, { skipMetrics: true, skipTracker: true });
+            } finally {
+                window.__TASK_STATE_SYNC_ACTIVE = prevSyncFlag;
+            }
+        }
+        return;
+    }
+
+    var priorityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
+    items.sort(function(a, b) {
+        var pa = priorityOrder[String(a && a.pri || '').toLowerCase()];
+        var pb = priorityOrder[String(b && b.pri || '').toLowerCase()];
+        if (typeof pa === 'undefined') pa = 99;
+        if (typeof pb === 'undefined') pb = 99;
+        if (pa !== pb) return pa - pb;
+        return String(a && a.id || '').localeCompare(String(b && b.id || ''));
+    });
+
+    var html = [];
+    items.forEach(function(item) {
+        var ticketId = String(item && item.id || '').toUpperCase();
+        var feature = String(item && item.feature || 'Untitled ticket');
+        html.push('<div class="task-group-label">' + escapeHtmlLite(ticketId + ' — ' + feature) + '</div>');
+
+        var manualSubtasks = Array.isArray(item && item.manualSubtasks) ? item.manualSubtasks : [];
+        if (!manualSubtasks.length) {
+            manualSubtasks = [
+                { id:'m_' + String(ticketId || 'ta000').toLowerCase().replace(/[^a-z0-9]+/g, '_') + '_1', title:'Step 01 - Confirm acceptance scope and dependencies' },
+                { id:'m_' + String(ticketId || 'ta000').toLowerCase().replace(/[^a-z0-9]+/g, '_') + '_2', title:'Step 02 - Execute core implementation for this ticket' },
+                { id:'m_' + String(ticketId || 'ta000').toLowerCase().replace(/[^a-z0-9]+/g, '_') + '_3', title:'Step 03 - Validate outcome against acceptance criteria' },
+                { id:'m_' + String(ticketId || 'ta000').toLowerCase().replace(/[^a-z0-9]+/g, '_') + '_4', title:'Step 04 - Capture closure evidence and update ticket state' }
+            ];
+        }
+
+        manualSubtasks.forEach(function(subtask, idx) {
+            var fallbackId = 'm_' + String(ticketId || 'ta000').toLowerCase().replace(/[^a-z0-9]+/g, '_') + '_' + String(idx + 1);
+            var sid = String(subtask && subtask.id || fallbackId);
+            var title = String(subtask && subtask.title || ('Subtask ' + String(idx + 1)));
+            var isDone = Array.isArray(window.COMPLETED_TASKS) && window.COMPLETED_TASKS.indexOf(sid) !== -1;
+            if (typeof TASK_TA_MAP !== 'undefined' && TASK_TA_MAP && !TASK_TA_MAP[sid]) TASK_TA_MAP[sid] = ticketId;
+
+            html.push('<label class="task-item task-sub-item' + (isDone ? ' done' : '') + '"><input type="checkbox" id="' + escapeHtmlLite(sid) + '" onchange="updateS16Progress()"' + (isDone ? ' checked' : '') + '><span class="task-text">' + escapeHtmlLite(title) + '</span></label>');
+        });
+    });
+
+    host.innerHTML = html.join('');
+    if (typeof updateAreaCount === 'function') updateAreaCount('s16-exec');
+    if (!options.skipProgress && typeof updateSprintBoardProgress === 'function') {
+        var prevSyncFlag = !!window.__TASK_STATE_SYNC_ACTIVE;
+        window.__TASK_STATE_SYNC_ACTIVE = true;
+        try {
+            updateSprintBoardProgress(16, { skipMetrics: true, skipTracker: true });
+        } finally {
+            window.__TASK_STATE_SYNC_ACTIVE = prevSyncFlag;
+        }
+    }
 }
 
 function getSprintTicketStats(sprintNum) {
@@ -4876,12 +4981,12 @@ function selectRetroSprint(sprintNum) {
         '15': {
             title: 'Sprint 15 — Retrospective',
             subtitle: 'Completed at sprint close-ready state — May 27, 2026. Reliability hardening delivered, governance/bookkeeping normalized, and closure evidence recorded.',
-            dates: 'May 18 – May 30, 2026'
+            dates: 'May 18 – May 27, 2026'
         },
         '16': {
             title: 'Sprint 16 — Retrospective',
             subtitle: 'Placeholder — retrospective is completed only after the sprint closes.',
-            dates: 'Jun 1 – Jun 13, 2026'
+            dates: 'May 28 – Jun 13, 2026'
         }
     };
     var selected = meta[key] || meta[String(getCurrentSprint())] || meta['12'];
@@ -4972,40 +5077,32 @@ function syncSprintViewStatuses() {
         }
     }
 
-    var s13DodBadge = document.querySelector('#dod-sprint-13 summary span');
-    if (s13DodBadge) {
-        if (s13Status === 'completed') {
-            s13DodBadge.textContent = 'Done';
-            s13DodBadge.style.background = 'rgba(16,185,129,0.2)';
-            s13DodBadge.style.color = '#86efac';
-            s13DodBadge.style.borderColor = 'rgba(16,185,129,0.4)';
+    function applyDodBadge(selector, sprintStatus) {
+        var badge = document.querySelector(selector);
+        if (!badge) return;
+
+        if (sprintStatus === 'active') {
+            badge.textContent = 'Active';
+            badge.style.background = 'rgba(213,10,10,0.25)';
+            badge.style.color = '#f87171';
+            badge.style.borderColor = 'rgba(213,10,10,0.4)';
+        } else if (sprintStatus === 'completed') {
+            badge.textContent = 'Done';
+            badge.style.background = 'rgba(16,185,129,0.2)';
+            badge.style.color = '#86efac';
+            badge.style.borderColor = 'rgba(16,185,129,0.4)';
         } else {
-            s13DodBadge.textContent = 'Active';
-            s13DodBadge.style.background = 'rgba(213,10,10,0.25)';
-            s13DodBadge.style.color = '#f87171';
-            s13DodBadge.style.borderColor = 'rgba(213,10,10,0.4)';
+            badge.textContent = 'Planned';
+            badge.style.background = 'rgba(148,163,184,0.2)';
+            badge.style.color = '#cbd5e1';
+            badge.style.borderColor = 'rgba(148,163,184,0.35)';
         }
     }
 
-    var s14DodBadge = document.querySelector('#dod-sprint-14 summary span');
-    if (s14DodBadge) {
-        if (s14Status === 'active') {
-            s14DodBadge.textContent = 'Active';
-            s14DodBadge.style.background = 'rgba(213,10,10,0.25)';
-            s14DodBadge.style.color = '#f87171';
-            s14DodBadge.style.borderColor = 'rgba(213,10,10,0.4)';
-        } else if (s14Status === 'completed') {
-            s14DodBadge.textContent = 'Done';
-            s14DodBadge.style.background = 'rgba(16,185,129,0.2)';
-            s14DodBadge.style.color = '#86efac';
-            s14DodBadge.style.borderColor = 'rgba(16,185,129,0.4)';
-        } else {
-            s14DodBadge.textContent = 'Planned';
-            s14DodBadge.style.background = 'rgba(148,163,184,0.2)';
-            s14DodBadge.style.color = '#cbd5e1';
-            s14DodBadge.style.borderColor = 'rgba(148,163,184,0.35)';
-        }
-    }
+    applyDodBadge('#dod-sprint-13 summary span', s13Status);
+    applyDodBadge('#dod-sprint-14 summary span', s14Status);
+    applyDodBadge('#dod-sprint-15 summary span', getSprintStatusByDate(15));
+    applyDodBadge('#dod-sprint-16 summary span', getSprintStatusByDate(16));
 }
 
 function initSprintScopedViews() {
@@ -5056,10 +5153,14 @@ document.addEventListener('click', function(e) {
 });
 
 /* ── SYNC DASHBOARD METRICS FROM CURRENT SPRINT TASKS ── */
-function getDashTaskUnitLabel(usePoints) {
-    return usePoints
-        ? 'Percent unit: effort points (XS=1, S=2, M=3, L=5, XL=8)'
-        : 'Percent unit: subtasks';
+function getDashTaskUnitLabel(usePoints, hasPointData) {
+    if (usePoints) {
+        return 'Percent unit: effort points (XS=1, S=2, M=3, L=5, XL=8)';
+    }
+    if (hasPointData) {
+        return 'Percent unit: subtasks (effort points tracked in count + charts)';
+    }
+    return 'Percent unit: subtasks';
 }
 
 function getDashChartUnitLabel(sprintNum, usePoints) {
@@ -5094,11 +5195,15 @@ function syncDashMetrics() {
     const countEl = document.getElementById('dash-task-count');
     const unitEl = document.getElementById('dash-task-unit');
     if (pctEl) pctEl.textContent = pctDisplay + '%';
-    if (unitEl) unitEl.textContent = getDashTaskUnitLabel(usePoints);
+    if (unitEl) unitEl.textContent = getDashTaskUnitLabel(usePoints, pointMetrics.totalPoints > 0);
     syncDashChartUnitNote(CURRENT_DASH_SPRINT);
     if (countEl) {
         if (totalSubtasks > 0) {
-            countEl.textContent = doneSubtasks + ' of ' + totalSubtasks + ' subtasks complete';
+            var subtaskText = doneSubtasks + ' of ' + totalSubtasks + ' subtasks complete';
+            if (pointMetrics.totalPoints > 0) {
+                subtaskText += ' · ' + pointMetrics.donePoints + ' of ' + pointMetrics.totalPoints + ' effort points complete';
+            }
+            countEl.textContent = subtaskText;
         } else if (boardMetrics.excluded > 0) {
             countEl.textContent = '0 actionable subtasks (all deferred to backlog)';
         } else if (usePoints && pointMetrics.totalPoints > 0) {
@@ -5129,8 +5234,9 @@ function syncDashMetrics() {
 (function() {
     var today = new Date(); today.setHours(0,0,0,0);
     var releaseDate = new Date('2026-06-13');
+    var activeSprintNum = getCurrentSprint();
     var activeSprint = (window.SPRINT_SCHEDULE || []).find(function(s) {
-        return today >= new Date(s.start) && today <= new Date(s.end);
+        return s && s.num === activeSprintNum;
     });
     var sprintCtx = activeSprint ? getSprintDayContext(activeSprint.num, today) : null;
     var sprintDiff = sprintCtx ? sprintCtx.remainingDays : 0;
@@ -6701,6 +6807,14 @@ function updateS14Progress(taskId) {
     });
 }
 
+function updateS16Progress(taskId) {
+    var changedTaskId = taskId || getTaskIdFromChangeEvent();
+    updateSprintBoardProgress(16, {
+        persistToApi: !!changedTaskId,
+        persistTaskIds: changedTaskId ? [changedTaskId] : []
+    });
+}
+
 function updateSprintBoardProgress(sprintNum, options) {
     options = options || {};
     var n = parseInt(sprintNum, 10);
@@ -6741,7 +6855,11 @@ function updateSprintBoardProgress(sprintNum, options) {
         }
 
         if (hasBoardSubtasks) {
-            countEl.textContent = subtaskSummary;
+            if (pointMetrics.totalPoints > 0) {
+                countEl.textContent = subtaskSummary + ' · ' + pointMetrics.donePoints + ' of ' + pointMetrics.totalPoints + ' effort points complete';
+            } else {
+                countEl.textContent = subtaskSummary;
+            }
         } else if (usePointProgress) {
             countEl.textContent = subtaskSummary + ' · ' + pointMetrics.donePoints + ' of ' + pointMetrics.totalPoints + ' effort points complete';
         } else {
@@ -8424,6 +8542,10 @@ function getSprintTaskBoardIds() {
 }
 
 function initTasks() {
+    if (typeof renderSprint16BoardFromBacklog === 'function') {
+        renderSprint16BoardFromBacklog({ skipProgress: true });
+    }
+
     getSprintTaskBoardIds().forEach(function(boardId) {
         var match = boardId.match(/^sprint(\d+)-board$/);
         var sprintLabel = match ? ('Sprint ' + match[1]) : boardId;
@@ -8555,23 +8677,62 @@ var SPRINT_SCHEDULE = [
     { num: 12, start: '2026-04-06', end: '2026-04-18', theme: 'Diagnose & Restore',   displayDates: 'Apr 6 – Apr 18'   },
     { num: 13, start: '2026-04-20', end: '2026-05-02', theme: 'Data & Clean',          displayDates: 'Apr 20 – May 2'   },
     { num: 14, start: '2026-05-04', end: '2026-05-16', theme: 'ML Retrain',            displayDates: 'May 4 – May 16'   },
-    { num: 15, start: '2026-05-18', end: '2026-05-30', theme: 'Prediction Reliability & Validation', displayDates: 'May 18 – May 30'  },
-    { num: 16, start: '2026-06-01', end: '2026-06-13', theme: 'Hardening & Release',   displayDates: 'Jun 1 – Jun 13'   }
+    { num: 15, start: '2026-05-18', end: '2026-05-27', theme: 'Prediction Reliability & Validation', displayDates: 'May 18 – May 27'  },
+    { num: 16, start: '2026-05-28', end: '2026-06-13', theme: 'Hardening & Release',   displayDates: 'May 28 – Jun 13'   }
 ];
+
+// Manual override requested by PM: Sprint 16 is active immediately.
+var MANUAL_CURRENT_SPRINT_OVERRIDE = 16;
+
+function parseIsoDateLocal(value, endOfDay) {
+    var raw = String(value || '').trim();
+    var m = raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (m) {
+        return new Date(
+            parseInt(m[1], 10),
+            parseInt(m[2], 10) - 1,
+            parseInt(m[3], 10),
+            endOfDay ? 23 : 0,
+            endOfDay ? 59 : 0,
+            endOfDay ? 59 : 0,
+            endOfDay ? 999 : 0
+        );
+    }
+    var d = new Date(raw);
+    if (isNaN(d.getTime())) return d;
+    if (endOfDay) d.setHours(23,59,59,999);
+    else d.setHours(0,0,0,0);
+    return d;
+}
+
+function getManualCurrentSprintOverride() {
+    var n = parseInt(MANUAL_CURRENT_SPRINT_OVERRIDE, 10);
+    if (isNaN(n)) return null;
+    if (!Array.isArray(SPRINT_SCHEDULE) || !SPRINT_SCHEDULE.length) return n;
+    var exists = (SPRINT_SCHEDULE || []).some(function(s) { return s && s.num === n; });
+    return exists ? n : null;
+}
 
 var DASH_SPRINT_STORAGE_KEY = 'pmforge_dashboard_selected_sprint_v1';
 var DASH_SPRINT_FOLLOW_CURRENT_KEY = 'pmforge_dashboard_follow_current_sprint_v1';
 
 function getCurrentSprint() {
+    if (!Array.isArray(SPRINT_SCHEDULE) || !SPRINT_SCHEDULE.length) {
+        var earlyManual = getManualCurrentSprintOverride();
+        return earlyManual !== null ? earlyManual : 12;
+    }
+
+    var manual = getManualCurrentSprintOverride();
+    if (manual !== null) return manual;
+
     var today = new Date();
     today.setHours(0,0,0,0);
     // Return the sprint whose date range contains today, or the most recent past sprint
     var current = SPRINT_SCHEDULE[0].num;
     for (var i = 0; i < SPRINT_SCHEDULE.length; i++) {
         var s = SPRINT_SCHEDULE[i];
-        var start = new Date(s.start);
-        var end = new Date(s.end);
-        end.setHours(23,59,59,999);
+        var start = parseIsoDateLocal(s.start, false);
+        var end = parseIsoDateLocal(s.end, true);
         if (today >= start && today <= end) return s.num;
         if (today > end) current = s.num;
         if (today < start) break;
@@ -8636,12 +8797,16 @@ function getSprintStatusByDate(sprintNum, referenceDate) {
     var sprint = (SPRINT_SCHEDULE || []).find(function(s) { return s.num === n; });
     if (!sprint) return 'upcoming';
 
+    var manual = getManualCurrentSprintOverride();
+    if (manual !== null) {
+        if (n === manual) return 'active';
+        return n < manual ? 'completed' : 'upcoming';
+    }
+
     var today = referenceDate ? new Date(referenceDate) : new Date();
     today.setHours(0,0,0,0);
-    var start = new Date(sprint.start);
-    start.setHours(0,0,0,0);
-    var end = new Date(sprint.end);
-    end.setHours(23,59,59,999);
+    var start = parseIsoDateLocal(sprint.start, false);
+    var end = parseIsoDateLocal(sprint.end, true);
 
     if (today < start) return 'upcoming';
     if (today > end) return 'completed';
@@ -8704,8 +8869,8 @@ var SPRINT_ARCHIVE = {
     15: {
         label: 'Sprint 15 — Prediction Reliability & Validation',
         status: 'active',
-        rag: { cls: 'green', label: 'ON TRACK — GREEN', msg: 'Sprint 15 execution is completion-ready: TA-055, TA-076, and TA-077 scopes are complete with verification evidence logged.', detail: 'Updated: May 27, 2026 · Sprint ends May 30, 2026' },
-        metrics: { sprintNum: '15', sprintSub: 'of 16 total · Prediction Reliability &amp; Validation', daysVal: '2', daysSub: 'Sprint ends May 30, 2026 · completion-ready checkpoint', taskPct: '100%', taskCount: '29 of 29 Sprint 15 subtasks complete' },
+        rag: { cls: 'green', label: 'ON TRACK — GREEN', msg: 'Sprint 15 execution is completion-ready: TA-055, TA-076, and TA-077 scopes are complete with verification evidence logged.', detail: 'Updated: May 27, 2026 · Sprint ends May 27, 2026' },
+        metrics: { sprintNum: '15', sprintSub: 'of 16 total · Prediction Reliability &amp; Validation', daysVal: '2', daysSub: 'Sprint ends May 27, 2026 · completion-ready checkpoint', taskPct: '100%', taskCount: '29 of 29 Sprint 15 subtasks complete' },
         burndownTitle: 'Burndown (Effort Points) — Sprint 15',
         burndownInsight: '<strong>S15 status:</strong> Completion-ready checkpoint reached. Sprint 15 board now tracks 29 of 29 completed subtasks, including TA-077 add-on hardening/verification/documentation closure items.',
         burndown: { ideal: [29,26,23,19,16,13,10,6,3,0], actual: [29,29,27,22,18,13,7,0,null,null], max: 32 },
@@ -8720,14 +8885,14 @@ var SPRINT_ARCHIVE = {
     16: {
         label: 'Sprint 16 — Hardening & Release',
         status: 'upcoming',
-        rag: { cls: 'green', label: 'ON TRACK — GREEN', msg: 'Sprint 16 starts Jun 1 · Final hardening and release', detail: 'Starts: Jun 1, 2026 · Ends: Jun 13, 2026' },
+        rag: { cls: 'green', label: 'ON TRACK — GREEN', msg: 'Sprint 16 starts May 28 · Final hardening and release', detail: 'Starts: May 28, 2026 · Ends: Jun 13, 2026' },
         metrics: { sprintNum: '16', sprintSub: 'of 16 total · Hardening &amp; Release', daysVal: '—', daysSub: 'Sprint ends Jun 13, 2026', taskPct: '0%', taskCount: 'Sprint Active' },
         burndownTitle: 'Burndown — Sprint 16',
-        burndownInsight: '<strong>S16 status:</strong> Sprint activates Jun 1.',
+        burndownInsight: '<strong>S16 status:</strong> Sprint activates May 28.',
         burndown: { ideal: null, actual: null, max: 10 },
         burnupInsight: '<strong>S16 scope:</strong> Final release sprint.',
         burnup: { labels: ['S1','S2','S3','S4','S5','S6','S7','S8','S9','S10','S11','S12','S13','S14','S15','S16*'], scope: [8,14,20,26,32,40,50,58,65,72,78,83,91,99,107,115], completed: [8,13,19,25,30,37,46,54,61,68,75,83,83,83,83,83] },
-        velocityInsight: '<strong>S16 velocity:</strong> Sprint activates Jun 1.',
+        velocityInsight: '<strong>S16 velocity:</strong> Sprint activates May 28.',
         velocity: { labels: ['S1','S2','S3','S4','S5','S6','S7','S8','S9','S10','S11','S12','S13','S14','S15','S16*'], data: [8,5,6,6,5,7,9,8,7,7,7,8,0,0,0,0], activeIndex: 15 },
         severityInsight: '<strong>S16 focus:</strong> Hardening and release.',
         severity: [11,13,7,2],
@@ -8747,19 +8912,36 @@ function computeLiveTaskCounts(sprintNum) {
     });
     var blockedCount = blocked.length;
     var blockedSub = blocked.map(function(i) { return i.id; }).join(' · ') || ('None in ' + sprintTag);
-    var open = items.filter(function(i) {
-        return !isDoneBacklogStatus(i.status);
-    }).length;
-    var inSprint = items.filter(function(i) {
-        return String(i.sprint || '').trim().toUpperCase() === sprintTag
-            && !isDoneBacklogStatus(i.status);
-    }).length;
-    var inBacklog = Math.max(0, open - inSprint);
+    var open = 0;
+    var inSprint = 0;
+    var inBacklog = 0;
+    var openPoints = 0;
+    var inSprintPoints = 0;
+    var inBacklogPoints = 0;
+
+    items.forEach(function(i) {
+        if (isDoneBacklogStatus(i.status)) return;
+        var points = getEffortPoints(i.effort);
+        var ticketSprint = String(i.sprint || '').trim().toUpperCase();
+
+        open += 1;
+        openPoints += points;
+
+        if (ticketSprint === sprintTag) {
+            inSprint += 1;
+            inSprintPoints += points;
+        } else {
+            inBacklog += 1;
+            inBacklogPoints += points;
+        }
+    });
+
     return {
         p1Count: String(blockedCount),
         p1Sub: blockedSub,
         openCount: String(open),
-        openSub: inSprint + ' in S' + selectedSprint + ' · ' + inBacklog + ' in backlog'
+        openSub: inSprint + ' in S' + selectedSprint + ' · ' + inBacklog + ' in backlog · '
+            + openPoints + ' open effort points (' + inSprintPoints + ' sprint, ' + inBacklogPoints + ' backlog)'
     };
 }
 
@@ -9129,10 +9311,8 @@ function buildIdealBurndownSeries(totalTasks, pointCount) {
 function getSprintDayContext(sprintNum, referenceDate) {
     var sprint = SPRINT_SCHEDULE.find(function(sp) { return sp.num === sprintNum; });
     if (!sprint) return null;
-    var start = new Date(sprint.start);
-    start.setHours(0,0,0,0);
-    var end = new Date(sprint.end);
-    end.setHours(0,0,0,0);
+    var start = parseIsoDateLocal(sprint.start, false);
+    var end = parseIsoDateLocal(sprint.end, false);
     var today = referenceDate ? new Date(referenceDate) : new Date();
     today.setHours(0,0,0,0);
 
@@ -9451,15 +9631,13 @@ function initSprintBoardTab() {
     var grid = document.getElementById('sprint-cards-grid');
     if (grid) {
         grid.innerHTML = SPRINT_SCHEDULE.map(function(s) {
-            var start = new Date(s.start);
-            var end = new Date(s.end);
-            end.setHours(23,59,59,999);
+            var status = getSprintStatusByDate(s.num, today);
             var cardClass, statusClass, statusLabel;
-            if (today > end) {
+            if (status === 'completed') {
                 cardClass = 'sprint-card completed';
                 statusClass = 'sprint-status status-completed';
                 statusLabel = 'Completed';
-            } else if (today >= start && today <= end) {
+            } else if (status === 'active') {
                 cardClass = 'sprint-card active';
                 statusClass = 'sprint-status status-active';
                 statusLabel = 'Active Now';
@@ -9500,13 +9678,11 @@ var recentUpdatesPaused = false;
 var recentUpdateSwapTimeout = null;
 
 function getNextSprintMeta() {
-    var today = new Date();
-    today.setHours(0,0,0,0);
-    return (SPRINT_SCHEDULE || []).find(function(sp) {
-        var start = new Date(sp.start);
-        start.setHours(0,0,0,0);
-        return start > today;
-    }) || null;
+    var cur = getCurrentSprint();
+    var next = (SPRINT_SCHEDULE || []).find(function(sp) {
+        return sp && sp.num > cur;
+    });
+    return next || null;
 }
 
 function buildRecentUpdatesForSprint(sprintNum, snapshot) {
@@ -9683,9 +9859,9 @@ function loadSprintDashboard(num, options) {
     if (ragDetail) {
         var lastMod = new Date(document.lastModified);
         var updatedStr = lastMod.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
-        var today = new Date(); today.setHours(0,0,0,0);
+        var currentNum = getCurrentSprint();
         var nextSprint = (window.SPRINT_SCHEDULE || []).find(function(sp) {
-            return new Date(sp.start) > today;
+            return sp && sp.num > currentNum;
         });
         var nextReviewStr = nextSprint
             ? 'Next sprint: S' + nextSprint.num + ' — ' + nextSprint.theme + ' (' + nextSprint.displayDates + ')'
@@ -9709,9 +9885,9 @@ function loadSprintDashboard(num, options) {
     // days-remaining — computed from SPRINT_SCHEDULE workdays (Mon–Fri)
     (function() {
         var today2 = new Date(); today2.setHours(0,0,0,0);
+        var activeSpNum = getCurrentSprint();
         var activeSp = SPRINT_SCHEDULE.find(function(sp) {
-            var st = new Date(sp.start), en = new Date(sp.end); en.setHours(23,59,59,999);
-            return today2 >= st && today2 <= en;
+            return sp && sp.num === activeSpNum;
         });
         var daysEl = document.getElementById('days-remaining');
         var subEl  = document.getElementById('dash-days-remaining-sub');
@@ -9751,10 +9927,9 @@ function loadSprintDashboard(num, options) {
     if (lu) {
         var lastMod = new Date(document.lastModified);
         var updDate = lastMod.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+        var activeSprintNum = getCurrentSprint();
         var activeSprint = (window.SPRINT_SCHEDULE || []).find(function(sp) {
-            var s = new Date(sp.start), e = new Date(sp.end);
-            var now = new Date(); now.setHours(0,0,0,0);
-            return now >= s && now <= e;
+            return sp && sp.num === activeSprintNum;
         });
         lu.textContent = updDate + (activeSprint ? ' — S' + activeSprint.num + ': ' + activeSprint.theme : '');
     }
@@ -10006,9 +10181,9 @@ initTasks();
         { num:5,  dates:'May 4 – May 10',  sprint:'S14', hours:24,  notes:'Sprint 14 kickoff execution. TA-075 completed with verifiable Option A/B/C effort-point model research and Option A selected as canonical stakeholder metric. Burndown, burnup, and velocity were aligned to effort points (not raw subtask counts), sprint workday math was capacity-adjusted for weekends and planned no-work days, and Decision Log + Sprint 14 DoD acceptance criteria were synchronized.' },
         { num:6,  dates:'May 11 – May 16', sprint:'S14', hours:23,  notes:'Sprint 14 closeout stabilization and governance pass. Applied P1 tracker fixes, reduced architecture motion blur, and fixed non-cycling live updates. Implemented and polished live architecture health monitoring with status-reactive connection visuals, repaired local dashboard/API CORS + probe behavior for reliable localhost operation, and finalized Sprint 14 retrospective plus DoD evidence alignment.' },
         { num:7,  dates:'May 18 – May 24', sprint:'S15', hours:27,  notes:'Sprint 15 execution week focused on multi-season reliability validation and evidence production. Completed TA-076/TA-077 sequence work including extraction reruns, guardrail analysis, and competitiveness diagnostics; captured artifacts for 2021-2025 evaluation and moved closure bookkeeping to fail-closed receipt workflow.' },
-        { num:8,  dates:'May 25 – May 30', sprint:'S15', hours:30,  notes:'Sprint 15 closeout and governance normalization week. Finalized reconciliation hardening and backend verification chain checks, corrected dashboard metric source-of-truth drift, normalized S15 backlog split (0 in sprint, remaining in backlog), and completed Sprint 15 retrospective + DoD entries with closure-gate receipts and backup/hash evidence.' },
-        { num:9,  dates:'Jun 1 – Jun 7',   sprint:'S16', hours:0,   notes:'' },
-        { num:10, dates:'Jun 8 – Jun 13',  sprint:'S16', hours:0,   notes:'' },
+        { num:8,  dates:'May 25 – May 27', sprint:'S15', hours:30,  notes:'Sprint 15 closeout and governance normalization week. Finalized reconciliation hardening and backend verification chain checks, corrected dashboard metric source-of-truth drift, normalized S15 backlog split (0 in sprint, remaining in backlog), and completed Sprint 15 retrospective + DoD entries with closure-gate receipts and backup/hash evidence.' },
+        { num:9,  dates:'May 28 – Jun 3',  sprint:'S16', hours:0,   notes:'' },
+        { num:10, dates:'Jun 4 – Jun 13',  sprint:'S16', hours:0,   notes:'' },
     ];
 
     var hoursSaveTimers = {};
@@ -10191,8 +10366,8 @@ initTasks();
         { num: 12, label: 'Sprint 12', sub: 'Diagnose & Restore', start: '2026-04-06', end: '2026-04-18' },
         { num: 13, label: 'Sprint 13', sub: 'Data & Clean',        start: '2026-04-20', end: '2026-05-02' },
         { num: 14, label: 'Sprint 14', sub: 'ML Retrain',          start: '2026-05-04', end: '2026-05-16' },
-        { num: 15, label: 'Sprint 15', sub: 'Prediction Reliability & Validation', start: '2026-05-18', end: '2026-05-30' },
-        { num: 16, label: 'Sprint 16', sub: 'Hardening & Release', start: '2026-06-01', end: '2026-06-13' },
+        { num: 15, label: 'Sprint 15', sub: 'Prediction Reliability & Validation', start: '2026-05-18', end: '2026-05-27' },
+        { num: 16, label: 'Sprint 16', sub: 'Hardening & Release', start: '2026-05-28', end: '2026-06-13' },
     ];
 
     // Today position
@@ -10298,7 +10473,21 @@ initTasks();
         { id:'TA-011', feature:'Move all passwords to .env files',               cat:'Security',       pri:'Critical', effort:'S', sprint:'S13', status:'Done' },
         { id:'TA-012', feature:'Load 2025 NFL season data into PostgreSQL',      cat:'Data',           pri:'Critical', effort:'L', sprint:'S13', status:'Done'      },
         { id:'TA-013', feature:'Validate data integrity — row counts & spot checks', cat:'Data',       pri:'High',     effort:'M', sprint:'S13', status:'Done'      },
-        { id:'TA-014', feature:'Fix broken frontend routes — /game-statistics and /matchup-analyzer wrong components', cat:'Frontend', pri:'High', effort:'S', sprint:'TBD', status:'Backlog' },
+        {
+            id:'TA-014',
+            feature:'Fix broken frontend routes — /game-statistics and /matchup-analyzer wrong components',
+            cat:'Frontend',
+            pri:'High',
+            effort:'S',
+            sprint:'S16',
+            status:'Backlog',
+            manualSubtasks:[
+                { id:'m_ta_014_1', title:'Step 01 - Reproduce route failures and map expected component bindings for /game-statistics and /matchup-analyzer' },
+                { id:'m_ta_014_2', title:'Step 02 - Apply route mapping fixes and ensure both direct navigation and deep-link loads resolve correctly' },
+                { id:'m_ta_014_3', title:'Step 03 - Validate route transitions from navbar and in-app links with no blank screens or incorrect component renders' },
+                { id:'m_ta_014_4', title:'Step 04 - Capture before-after evidence and record closure notes for advisor review traceability' }
+            ]
+        },
         { id:'TA-015', feature:'Fix background_updater.py missing import',        cat:'Backend',        pri:'High',     effort:'S', sprint:'TBD', status:'Backlog'   },
         { id:'TA-016', feature:'Confirm background updater running in production', cat:'Infrastructure', pri:'High',     effort:'S', sprint:'TBD', status:'Backlog'   },
         { id:'TA-017', feature:'Audit git history for exposed secrets',           cat:'Security',       pri:'High',     effort:'M', sprint:'TBD', status:'Backlog'   },
@@ -10411,7 +10600,21 @@ initTasks();
                 { at:'2026-05-27T21:20:00', by:'GitHub Copilot (Developer)', note:'Sprint 15 close normalization: moved from S15/In Sprint to TBD/Backlog because this frontend stream was not represented in the Sprint 15 board completion set; retained for future planning scope selection.' }
             ]
         },
-        { id:'TA-029', feature:'Zero console errors in production',                cat:'Frontend',       pri:'High',     effort:'M', sprint:'TBD', status:'Backlog'   },
+        {
+            id:'TA-029',
+            feature:'Zero console errors in production',
+            cat:'Frontend',
+            pri:'High',
+            effort:'M',
+            sprint:'S16',
+            status:'Backlog',
+            manualSubtasks:[
+                { id:'m_ta_029_1', title:'Step 01 - Run console audit across all primary production routes and log every warning/error with reproducible steps' },
+                { id:'m_ta_029_2', title:'Step 02 - Fix JavaScript runtime errors and noisy warnings that indicate broken app behavior or unstable rendering paths' },
+                { id:'m_ta_029_3', title:'Step 03 - Re-run route sweep in a clean session and confirm zero console errors on advisor-critical flows' },
+                { id:'m_ta_029_4', title:'Step 04 - Publish final console-audit evidence summary with timestamped validation notes' }
+            ]
+        },
         {
             id:'TA-030',
             feature:'Full production walkthrough — advisor demo-ready',
@@ -10445,15 +10648,141 @@ initTasks();
                 { at:'2026-05-18T18:12:00', by:'GitHub Copilot (Developer)', note:'Expanded into a 10-step demo-readiness walkthrough sequence for explicit ordered completion.' }
             ]
         },
-        { id:'TA-031', feature:'Fix /game-statistics and /matchup-analyzer routes', cat:'Frontend',      pri:'High',     effort:'S', sprint:'TBD', status:'Backlog'   },
-        { id:'TA-032', feature:'Rate limiting on Flask API',                       cat:'Security',       pri:'High',     effort:'S', sprint:'TBD', status:'Backlog'   },
-        { id:'TA-033', feature:'HTTPS confirmed — all traffic encrypted',          cat:'Security',       pri:'Critical', effort:'S', sprint:'TBD', status:'Backlog'   },
-        { id:'TA-034', feature:'Final security audit — no exposed credentials',    cat:'Security',       pri:'Critical', effort:'M', sprint:'TBD', status:'Backlog'   },
-        { id:'TA-035', feature:'README updated for public audience',               cat:'Documentation',  pri:'Medium',   effort:'S', sprint:'TBD', status:'Backlog'   },
-        { id:'TA-036', feature:'Final performance report written & submitted',     cat:'Documentation',  pri:'Critical', effort:'M', sprint:'TBD', status:'Backlog'   },
-        { id:'TA-037', feature:'App stable for 48+ hours before submission',       cat:'QA',             pri:'Critical', effort:'M', sprint:'TBD', status:'Backlog'   },
-        { id:'TA-038', feature:'Capstone advisor sign-off received',               cat:'Milestone',      pri:'Critical', effort:'S', sprint:'TBD', status:'Backlog'   },
-        { id:'TA-039', feature:'Tag v1.0 release on GitHub',                       cat:'Infrastructure', pri:'High',     effort:'S', sprint:'TBD', status:'Backlog'   },
+        {
+            id:'TA-031',
+            feature:'Fix /game-statistics and /matchup-analyzer routes',
+            cat:'Frontend',
+            pri:'High',
+            effort:'S',
+            sprint:'S16',
+            status:'Backlog',
+            manualSubtasks:[
+                { id:'m_ta_031_1', title:'Step 01 - Confirm exact route contracts and expected page behavior for /game-statistics and /matchup-analyzer' },
+                { id:'m_ta_031_2', title:'Step 02 - Resolve remaining route-level regressions for refresh, direct URL access, and component mount lifecycle' },
+                { id:'m_ta_031_3', title:'Step 03 - Validate 200-load behavior and user navigation parity between both routes after patch' },
+                { id:'m_ta_031_4', title:'Step 04 - Record fix proof and residual risk notes in ticket evidence fields' }
+            ]
+        },
+        {
+            id:'TA-032',
+            feature:'Rate limiting on Flask API',
+            cat:'Security',
+            pri:'High',
+            effort:'S',
+            sprint:'S16',
+            status:'Backlog',
+            manualSubtasks:[
+                { id:'m_ta_032_1', title:'Step 01 - Define route-level rate-limit policy and exempt internal health-check paths where appropriate' },
+                { id:'m_ta_032_2', title:'Step 02 - Implement limiter configuration in Flask with safe defaults for burst and sustained traffic' },
+                { id:'m_ta_032_3', title:'Step 03 - Validate 429 responses and retry headers using repeatable local request tests' },
+                { id:'m_ta_032_4', title:'Step 04 - Document policy and deployment rollback notes in operations runbook context' }
+            ]
+        },
+        {
+            id:'TA-033',
+            feature:'HTTPS confirmed — all traffic encrypted',
+            cat:'Security',
+            pri:'Critical',
+            effort:'S',
+            sprint:'S16',
+            status:'Backlog',
+            manualSubtasks:[
+                { id:'m_ta_033_1', title:'Step 01 - Verify TLS certificate chain validity and forced HTTP to HTTPS redirect behavior on app endpoints' },
+                { id:'m_ta_033_2', title:'Step 02 - Audit frontend assets and API calls for mixed-content or hardcoded http:// references' },
+                { id:'m_ta_033_3', title:'Step 03 - Re-test key user flows and API requests to confirm end-to-end HTTPS-only transport' },
+                { id:'m_ta_033_4', title:'Step 04 - Publish HTTPS verification evidence bundle with timestamps and test commands' }
+            ]
+        },
+        {
+            id:'TA-034',
+            feature:'Final security audit — no exposed credentials',
+            cat:'Security',
+            pri:'Critical',
+            effort:'M',
+            sprint:'S16',
+            status:'Backlog',
+            manualSubtasks:[
+                { id:'m_ta_034_1', title:'Step 01 - Execute final security checklist covering secrets exposure, dependency risk, and config hardening gaps' },
+                { id:'m_ta_034_2', title:'Step 02 - Remediate audit findings and retest impacted routes, scripts, and environment configs' },
+                { id:'m_ta_034_3', title:'Step 03 - Verify repository and runtime contain no exposed credentials or insecure fallback values' },
+                { id:'m_ta_034_4', title:'Step 04 - Publish signed-off security audit summary with evidence links and residual risk statement' }
+            ]
+        },
+        {
+            id:'TA-035',
+            feature:'README updated for public audience',
+            cat:'Documentation',
+            pri:'Medium',
+            effort:'S',
+            sprint:'S16',
+            status:'Backlog',
+            manualSubtasks:[
+                { id:'m_ta_035_1', title:'Step 01 - Rewrite README overview and setup flow for external/public readers with clear project purpose' },
+                { id:'m_ta_035_2', title:'Step 02 - Add validated run instructions, environment expectations, and known boundary notes' },
+                { id:'m_ta_035_3', title:'Step 03 - Verify all README links commands and file references resolve correctly from a clean clone' },
+                { id:'m_ta_035_4', title:'Step 04 - Capture documentation update evidence and finalize handoff-ready README summary' }
+            ]
+        },
+        {
+            id:'TA-036',
+            feature:'Final performance report written & submitted',
+            cat:'Documentation',
+            pri:'Critical',
+            effort:'M',
+            sprint:'S16',
+            status:'Backlog',
+            manualSubtasks:[
+                { id:'m_ta_036_1', title:'Step 01 - Compile sprint outcomes, model-performance metrics, and governance evidence into report source set' },
+                { id:'m_ta_036_2', title:'Step 02 - Draft final performance narrative with accomplishments, risks, and mitigation actions' },
+                { id:'m_ta_036_3', title:'Step 03 - Review report against advisor rubric and capstone submission requirements checklist' },
+                { id:'m_ta_036_4', title:'Step 04 - Submit final report package and log timestamped submission confirmation evidence' }
+            ]
+        },
+        {
+            id:'TA-037',
+            feature:'App stable for 48+ hours before submission',
+            cat:'QA',
+            pri:'Critical',
+            effort:'M',
+            sprint:'S16',
+            status:'Backlog',
+            manualSubtasks:[
+                { id:'m_ta_037_1', title:'Step 01 - Define 48-hour stability watch criteria and required uptime/error-rate thresholds' },
+                { id:'m_ta_037_2', title:'Step 02 - Run continuous stability monitoring window and capture service-health checkpoints' },
+                { id:'m_ta_037_3', title:'Step 03 - Resolve any runtime incidents and restart watch if thresholds are not met' },
+                { id:'m_ta_037_4', title:'Step 04 - Publish final stability evidence pack proving 48+ hour readiness gate completion' }
+            ]
+        },
+        {
+            id:'TA-038',
+            feature:'Capstone advisor sign-off received',
+            cat:'Milestone',
+            pri:'Critical',
+            effort:'S',
+            sprint:'S16',
+            status:'Backlog',
+            manualSubtasks:[
+                { id:'m_ta_038_1', title:'Step 01 - Prepare advisor sign-off packet including demo checklist, risks, and final evidence references' },
+                { id:'m_ta_038_2', title:'Step 02 - Execute advisor walkthrough and collect approval feedback plus required follow-up actions' },
+                { id:'m_ta_038_3', title:'Step 03 - Complete follow-up items requested during sign-off review and confirm closure' },
+                { id:'m_ta_038_4', title:'Step 04 - Record sign-off outcome date and acceptance evidence in sprint governance artifacts' }
+            ]
+        },
+        {
+            id:'TA-039',
+            feature:'Tag v1.0 release on GitHub',
+            cat:'Infrastructure',
+            pri:'High',
+            effort:'S',
+            sprint:'S16',
+            status:'Backlog',
+            manualSubtasks:[
+                { id:'m_ta_039_1', title:'Step 01 - Validate release readiness checklist and ensure all Sprint 16 critical blockers are resolved' },
+                { id:'m_ta_039_2', title:'Step 02 - Create annotated v1.0 Git tag with release notes summarizing final deliverable scope' },
+                { id:'m_ta_039_3', title:'Step 03 - Verify tag points to approved commit and release artifact references are reproducible' },
+                { id:'m_ta_039_4', title:'Step 04 - Publish release evidence log including tag hash, notes URL, and rollback reference' }
+            ]
+        },
         { id:'TA-040', feature:'Move PM Dashboard to Amplify with admin panel',    cat:'Dashboard',      pri:'High',     effort:'L', sprint:'TBD', status:'Backlog'   },
         { id:'TA-041', feature:'User authentication (public vs admin view)',        cat:'Security',       pri:'High',     effort:'L', sprint:'TBD', status:'Backlog'   },
         { id:'TA-042', feature:'2026 NFL season live data integration',            cat:'Data',           pri:'Medium',   effort:'L', sprint:'TBD', status:'Backlog'   },
@@ -11092,10 +11421,10 @@ function showSprintView(view, btn) {
         { num:4,  dates:'Apr 27–May 2, 2026',start:'2026-04-27', end:'2026-05-02', sprint:'Sprint 13 — Data & Clean',        sprintKey:'S13', sprintDates:'Apr 20–May 2' },
         { num:5,  dates:'May 4–10, 2026',    start:'2026-05-04', end:'2026-05-10', sprint:'Sprint 14 — ML Retrain',          sprintKey:'S14', sprintDates:'May 4–16' },
         { num:6,  dates:'May 11–16, 2026',   start:'2026-05-11', end:'2026-05-16', sprint:'Sprint 14 — ML Retrain',          sprintKey:'S14', sprintDates:'May 4–16' },
-        { num:7,  dates:'May 18–24, 2026',   start:'2026-05-18', end:'2026-05-24', sprint:'Sprint 15 — Prediction Reliability & Validation', sprintKey:'S15', sprintDates:'May 18–30' },
-        { num:8,  dates:'May 25–30, 2026',   start:'2026-05-25', end:'2026-05-30', sprint:'Sprint 15 — Prediction Reliability & Validation', sprintKey:'S15', sprintDates:'May 18–30' },
-        { num:9,  dates:'Jun 1–7, 2026',     start:'2026-06-01', end:'2026-06-07', sprint:'Sprint 16 — Hardening & Release', sprintKey:'S16', sprintDates:'Jun 1–13' },
-        { num:10, dates:'Jun 8–13, 2026',    start:'2026-06-08', end:'2026-06-13', sprint:'Sprint 16 — Hardening & Release', sprintKey:'S16', sprintDates:'Jun 1–13' },
+        { num:7,  dates:'May 18–24, 2026',   start:'2026-05-18', end:'2026-05-24', sprint:'Sprint 15 — Prediction Reliability & Validation', sprintKey:'S15', sprintDates:'May 18–27' },
+        { num:8,  dates:'May 25–27, 2026',   start:'2026-05-25', end:'2026-05-27', sprint:'Sprint 15 — Prediction Reliability & Validation', sprintKey:'S15', sprintDates:'May 18–27' },
+        { num:9,  dates:'May 28–Jun 3, 2026',start:'2026-05-28', end:'2026-06-03', sprint:'Sprint 16 — Hardening & Release', sprintKey:'S16', sprintDates:'May 28–Jun 13' },
+        { num:10, dates:'Jun 4–13, 2026',    start:'2026-06-04', end:'2026-06-13', sprint:'Sprint 16 — Hardening & Release', sprintKey:'S16', sprintDates:'May 28–Jun 13' },
     ];
 
     const NEXT_SPRINT_GOALS = {
@@ -11126,7 +11455,9 @@ function showSprintView(view, btn) {
             'Sprint acceptance: publish TA-077 results package plus TA-030 production walkthrough for advisor demo readiness after ML and UI checks pass',
         ],
         'Sprint 16 — Hardening & Release': [
-            'Goals TBD — assigned at sprint planning after Sprint 15 closes',
+            'Submission hardening baseline: TA-033 TA-034 TA-036 TA-037 TA-038 and TA-039 closed with verifiable evidence',
+            'Security + readiness closure: TA-032 rate limiting and TA-035 public README updates completed for final handoff',
+            'Route and runtime stability closure: TA-014 TA-031 and TA-029 complete with no blocking regressions before advisor sign-off',
         ],
     };
 
@@ -12203,9 +12534,17 @@ function showSprintView(view, btn) {
     }
 
     function normalizeItems() {
+        var finalSprintTag = getFinalSprintTag();
+
         (window.PB_ITEMS || []).forEach(function(item) {
             item.status = normalizeStatus(item.status);
             item.assignee = normalizeAssignee(item.assignee || 'Unassigned');
+
+            // Final sprint policy: any remaining non-done ticket must be scheduled in the final sprint.
+            if (finalSprintTag && item.status !== 'Done') {
+                item.sprint = finalSprintTag;
+            }
+
             if (item.assignee === 'Unassigned' && shouldBackfillAssignee(item)) {
                 item.assignee = defaultAssigneeForHistoricalItem(item);
             }
@@ -12221,6 +12560,19 @@ function showSprintView(view, btn) {
             item.manualSubtasks = Array.isArray(item.manualSubtasks) ? item.manualSubtasks : [];
             ensureTicketDataCompleteness(item);
         });
+    }
+
+    function getFinalSprintTag() {
+        var schedule = Array.isArray(window.SPRINT_SCHEDULE) ? window.SPRINT_SCHEDULE : [];
+        if (!schedule.length) return '';
+
+        var maxNum = 0;
+        schedule.forEach(function(s) {
+            var n = parseInt(s && s.num, 10);
+            if (!isNaN(n) && n > maxNum) maxNum = n;
+        });
+
+        return maxNum > 0 ? ('S' + maxNum) : '';
     }
 
     function nextTicketId() {
@@ -12266,7 +12618,7 @@ function showSprintView(view, btn) {
         return items.filter(function(item) {
             if (item.sprint !== 'TBD' && item.sprint !== 'all') {
                 var sp = (window.SPRINT_SCHEDULE || []).find(function(s) { return 'S' + s.num === item.sprint; });
-                if (sp && new Date(sp.start) > today) return false;
+                if (sp && getSprintStatusByDate(sp.num, today) === 'upcoming') return false;
             }
             if (ttFilters.sprint !== 'all' && item.sprint !== ttFilters.sprint) return false;
             if (ttFilters.pri !== 'all' && item.pri !== ttFilters.pri) return false;
@@ -12320,8 +12672,7 @@ function showSprintView(view, btn) {
         var html = '<button class="filter-btn active" onclick="setTTFilter(\'sprint\',\'all\',this)">All</button>';
         (window.SPRINT_SCHEDULE || []).forEach(function(s) {
             var key = 'S' + s.num;
-            var sprintStart = new Date(s.start);
-            if (sprintStart > today) {
+            if (getSprintStatusByDate(s.num, today) === 'upcoming') {
                 html += '<button class="filter-btn" disabled title="Sprint starts ' + s.displayDates.split('–')[0].trim() + '" style="opacity:0.35;cursor:not-allowed;">' + key + '</button>';
             } else {
                 html += '<button class="filter-btn" onclick="setTTFilter(\'sprint\',\'' + key + '\',this)">' + key + '</button>';
@@ -12894,6 +13245,10 @@ function showSprintView(view, btn) {
     window.renderTaskTracker = function() {
         var items = window.PB_ITEMS || [];
         var mappingChanged = syncMappedTicketStates();
+        if (typeof renderSprint16BoardFromBacklog === 'function') {
+            renderSprint16BoardFromBacklog();
+        }
+        if (typeof syncDashMetrics === 'function') syncDashMetrics();
         if (mappingChanged) {
             if (typeof refreshBlockerCounts === 'function') refreshBlockerCounts(true);
             if (typeof loadSprintDashboard === 'function') loadSprintDashboard(CURRENT_DASH_SPRINT);
@@ -13075,6 +13430,8 @@ function showSprintView(view, btn) {
 
     buildSprintButtons();
     normalizeItems();
+    if (typeof loadSprintDashboard === 'function') loadSprintDashboard(CURRENT_DASH_SPRINT);
+    if (typeof syncDashMetrics === 'function') syncDashMetrics();
     initTicketWorkspaceTab();
     window.renderTaskTracker();
 
@@ -13082,6 +13439,8 @@ function showSprintView(view, btn) {
         var maxAttempts = 3;
         return window.dashboardApiBootstrapWorkspace().then(function() {
             normalizeItems();
+            if (typeof loadSprintDashboard === 'function') loadSprintDashboard(CURRENT_DASH_SPRINT);
+            if (typeof syncDashMetrics === 'function') syncDashMetrics();
             if (typeof syncTaskStatesFromData === 'function') syncTaskStatesFromData({ skipTracker: true });
             if (typeof refreshBlockerCounts === 'function') refreshBlockerCounts(true);
             window.renderTaskTracker();
