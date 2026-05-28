@@ -27,5 +27,17 @@ Status: Blocked (window in progress)
   - `5000/api/teams=200`
   - `3000=200`
 
+## Interim Window Metrics (2026-05-28)
+- Total checkpoint rows in file: 10
+- Live-window checkpoint rows: 9
+- Live-window all_ok true: 9/9
+- Live window span (UTC):
+  - First: `2026-05-28T19:17:02.243395+00:00`
+  - Latest: `2026-05-28T19:57:03.290541+00:00`
+- Latency snapshot (ms):
+  - `/health`: min 57, max 80, avg 64.6
+  - `/api/teams`: min 59, max 78, avg 62.8
+  - `frontend /`: min 2, max 2, avg 2.0
+
 ## Current Gate Truth
 - TA-037 remains blocked until the full 48+ hour window completes and evidence review is finalized.

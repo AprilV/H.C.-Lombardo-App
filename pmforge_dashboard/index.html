@@ -10903,7 +10903,7 @@ initTasks();
             status:'Blocked',
             assignee:'GitHub Copilot (Developer)',
             description:'Blocked while active 48+ hour stability monitoring window is in progress; closure pending full-duration completion and evidence review. Current run evidence: docs/sprints/ta037_stability_gate/TA037_LIVE_WINDOW_START_2026-05-28.md',
-            updatedAt:'2026-05-28T19:17:02',
+            updatedAt:'2026-05-28T20:00:00',
             updatedBy:'GitHub Copilot (Developer)',
             manualSubtasks:[
                 { id:'m_ta_037_1', title:'Step 01 - Define 48-hour stability watch criteria and required uptime/error-rate thresholds' },
@@ -10913,6 +10913,7 @@ initTasks();
             ],
             comments:[],
             history:[
+                { at:'2026-05-28T20:00:00Z', by:'GitHub Copilot (Developer)', note:'Interim live-window check: 9 consecutive all_ok checkpoints since run start, with stable 200 responses on /health, /api/teams, and frontend target.' },
                 { at:'2026-05-28T19:17:02Z', by:'GitHub Copilot (Developer)', note:'Started active 48-hour TA-037 monitoring run after services were brought online; initial live checkpoint recorded all_ok=true and evidence linked.' },
                 { at:'2026-05-28T18:38:36Z', by:'GitHub Copilot (Developer)', note:'Executed one-snapshot stability harness smoke run and captured checkpoint JSONL output; result correctly reported service-down connection refusals while local services were not running.' },
                 { at:'2026-05-28T10:20:00', by:'GitHub Copilot (Developer)', note:'Added TA-037 monitoring harness script and run instructions; gate remains Blocked until a full 48+ hour checkpoint window is executed and reviewed.' },
