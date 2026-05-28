@@ -8912,19 +8912,36 @@ function computeLiveTaskCounts(sprintNum) {
     });
     var blockedCount = blocked.length;
     var blockedSub = blocked.map(function(i) { return i.id; }).join(' · ') || ('None in ' + sprintTag);
-    var open = items.filter(function(i) {
-        return !isDoneBacklogStatus(i.status);
-    }).length;
-    var inSprint = items.filter(function(i) {
-        return String(i.sprint || '').trim().toUpperCase() === sprintTag
-            && !isDoneBacklogStatus(i.status);
-    }).length;
-    var inBacklog = Math.max(0, open - inSprint);
+    var open = 0;
+    var inSprint = 0;
+    var inBacklog = 0;
+    var openPoints = 0;
+    var inSprintPoints = 0;
+    var inBacklogPoints = 0;
+
+    items.forEach(function(i) {
+        if (isDoneBacklogStatus(i.status)) return;
+        var points = getEffortPoints(i.effort);
+        var ticketSprint = String(i.sprint || '').trim().toUpperCase();
+
+        open += 1;
+        openPoints += points;
+
+        if (ticketSprint === sprintTag) {
+            inSprint += 1;
+            inSprintPoints += points;
+        } else {
+            inBacklog += 1;
+            inBacklogPoints += points;
+        }
+    });
+
     return {
         p1Count: String(blockedCount),
         p1Sub: blockedSub,
         openCount: String(open),
-        openSub: inSprint + ' in S' + selectedSprint + ' · ' + inBacklog + ' in backlog'
+        openSub: inSprint + ' in S' + selectedSprint + ' · ' + inBacklog + ' in backlog · '
+            + openPoints + ' open effort points (' + inSprintPoints + ' sprint, ' + inBacklogPoints + ' backlog)'
     };
 }
 
@@ -12517,9 +12534,17 @@ function showSprintView(view, btn) {
     }
 
     function normalizeItems() {
+        var finalSprintTag = getFinalSprintTag();
+
         (window.PB_ITEMS || []).forEach(function(item) {
             item.status = normalizeStatus(item.status);
             item.assignee = normalizeAssignee(item.assignee || 'Unassigned');
+
+            // Final sprint policy: any remaining non-done ticket must be scheduled in the final sprint.
+            if (finalSprintTag && item.status !== 'Done') {
+                item.sprint = finalSprintTag;
+            }
+
             if (item.assignee === 'Unassigned' && shouldBackfillAssignee(item)) {
                 item.assignee = defaultAssigneeForHistoricalItem(item);
             }
@@ -12535,6 +12560,19 @@ function showSprintView(view, btn) {
             item.manualSubtasks = Array.isArray(item.manualSubtasks) ? item.manualSubtasks : [];
             ensureTicketDataCompleteness(item);
         });
+    }
+
+    function getFinalSprintTag() {
+        var schedule = Array.isArray(window.SPRINT_SCHEDULE) ? window.SPRINT_SCHEDULE : [];
+        if (!schedule.length) return '';
+
+        var maxNum = 0;
+        schedule.forEach(function(s) {
+            var n = parseInt(s && s.num, 10);
+            if (!isNaN(n) && n > maxNum) maxNum = n;
+        });
+
+        return maxNum > 0 ? ('S' + maxNum) : '';
     }
 
     function nextTicketId() {
@@ -13210,6 +13248,7 @@ function showSprintView(view, btn) {
         if (typeof renderSprint16BoardFromBacklog === 'function') {
             renderSprint16BoardFromBacklog();
         }
+        if (typeof syncDashMetrics === 'function') syncDashMetrics();
         if (mappingChanged) {
             if (typeof refreshBlockerCounts === 'function') refreshBlockerCounts(true);
             if (typeof loadSprintDashboard === 'function') loadSprintDashboard(CURRENT_DASH_SPRINT);
@@ -13391,6 +13430,8 @@ function showSprintView(view, btn) {
 
     buildSprintButtons();
     normalizeItems();
+    if (typeof loadSprintDashboard === 'function') loadSprintDashboard(CURRENT_DASH_SPRINT);
+    if (typeof syncDashMetrics === 'function') syncDashMetrics();
     initTicketWorkspaceTab();
     window.renderTaskTracker();
 
@@ -13398,6 +13439,8 @@ function showSprintView(view, btn) {
         var maxAttempts = 3;
         return window.dashboardApiBootstrapWorkspace().then(function() {
             normalizeItems();
+            if (typeof loadSprintDashboard === 'function') loadSprintDashboard(CURRENT_DASH_SPRINT);
+            if (typeof syncDashMetrics === 'function') syncDashMetrics();
             if (typeof syncTaskStatesFromData === 'function') syncTaskStatesFromData({ skipTracker: true });
             if (typeof refreshBlockerCounts === 'function') refreshBlockerCounts(true);
             window.renderTaskTracker();
