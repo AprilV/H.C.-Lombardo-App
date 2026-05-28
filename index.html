@@ -6512,6 +6512,7 @@ const COMPLETED_TASKS = [
     'm_ta_036_2',
     'm_ta_036_3',
     'm_ta_037_1',
+    'm_ta_038_1',
 ];
 const BLOCKED_TASKS = [];
 
@@ -10917,12 +10918,20 @@ initTasks();
             pri:'Critical',
             effort:'S',
             sprint:'S16',
-            status:'Backlog',
+            status:'Blocked',
+            assignee:'GitHub Copilot (Developer)',
+            description:'Blocked pending external advisor review session and explicit sign-off outcome evidence. Packet prep baseline published: docs/sprints/ta038_advisor_signoff/TA038_SIGNOFF_PACKET_READY_BLOCKED_2026-05-27.md',
+            updatedAt:'2026-05-27T23:59:59',
+            updatedBy:'GitHub Copilot (Developer)',
             manualSubtasks:[
                 { id:'m_ta_038_1', title:'Step 01 - Prepare advisor sign-off packet including demo checklist, risks, and final evidence references' },
                 { id:'m_ta_038_2', title:'Step 02 - Execute advisor walkthrough and collect approval feedback plus required follow-up actions' },
                 { id:'m_ta_038_3', title:'Step 03 - Complete follow-up items requested during sign-off review and confirm closure' },
                 { id:'m_ta_038_4', title:'Step 04 - Record sign-off outcome date and acceptance evidence in sprint governance artifacts' }
+            ],
+            comments:[],
+            history:[
+                { at:'2026-05-27T23:59:59', by:'GitHub Copilot (Developer)', note:'Set TA-038 to Blocked after preparing advisor sign-off packet baseline; completion requires external advisor review evidence.' }
             ]
         },
         {
@@ -11675,7 +11684,7 @@ function showSprintView(view, btn) {
             'Sprint acceptance: publish TA-077 results package plus TA-030 production walkthrough for advisor demo readiness after ML and UI checks pass',
         ],
         'Sprint 16 — Hardening & Release': [
-            'Submission hardening baseline remains open: TA-034 TA-036 and TA-037 currently blocked, while TA-038 and TA-039 remain pending verifiable evidence closure',
+            'Submission hardening baseline remains open: TA-034 TA-036 TA-037 and TA-038 currently blocked, while TA-039 remains pending verifiable evidence closure',
             'Security + readiness closure: TA-032 rate limiting and TA-035 public README update completed; TA-034 remains blocked pending credential remediation',
             'Route and runtime stability closure: TA-014 TA-031 and TA-029 complete with no blocking regressions before advisor sign-off',
         ],
