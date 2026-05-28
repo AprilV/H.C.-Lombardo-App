@@ -3383,10 +3383,28 @@
     </div>
 
 
-    <!-- Sprint 16 placeholder -->
+    <!-- Sprint 16 board -->
     <div id="sprint-board-16" style="display:none;">
         <div class="pm-panel">
-            <div class="pm-header"><div><h2>Sprint 16 — Hardening &amp; Release</h2><p>Active now (early kickoff). Official schedule window: May 28 – Jun 13, 2026.</p></div><div class="sprint-meta"><span class="meta-pill">May 28 – Jun 13, 2026</span><span class="meta-pill" style="color:#10b981; border-color:#10b981;">Active</span></div></div>
+            <div class="pm-header"><div><h2>Sprint 16 — Hardening &amp; Release</h2><p>Board auto-syncs from Sprint 16 backlog tickets and their subtasks. Changes in the tracker are reflected here.</p></div><div class="sprint-meta"><span class="meta-pill">May 28 – Jun 13, 2026</span><span class="meta-pill" style="color:#10b981; border-color:#10b981;">Active</span></div></div>
+
+            <div style="max-width:940px; margin:0 0 1rem;">
+                <div class="progress-label"><span>Sprint 16 Progress</span><span id="s16-pct">0%</span></div>
+                <div class="progress-bar-wrap"><div class="progress-bar-fill" id="s16-fill" style="width:0%"></div></div>
+                <div style="font-size:0.75rem;color:var(--muted);margin-top:0.4rem;" id="s16-count">0 of 0 Sprint 16 subtasks complete</div>
+            </div>
+
+            <div class="area-grid" id="sprint16-board">
+                <div class="area-card">
+                    <div class="area-header" onclick="toggleArea('s16-exec')">
+                        <div class="area-title">Sprint 16 Execution Queue <span class="area-count" id="count-s16-exec">0/0</span></div>
+                        <span id="arrow-s16-exec">▾</span>
+                    </div>
+                    <div class="area-body" id="s16-exec">
+                        <div class="task-item task-sub-item" style="opacity:0.8;"><span class="task-text">Loading Sprint 16 tasks from backlog...</span></div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -4501,6 +4519,10 @@ function showSprintPageView(viewId, btn) {
 }
 
 function showSprintBoard(sprintNum) {
+    var n = parseInt(sprintNum, 10);
+    if (!isNaN(n) && n === 16 && typeof renderSprint16BoardFromBacklog === 'function') {
+        renderSprint16BoardFromBacklog();
+    }
     document.querySelectorAll('[id^="sprint-board-"]').forEach(function(el) { el.style.display = 'none'; });
     var board = document.getElementById('sprint-board-' + sprintNum);
     if (board) board.style.display = '';
@@ -4524,6 +4546,80 @@ function normalizeStatusBucket(status) {
     if (s === 'blocked') return 'blocked';
     if (s === 'in progress' || s === 'in sprint') return 'inprogress';
     return 'todo';
+}
+
+function renderSprint16BoardFromBacklog(options) {
+    options = options || {};
+    var host = document.getElementById('s16-exec');
+    if (!host) return;
+
+    var items = (window.PB_ITEMS || []).filter(function(item) {
+        return String(item && item.sprint || '').trim().toUpperCase() === 'S16';
+    });
+
+    if (!items.length) {
+        host.innerHTML = '<div class="task-item task-sub-item" style="opacity:0.8;"><span class="task-text">No Sprint 16 tickets are currently assigned in backlog data.</span></div>';
+        if (typeof updateAreaCount === 'function') updateAreaCount('s16-exec');
+        if (!options.skipProgress && typeof updateSprintBoardProgress === 'function') {
+            var prevSyncFlag = !!window.__TASK_STATE_SYNC_ACTIVE;
+            window.__TASK_STATE_SYNC_ACTIVE = true;
+            try {
+                updateSprintBoardProgress(16, { skipMetrics: true, skipTracker: true });
+            } finally {
+                window.__TASK_STATE_SYNC_ACTIVE = prevSyncFlag;
+            }
+        }
+        return;
+    }
+
+    var priorityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
+    items.sort(function(a, b) {
+        var pa = priorityOrder[String(a && a.pri || '').toLowerCase()];
+        var pb = priorityOrder[String(b && b.pri || '').toLowerCase()];
+        if (typeof pa === 'undefined') pa = 99;
+        if (typeof pb === 'undefined') pb = 99;
+        if (pa !== pb) return pa - pb;
+        return String(a && a.id || '').localeCompare(String(b && b.id || ''));
+    });
+
+    var html = [];
+    items.forEach(function(item) {
+        var ticketId = String(item && item.id || '').toUpperCase();
+        var feature = String(item && item.feature || 'Untitled ticket');
+        html.push('<div class="task-group-label">' + escapeHtmlLite(ticketId + ' — ' + feature) + '</div>');
+
+        var manualSubtasks = Array.isArray(item && item.manualSubtasks) ? item.manualSubtasks : [];
+        if (!manualSubtasks.length) {
+            manualSubtasks = [
+                { id:'m_' + String(ticketId || 'ta000').toLowerCase().replace(/[^a-z0-9]+/g, '_') + '_1', title:'Step 01 - Confirm acceptance scope and dependencies' },
+                { id:'m_' + String(ticketId || 'ta000').toLowerCase().replace(/[^a-z0-9]+/g, '_') + '_2', title:'Step 02 - Execute core implementation for this ticket' },
+                { id:'m_' + String(ticketId || 'ta000').toLowerCase().replace(/[^a-z0-9]+/g, '_') + '_3', title:'Step 03 - Validate outcome against acceptance criteria' },
+                { id:'m_' + String(ticketId || 'ta000').toLowerCase().replace(/[^a-z0-9]+/g, '_') + '_4', title:'Step 04 - Capture closure evidence and update ticket state' }
+            ];
+        }
+
+        manualSubtasks.forEach(function(subtask, idx) {
+            var fallbackId = 'm_' + String(ticketId || 'ta000').toLowerCase().replace(/[^a-z0-9]+/g, '_') + '_' + String(idx + 1);
+            var sid = String(subtask && subtask.id || fallbackId);
+            var title = String(subtask && subtask.title || ('Subtask ' + String(idx + 1)));
+            var isDone = Array.isArray(window.COMPLETED_TASKS) && window.COMPLETED_TASKS.indexOf(sid) !== -1;
+            if (typeof TASK_TA_MAP !== 'undefined' && TASK_TA_MAP && !TASK_TA_MAP[sid]) TASK_TA_MAP[sid] = ticketId;
+
+            html.push('<label class="task-item task-sub-item' + (isDone ? ' done' : '') + '"><input type="checkbox" id="' + escapeHtmlLite(sid) + '" onchange="updateS16Progress()"' + (isDone ? ' checked' : '') + '><span class="task-text">' + escapeHtmlLite(title) + '</span></label>');
+        });
+    });
+
+    host.innerHTML = html.join('');
+    if (typeof updateAreaCount === 'function') updateAreaCount('s16-exec');
+    if (!options.skipProgress && typeof updateSprintBoardProgress === 'function') {
+        var prevSyncFlag = !!window.__TASK_STATE_SYNC_ACTIVE;
+        window.__TASK_STATE_SYNC_ACTIVE = true;
+        try {
+            updateSprintBoardProgress(16, { skipMetrics: true, skipTracker: true });
+        } finally {
+            window.__TASK_STATE_SYNC_ACTIVE = prevSyncFlag;
+        }
+    }
 }
 
 function getSprintTicketStats(sprintNum) {
@@ -6711,6 +6807,14 @@ function updateS14Progress(taskId) {
     });
 }
 
+function updateS16Progress(taskId) {
+    var changedTaskId = taskId || getTaskIdFromChangeEvent();
+    updateSprintBoardProgress(16, {
+        persistToApi: !!changedTaskId,
+        persistTaskIds: changedTaskId ? [changedTaskId] : []
+    });
+}
+
 function updateSprintBoardProgress(sprintNum, options) {
     options = options || {};
     var n = parseInt(sprintNum, 10);
@@ -8438,6 +8542,10 @@ function getSprintTaskBoardIds() {
 }
 
 function initTasks() {
+    if (typeof renderSprint16BoardFromBacklog === 'function') {
+        renderSprint16BoardFromBacklog({ skipProgress: true });
+    }
+
     getSprintTaskBoardIds().forEach(function(boardId) {
         var match = boardId.match(/^sprint(\d+)-board$/);
         var sprintLabel = match ? ('Sprint ' + match[1]) : boardId;
@@ -13099,6 +13207,9 @@ function showSprintView(view, btn) {
     window.renderTaskTracker = function() {
         var items = window.PB_ITEMS || [];
         var mappingChanged = syncMappedTicketStates();
+        if (typeof renderSprint16BoardFromBacklog === 'function') {
+            renderSprint16BoardFromBacklog();
+        }
         if (mappingChanged) {
             if (typeof refreshBlockerCounts === 'function') refreshBlockerCounts(true);
             if (typeof loadSprintDashboard === 'function') loadSprintDashboard(CURRENT_DASH_SPRINT);
