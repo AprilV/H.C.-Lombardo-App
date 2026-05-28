@@ -10,7 +10,12 @@ Credential literal remediation was completed for active scripts and deployment a
 
 Current measured state:
 - Active/runtime script hits for literals `aprilv120|nfl2024`: 0
-- Full tracked-repo hits for literals `aprilv120|nfl2024`: 505
+- Full tracked-repo hits for literals `aprilv120|nfl2024`: 508
+- Residual-hit buckets:
+  - docs/: 363
+  - backups/: 107
+  - devlog_output.html: 38
+  - other active paths: 0
 
 The ticket remains blocked because archive/devlog/history artifacts still retain historical plaintext values and credential-rotation evidence has not yet been attached.
 
@@ -18,6 +23,8 @@ The ticket remains blocked because archive/devlog/history artifacts still retain
 - `git grep -n -I -E "aprilv120|nfl2024" -- .`
 - PowerShell filter for active files:
   - `git grep ... | Select-String -NotMatch '^(docs/|backups/|devlog_output.html)'`
+- PowerShell bucket breakdown:
+  - `docs`, `backups`, `devlog_output.html`, and `other` class counts from grep output
 
 ## Remediated Scope (This Pass)
 - Startup/runtime scripts now require `DB_PASSWORD` from environment.
