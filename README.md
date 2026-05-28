@@ -50,6 +50,14 @@ START-DEV.bat
 STOP.bat
 ```
 
+### Quick Health Check
+```powershell
+# Verify API + database connectivity
+python health_check.py
+```
+
+Expected output includes successful database connectivity, and API/frontend readiness checks when those services are running.
+
 ### Testing Before Deployment
 1. Make changes in local environment
 2. Test thoroughly with `python startup.py` (or `START-DEV.bat`)
@@ -71,13 +79,11 @@ STOP.bat
 - `scripts/data_loading/update_2025_with_epa.py` - Calculate EPA stats
 - `scripts/data_loading/auto_update_service.py` - Continuous updates
 
-### Documentation (READ FIRST)
-- `docs/ai_reference/READ_THIS_FIRST.md` - **START HERE** (AI behavior contracts)
-- `docs/ai_reference/ARCHITECTURE.md` - Complete system architecture
-- `docs/ai_reference/BEST_PRACTICES.md` - Development workflow
-- `docs/ai_reference/NFL_SPREAD_BETTING_GUIDE.md` - Spread betting logic
-- `docs/ai_reference/PREDICTION_TRACKING_SYSTEM.md` - ML prediction tracking
-- `docs/ai_reference/QUICK_START_HCL.md` - Quick start guide
+### Documentation
+- `README.md` - Public project overview and local run guidance
+- `docs/deployment/DEPLOYMENT_GUIDE.md` - Deployment and environment notes
+- `docs/ai_reference/ARCHITECTURE.md` - System architecture details
+- `docs/sprints/` - Sprint evidence and delivery artifacts
 
 ## GitHub Actions
 

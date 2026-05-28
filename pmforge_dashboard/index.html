@@ -6504,6 +6504,10 @@ const COMPLETED_TASKS = [
     'm_ta_033_2',
     'm_ta_033_3',
     'm_ta_033_4',
+    'm_ta_035_1',
+    'm_ta_035_2',
+    'm_ta_035_3',
+    'm_ta_035_4',
 ];
 const BLOCKED_TASKS = [];
 
@@ -10840,12 +10844,20 @@ initTasks();
             pri:'Medium',
             effort:'S',
             sprint:'S16',
-            status:'Backlog',
+            status:'Done',
+            assignee:'GitHub Copilot (Developer)',
+            description:'Updated README for public audience clarity, removed untracked verification references, and validated tracked links/commands. Evidence: docs/sprints/ta035_readme_public_update/TA035_README_PUBLIC_UPDATE_2026-05-27.md',
+            updatedAt:'2026-05-27T23:59:00',
+            updatedBy:'GitHub Copilot (Developer)',
             manualSubtasks:[
                 { id:'m_ta_035_1', title:'Step 01 - Rewrite README overview and setup flow for external/public readers with clear project purpose' },
                 { id:'m_ta_035_2', title:'Step 02 - Add validated run instructions, environment expectations, and known boundary notes' },
                 { id:'m_ta_035_3', title:'Step 03 - Verify all README links commands and file references resolve correctly from a clean clone' },
                 { id:'m_ta_035_4', title:'Step 04 - Capture documentation update evidence and finalize handoff-ready README summary' }
+            ],
+            comments:[],
+            history:[
+                { at:'2026-05-27T23:59:00', by:'GitHub Copilot (Developer)', note:'Closed TA-035 after public README rewrite and tracked-path command/link validation evidence publication.' }
             ]
         },
         {
@@ -11644,7 +11656,7 @@ function showSprintView(view, btn) {
         ],
         'Sprint 16 — Hardening & Release': [
             'Submission hardening baseline remains open: TA-034 currently blocked and TA-036 TA-037 TA-038 TA-039 still pending verifiable evidence closure',
-            'Security + readiness closure: TA-032 rate limiting completed; TA-035 public README update remains for final handoff',
+            'Security + readiness closure: TA-032 rate limiting and TA-035 public README update completed; TA-034 remains blocked pending credential remediation',
             'Route and runtime stability closure: TA-014 TA-031 and TA-029 complete with no blocking regressions before advisor sign-off',
         ],
     };
