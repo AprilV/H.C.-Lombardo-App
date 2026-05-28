@@ -45,10 +45,18 @@ _last_event_at = {}
 
 
 def _safe_resolve(path_like):
-    return Path(path_like).resolve(strict=False)
+    try:
+        return Path(path_like).resolve(strict=False)
+    except Exception:
+        try:
+            return Path(os.path.abspath(str(path_like)))
+        except Exception:
+            return None
 
 
 def _is_relative_to(path_obj, parent_obj):
+    if path_obj is None or parent_obj is None:
+        return False
     try:
         path_obj.relative_to(parent_obj)
         return True
@@ -56,8 +64,21 @@ def _is_relative_to(path_obj, parent_obj):
         return False
 
 
+def _to_repo_rel(path_like):
+    """Best-effort repo-relative path for logging without throwing on malformed paths."""
+    resolved = _safe_resolve(path_like)
+    repo_root = _safe_resolve(REPO)
+    if resolved is None:
+        return str(path_like).replace('\\', '/')
+    if _is_relative_to(resolved, repo_root):
+        return str(resolved.relative_to(repo_root)).replace('\\', '/')
+    return str(resolved).replace('\\', '/')
+
+
 def should_track(path_str):
     p = _safe_resolve(path_str)
+    if p is None:
+        return False
     if not _is_relative_to(p, _safe_resolve(REPO)):
         return False
     # Never record writes to the devlog archive itself; that causes recursion.
@@ -72,8 +93,11 @@ def should_track(path_str):
 
 
 def should_emit_event(event_type, path_str):
+    resolved = _safe_resolve(path_str)
+    if resolved is None:
+        return False
     now = time.time()
-    key = (event_type, str(_safe_resolve(path_str)).lower())
+    key = (event_type, str(resolved).lower())
     with _event_lock:
         last = _last_event_at.get(key)
         if last is not None and (now - last) < EVENT_DEBOUNCE_SECONDS:
@@ -121,7 +145,7 @@ def update_index():
 
 
 def add_entry(event_type, path_str, extra=None):
-    rel = str(_safe_resolve(path_str).relative_to(_safe_resolve(REPO))).replace('\\', '/')
+    rel = _to_repo_rel(path_str)
     ts  = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     entry = {'ts': ts, 'type': event_type, 'file': rel}
     if extra:
@@ -161,7 +185,7 @@ class RepoHandler(FileSystemEventHandler):
             if (should_track(event.src_path) or should_track(event.dest_path)) and should_emit_event('renamed', event.dest_path):
                 try:
                     add_entry('renamed', event.dest_path,
-                              extra={'from': str(_safe_resolve(event.src_path).relative_to(_safe_resolve(REPO))).replace('\\', '/')})
+                              extra={'from': _to_repo_rel(event.src_path)})
                 except Exception as exc:
                     print(f"[log_watcher][WARN] moved event failed: {exc}")
 
