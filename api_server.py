@@ -12,6 +12,8 @@ import logging
 import datetime as dt
 from dotenv import load_dotenv
 from werkzeug.middleware.proxy_fix import ProxyFix
+from flask_limiter import Limiter
+from flask_limiter.errors import RateLimitExceeded
 
 load_dotenv()
 
@@ -49,6 +51,24 @@ BUILD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'fronten
 # Initialize Flask with static files
 app = Flask(__name__, static_folder=BUILD_FOLDER, static_url_path='')
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
+
+
+def get_rate_limit_key():
+    """Resolve client key using proxy-forwarded IP when available."""
+    forwarded_for = request.headers.get('X-Forwarded-For', '')
+    if forwarded_for:
+        return forwarded_for.split(',')[0].strip()
+    return request.remote_addr or 'unknown'
+
+
+DEFAULT_RATE_LIMIT = os.getenv('API_RATE_LIMIT_DEFAULT', '180 per minute')
+DEFAULT_RETRY_AFTER_SECONDS = os.getenv('API_RATE_LIMIT_RETRY_AFTER_SECONDS', '60')
+limiter = Limiter(
+    key_func=get_rate_limit_key,
+    default_limits=[DEFAULT_RATE_LIMIT],
+    storage_uri=os.getenv('API_RATE_LIMIT_STORAGE_URI', 'memory://')
+)
+limiter.init_app(app)
 
 # Enable CORS for React frontend and local HTML files
 CORS(app, resources={
@@ -182,7 +202,32 @@ def fetch_team_stats_fallback(cursor, season=None):
 
 # API Routes (these must come before the React catch-all route)
 
+
+@app.errorhandler(RateLimitExceeded)
+def handle_rate_limit_exceeded(error):
+    """Return a JSON 429 response so API clients can retry predictably."""
+    retry_after = getattr(error, 'retry_after', None)
+    response = jsonify({
+        'error': 'rate_limit_exceeded',
+        'message': 'Too many requests. Please retry later.'
+    })
+    response.status_code = 429
+    try:
+        fallback_retry_after = max(1, int(DEFAULT_RETRY_AFTER_SECONDS))
+    except Exception:
+        fallback_retry_after = 60
+
+    if retry_after is None:
+        response.headers['Retry-After'] = str(fallback_retry_after)
+    else:
+        try:
+            response.headers['Retry-After'] = str(max(1, int(retry_after)))
+        except Exception:
+            response.headers['Retry-After'] = str(fallback_retry_after)
+    return response
+
 @app.route('/health')
+@limiter.exempt
 def health():
     """Health check including database connectivity"""
     try:
