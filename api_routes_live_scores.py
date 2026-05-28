@@ -27,7 +27,7 @@ def get_db_connection():
 
 live_scores_api = Blueprint('live_scores_api', __name__)
 
-ESPN_SCOREBOARD_URL = "http://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard"
+ESPN_SCOREBOARD_URL = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard"
 
 
 def get_latest_completed_season():

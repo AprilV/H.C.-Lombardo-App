@@ -3,7 +3,7 @@ H.C. Lombardo NFL Analytics - Production API Server
 Flask + PostgreSQL + CORS for React frontend
 Serves both API endpoints and production React build
 """
-from flask import Flask, jsonify, send_from_directory, request
+from flask import Flask, jsonify, send_from_directory, request, redirect
 from flask_cors import CORS
 import psycopg2
 import sys
@@ -11,6 +11,7 @@ import os
 import logging
 import datetime as dt
 from dotenv import load_dotenv
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 load_dotenv()
 
@@ -47,6 +48,7 @@ BUILD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'fronten
 
 # Initialize Flask with static files
 app = Flask(__name__, static_folder=BUILD_FOLDER, static_url_path='')
+app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
 # Enable CORS for React frontend and local HTML files
 CORS(app, resources={
@@ -82,6 +84,40 @@ if ml_api:
 
 # Register Live Scores API routes
 app.register_blueprint(live_scores_api)
+
+
+def _is_local_request():
+    """Treat localhost development traffic as exempt from HTTPS enforcement."""
+    forwarded_host = (request.headers.get('X-Forwarded-Host') or '').split(',')[0].strip()
+    host = (forwarded_host or request.host or '').split(':')[0].lower()
+    return host in {'localhost', '127.0.0.1', '::1'}
+
+
+@app.before_request
+def enforce_https_in_production():
+    """Redirect non-local HTTP requests to HTTPS when behind a reverse proxy."""
+    if app.debug or _is_local_request() or request.method == 'OPTIONS':
+        return None
+
+    forwarded_proto = request.headers.get('X-Forwarded-Proto', request.scheme)
+    scheme = str(forwarded_proto).split(',')[0].strip().lower()
+
+    if scheme != 'https':
+        secure_url = request.url.replace('http://', 'https://', 1)
+        return redirect(secure_url, code=301)
+
+    return None
+
+
+@app.after_request
+def add_transport_security_headers(response):
+    """Set HSTS on HTTPS responses to lock clients to encrypted transport."""
+    if not _is_local_request():
+        forwarded_proto = request.headers.get('X-Forwarded-Proto', request.scheme)
+        scheme = str(forwarded_proto).split(',')[0].strip().lower()
+        if scheme == 'https':
+            response.headers.setdefault('Strict-Transport-Security', 'max-age=31536000; includeSubDomains')
+    return response
 
 # Database configuration
 DB_CONFIG = {
