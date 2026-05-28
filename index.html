@@ -6492,6 +6492,10 @@ const COMPLETED_TASKS = [
     'sp15_ta077_8',
     'sp15_ta077_9',
     // Sprint 16 closures
+    'm_ta_017_1',
+    'm_ta_017_2',
+    'm_ta_017_3',
+    'm_ta_017_4',
     'm_ta_032_1',
     'm_ta_032_2',
     'm_ta_032_3',
@@ -10565,7 +10569,29 @@ initTasks();
                 { at:'2026-05-27T23:05:00', by:'GitHub Copilot (Developer)', note:'Blocked due to production access gate. Verification runbook prepared pending AWS/EC2 authorization.' }
             ]
         },
-        { id:'TA-017', feature:'Audit git history for exposed secrets',           cat:'Security',       pri:'High',     effort:'M', sprint:'TBD', status:'Backlog'   },
+        {
+            id:'TA-017',
+            feature:'Audit git history for exposed secrets',
+            cat:'Security',
+            pri:'High',
+            effort:'M',
+            sprint:'S16',
+            status:'Done',
+            assignee:'GitHub Copilot (Developer)',
+            description:'Completed repository + history credential audit. No AWS/GitHub/Google/Slack/Stripe signature tokens detected; DB credential literals remain in active scripts and historical artifacts. Evidence: docs/sprints/ta017_secret_history_audit/TA017_SECRET_HISTORY_AUDIT_2026-05-27.md',
+            updatedAt:'2026-05-27T23:45:00',
+            updatedBy:'GitHub Copilot (Developer)',
+            manualSubtasks:[
+                { id:'m_ta_017_1', title:'Step 01 - Define credential signature and literal-password audit patterns for tracked files and history scans' },
+                { id:'m_ta_017_2', title:'Step 02 - Execute tracked-file scans and quantify active exposure findings by file scope' },
+                { id:'m_ta_017_3', title:'Step 03 - Execute git-history scans and capture commit-level evidence for detected literals' },
+                { id:'m_ta_017_4', title:'Step 04 - Publish evidence report with severity assessment and remediation recommendations' }
+            ],
+            comments:[],
+            history:[
+                { at:'2026-05-27T23:45:00', by:'GitHub Copilot (Developer)', note:'Closed TA-017 after completing tracked-file and git-history secret audit and publishing evidence with quantified findings.' }
+            ]
+        },
         { id:'TA-018', feature:'Retrain XGBoost winner classifier on 2025 data', cat:'ML',             pri:'Critical', effort:'L', sprint:'S14', status:'Done' },
         { id:'TA-019', feature:'Retrain spread regressor — document MAE',         cat:'ML',             pri:'Critical', effort:'L', sprint:'S14', status:'Done' },
         { id:'TA-020', feature:'Recalculate Elo ratings through 2025 season',     cat:'ML',             pri:'High',     effort:'M', sprint:'S14', status:'Done' },
