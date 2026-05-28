@@ -3758,12 +3758,21 @@
 
             <details id="dod-sprint-16" style="display:none; background:var(--card); border:1px solid var(--border); border-radius:0.6rem; overflow:hidden;">
                 <summary style="padding:0.9rem 1.25rem; cursor:pointer; display:flex; align-items:center; gap:0.75rem; font-weight:700; font-size:0.9rem; color:#f1f5f9; list-style:none; user-select:none;">
-                    <span style="background:rgba(148,163,184,0.2); color:#cbd5e1; border:1px solid rgba(148,163,184,0.35); border-radius:9999px; padding:0.1rem 0.65rem; font-size:0.72rem; font-weight:700;">Planned</span>
+                    <span style="background:rgba(213,10,10,0.25); color:#f87171; border:1px solid rgba(213,10,10,0.4); border-radius:9999px; padding:0.1rem 0.65rem; font-size:0.72rem; font-weight:700;">Active</span>
                     Sprint 16
                     <span style="margin-left:auto; color:var(--muted); font-size:0.8rem;">May 28 – Jun 13</span>
                 </summary>
                 <div data-dod-list="16" style="padding:0 1.25rem 1rem; display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:0.4rem; margin-top:0.25rem;">
-                    <div class="dod-item">No DoD criteria entered yet. Use PM Definition of Done Entry above.</div>
+                    <div class="dod-item">Sprint 16 committed tickets are execution-ready with explicit subtasks for TA-014, TA-029, and TA-031 through TA-039</div>
+                    <div class="dod-item">All Sprint 16 committed tickets reach Done status with no remaining Blocked items</div>
+                    <div class="dod-item">Broken route fixes are verified for /game-statistics and /matchup-analyzer across direct URL load and in-app navigation</div>
+                    <div class="dod-item">Production console audit passes with zero runtime errors on advisor-critical pages and flows</div>
+                    <div class="dod-item">API security hardening is complete: rate limiting enforced and HTTPS-only transport verified end-to-end</div>
+                    <div class="dod-item">Final security audit confirms no exposed credentials in touched source, config, or deployment paths</div>
+                    <div class="dod-item">Public-facing README and capstone performance report are finalized, accurate, and submission-ready</div>
+                    <div class="dod-item">App stability gate passes with at least 48 hours of monitored runtime and no unresolved incidents</div>
+                    <div class="dod-item">Advisor sign-off evidence is recorded and linked to Sprint 16 closure artifacts</div>
+                    <div class="dod-item">GitHub v1.0 release tag is created from approved commit state with release notes and rollback reference</div>
                 </div>
             </details>
         </div>
@@ -4972,40 +4981,32 @@ function syncSprintViewStatuses() {
         }
     }
 
-    var s13DodBadge = document.querySelector('#dod-sprint-13 summary span');
-    if (s13DodBadge) {
-        if (s13Status === 'completed') {
-            s13DodBadge.textContent = 'Done';
-            s13DodBadge.style.background = 'rgba(16,185,129,0.2)';
-            s13DodBadge.style.color = '#86efac';
-            s13DodBadge.style.borderColor = 'rgba(16,185,129,0.4)';
+    function applyDodBadge(selector, sprintStatus) {
+        var badge = document.querySelector(selector);
+        if (!badge) return;
+
+        if (sprintStatus === 'active') {
+            badge.textContent = 'Active';
+            badge.style.background = 'rgba(213,10,10,0.25)';
+            badge.style.color = '#f87171';
+            badge.style.borderColor = 'rgba(213,10,10,0.4)';
+        } else if (sprintStatus === 'completed') {
+            badge.textContent = 'Done';
+            badge.style.background = 'rgba(16,185,129,0.2)';
+            badge.style.color = '#86efac';
+            badge.style.borderColor = 'rgba(16,185,129,0.4)';
         } else {
-            s13DodBadge.textContent = 'Active';
-            s13DodBadge.style.background = 'rgba(213,10,10,0.25)';
-            s13DodBadge.style.color = '#f87171';
-            s13DodBadge.style.borderColor = 'rgba(213,10,10,0.4)';
+            badge.textContent = 'Planned';
+            badge.style.background = 'rgba(148,163,184,0.2)';
+            badge.style.color = '#cbd5e1';
+            badge.style.borderColor = 'rgba(148,163,184,0.35)';
         }
     }
 
-    var s14DodBadge = document.querySelector('#dod-sprint-14 summary span');
-    if (s14DodBadge) {
-        if (s14Status === 'active') {
-            s14DodBadge.textContent = 'Active';
-            s14DodBadge.style.background = 'rgba(213,10,10,0.25)';
-            s14DodBadge.style.color = '#f87171';
-            s14DodBadge.style.borderColor = 'rgba(213,10,10,0.4)';
-        } else if (s14Status === 'completed') {
-            s14DodBadge.textContent = 'Done';
-            s14DodBadge.style.background = 'rgba(16,185,129,0.2)';
-            s14DodBadge.style.color = '#86efac';
-            s14DodBadge.style.borderColor = 'rgba(16,185,129,0.4)';
-        } else {
-            s14DodBadge.textContent = 'Planned';
-            s14DodBadge.style.background = 'rgba(148,163,184,0.2)';
-            s14DodBadge.style.color = '#cbd5e1';
-            s14DodBadge.style.borderColor = 'rgba(148,163,184,0.35)';
-        }
-    }
+    applyDodBadge('#dod-sprint-13 summary span', s13Status);
+    applyDodBadge('#dod-sprint-14 summary span', s14Status);
+    applyDodBadge('#dod-sprint-15 summary span', getSprintStatusByDate(15));
+    applyDodBadge('#dod-sprint-16 summary span', getSprintStatusByDate(16));
 }
 
 function initSprintScopedViews() {
