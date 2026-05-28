@@ -6,6 +6,33 @@ Format: `YYYY.MM.DD` (example: `2026.04.23`)
 
 ---
 
+## 2026.05.28 (Draft / In Progress)
+
+### Completed
+
+1. Added missing Sprint 16 manual-subtask metadata entries in `TASK_DETAILS` for completed `m_ta_*` items so closure context includes `resolution`, `date`, `timestamp`, and `updatedBy` fields.
+2. Synchronized dashboard governance traceability for recent Sprint 16 ticket updates (TA-017, TA-032, TA-033, TA-034 partial completion, TA-035, TA-036 partial completion, TA-037 Step 01, TA-038 Step 01, TA-039 Step 01).
+3. Executed closure-gate validation command for Sprint 16 to confirm no booking-schema contract regression after updates.
+
+### In Progress
+
+1. `TA-037` 48-hour stability window remains active; only Step 01 is complete and closure is pending full-duration evidence review.
+2. `TA-034`, `TA-036`, `TA-038`, and `TA-039` remain blocked on external/policy gates documented in sprint evidence.
+
+### Notes
+
+1. This release-note entry is governance-focused and does not change application runtime behavior.
+2. Sprint 16 status remains intentionally fail-closed for blocked external gates.
+
+### Evidence
+
+1. `pmforge_dashboard/index.html`.
+2. `docs/sprints/ta034_security_audit/TA034_REMEDIATION_PROGRESS_2026-05-28.md`.
+3. `docs/sprints/ta037_stability_gate/TA037_LIVE_WINDOW_START_2026-05-28.md`.
+4. `docs/dashboard_product/DASHBOARD_RELEASE_NOTES.md`.
+
+---
+
 ## 2026.05.07 (Draft / In Progress)
 
 ### Completed
