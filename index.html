@@ -2524,6 +2524,10 @@
         </div>
     </div>
 
+    <div id="dash-live-progress" style="display:none; margin-top:-0.25rem; margin-bottom:0.95rem; background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.35); border-radius:0.7rem; padding:0.62rem 0.82rem;">
+        <div id="dash-live-progress-text" style="font-size:0.82rem; color:#d1fae5; line-height:1.45;"></div>
+    </div>
+
     <!-- ── PM METRICS STRIP ── -->
     <div class="pm-metrics-strip">
         <div class="pm-metric">
@@ -5218,6 +5222,55 @@ function syncDashMetrics() {
             countEl.textContent = 'Sprint Active';
         }
     }
+
+    syncDashLiveProgressNotice();
+}
+
+function extractTa037StreakText(ticket) {
+    var history = (ticket && ticket.history) || [];
+    for (var i = 0; i < history.length; i++) {
+        var note = String(history[i] && history[i].note || '');
+        if (!note) continue;
+        var m = note.match(/(\d+)\s+consecutive\s+all_ok\s+checkpoints/i);
+        if (m && m[1]) {
+            return m[1] + ' consecutive healthy checkpoints';
+        }
+    }
+    return '';
+}
+
+function syncDashLiveProgressNotice() {
+    var host = document.getElementById('dash-live-progress');
+    var textEl = document.getElementById('dash-live-progress-text');
+    if (!host || !textEl) return;
+
+    var selectedSprint = parseInt(CURRENT_DASH_SPRINT, 10);
+    if (isNaN(selectedSprint) || selectedSprint !== 16) {
+        host.style.display = 'none';
+        textEl.textContent = '';
+        return;
+    }
+
+    var ta037 = getBacklogTicketById('TA-037');
+    if (!ta037) {
+        host.style.display = 'none';
+        textEl.textContent = '';
+        return;
+    }
+
+    var streak = extractTa037StreakText(ta037);
+    var status = String(ta037.status || 'Unknown').trim();
+    var updated = String(ta037.updatedAt || '').trim();
+    var updatedDisplay = updated ? formatDateTimeShort(updated) : 'n/a';
+
+    var summary = streak
+        ? 'TA-037 live stability watch: ' + streak + ' (' + status + ').'
+        : 'TA-037 live stability watch is active (' + status + ').';
+
+    textEl.textContent = summary
+        + ' Last monitoring update: ' + updatedDisplay
+        + '. Note: Sprint Tasks Done percent moves only when subtasks are completed.';
+    host.style.display = 'block';
 }
 
 // Live clock + auto last-updated
