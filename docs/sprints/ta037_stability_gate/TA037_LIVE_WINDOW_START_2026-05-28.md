@@ -28,16 +28,16 @@ Status: Blocked (window in progress)
   - `3000=200`
 
 ## Interim Window Metrics (2026-05-28)
-- Total checkpoint rows in file: 34
-- Live-window checkpoint rows: 33
-- Live-window all_ok true: 33/33
+- Total checkpoint rows in file: 65
+- Live-window checkpoint rows: 64
+- Live-window all_ok true: 64/64
 - Live window span (UTC):
   - First: `2026-05-28T19:17:02.243395+00:00`
-  - Latest: `2026-05-28T21:54:31.496855+00:00`
+  - Latest: `2026-05-29T00:27:26.833378+00:00`
 - Latency snapshot (ms):
-  - `/health`: min 57, max 3164, avg 171.5
-  - `/api/teams`: min 54, max 90, avg 65.5
-  - `frontend /`: min 2, max 26, avg 3.1
+  - `/health`: min 57, max 3465, avg 254.9
+  - `/api/teams`: min 54, max 2037, avg 127.8
+  - `frontend /`: min 2, max 26, avg 3.0
 
 ## Interim Health Snapshot (2026-05-28)
 - Current endpoint check: `5000/health=200`, `5000/api/teams=200`, `3000=200`.
