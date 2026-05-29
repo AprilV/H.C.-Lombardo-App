@@ -5191,6 +5191,14 @@ function syncDashChartUnitNote(sprintNum) {
 }
 
 function syncDashMetrics() {
+    var selectedSprint = parseInt(CURRENT_DASH_SPRINT, 10);
+    if (!isNaN(selectedSprint) && selectedSprint === 16 && typeof renderSprint16BoardFromBacklog === 'function') {
+        var s16CheckboxCount = document.querySelectorAll('#sprint16-board input[type="checkbox"]').length;
+        if (s16CheckboxCount === 0) {
+            renderSprint16BoardFromBacklog({ skipProgress: true });
+        }
+    }
+
     const items = window.PB_ITEMS || [];
     const pointMetrics = getCommittedSprintTicketCounts(items, CURRENT_DASH_SPRINT);
     const boardMetrics = getBoardCompletionCounts(CURRENT_DASH_SPRINT);
@@ -5224,6 +5232,7 @@ function syncDashMetrics() {
     }
 
     syncDashLiveProgressNotice();
+    if (typeof refreshBlockerCounts === 'function') refreshBlockerCounts(true);
 }
 
 function extractTa037StreakText(ticket) {
@@ -9956,6 +9965,10 @@ function loadSprintDashboard(num, options) {
     CURRENT_DASH_SPRINT = sprintNum;
     persistDashSprintSelection(sprintNum);
     persistFollowCurrentSprintPreference(!!followCurrent);
+
+    if (sprintNum === 16 && typeof renderSprint16BoardFromBacklog === 'function') {
+        renderSprint16BoardFromBacklog({ skipProgress: true });
+    }
 
     var s = getEffectiveSprintSnapshot(sprintNum);
     if (!s) return;
