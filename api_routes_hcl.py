@@ -58,6 +58,28 @@ def resolve_request_season(cur):
         return season
     return get_latest_completed_season(cur)
 
+
+def view_exists(cur, qualified_view_name):
+    """Return True when a database view exists and is addressable."""
+    cur.execute("SELECT to_regclass(%s) AS relation_name", (qualified_view_name,))
+    row = cur.fetchone()
+    if not row:
+        return False
+    if isinstance(row, dict):
+        return row.get('relation_name') is not None
+    return row[0] is not None
+
+
+def analytics_view_unavailable_payload(view_name, season=None):
+    payload = {
+        'success': True,
+        'degraded': True,
+        'warning': f'Analytics view {view_name} is not available in this environment'
+    }
+    if season is not None:
+        payload['season'] = season
+    return payload
+
 @hcl_bp.route('/teams', methods=['GET'])
 def get_teams():
     """
@@ -579,6 +601,16 @@ def get_betting_performance():
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=RealDictCursor)
         season = resolve_request_season(cur)
+
+        if not view_exists(cur, 'hcl.v_team_betting_performance'):
+            cur.close()
+            conn.close()
+            fallback = analytics_view_unavailable_payload('hcl.v_team_betting_performance', season)
+            fallback.update({
+                'count': 0,
+                'teams': []
+            })
+            return jsonify(fallback)
         
         query = """
             SELECT 
@@ -656,6 +688,16 @@ def get_weather_impact():
         
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=RealDictCursor)
+
+        if not view_exists(cur, 'hcl.v_weather_impact_analysis'):
+            cur.close()
+            conn.close()
+            fallback = analytics_view_unavailable_payload('hcl.v_weather_impact_analysis', season)
+            fallback.update({
+                'count': 0,
+                'conditions': []
+            })
+            return jsonify(fallback)
         
         query = """
             SELECT 
@@ -734,6 +776,16 @@ def get_rest_advantage():
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=RealDictCursor)
         season = resolve_request_season(cur)
+
+        if not view_exists(cur, 'hcl.v_rest_advantage'):
+            cur.close()
+            conn.close()
+            fallback = analytics_view_unavailable_payload('hcl.v_rest_advantage', season)
+            fallback.update({
+                'count': 0,
+                'rest_categories': []
+            })
+            return jsonify(fallback)
         
         query = """
             SELECT 
@@ -804,6 +856,16 @@ def get_referee_tendencies():
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=RealDictCursor)
         season = resolve_request_season(cur)
+
+        if not view_exists(cur, 'hcl.v_referee_tendencies'):
+            cur.close()
+            conn.close()
+            fallback = analytics_view_unavailable_payload('hcl.v_referee_tendencies', season)
+            fallback.update({
+                'count': 0,
+                'referees': []
+            })
+            return jsonify(fallback)
         
         query = """
             SELECT 
@@ -880,6 +942,30 @@ def get_analytics_summary():
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=RealDictCursor)
         season = resolve_request_season(cur)
+
+        required_views = [
+            'hcl.v_team_betting_performance',
+            'hcl.v_weather_impact_analysis',
+            'hcl.v_rest_advantage',
+            'hcl.v_referee_tendencies'
+        ]
+        missing_views = [view for view in required_views if not view_exists(cur, view)]
+        if missing_views:
+            cur.close()
+            conn.close()
+            return jsonify({
+                'success': True,
+                'degraded': True,
+                'season': season,
+                'warning': 'One or more analytics views are unavailable in this environment',
+                'missing_views': missing_views,
+                'summary': {
+                    'best_ats_team': None,
+                    'weather_impact': [],
+                    'best_rest_advantage': None,
+                    'most_games_referee': None
+                }
+            })
         
         # Best ATS team
         cur.execute("""

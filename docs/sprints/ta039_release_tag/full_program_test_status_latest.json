@@ -1,0 +1,418 @@
+{
+  "generated_utc": "2026-06-02T04:17:07.384487+00:00",
+  "frontend_base": "https://staging.d2fwv8daemi5y2.amplifyapp.com",
+  "api_base": "https://9dkkj5n2rc.execute-api.us-east-2.amazonaws.com",
+  "route_inventory_count": 13,
+  "route_results": [
+    {
+      "route": "/",
+      "status_code": 200,
+      "ok": true,
+      "error": null
+    },
+    {
+      "route": "/admin",
+      "status_code": 404,
+      "ok": false,
+      "error": null
+    },
+    {
+      "route": "/analytics",
+      "status_code": 404,
+      "ok": false,
+      "error": null
+    },
+    {
+      "route": "/game-statistics",
+      "status_code": 404,
+      "ok": false,
+      "error": null
+    },
+    {
+      "route": "/historical-data",
+      "status_code": 404,
+      "ok": false,
+      "error": null
+    },
+    {
+      "route": "/matchup-analyzer",
+      "status_code": 404,
+      "ok": false,
+      "error": null
+    },
+    {
+      "route": "/ml-predictions",
+      "status_code": 404,
+      "ok": false,
+      "error": null
+    },
+    {
+      "route": "/ml-predictions-old",
+      "status_code": 404,
+      "ok": false,
+      "error": null
+    },
+    {
+      "route": "/ml-predictions-redesign",
+      "status_code": 404,
+      "ok": false,
+      "error": null
+    },
+    {
+      "route": "/model-performance",
+      "status_code": 404,
+      "ok": false,
+      "error": null
+    },
+    {
+      "route": "/settings",
+      "status_code": 404,
+      "ok": false,
+      "error": null
+    },
+    {
+      "route": "/team-comparison",
+      "status_code": 404,
+      "ok": false,
+      "error": null
+    },
+    {
+      "route": "/team-stats",
+      "status_code": 404,
+      "ok": false,
+      "error": null
+    }
+  ],
+  "api_inventory_count": 32,
+  "api_results": [
+    {
+      "method": "GET",
+      "template": "/api/elo/predict-week/${season}/${week}",
+      "resolved": "/api/elo/predict-week/2025/1",
+      "status_code": 200,
+      "ok": true,
+      "skipped": false,
+      "skip_reason": null,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "template": "/api/elo/ratings/current",
+      "resolved": "/api/elo/ratings/current",
+      "status_code": 200,
+      "ok": true,
+      "skipped": false,
+      "skip_reason": null,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "template": "/api/hcl/analytics/betting?season=${season}",
+      "resolved": "/api/hcl/analytics/betting?season=2025",
+      "status_code": 500,
+      "ok": false,
+      "skipped": false,
+      "skip_reason": null,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "template": "/api/hcl/analytics/betting?season=${season}${selectedTeam ?",
+      "resolved": null,
+      "status_code": null,
+      "ok": false,
+      "skipped": true,
+      "skip_reason": "Template has unresolved dynamic variables",
+      "error": null
+    },
+    {
+      "method": "GET",
+      "template": "/api/hcl/analytics/referees?season=${season}",
+      "resolved": "/api/hcl/analytics/referees?season=2025",
+      "status_code": 500,
+      "ok": false,
+      "skipped": false,
+      "skip_reason": null,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "template": "/api/hcl/analytics/rest?season=${season}",
+      "resolved": "/api/hcl/analytics/rest?season=2025",
+      "status_code": 500,
+      "ok": false,
+      "skipped": false,
+      "skip_reason": null,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "template": "/api/hcl/analytics/summary?season=${season}",
+      "resolved": "/api/hcl/analytics/summary?season=2025",
+      "status_code": 500,
+      "ok": false,
+      "skipped": false,
+      "skip_reason": null,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "template": "/api/hcl/analytics/weather?season=${season}",
+      "resolved": "/api/hcl/analytics/weather?season=2025",
+      "status_code": 500,
+      "ok": false,
+      "skipped": false,
+      "skip_reason": null,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "template": "/api/hcl/teams/${abbr}/games?season=${season}&limit=50",
+      "resolved": "/api/hcl/teams/KC/games?season=2025&limit=50",
+      "status_code": 200,
+      "ok": true,
+      "skipped": false,
+      "skip_reason": null,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "template": "/api/hcl/teams/${abbr}?season=${season}",
+      "resolved": "/api/hcl/teams/KC?season=2025",
+      "status_code": 200,
+      "ok": true,
+      "skipped": false,
+      "skip_reason": null,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "template": "/api/hcl/teams/${selectedTeam}?season=${selectedSeason}",
+      "resolved": "/api/hcl/teams/KC?season=2025",
+      "status_code": 200,
+      "ok": true,
+      "skipped": false,
+      "skip_reason": null,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "template": "/api/hcl/teams/${teamAbbr}/games?season=${season}",
+      "resolved": "/api/hcl/teams/KC/games?season=2025",
+      "status_code": 200,
+      "ok": true,
+      "skipped": false,
+      "skip_reason": null,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "template": "/api/hcl/teams/${teamAbbr}?season=${season}",
+      "resolved": "/api/hcl/teams/KC?season=2025",
+      "status_code": 200,
+      "ok": true,
+      "skipped": false,
+      "skip_reason": null,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "template": "/api/hcl/teams?season=${defaultSeason}",
+      "resolved": "/api/hcl/teams?season=2025",
+      "status_code": 200,
+      "ok": true,
+      "skipped": false,
+      "skip_reason": null,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "template": "/api/hcl/teams?season=${seasonA}",
+      "resolved": "/api/hcl/teams?season=2025",
+      "status_code": 200,
+      "ok": true,
+      "skipped": false,
+      "skip_reason": null,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "template": "/api/hcl/teams?season=${seasonB}",
+      "resolved": "/api/hcl/teams?season=2025",
+      "status_code": 200,
+      "ok": true,
+      "skipped": false,
+      "skip_reason": null,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "template": "/api/hcl/teams?season=${season}",
+      "resolved": "/api/hcl/teams?season=2025",
+      "status_code": 200,
+      "ok": true,
+      "skipped": false,
+      "skip_reason": null,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "template": "/api/hcl/teams?season=${selectedSeason}",
+      "resolved": "/api/hcl/teams?season=2025",
+      "status_code": 200,
+      "ok": true,
+      "skipped": false,
+      "skip_reason": null,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "template": "/api/live-scores",
+      "resolved": "/api/live-scores",
+      "status_code": 200,
+      "ok": true,
+      "skipped": false,
+      "skip_reason": null,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "template": "/api/ml/available-weeks",
+      "resolved": "/api/ml/available-weeks",
+      "status_code": 200,
+      "ok": true,
+      "skipped": false,
+      "skip_reason": null,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "template": "/api/ml/explain",
+      "resolved": "/api/ml/explain",
+      "status_code": 200,
+      "ok": true,
+      "skipped": false,
+      "skip_reason": null,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "template": "/api/ml/model-info",
+      "resolved": "/api/ml/model-info",
+      "status_code": 200,
+      "ok": true,
+      "skipped": false,
+      "skip_reason": null,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "template": "/api/ml/performance-stats?season=${season}",
+      "resolved": "/api/ml/performance-stats?season=2025",
+      "status_code": 200,
+      "ok": true,
+      "skipped": false,
+      "skip_reason": null,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "template": "/api/ml/predict-upcoming",
+      "resolved": "/api/ml/predict-upcoming",
+      "status_code": 200,
+      "ok": true,
+      "skipped": false,
+      "skip_reason": null,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "template": "/api/ml/predict-week/${season}/${week}",
+      "resolved": "/api/ml/predict-week/2025/1",
+      "status_code": 200,
+      "ok": true,
+      "skipped": false,
+      "skip_reason": null,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "template": "/api/ml/season-ai-vs-vegas/${season}",
+      "resolved": "/api/ml/season-ai-vs-vegas/2025",
+      "status_code": 200,
+      "ok": true,
+      "skipped": false,
+      "skip_reason": null,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "template": "/api/ml/season-ai-vs-vegas/${selectedSeason}",
+      "resolved": "/api/ml/season-ai-vs-vegas/2025",
+      "status_code": 200,
+      "ok": true,
+      "skipped": false,
+      "skip_reason": null,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "template": "/api/predictions/combined/${season}/${week}",
+      "resolved": "/api/predictions/combined/2025/1",
+      "status_code": 200,
+      "ok": true,
+      "skipped": false,
+      "skip_reason": null,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "template": "/api/teams",
+      "resolved": "/api/teams",
+      "status_code": 200,
+      "ok": true,
+      "skipped": false,
+      "skip_reason": null,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "template": "/api/teams/${abbreviation}",
+      "resolved": "/api/teams/KC",
+      "status_code": 200,
+      "ok": true,
+      "skipped": false,
+      "skip_reason": null,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "template": "/health",
+      "resolved": "/health",
+      "status_code": 200,
+      "ok": true,
+      "skipped": false,
+      "skip_reason": null,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "template": "/api/ml/update-results",
+      "resolved": "/api/ml/update-results",
+      "status_code": null,
+      "ok": false,
+      "skipped": true,
+      "skip_reason": "Non-GET endpoint skipped to avoid side effects",
+      "error": null
+    }
+  ],
+  "totals": {
+    "route_inventory_count": 13,
+    "route_pass": 1,
+    "route_fail": 12,
+    "api_inventory_count": 32,
+    "api_pass": 25,
+    "api_fail": 5,
+    "api_skipped": 2
+  }
+}

@@ -1,0 +1,135 @@
+{
+  "generated_utc": "2026-06-02T04:18:00Z",
+  "target": "https://staging.d2fwv8daemi5y2.amplifyapp.com",
+  "automation_type": "interactive_ui_control_sweep",
+  "summary": {
+    "routes_in_navigation_inventory": 11,
+    "routes_reached_in_app": 11,
+    "route_navigation_pass": true,
+    "links_seen_total": 132,
+    "buttons_seen_total": 48,
+    "select_controls_seen_total": 13,
+    "input_controls_seen_total": 1,
+    "select_option_changes_executed_total": 301,
+    "network_error_count": 4
+  },
+  "coverage_notes": [
+    "All side-menu routes were opened through in-app navigation (SPA path transitions succeeded).",
+    "All discovered native select controls were iterated through available options and restored.",
+    "Controls were exercised in a non-destructive mode.",
+    "Direct deep-link behavior is validated separately by full_program_test_automation.py and still fails for non-root routes."
+  ],
+  "results": [
+    {
+      "label": "Dashboard",
+      "expected_path": "/",
+      "actual_path": "/",
+      "route_ok": true,
+      "controls": { "links": 12, "buttons": 5, "selects": 1, "inputs": 0 },
+      "select_option_changes": 3
+    },
+    {
+      "label": "Team Stats",
+      "expected_path": "/team-stats",
+      "actual_path": "/team-stats",
+      "route_ok": true,
+      "controls": { "links": 12, "buttons": 4, "selects": 1, "inputs": 1 },
+      "select_option_changes": 33
+    },
+    {
+      "label": "Team Comparison",
+      "expected_path": "/team-comparison",
+      "actual_path": "/team-comparison",
+      "route_ok": true,
+      "controls": { "links": 12, "buttons": 6, "selects": 4, "inputs": 0 },
+      "select_option_changes": 120
+    },
+    {
+      "label": "Matchup Analyzer",
+      "expected_path": "/matchup-analyzer",
+      "actual_path": "/matchup-analyzer",
+      "route_ok": true,
+      "controls": { "links": 12, "buttons": 2, "selects": 0, "inputs": 0 },
+      "select_option_changes": 0
+    },
+    {
+      "label": "Advanced Analytics",
+      "expected_path": "/analytics",
+      "actual_path": "/analytics",
+      "route_ok": true,
+      "controls": { "links": 12, "buttons": 8, "selects": 1, "inputs": 0 },
+      "select_option_changes": 4
+    },
+    {
+      "label": "Game Statistics",
+      "expected_path": "/game-statistics",
+      "actual_path": "/game-statistics",
+      "route_ok": true,
+      "controls": { "links": 12, "buttons": 5, "selects": 4, "inputs": 0 },
+      "select_option_changes": 120
+    },
+    {
+      "label": "Historical Data",
+      "expected_path": "/historical-data",
+      "actual_path": "/historical-data",
+      "route_ok": true,
+      "controls": { "links": 12, "buttons": 2, "selects": 0, "inputs": 0 },
+      "select_option_changes": 0
+    },
+    {
+      "label": "AI Predictions",
+      "expected_path": "/ml-predictions",
+      "actual_path": "/ml-predictions",
+      "route_ok": true,
+      "controls": { "links": 12, "buttons": 5, "selects": 2, "inputs": 0 },
+      "select_option_changes": 25
+    },
+    {
+      "label": "Model Performance",
+      "expected_path": "/model-performance",
+      "actual_path": "/model-performance",
+      "route_ok": true,
+      "controls": { "links": 12, "buttons": 2, "selects": 0, "inputs": 0 },
+      "select_option_changes": 0
+    },
+    {
+      "label": "Admin",
+      "expected_path": "/admin",
+      "actual_path": "/admin",
+      "route_ok": true,
+      "controls": { "links": 12, "buttons": 7, "selects": 0, "inputs": 0 },
+      "select_option_changes": 0
+    },
+    {
+      "label": "Settings",
+      "expected_path": "/settings",
+      "actual_path": "/settings",
+      "route_ok": true,
+      "controls": { "links": 12, "buttons": 2, "selects": 0, "inputs": 0 },
+      "select_option_changes": 0
+    }
+  ],
+  "network_errors": [
+    {
+      "status": 500,
+      "url": "https://9dkkj5n2rc.execute-api.us-east-2.amazonaws.com/api/hcl/analytics/summary?season=2025"
+    },
+    {
+      "status": 500,
+      "url": "https://9dkkj5n2rc.execute-api.us-east-2.amazonaws.com/api/hcl/analytics/summary?season=2024"
+    },
+    {
+      "status": 500,
+      "url": "https://9dkkj5n2rc.execute-api.us-east-2.amazonaws.com/api/hcl/analytics/summary?season=2023"
+    },
+    {
+      "status": 500,
+      "url": "https://9dkkj5n2rc.execute-api.us-east-2.amazonaws.com/api/hcl/analytics/summary?season=2022"
+    }
+  ],
+  "known_limitations": [
+    "Button click actions were inventory-counted but not exhaustively clicked due side-effect risk.",
+    "Non-GET APIs and destructive actions were intentionally excluded.",
+    "Deep-link route host rewrite validation is out-of-band and currently failing for non-root routes."
+  ]
+}
