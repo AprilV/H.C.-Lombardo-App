@@ -92,7 +92,19 @@ a direct breach of AI_EXECUTION_CONTRACT.md.
 
 ---
 
-## 9. HOW TO USE THIS CHECKLIST
+## 9. DASHBOARD INTEGRITY VIOLATIONS
+
+☐ Skipped `RUN DASHBOARD LINE AUDIT` when editing dashboard sprint/status data  
+☐ Updated final sprint statuses without evidence-backed ticket audit  
+☐ Left any ticket in `TBD`/`Backlog` during final sprint lockdown  
+☐ Changed ticket status without reconciling subtask completion state  
+☐ Marked ticket complete/blocked without required `TASK_DETAILS` fields  
+☐ Left missing parent resolution detail records for done/blocked tickets  
+☐ Reported dashboard card values without post-edit verification  
+
+---
+
+## 10. HOW TO USE THIS CHECKLIST
 
 When a violation occurs:
 
@@ -103,6 +115,8 @@ When a violation occurs:
 
 Example:
 "Violation detected: Partial Fix + Assumption (Sections 3 and 2). Stop and reassess."
+
+"Violation detected: Dashboard Integrity (Section 9). Run line-by-line audit gate before further edits."
 
 ---
 

@@ -613,6 +613,19 @@ If the user message includes `EXECUTE ORDER 66` OR `RUN STARTUP LOCK` OR `LOOK A
    - explicit exclusion list
 ```
 
+For dashboard projects, add this additional block:
+
+```md
+## Dashboard Integrity Trigger (Final Sprint Safety)
+If the user message includes `RUN DASHBOARD LINE AUDIT` OR `RUN FINAL SPRINT INTEGRITY AUDIT` OR references `docs/DASHBOARD_UPDATE_GUIDE.md` for dashboard integrity enforcement, execute this protocol before dashboard edits:
+1. Read `docs/DASHBOARD_UPDATE_GUIDE.md` sections `Final Sprint Lockdown Protocol (No Backlog Allowed)` and `Line-by-Line Audit Gate (Mandatory Before Push)`.
+2. Audit active sprint ticket integrity line-by-line before making changes.
+3. Return a baseline audit snapshot (status totals, blocked IDs, non-compliant IDs, and top-card values).
+4. Apply fixes only after baseline audit is reported.
+5. Re-run the same audit after edits and report pass/fail deltas.
+6. Do not infer status from incomplete evidence. If evidence is missing, stop and ask.
+```
+
 ## Step 6: Define Your Read Matrix
 
 A read matrix is the exact list of docs the assistant must read during startup lock.

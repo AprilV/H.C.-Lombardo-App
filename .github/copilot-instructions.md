@@ -90,3 +90,16 @@ Explicit exclusions unless user explicitly requests archive deep-read:
 		- verification snapshot status
 		- read matrix status (complete/blocked)
 		- explicit exclusion list used for this startup lock
+
+## Dashboard Integrity Trigger (Final Sprint Safety)
+- If the user message includes `RUN DASHBOARD LINE AUDIT` OR `RUN FINAL SPRINT INTEGRITY AUDIT` OR references `docs/DASHBOARD_UPDATE_GUIDE.md` for dashboard integrity enforcement, execute this protocol before dashboard edits:
+	1. Read `docs/DASHBOARD_UPDATE_GUIDE.md` sections `Final Sprint Lockdown Protocol (No Backlog Allowed)` and `Line-by-Line Audit Gate (Mandatory Before Push)`.
+	2. Audit active sprint ticket integrity line-by-line before making changes (status, sprint assignment, subtasks, task detail records, parent closure detail records).
+	3. Return a baseline audit snapshot before edits with:
+		- sprint totals by status
+		- blocked ticket IDs
+		- non-compliant ticket IDs grouped by failure type
+		- top-card values (`Sprint Tasks Done`, `Open P1 Blockers`, `Total Open Tasks`)
+	4. Apply fixes only after baseline audit is reported.
+	5. Re-run the same audit after edits and report pass/fail deltas.
+	6. Do not infer status from incomplete evidence. If evidence is missing, stop and ask.

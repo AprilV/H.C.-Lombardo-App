@@ -43,8 +43,64 @@ If these arrays are not updated, the chart will be stale even when tasks/backlog
 
 ---
 
+## Final Sprint Lockdown Protocol (No Backlog Allowed)
+
+When the active sprint is the last sprint in `SPRINT_SCHEDULE`, the dashboard must run in final-sprint lockdown mode.
+
+Mandatory rules:
+
+1. No `PB_ITEMS` ticket may remain in `TBD` or `Backlog` sprint assignment.
+2. Every ticket in the final sprint must be either `Done` or `Blocked`.
+3. Open tickets in the final sprint must be only true blockers, and must appear in Open P1 Blockers.
+4. For every `Done` or `Blocked` ticket:
+	- all manual subtask IDs must exist,
+	- subtask completion must match status (`COMPLETED_TASKS` for Done, `BLOCKED_TASKS` for Blocked),
+	- every subtask must have `TASK_DETAILS` with `resolution`, `date`, `timestamp`, `updatedBy`,
+	- parent detail key (`ta_parent_<ticket_id>`) must have a resolution record.
+5. No guessing: ticket state changes must be evidence-based from ticket history, closure docs, and recorded resolution artifacts.
+6. If evidence is missing, stop and ask before changing status.
+
+Operator phrase for enforcement:
+
+- `RUN DASHBOARD LINE AUDIT`
+
+When this phrase is used, Claude must execute the Line-by-Line Audit Gate below before and after changes.
+
+---
+
+## Line-by-Line Audit Gate (Mandatory Before Push)
+
+Run this gate for the active sprint after any dashboard ticket/status edit.
+
+Pass criteria:
+
+1. Sprint totals reconcile:
+	- `done + blocked + in-progress + to-do + other = sprint total`.
+2. Final sprint policy reconciles:
+	- `TBD/Backlog ticket count = 0`.
+	- `in-progress/to-do/other = 0` for final sprint.
+3. Subtask integrity reconciles:
+	- `missingDoneTickets = 0`.
+	- `missingBlockedTickets = 0`.
+	- `missingDetailTickets = 0`.
+	- `missingParentTickets = 0`.
+4. Card reconciliation:
+	- `Open P1 Blockers` equals count of blocked final-sprint tickets.
+	- `Total Open Tasks` equals count of open final-sprint tickets.
+	- `Sprint Tasks Done` card matches final-sprint subtask and effort-point totals.
+
+Required audit output in session response:
+
+1. Final sprint totals.
+2. Blocked ticket IDs.
+3. Any non-compliant ticket IDs (must be empty before push).
+4. Card values after reload.
+
+---
+
 ## Daily Update Order (Mandatory)
 
+0. If active sprint is final sprint, run `RUN DASHBOARD LINE AUDIT` gate first and capture baseline totals.
 1. Preferred: run one command per completed subtask:
 	- `./scripts/maintenance/dashboard_complete_subtask.ps1 -Sprint <active_sprint_num> -Subtask <task_id> -Resolution "<what was completed>"`
 	- This writes `COMPLETED_TASKS`, `TASK_DETAILS`, PB parent status, creates a timestamped pre-write backup under `backups/dashboard_automation`, and runs closure receipt automatically.
@@ -65,6 +121,7 @@ If these arrays are not updated, the chart will be stale even when tasks/backlog
 	- `python scripts/maintenance/dashboard_closure_gate.py subtask --sprint <active_sprint_num> --subtask <task_id>`
 	- One-command receipt (recommended): `./scripts/maintenance/dashboard_closure_receipt.ps1 -Sprint <active_sprint_num> -Subtask <task_id>`
 9. Commit + push.
+10. If active sprint is final sprint, rerun `RUN DASHBOARD LINE AUDIT` and confirm zero drift before final response.
 
 ---
 
