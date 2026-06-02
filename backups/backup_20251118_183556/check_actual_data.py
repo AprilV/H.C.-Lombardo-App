@@ -4,7 +4,7 @@ from psycopg2.extras import RealDictCursor
 conn = psycopg2.connect(
     dbname='nfl_analytics',
     user='postgres',
-    password='aprilv120'
+    password='REDACTED_DB_PASSWORD'
 )
 cur = conn.cursor(cursor_factory=RealDictCursor)
 

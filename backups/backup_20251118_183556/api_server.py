@@ -46,7 +46,7 @@ app.register_blueprint(ml_api)
 DB_CONFIG = {
     'dbname': 'nfl_analytics',
     'user': 'postgres',
-    'password': 'aprilv120',
+    'password': 'REDACTED_DB_PASSWORD',
     'host': 'localhost',
     'port': 5432
 }

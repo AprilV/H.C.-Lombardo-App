@@ -5,7 +5,7 @@ try:
     conn = psycopg2.connect(
         dbname='nfl_analytics',
         user='postgres',
-        password='aprilv120',
+        password='REDACTED_DB_PASSWORD',
         host='localhost'
     )
     cur = conn.cursor(cursor_factory=RealDictCursor)

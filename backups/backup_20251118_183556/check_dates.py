@@ -6,7 +6,7 @@ conn = psycopg2.connect(
     port=5432,
     database='nfl_analytics',
     user='postgres',
-    password='aprilv120'
+    password='REDACTED_DB_PASSWORD'
 )
 
 cursor = conn.cursor()

@@ -69,13 +69,17 @@ function MLPredictions() {
     fetchEloRatings();
     fetchModelInfo();
     fetchExplanation();
-    fetchSeasonStats();
     fetchLiveScores();
     
     // Refresh live scores every 30 seconds
     const interval = setInterval(fetchLiveScores, 30000);
     return () => clearInterval(interval);
   }, []);
+
+  // Keep season-level AI vs Vegas metrics in sync with the selected season.
+  useEffect(() => {
+    fetchSeasonStats();
+  }, [season]);
 
   // Fetch predictions when model type changes
   useEffect(() => {

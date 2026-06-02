@@ -17,7 +17,7 @@ cd /d "%~dp0"
 
 REM Step 1: Check Database
 echo [1/4] Checking Database Connection...
-python -c "import psycopg2; conn = psycopg2.connect(host='localhost', port=5432, database='nfl_analytics', user='postgres', password='aprilv120'); cursor = conn.cursor(); cursor.execute('SELECT COUNT(*) FROM teams'); count = cursor.fetchone()[0]; conn.close(); print(f'      Database Ready: {count} teams loaded')" 2>nul
+python -c "import psycopg2; conn = psycopg2.connect(host='localhost', port=5432, database='nfl_analytics', user='postgres', password='REDACTED_DB_PASSWORD'); cursor = conn.cursor(); cursor.execute('SELECT COUNT(*) FROM teams'); count = cursor.fetchone()[0]; conn.close(); print(f'      Database Ready: {count} teams loaded')" 2>nul
 if errorlevel 1 (
     echo       ERROR: Database not available. Make sure PostgreSQL is running.
     pause

@@ -27,7 +27,6 @@ function Admin() {
       const data = await response.json();
       setServerStatus(data);
     } catch (err) {
-      console.error('Health check failed:', err);
       setServerStatus(null);
     }
   };
@@ -46,7 +45,7 @@ function Admin() {
         });
       }
     } catch (err) {
-      console.error('Failed to fetch DB stats:', err);
+      setDbStats(null);
     }
   };
 

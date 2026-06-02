@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction Models - Classifier & Regressor</title>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/renderers/CSS2DRenderer.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            overflow: hidden;
+        }
+        
+        #models-canvas {
+            width: 100%;
+            height: 100vh;
+        }
+        
+        .model-info {
+            position: absolute;
+            top: 10px;
+            left: 20px;
+            right: 20px;
+            background: rgba(15, 23, 42, 0.95);
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid rgba(74, 158, 255, 0.3);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        }
+        
+        .model-info h2 {
+            color: #7ab8ff;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .model-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #9ca3af;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+        
+        .tab-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .tab-btn.active {
+            background: linear-gradient(135deg, #2a5298 0%, #3a6bc8 100%);
+            border-color: #4a9eff;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(74, 158, 255, 0.4);
+        }
+        
+        .tab-btn.classifier.active {
+            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+            border-color: #4ade80;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+        }
+        
+        .tab-btn.regressor.active {
+            background: linear-gradient(135deg, #be185d 0%, #ec4899 100%);
+            border-color: #f472b6;
+            box-shadow: 0 4px 12px rgba(236, 72, 153, 0.4);
+        }
+        
+        .model-details {
+            display: none;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .model-details.active {
+            display: block;
+        }
+        
+        .model-details h3 {
+            color: #4ade80;
+            font-size: 1rem;
+            margin-bottom: 8px;
+        }
+        
+        .model-details.regressor h3 {
+            color: #ec4899;
+        }
+        
+        .model-details p {
+            color: #e2e8f0;
+            line-height: 1.5;
+            font-size: 0.85rem;
+            margin: 4px 0;
+        }
+        
+        .metric {
+            color: #7ab8ff;
+            font-weight: bold;
+        }
+        
+        .layer-label {
+            color: #7ab8ff;
+            font-size: 14px;
+            font-weight: 600;
+            text-align: center;
+            padding: 6px 12px;
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid #3b82f6;
+            border-radius: 6px;
+            pointer-events: none;
+            white-space: nowrap;
+            text-shadow: 0 0 10px rgba(122, 184, 255, 0.5);
+        }
+        
+        .layer-description {
+            color: #9ca3af;
+            font-size: 11px;
+            font-weight: 400;
+            margin-top: 2px;
+        }
+        
+        .model-title {
+            color: #e2e8f0;
+            font-size: 16px;
+            font-weight: 700;
+            text-align: center;
+            padding: 8px 16px;
+            background: rgba(15, 23, 42, 0.9);
+            border: 2px solid;
+            border-radius: 8px;
+            pointer-events: none;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+        }
+        
+        .architecture-explanation {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #e2e8f0;
+            font-size: 13px;
+            text-align: center;
+            padding: 12px 20px;
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid #3b82f6;
+            border-radius: 8px;
+            max-width: 700px;
+            line-height: 1.6;
+            z-index: 100;
+        }
+        
+        .architecture-explanation strong {
+            color: #7ab8ff;
+            font-weight: 700;
+        }
+        
+        .controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(15, 23, 42, 0.95);
+            padding: 15px 25px;
+            border-radius: 12px;
+            border: 1px solid rgba(74, 158, 255, 0.3);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        
+        .control-btn {
+            background: linear-gradient(135deg, #2a5298 0%, #3a6bc8 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(42, 82, 152, 0.6);
+        }
+        
+        .control-label {
+            color: #7ab8ff;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div id="models-canvas"></div>
+    
+    <div class="model-info">
+        <h2>🎯 AI Prediction Models</h2>
+        
+        <div class="model-tabs">
+            <button class="tab-btn classifier active" onclick="switchModel('classifier')">
+                🟢 Win/Loss Classifier
+            </button>
+            <button class="tab-btn regressor" onclick="switchModel('regressor')">
+                🔴 Score Regressor
+            </button>
+        </div>
+        
+        <div class="model-details classifier active">
+            <h3>🟢 Win/Loss Classifier</h3>
+            <p><span class="metric">Purpose:</span> Predicts which team will win the game</p>
+            <p><span class="metric">Architecture:</span> 41 inputs → 128 → 64 → 32 → 1 output</p>
+            <p><span class="metric">Training Data:</span> Historical NFL games</p>
+            <p><span class="metric">Output:</span> Win probability (0-1)</p>
+        </div>
+        
+        <div class="model-details regressor">
+            <h3>🔴 Score Regressor</h3>
+            <p><span class="metric">Purpose:</span> Predicts the final score difference</p>
+            <p><span class="metric">Architecture:</span> 41 inputs → 128 → 64 → 32 → 1 output</p>
+            <p><span class="metric">Training Data:</span> Historical NFL games</p>
+            <p><span class="metric">Output:</span> Point spread prediction</p>
+        </div>
+    </div>
+    
+    <div class="controls">
+        <span class="control-label">🖱️ Drag to rotate</span>
+        <span class="control-label">🔍 Scroll to zoom</span>
+        <button class="control-btn" onclick="toggleAutoRotate()">Toggle Auto-Rotate</button>
+        <button class="control-btn" onclick="resetCamera()">Reset View</button>
+    </div>
+    
+    <div class="architecture-explanation classifier-explanation">
+        <strong>Win/Loss Classifier</strong><br>
+        This model predicts <strong>who will win</strong> the game. It outputs a <strong>binary result</strong> (0 or 1) representing the probability of a team winning. Think of it as a yes/no question: "Will this team win?" The layers compress 41 game statistics into a single win probability.
+    </div>
+    
+    <div class="architecture-explanation regressor-explanation" style="display: none;">
+        <strong>Score Regressor</strong><br>
+        This model predicts <strong>by how much</strong> a team will win or lose. It outputs a <strong>continuous number</strong> (the point spread) rather than just yes/no. Think of it as answering: "What will the final score difference be?" The layers compress 41 game statistics into a predicted point spread.
+    </div>
+    
+    <script>
+        let scene, camera, renderer, controls;
+        let classifierGroup, regressorGroup;
+        let animationId;
+        let autoRotate = true;
+        let currentModel = 'classifier';
+        
+        function init() {
+            const container = document.getElementById('models-canvas');
+            
+            // Scene
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x0a0e27);
+            scene.fog = new THREE.Fog(0x0a0e27, 50, 150);
+            
+            // Camera
+            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 0, 120);
+            camera.lookAt(0, 0, 0);
+            
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            container.appendChild(renderer.domElement);
+            
+            // Controls
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.minDistance = 30;
+            controls.maxDistance = 150;
+            controls.autoRotate = autoRotate;
+            controls.autoRotateSpeed = 1.0;
+            
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+            
+            const directionalLight1 = new THREE.DirectionalLight(0x10b981, 0.8);
+            directionalLight1.position.set(-30, 20, 20);
+            scene.add(directionalLight1);
+            
+            const directionalLight2 = new THREE.DirectionalLight(0xec4899, 0.8);
+            directionalLight2.position.set(30, 20, 20);
+            scene.add(directionalLight2);
+            
+            // Grid
+            const grid = new THREE.GridHelper(80, 16, 0x1e293b, 0x0f172a);
+            grid.position.y = -10;
+            scene.add(grid);
+            
+            // Create both models
+            createClassifier();
+            createRegressor();
+            
+            // Add labels explaining layers and architecture
+            addModelLabels();
+            
+            // Start animation
+            animate();
+            
+            // Handle resize
+            window.addEventListener('resize', onWindowResize);
+        }
+        
+        function createClassifier() {
+            // Win/Loss Classifier - RAINBOW GRADIENT
+            const layers = [
+                { count: 41, color: 0x8b5cf6, z: 40, rows: 7, cols: 6, size: 0.4 },     // Purple (input)
+                { count: 128, color: 0x3b82f6, z: 20, rows: 8, cols: 16, size: 0.35 },   // Blue
+                { count: 64, color: 0x10b981, z: 0, rows: 8, cols: 8, size: 0.35 },      // Emerald
+                { count: 32, color: 0xfbbf24, z: -20, rows: 4, cols: 8, size: 0.35 },    // Amber
+                { count: 1, color: 0xef4444, z: -40, rows: 1, cols: 1, size: 0.6 }       // Red (output)
+            ];
+            
+            classifierGroup = new THREE.Group();
+            const spacing = 3;
+            
+            layers.forEach((layer, layerIndex) => {
+                const neuronsInLayer = [];
+                const cols = layer.cols;
+                const rows = layer.rows;
+                const xOffset = -(cols - 1) * spacing / 2;
+                const yOffset = -(rows - 1) * spacing / 2;
+                
+                for (let i = 0; i < layer.count; i++) {
+                    const row = Math.floor(i / cols);
+                    const col = i % cols;
+                    
+                    const neuron = new THREE.Mesh(
+                        new THREE.SphereGeometry(layer.size, 16, 16),
+                        new THREE.MeshPhongMaterial({ 
+                            color: layer.color,
+                            emissive: layer.color, 
+                            emissiveIntensity: 0.6,
+                            shininess: 100
+                        })
+                    );
+                    
+                    neuron.position.set(
+                        xOffset + col * spacing,
+                        yOffset + row * spacing,
+                        layer.z
+                    );
+                    
+                    classifierGroup.add(neuron);
+                    neuronsInLayer.push(neuron);
+                }
+                
+                // Add connections between layers (MORE visible connections)
+                if (layerIndex > 0) {
+                    const prevLayer = layers[layerIndex - 1];
+                    const prevNeurons = classifierGroup.children.filter(child => 
+                        child.geometry && child.geometry.type === 'SphereGeometry'
+                    ).slice(-prevLayer.count - layer.count, -layer.count);
+                    
+                    // Increase connection density for visibility
+                    const sampleRate = layerIndex === 1 ? 0.08 : 0.15; // Much more connections
+                    
+                    neuronsInLayer.forEach((neuron, idx) => {
+                        prevNeurons.forEach(prevNeuron => {
+                            if (Math.random() < sampleRate) {
+                                const points = [prevNeuron.position.clone(), neuron.position.clone()];
+                                const geometry = new THREE.BufferGeometry().setFromPoints(points);
+                                const line = new THREE.Line(geometry, 
+                                    new THREE.LineBasicMaterial({ 
+                                        color: layer.color, 
+                                        opacity: 0.3, 
+                                        transparent: true,
+                                        linewidth: 2
+                                    })
+                                );
+                                classifierGroup.add(line);
+                            }
+                        });
+                    });
+                }
+            });
+            
+            classifierGroup.position.set(0, 0, 0);
+            classifierGroup.userData.pulsePhase = 0;
+            classifierGroup.visible = true;
+            scene.add(classifierGroup);
+        }
+        
+        function createRegressor() {
+            // Score Regressor - SUNSET GRADIENT
+            const layers = [
+                { count: 41, color: 0x06b6d4, z: 40, rows: 7, cols: 6, size: 0.4 },     // Cyan (input)
+                { count: 128, color: 0x8b5cf6, z: 20, rows: 8, cols: 16, size: 0.35 },   // Violet
+                { count: 64, color: 0xec4899, z: 0, rows: 8, cols: 8, size: 0.35 },      // Pink
+                { count: 32, color: 0xf97316, z: -20, rows: 4, cols: 8, size: 0.35 },    // Orange
+                { count: 1, color: 0xfbbf24, z: -40, rows: 1, cols: 1, size: 0.6 }       // Gold (output)
+            ];
+            
+            regressorGroup = new THREE.Group();
+            const spacing = 3;
+            
+            layers.forEach((layer, layerIndex) => {
+                const neuronsInLayer = [];
+                const cols = layer.cols;
+                const rows = layer.rows;
+                const xOffset = -(cols - 1) * spacing / 2;
+                const yOffset = -(rows - 1) * spacing / 2;
+                
+                for (let i = 0; i < layer.count; i++) {
+                    const row = Math.floor(i / cols);
+                    const col = i % cols;
+                    
+                    const neuron = new THREE.Mesh(
+                        new THREE.SphereGeometry(layer.size, 16, 16),
+                        new THREE.MeshPhongMaterial({ 
+                            color: layer.color,
+                            emissive: layer.color, 
+                            emissiveIntensity: 0.6,
+                            shininess: 100
+                        })
+                    );
+                    
+                    neuron.position.set(
+                        xOffset + col * spacing,
+                        yOffset + row * spacing,
+                        layer.z
+                    );
+                    
+                    regressorGroup.add(neuron);
+                    neuronsInLayer.push(neuron);
+                }
+                
+                // Add connections between layers (MORE visible connections)
+                if (layerIndex > 0) {
+                    const prevLayer = layers[layerIndex - 1];
+                    const prevNeurons = regressorGroup.children.filter(child => 
+                        child.geometry && child.geometry.type === 'SphereGeometry'
+                    ).slice(-prevLayer.count - layer.count, -layer.count);
+                    
+                    // Increase connection density for visibility
+                    const sampleRate = layerIndex === 1 ? 0.08 : 0.15; // Much more connections
+                    
+                    neuronsInLayer.forEach((neuron, idx) => {
+                        prevNeurons.forEach(prevNeuron => {
+                            if (Math.random() < sampleRate) {
+                                const points = [prevNeuron.position.clone(), neuron.position.clone()];
+                                const geometry = new THREE.BufferGeometry().setFromPoints(points);
+                                const line = new THREE.Line(geometry, 
+                                    new THREE.LineBasicMaterial({ 
+                                        color: layer.color, 
+                                        opacity: 0.3, 
+                                        transparent: true,
+                                        linewidth: 2
+                                    })
+                                );
+                                regressorGroup.add(line);
+                            }
+                        });
+                    });
+                }
+            });
+            
+            regressorGroup.position.set(0, 0, 0);
+            regressorGroup.userData.pulsePhase = Math.PI;
+            regressorGroup.visible = false;
+            scene.add(regressorGroup);
+        }
+        
+        function addModelLabels() {
+            // CSS2D Renderer for labels
+            const labelRenderer = new THREE.CSS2DRenderer();
+            labelRenderer.setSize(window.innerWidth, window.innerHeight);
+            labelRenderer.domElement.style.position = 'absolute';
+            labelRenderer.domElement.style.top = '0';
+            labelRenderer.domElement.style.pointerEvents = 'none';
+            document.getElementById('models-canvas').appendChild(labelRenderer.domElement);
+            
+            // Store reference for animation
+            window.labelRenderer = labelRenderer;
+            
+            // Classifier layer colors (rainbow gradient)
+            const classifierLayers = [
+                { z: 40, title: 'Input Layer (41)', desc: 'Game stats & team metrics', color: '#8b5cf6' },
+                { z: 20, title: 'Hidden Layer 1 (128)', desc: 'Pattern detection - identifies winning trends', color: '#3b82f6' },
+                { z: 0, title: 'Hidden Layer 2 (64)', desc: 'Feature refinement - focuses on key patterns', color: '#10b981' },
+                { z: -20, title: 'Hidden Layer 3 (32)', desc: 'Decision making - consolidates predictions', color: '#fbbf24' },
+                { z: -40, title: 'Output Layer (1)', desc: 'Win Probability (0-1)', color: '#ef4444' }
+            ];
+            
+            // Regressor layer colors (sunset gradient)
+            const regressorLayers = [
+                { z: 40, title: 'Input Layer (41)', desc: 'Game stats & team metrics', color: '#06b6d4' },
+                { z: 20, title: 'Hidden Layer 1 (128)', desc: 'Pattern detection - identifies scoring trends', color: '#8b5cf6' },
+                { z: 0, title: 'Hidden Layer 2 (64)', desc: 'Feature refinement - focuses on key patterns', color: '#ec4899' },
+                { z: -20, title: 'Hidden Layer 3 (32)', desc: 'Decision making - consolidates predictions', color: '#f97316' },
+                { z: -40, title: 'Output Layer (1)', desc: 'Point Spread Prediction', color: '#fbbf24' }
+            ];
+            
+            // Add labels for Classifier
+            classifierLayers.forEach((info) => {
+                const div = document.createElement('div');
+                div.className = 'layer-label classifier-label';
+                div.style.borderColor = info.color;
+                div.innerHTML = `<strong style="color: ${info.color};">${info.title}</strong>`;
+                if (info.desc) {
+                    div.innerHTML += `<div class="layer-description">${info.desc}</div>`;
+                }
+                
+                const label = new THREE.CSS2DObject(div);
+                label.position.set(0, -25, info.z);
+                label.visible = true;
+                scene.add(label);
+                window['classifierLabel' + info.z] = label;
+            });
+            
+            // Add labels for Regressor
+            regressorLayers.forEach((info) => {
+                const div = document.createElement('div');
+                div.className = 'layer-label regressor-label';
+                div.style.borderColor = info.color;
+                div.innerHTML = `<strong style="color: ${info.color};">${info.title}</strong>`;
+                if (info.desc) {
+                    div.innerHTML += `<div class="layer-description">${info.desc}</div>`;
+                }
+                
+                const label = new THREE.CSS2DObject(div);
+                label.position.set(0, -25, info.z);
+                label.visible = false;
+                scene.add(label);
+                window['regressorLabel' + info.z] = label;
+            });
+        }
+        
+        function switchModel(modelType) {
+            currentModel = modelType;
+            
+            // Toggle visibility
+            if (classifierGroup && regressorGroup) {
+                classifierGroup.visible = (modelType === 'classifier');
+                regressorGroup.visible = (modelType === 'regressor');
+                
+                // Toggle labels
+                const classifierLabels = document.querySelectorAll('.classifier-label');
+                const regressorLabels = document.querySelectorAll('.regressor-label');
+                
+                classifierLabels.forEach(label => {
+                    const parent = label.parentElement?.parentElement;
+                    if (parent && parent.__threeObj) {
+                        parent.__threeObj.visible = (modelType === 'classifier');
+                    }
+                });
+                
+                regressorLabels.forEach(label => {
+                    const parent = label.parentElement?.parentElement;
+                    if (parent && parent.__threeObj) {
+                        parent.__threeObj.visible = (modelType === 'regressor');
+                    }
+                });
+                
+                // Update label visibility directly
+                [40, 20, 0, -20, -40].forEach(z => {
+                    if (window['classifierLabel' + z]) {
+                        window['classifierLabel' + z].visible = (modelType === 'classifier');
+                    }
+                    if (window['regressorLabel' + z]) {
+                        window['regressorLabel' + z].visible = (modelType === 'regressor');
+                    }
+                });
+            }
+            
+            // Toggle UI tabs
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`.tab-btn.${modelType}`).classList.add('active');
+            
+            // Toggle info panels
+            document.querySelectorAll('.model-details').forEach(panel => panel.classList.remove('active'));
+            document.querySelector(`.model-details.${modelType}`).classList.add('active');
+            
+            // Toggle explanation panels
+            const classifierExplanation = document.querySelector('.classifier-explanation');
+            const regressorExplanation = document.querySelector('.regressor-explanation');
+            if (classifierExplanation && regressorExplanation) {
+                classifierExplanation.style.display = (modelType === 'classifier') ? 'block' : 'none';
+                regressorExplanation.style.display = (modelType === 'regressor') ? 'block' : 'none';
+            }
+        }
+        
+        function animate() {
+            animationId = requestAnimationFrame(animate);
+            
+            controls.update();
+            
+            // Pulsing animation for neurons
+            const time = Date.now() * 0.001;
+            
+            [classifierGroup, regressorGroup].forEach(group => {
+                if (group) {
+                    group.children.forEach((child) => {
+                        // Pulse neurons (spheres)
+                        if (child.geometry && child.geometry.type === 'SphereGeometry') {
+                            const pulse = Math.sin(time * 2 + group.userData.pulsePhase) * 0.2 + 0.6;
+                            child.material.emissiveIntensity = pulse;
+                        }
+                    });
+                }
+            });
+            
+            renderer.render(scene, camera);
+            
+            // Render labels
+            if (window.labelRenderer) {
+                window.labelRenderer.render(scene, camera);
+            }
+        }
+        
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+        
+        function toggleAutoRotate() {
+            autoRotate = !autoRotate;
+            controls.autoRotate = autoRotate;
+        }
+        
+        function resetCamera() {
+            camera.position.set(0, 0, 120);
+            controls.target.set(0, 0, 0);
+            controls.update();
+        }
+        
+        // Initialize
+        init();
+    </script>
+</body>
+</html>

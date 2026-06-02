@@ -54,7 +54,7 @@ Status: **OPEN** | **IN SPRINT** | **DONE**
 |----|-------|----------|------|--------|
 | BUG-1 | Fix App.js: /game-statistics routes to TeamComparison (wrong component) | P1 | S | DONE |
 | BUG-2 | Fix App.js: /matchup-analyzer routes to TeamComparison (wrong component) | P1 | S | DONE |
-| BUG-3 | Remove hardcoded password 'aprilv120' fallback from api_server.py, api_routes_hcl.py, api_routes_live_scores.py | P1 | S | DONE |
+| BUG-3 | Remove hardcoded password 'REDACTED_DB_PASSWORD' fallback from api_server.py, api_routes_hcl.py, api_routes_live_scores.py | P1 | S | DONE |
 | BUG-4 | Remove 7+ print(f"DEBUG:...") statements from api_routes_live_scores.py | P1 | S | DONE |
 | BUG-5 | Fix background_updater.py: imports MultiSourceDataFetcher which doesn't exist | P1 | M | DONE |
 | BUG-6 | Fix season default logic (hardcoded 2025 throughout) — implement dynamic current-season logic | P1 | M | DONE |

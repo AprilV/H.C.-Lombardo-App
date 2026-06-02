@@ -103,9 +103,9 @@ These were confirmed issues from earlier code review. Status below reflects veri
 |---|-------|------|------|----------|--------|--------|
 | BUG-001 | /game-statistics routes to wrong component | frontend/src/App.js | ~58 | P2 | FIXED | S12 |
 | BUG-002 | /matchup-analyzer routes to wrong component | frontend/src/App.js | ~59 | P2 | FIXED | S12 |
-| BUG-003 | Hardcoded password 'aprilv120' fallback | api_server.py | ~77 | P1 | FIXED | S12 |
-| BUG-004 | Hardcoded password 'aprilv120' fallback | api_routes_hcl.py | ~22 | P1 | FIXED | S12 |
-| BUG-005 | Hardcoded password 'aprilv120' fallback | api_routes_live_scores.py | ~29 | P1 | FIXED | S12 |
+| BUG-003 | Hardcoded password 'REDACTED_DB_PASSWORD' fallback | api_server.py | ~77 | P1 | FIXED | S12 |
+| BUG-004 | Hardcoded password 'REDACTED_DB_PASSWORD' fallback | api_routes_hcl.py | ~22 | P1 | FIXED | S12 |
+| BUG-005 | Hardcoded password 'REDACTED_DB_PASSWORD' fallback | api_routes_live_scores.py | ~29 | P1 | FIXED | S12 |
 | BUG-006 | 7+ DEBUG print statements in production | api_routes_live_scores.py | various | P3 | FIXED | S12 |
 | BUG-007 | background_updater.py missing import | background_updater.py | — | P2 | FIXED | S12 |
 | BUG-008 | train_xgb_winner.py uses hcl_test schema | ml/train_xgb_winner.py | 255 | P2 | OPEN | S14 |

@@ -127,6 +127,19 @@ c:\ReactGitEC2\IS330\H.C Lombardo App\
 
 ## 🔍 Verification Commands
 
+### Core Backend Chain (Recommended)
+```powershell
+./scripts/maintenance/verify_backend_core_chain.ps1
+```
+
+Expected PASS signatures:
+1. `PASS: Core backend verification chain is healthy.`
+2. `RESULT: 3/3 checks passed`
+3. Nested ML verification output includes:
+    - `PASS: ML verification chain is healthy.`
+    - `RESULT: 2/2 checks passed`
+    - `PASS chain hash is range-sensitive and contracts are stable.`
+
 ### Check if services are running
 ```powershell
 netstat -ano | findstr ":5000.*LISTENING"  # API Server
@@ -136,7 +149,7 @@ netstat -ano | findstr ":5432.*LISTENING"  # PostgreSQL
 
 ### Check database
 ```powershell
-$env:PGPASSWORD="aprilv120"
+$env:PGPASSWORD="REDACTED_DB_PASSWORD"
 & "C:\Program Files\PostgreSQL\18\bin\psql.exe" -U postgres -d nfl_analytics -c "SELECT COUNT(*) FROM teams;"
 ```
 
@@ -199,7 +212,7 @@ python espn_data_fetcher.py  # Fetch from ESPN API
 
 ### Database Credentials
 - **Username**: postgres
-- **Password**: aprilv120 (stored in environment/code)
+- **Password**: REDACTED_DB_PASSWORD (stored in environment/code)
 - **Access**: localhost only (not exposed to network)
 
 ### Recommendation for Production
@@ -207,7 +220,7 @@ python espn_data_fetcher.py  # Fetch from ESPN API
 2. Add `.env` to `.gitignore`
 3. Use environment variables:
    ```powershell
-   $env:DB_PASSWORD="aprilv120"
+   $env:DB_PASSWORD="REDACTED_DB_PASSWORD"
    ```
 
 ---
@@ -272,7 +285,7 @@ python api_server.py       # API only (port 5000)
 cd frontend; npm start     # React only (port 3000)
 
 # Database Access
-$env:PGPASSWORD="aprilv120"
+$env:PGPASSWORD="REDACTED_DB_PASSWORD"
 & "C:\Program Files\PostgreSQL\18\bin\psql.exe" -U postgres -d nfl_analytics
 ```
 

@@ -158,7 +158,7 @@ services:
     environment:
       POSTGRES_DB: nfl_analytics
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: aprilv120
+      POSTGRES_PASSWORD: REDACTED_DB_PASSWORD
     ports:
       - "5432:5432"
     volumes:
@@ -169,7 +169,7 @@ services:
     ports:
       - "5000:5000"
     environment:
-      DATABASE_URL: postgresql://postgres:aprilv120@postgres:5432/nfl_analytics
+      DATABASE_URL: postgresql://postgres:REDACTED_DB_PASSWORD@postgres:5432/nfl_analytics
     depends_on:
       - postgres
 

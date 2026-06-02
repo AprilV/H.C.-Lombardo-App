@@ -1,0 +1,39 @@
+﻿{
+    "generated_at_utc":  "2026-05-20T20:13:35.1245156Z",
+    "scope":  "TA-076 integrated reliability evidence bundle",
+    "endpoints":  {
+                      "ml_predict_week":  {
+                                              "route":  "/api/ml/predict-week/2024/18",
+                                              "status":  "HTTP 200",
+                                              "total_games":  16,
+                                              "winner_field_present":  true,
+                                              "spread_fields_present":  true
+                                          },
+                      "elo_predict_week":  {
+                                               "route":  "/api/elo/predict-week/2024/18",
+                                               "status":  "HTTP 200",
+                                               "total_games":  16,
+                                               "elo_spread_field_present":  true
+                                           },
+                      "model_performance":  {
+                                                "route":  "/api/ml/model-performance",
+                                                "status":  "HTTP 200",
+                                                "total_games":  272,
+                                                "classification_accuracy":  40.44,
+                                                "margin_mae":  13.75,
+                                                "contract_shape_ok":  true
+                                            }
+                  },
+    "gates":  {
+                  "G1_http_ml":  true,
+                  "G2_nonempty_ml":  true,
+                  "G3_fields_ml":  true,
+                  "G4_elo_spread":  true,
+                  "G5_model_contract":  true,
+                  "all_pass":  true
+              },
+    "blockers":  [
+
+                 ],
+    "signoff_recommendation":  "GO: Reliability smoke gates passed; no blockers identified for TA-076 closure."
+}

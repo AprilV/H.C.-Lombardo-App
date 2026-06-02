@@ -1,0 +1,22 @@
+{
+  "short_name": "H.C. Lombardo",
+  "name": "H.C. Lombardo NFL Analytics",
+  "description": "Professional NFL Analytics & Gambling Platform",
+  "icons": [
+    {
+      "src": "https://a.espncdn.com/i/teamlogos/leagues/500/nfl.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "https://a.espncdn.com/i/teamlogos/leagues/500/nfl.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#013369",
+  "background_color": "#013369",
+  "orientation": "portrait-primary"
+}

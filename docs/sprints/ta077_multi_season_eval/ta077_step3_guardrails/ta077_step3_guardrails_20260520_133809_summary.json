@@ -1,0 +1,122 @@
+{
+  "generated_at": "2026-05-20T13:38:09",
+  "thresholds": {
+    "max_leakage_pct": 5.0,
+    "max_line_lock_pct": 95.0
+  },
+  "overall_guardrails": {
+    "leakage": {
+      "rows_checked": 1359,
+      "predicted_after_game_date_count": 1343,
+      "pct": 98.82,
+      "pass": false
+    },
+    "line_lock": {
+      "rows_checked": 1309,
+      "line_locked_count": 1309,
+      "pct": 100.0,
+      "pass": false
+    },
+    "overall_pass": false
+  },
+  "by_season": {
+    "2021": {
+      "leakage": {
+        "rows_checked": 272,
+        "predicted_after_game_date_count": 272,
+        "pct": 100.0,
+        "threshold_pct": 5.0,
+        "pass": false
+      },
+      "line_lock": {
+        "rows_checked": 272,
+        "line_locked_count": 272,
+        "pct": 100.0,
+        "threshold_pct": 95.0,
+        "pass": false
+      },
+      "overall_pass": false
+    },
+    "2022": {
+      "leakage": {
+        "rows_checked": 271,
+        "predicted_after_game_date_count": 271,
+        "pct": 100.0,
+        "threshold_pct": 5.0,
+        "pass": false
+      },
+      "line_lock": {
+        "rows_checked": 271,
+        "line_locked_count": 271,
+        "pct": 100.0,
+        "threshold_pct": 95.0,
+        "pass": false
+      },
+      "overall_pass": false
+    },
+    "2023": {
+      "leakage": {
+        "rows_checked": 272,
+        "predicted_after_game_date_count": 272,
+        "pct": 100.0,
+        "threshold_pct": 5.0,
+        "pass": false
+      },
+      "line_lock": {
+        "rows_checked": 272,
+        "line_locked_count": 272,
+        "pct": 100.0,
+        "threshold_pct": 95.0,
+        "pass": false
+      },
+      "overall_pass": false
+    },
+    "2024": {
+      "leakage": {
+        "rows_checked": 272,
+        "predicted_after_game_date_count": 256,
+        "pct": 94.12,
+        "threshold_pct": 5.0,
+        "pass": false
+      },
+      "line_lock": {
+        "rows_checked": 272,
+        "line_locked_count": 272,
+        "pct": 100.0,
+        "threshold_pct": 95.0,
+        "pass": false
+      },
+      "overall_pass": false
+    },
+    "2025": {
+      "leakage": {
+        "rows_checked": 272,
+        "predicted_after_game_date_count": 272,
+        "pct": 100.0,
+        "threshold_pct": 5.0,
+        "pass": false
+      },
+      "line_lock": {
+        "rows_checked": 222,
+        "line_locked_count": 222,
+        "pct": 100.0,
+        "threshold_pct": 95.0,
+        "pass": false
+      },
+      "overall_pass": false
+    }
+  },
+  "pass_fail_counts": {
+    "seasons_total": 5,
+    "seasons_overall_pass": 0,
+    "seasons_overall_fail": 5,
+    "leakage_pass_seasons": 0,
+    "leakage_fail_seasons": 5,
+    "line_lock_pass_seasons": 0,
+    "line_lock_fail_seasons": 5
+  },
+  "source_paths": {
+    "combined_csv": "c:/ReactGitEC2/IS330/H.C Lombardo App/docs/sprints/ta077_multi_season_eval/ta077_step1_lock/ta070_s70_1_20260520_201725_combined.csv",
+    "s70_3_summary": "c:/ReactGitEC2/IS330/H.C Lombardo App/docs/sprints/ta077_multi_season_eval/ta077_step3_guardrails/ta070_s70_3_20260520_203722_summary.json"
+  }
+}

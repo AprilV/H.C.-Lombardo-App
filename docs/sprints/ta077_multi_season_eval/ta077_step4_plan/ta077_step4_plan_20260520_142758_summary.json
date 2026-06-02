@@ -1,0 +1,73 @@
+{
+  "generated_at": "2026-05-20T14:27:58",
+  "sources": {
+    "step2_summary": "c:/ReactGitEC2/IS330/H.C Lombardo App/docs/sprints/ta077_multi_season_eval/ta077_step2_metrics/ta077_step2_corrected_20260520_133506_summary.json",
+    "step3_summary": "c:/ReactGitEC2/IS330/H.C Lombardo App/docs/sprints/ta077_multi_season_eval/ta077_step3_guardrails/ta077_step3_guardrails_corrected_20260520_133923_summary.json"
+  },
+  "snapshot": {
+    "winner_accuracy_pct": 38.93,
+    "spread_accuracy_pct": 50.67,
+    "total_accuracy_pct": 54.44,
+    "margin_mae_points": 14.06,
+    "total_mae_points": 10.36,
+    "ai_vs_vegas_ai_wins": 193,
+    "ai_vs_vegas_vegas_wins": 477,
+    "ai_vs_vegas_ties": 639,
+    "ai_vs_vegas_ai_win_pct": 14.74,
+    "ai_vs_vegas_vegas_win_pct": 36.44,
+    "leakage_pct": 98.82,
+    "line_lock_pct": 93.05,
+    "seasons_pass_both": 0,
+    "seasons_total": 5
+  },
+  "prioritized_actions": [
+    {
+      "priority": "P0",
+      "action_id": "TA077-A1",
+      "title": "Enforce pregame-only evaluation cohort",
+      "owner": "Backend-ML",
+      "problem": "Leakage guardrail fails across all seasons (predicted_after_game_date high).",
+      "success_gate": "overall leakage <= 5% and 5/5 seasons leakage-pass",
+      "implementation": [
+        "Tag prediction provenance mode for every row (live vs backfill).",
+        "Exclude postgame/backfill rows from benchmark scoring queries and API views.",
+        "Add automated leakage assertion in evaluation pipeline."
+      ]
+    },
+    {
+      "priority": "P1",
+      "action_id": "TA077-A2",
+      "title": "Decouple totals from vegas line anchoring",
+      "owner": "ML-Modeling",
+      "problem": "Line-lock still fails in 2025 and remains near threshold overall.",
+      "success_gate": "line-lock <= 95% overall and 5/5 seasons line-lock-pass",
+      "implementation": [
+        "Generate independent predicted_total output (not vegas-total locked).",
+        "Recompute predicted_home_score/predicted_away_score from independent total logic.",
+        "Add per-season line-lock monitor in TA-077 run outputs."
+      ]
+    },
+    {
+      "priority": "P2",
+      "action_id": "TA077-A3",
+      "title": "Competitiveness tuning after integrity fixes",
+      "owner": "ML-Modeling",
+      "problem": "AI-vs-Vegas head-to-head remains materially behind Vegas in current benchmark cohort.",
+      "success_gate": "AI-vs-Vegas delta improves after A1/A2 without integrity regressions",
+      "implementation": [
+        "Run post-fix recalibration and feature drift diagnostics.",
+        "Compare season-by-season deltas and confidence-bucket behavior.",
+        "Promote only settings that preserve leakage/line-lock guardrail pass."
+      ]
+    }
+  ],
+  "recommendation": {
+    "status": "NO-GO",
+    "reason": "TA-077 competitiveness claims are blocked by unresolved leakage integrity failure.",
+    "conditions_to_promote": [
+      "Leakage guardrail pass at overall and all-season level.",
+      "Line-lock guardrail pass at overall and all-season level.",
+      "Refreshed AI-vs-Vegas deltas recomputed on integrity-clean cohort."
+    ]
+  }
+}

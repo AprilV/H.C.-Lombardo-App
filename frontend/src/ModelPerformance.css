@@ -21,6 +21,7 @@
 .season-selector {
   display: flex;
   justify-content: center;
+  flex-wrap: wrap;
   gap: 15px;
   margin-bottom: 20px;
 }
@@ -54,6 +55,45 @@
 
 .season-btn.active:hover {
   transform: scale(1.05) translateY(-2px);
+}
+
+.live-status-row {
+  margin: 8px auto 0;
+  max-width: 900px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 10px;
+  background: rgba(10, 18, 35, 0.5);
+}
+
+.live-status-text {
+  color: #cbd5e1;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.refresh-now-btn {
+  border: 1px solid rgba(59, 130, 246, 0.6);
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #fff;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  padding: 8px 14px;
+  cursor: pointer;
+}
+
+.refresh-now-btn:hover:not(:disabled) {
+  filter: brightness(1.07);
+}
+
+.refresh-now-btn:disabled {
+  opacity: 0.75;
+  cursor: not-allowed;
 }
 
 /* VEGAS HERO COMPARISON */
@@ -798,8 +838,64 @@
   font-size: 0.85rem;
 }
 
+@media (max-width: 1200px) {
+  .vegas-hero {
+    padding: 28px 20px;
+  }
+
+  .hero-title {
+    font-size: clamp(1.6rem, 5vw, 2.3rem);
+    margin-bottom: 20px;
+  }
+
+  .hero-comparison {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .comparison-side,
+  .delta-badge {
+    width: 100%;
+    max-width: 560px;
+    margin: 0 auto;
+  }
+
+  .comparison-middle {
+    width: 100%;
+  }
+
+  .side-number {
+    font-size: clamp(2.6rem, 11vw, 4rem);
+  }
+
+  .delta-number {
+    font-size: clamp(2rem, 10vw, 3rem);
+  }
+}
+
 /* Responsive */
 @media (max-width: 768px) {
+  .performance-container {
+    padding: 14px;
+  }
+
+  .vegas-hero {
+    border-radius: 16px;
+    padding: 18px 14px;
+  }
+
+  .comparison-side {
+    padding: 20px 14px;
+  }
+
+  .delta-badge {
+    padding: 16px 14px;
+  }
+
+  .side-label {
+    letter-spacing: 1.1px;
+  }
+
   .performance-header {
     flex-direction: column;
     gap: 15px;
@@ -828,6 +924,11 @@
   }
 
   .benchmark-info {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .live-status-row {
     flex-direction: column;
     align-items: flex-start;
   }

@@ -11,7 +11,7 @@ def test_hcl_queries():
     conn = psycopg2.connect(
         dbname='nfl_analytics_test',
         user='postgres',
-        password='aprilv120',
+        password='REDACTED_DB_PASSWORD',
         host='localhost',
         port='5432'
     )

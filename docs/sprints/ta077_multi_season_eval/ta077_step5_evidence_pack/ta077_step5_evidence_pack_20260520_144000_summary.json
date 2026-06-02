@@ -1,0 +1,57 @@
+{
+  "generated_at_utc": "2026-05-20T21:40:00.893594+00:00",
+  "scope": "TA-077 advisor-ready evidence pack",
+  "snapshot": {
+    "winner_accuracy_pct": 38.93,
+    "spread_accuracy_pct": 50.67,
+    "total_accuracy_pct": 54.44,
+    "margin_mae_points": 14.06,
+    "total_mae_points": 10.36,
+    "ai_vs_vegas": {
+      "compared_games": 1309,
+      "ai_wins": 193,
+      "vegas_wins": 477,
+      "ties": 639,
+      "ai_win_pct": 14.74,
+      "vegas_win_pct": 36.44,
+      "tie_pct": 48.82
+    },
+    "guardrails": {
+      "leakage": {
+        "rows_checked": 1359,
+        "predicted_after_game_date_count": 1343,
+        "pct": 98.82,
+        "pass": false
+      },
+      "line_lock": {
+        "rows_checked": 1309,
+        "line_locked_count": 1218,
+        "pct": 93.05,
+        "pass": true
+      },
+      "overall_pass": false
+    },
+    "guardrail_counts": {
+      "seasons_total": 5,
+      "seasons_overall_pass": 0,
+      "seasons_overall_fail": 5,
+      "leakage_pass_seasons": 0,
+      "leakage_fail_seasons": 5,
+      "line_lock_pass_seasons": 4,
+      "line_lock_fail_seasons": 1
+    },
+    "recommendation": {
+      "status": "NO-GO",
+      "reason": "TA-077 competitiveness claims are blocked by unresolved leakage integrity failure.",
+      "conditions_to_promote": [
+        "Leakage guardrail pass at overall and all-season level.",
+        "Line-lock guardrail pass at overall and all-season level.",
+        "Refreshed AI-vs-Vegas deltas recomputed on integrity-clean cohort."
+      ]
+    }
+  },
+  "manifest": "docs/sprints/ta077_multi_season_eval/ta077_step5_evidence_pack/ta077_step5_evidence_pack_20260520_144000_manifest.json",
+  "advisor_report": "docs/sprints/ta077_multi_season_eval/ta077_step5_evidence_pack/ta077_step5_evidence_pack_20260520_144000_advisor.md",
+  "recommendation_status": "NO-GO",
+  "recommendation_reason": "TA-077 competitiveness claims are blocked by unresolved leakage integrity failure."
+}

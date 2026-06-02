@@ -13,6 +13,10 @@ function MLPredictionsRedesign() {
   const [availableWeeks, setAvailableWeeks] = useState([]);
   const [loading, setLoading] = useState(false);
   const [combinedData, setCombinedData] = useState([]);
+  const [seasonStats, setSeasonStats] = useState(null);
+  const [seasonStatsLoading, setSeasonStatsLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState(null);
   const [error, setError] = useState(null);
   const [view, setView] = useState('winner-picks'); // 'winner-picks', 'spreads'
 
@@ -27,6 +31,41 @@ function MLPredictionsRedesign() {
     }
   }, [week, season]);
 
+  useEffect(() => {
+    if (season) {
+      fetchSeasonStats(season);
+    }
+  }, [season]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (season) {
+        fetchSeasonStats(season, { silent: true });
+      }
+      if (week && season) {
+        fetchCombinedPredictions({ silent: true });
+      }
+    }, 10000);
+
+    const onFocus = () => {
+      if (season) {
+        fetchSeasonStats(season, { silent: true });
+      }
+      if (week && season) {
+        fetchCombinedPredictions({ silent: true });
+      }
+    };
+
+    window.addEventListener('focus', onFocus);
+    document.addEventListener('visibilitychange', onFocus);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('focus', onFocus);
+      document.removeEventListener('visibilitychange', onFocus);
+    };
+  }, [season, week]);
+
   const fetchAvailableWeeks = async () => {
     try {
       const response = await fetch(`${API_URL}/api/ml/available-weeks`);
@@ -35,7 +74,7 @@ function MLPredictionsRedesign() {
         setAvailableWeeks(data.weeks || []);
       }
     } catch (err) {
-      console.error('Error fetching available weeks:', err);
+      setAvailableWeeks([]);
     }
   };
 
@@ -50,28 +89,81 @@ function MLPredictionsRedesign() {
         setWeek(data.week);
       }
     } catch (err) {
-      console.error('Error fetching upcoming:', err);
+      setError('Failed to load upcoming predictions');
     }
     setLoading(false);
   };
 
-  const fetchCombinedPredictions = async () => {
-    setLoading(true);
-    setError(null);
+  const fetchCombinedPredictions = async ({ silent = false } = {}) => {
+    if (!silent) {
+      setRefreshing(true);
+      setLoading(true);
+      setError(null);
+    }
     try {
       const response = await fetch(`${API_URL}/api/predictions/combined/${season}/${week}`);
       const data = await response.json();
       
       if (data.success) {
         setCombinedData(data.predictions || []);
+        setLastUpdated(new Date());
       } else {
         setError(data.message || 'No predictions available');
       }
     } catch (err) {
-      console.error('Error:', err);
-      setError('Failed to load predictions');
+      if (!silent) {
+        setError('Failed to load predictions');
+      }
     }
-    setLoading(false);
+    if (!silent) {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
+
+  const fetchSeasonStats = async (selectedSeason = season, { silent = false } = {}) => {
+    if (!silent) {
+      setSeasonStatsLoading(true);
+    }
+    try {
+      const response = await fetch(`${API_URL}/api/ml/season-ai-vs-vegas/${selectedSeason}`);
+      const data = await response.json();
+
+      if (data.success) {
+        setSeasonStats(data);
+        setLastUpdated(new Date());
+      } else {
+        setSeasonStats(null);
+      }
+    } catch (err) {
+      if (!silent) {
+        setSeasonStats(null);
+      }
+    }
+    if (!silent) {
+      setSeasonStatsLoading(false);
+    }
+  };
+
+  const refreshAll = async () => {
+    setRefreshing(true);
+    try {
+      if (season) {
+        await fetchSeasonStats(season);
+      }
+      if (week && season) {
+        await fetchCombinedPredictions();
+      }
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
+  const formatLastUpdated = () => {
+    if (!lastUpdated) {
+      return 'Waiting for first sync';
+    }
+    return `Last updated ${lastUpdated.toLocaleTimeString()}`;
   };
 
   const getTeamLogo = (team) => {
@@ -441,9 +533,67 @@ function MLPredictionsRedesign() {
           </select>
         </div>
 
-        <button className="load-btn" onClick={fetchCombinedPredictions}>
+        <button className="load-btn" onClick={() => fetchCombinedPredictions()}>
           Load Week
         </button>
+      </div>
+
+      <div className="predictions-live-row">
+        <div className="predictions-live-text">
+          Live sync every 10s | {formatLastUpdated()}
+        </div>
+        <button
+          className="predictions-refresh-btn"
+          type="button"
+          onClick={refreshAll}
+          disabled={refreshing}
+        >
+          {refreshing ? 'Refreshing...' : 'Refresh Now'}
+        </button>
+      </div>
+
+      <div className="season-benchmark" aria-live="polite">
+        <div className="season-benchmark-header">
+          <h3>AI vs Vegas - {season} Season</h3>
+          <p>Spread head-to-head win rates</p>
+        </div>
+
+        {seasonStatsLoading ? (
+          <div className="season-benchmark-loading">Updating season benchmark...</div>
+        ) : (
+          <>
+            <div className="season-benchmark-grid">
+              <div className="benchmark-tile ai">
+                <div className="benchmark-label">AI Win %</div>
+                <div className="benchmark-value">
+                  {seasonStats ? Number(seasonStats.ai_percentage || 0).toFixed(1) : '0.0'}%
+                </div>
+              </div>
+
+              <div className="benchmark-tile vegas">
+                <div className="benchmark-label">Vegas Win %</div>
+                <div className="benchmark-value">
+                  {seasonStats ? Number(seasonStats.vegas_percentage || 0).toFixed(1) : '0.0'}%
+                </div>
+              </div>
+
+              <div className={`benchmark-tile delta ${seasonStats && Number(seasonStats.ai_percentage || 0) >= Number(seasonStats.vegas_percentage || 0) ? 'positive' : 'negative'}`}>
+                <div className="benchmark-label">AI vs Vegas</div>
+                <div className="benchmark-value">
+                  {seasonStats
+                    ? `${(Number(seasonStats.ai_percentage || 0) - Number(seasonStats.vegas_percentage || 0) >= 0 ? '+' : '')}${(Number(seasonStats.ai_percentage || 0) - Number(seasonStats.vegas_percentage || 0)).toFixed(1)}%`
+                    : '0.0%'}
+                </div>
+              </div>
+            </div>
+
+            <div className="season-benchmark-detail">
+              {seasonStats
+                ? `Record: AI ${seasonStats.ai_wins} - Vegas ${seasonStats.vegas_wins} | Ties ${seasonStats.ties} | Games ${seasonStats.total_games}`
+                : 'Season benchmark data unavailable'}
+            </div>
+          </>
+        )}
       </div>
 
       <div className="view-tabs">

@@ -16,12 +16,12 @@ Scope: Audit git history and tracked repository content for exposed secrets
 - `git grep -n -I -E "AKIA[0-9A-Z]{16}|ASIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{36}|github_pat_[A-Za-z0-9_]{82,}|xox[baprs]-[A-Za-z0-9-]{10,}|AIza[0-9A-Za-z_-]{35}|sk_live_[0-9A-Za-z]{16,}" -- .`
 
 ### Working tree literal-password checks
-- `git grep -n -I "aprilv120" -- . ":(exclude)docs/devlog/**" ":(exclude)docs/ai_reference/DEV_LOG_FULL.txt" ":(exclude)docs/archive/**" ":(exclude)backups/**"`
-- `git grep -n -I "nfl2024" -- . ":(exclude)docs/devlog/**" ":(exclude)docs/ai_reference/DEV_LOG_FULL.txt" ":(exclude)docs/archive/**" ":(exclude)backups/**"`
+- `git grep -n -I "REDACTED_DB_PASSWORD" -- . ":(exclude)docs/devlog/**" ":(exclude)docs/ai_reference/DEV_LOG_FULL.txt" ":(exclude)docs/archive/**" ":(exclude)backups/**"`
+- `git grep -n -I "REDACTED_DB_PASSWORD" -- . ":(exclude)docs/devlog/**" ":(exclude)docs/ai_reference/DEV_LOG_FULL.txt" ":(exclude)docs/archive/**" ":(exclude)backups/**"`
 
 ### History checks
-- `git log --all --oneline -S"aprilv120" --`
-- `git log --all --oneline -S"nfl2024" --`
+- `git log --all --oneline -S"REDACTED_DB_PASSWORD" --`
+- `git log --all --oneline -S"REDACTED_DB_PASSWORD" --`
 - `git log --all --oneline -G"AKIA[0-9A-Z]{16}" --`
 - `git log --all --oneline -G"ghp_[A-Za-z0-9]{36}" --`
 
@@ -37,14 +37,14 @@ Scope: Audit git history and tracked repository content for exposed secrets
   - `sk_live_*`: 0
 
 ### Literal credential findings
-- `aprilv120`:
+- `REDACTED_DB_PASSWORD`:
   - 80 tracked-file hits after excluding archive/devlog baseline paths above.
   - 37 hits across 31 script/executable files (`.py`, `.sh`, `.bat`, `.service`, etc.).
-  - `git log -S"aprilv120"`: 56 commits.
-- `nfl2024`:
+  - `git log -S"REDACTED_DB_PASSWORD"`: 56 commits.
+- `REDACTED_DB_PASSWORD`:
   - 15 tracked-file hits after exclusions above.
   - 2 script-file hits.
-  - `git log -S"nfl2024"`: 20 commits.
+  - `git log -S"REDACTED_DB_PASSWORD"`: 20 commits.
 
 ## High-Risk Active Script Findings (Representative)
 - `START-DEV.bat`

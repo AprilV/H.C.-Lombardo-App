@@ -268,7 +268,7 @@ ALTER TABLE teams DROP COLUMN IF EXISTS last_updated;
 
 1. **Check Database:**
 ```bash
-python -c "import psycopg2; conn = psycopg2.connect(host='localhost', database='nfl_analytics', user='postgres', password='aprilv120'); cur = conn.cursor(); cur.execute('SELECT COUNT(*) as teams, MAX(last_updated) as latest FROM teams'); print(cur.fetchone()); conn.close()"
+python -c "import psycopg2; conn = psycopg2.connect(host='localhost', database='nfl_analytics', user='postgres', password='REDACTED_DB_PASSWORD'); cur = conn.cursor(); cur.execute('SELECT COUNT(*) as teams, MAX(last_updated) as latest FROM teams'); print(cur.fetchone()); conn.close()"
 ```
 
 2. **Refresh Data:**

@@ -1,0 +1,46 @@
+{
+  "generated_at_utc": "2026-05-26T18:58:28.070748+00:00",
+  "source_combined_csv": "docs/sprints/ta077_multi_season_eval/ta077_run_20260526_185826/season_2021/ta070_s70_1_20260526_185827_combined.csv",
+  "row_count": 0,
+  "overall": {
+    "scope": "overall",
+    "season": null,
+    "week": null,
+    "games_total": 0,
+    "winner_evaluable_games": 0,
+    "winner_correct_games": 0,
+    "winner_accuracy_pct": null,
+    "winner_coverage_pct": null,
+    "spread_evaluable_games": 0,
+    "spread_correct_games": 0,
+    "spread_accuracy_pct": null,
+    "spread_coverage_pct": null,
+    "margin_mae_points": null,
+    "margin_mae_coverage_pct": null,
+    "total_evaluable_games": 0,
+    "total_correct_games": 0,
+    "total_accuracy_pct": null,
+    "total_coverage_pct": null,
+    "total_mae_points": null,
+    "total_mae_coverage_pct": null,
+    "vegas_spread_line_count": 0,
+    "vegas_spread_line_coverage_pct": null,
+    "vegas_total_line_count": 0,
+    "vegas_total_line_coverage_pct": null,
+    "predicted_score_count": 0,
+    "predicted_score_coverage_pct": null
+  },
+  "by_season": [],
+  "by_season_week": [],
+  "metric_notes": {
+    "accuracy_pct": "correct / evaluable * 100",
+    "coverage_pct": "evaluable / games_total * 100",
+    "mae_points": "mean absolute error over rows where prediction and actual values are both available",
+    "spread_accuracy_scope": "rows where spread_pick_correct is non-null (push and missing-line rows excluded)",
+    "total_accuracy_scope": "rows where total_pick_correct is non-null (push and missing-line rows excluded)"
+  },
+  "files": {
+    "by_season_csv": "docs/sprints/ta077_multi_season_eval/ta077_run_20260526_185826/season_2021/ta070_s70_2_20260526_185828_by_season.csv",
+    "by_week_csv": "docs/sprints/ta077_multi_season_eval/ta077_run_20260526_185826/season_2021/ta070_s70_2_20260526_185828_by_week.csv"
+  }
+}

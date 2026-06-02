@@ -1,0 +1,75 @@
+{
+  "generated_at_utc": "2026-05-20T21:40:00.892777+00:00",
+  "scope": "TA-077 Step 05 advisor-ready evidence pack",
+  "artifact_count": 11,
+  "missing_count": 0,
+  "artifacts": [
+    {
+      "path": "docs/sprints/ta077_multi_season_eval/ta077_step1_lock/ta070_s70_1_20260520_201725_summary.json",
+      "size_bytes": 931,
+      "modified_utc": "2026-05-20T20:17:25.671524+00:00",
+      "sha256": "d4050702740eea32d3879ad6d55ab0b0444784eb7d2c957f072e709a374fbb44"
+    },
+    {
+      "path": "docs/sprints/ta077_multi_season_eval/ta077_step1_lock/ta070_s70_1_20260520_201725_combined.csv",
+      "size_bytes": 291896,
+      "modified_utc": "2026-05-20T20:17:25.634384+00:00",
+      "sha256": "5bcaca9fdce649033f46f6ec327af976c7f151fa9df8e376e7aa410c41c90daf"
+    },
+    {
+      "path": "docs/sprints/ta077_multi_season_eval/ta077_step2_metrics/ta070_s70_2_20260520_203040_summary.json",
+      "size_bytes": 91510,
+      "modified_utc": "2026-05-20T20:30:40.446270+00:00",
+      "sha256": "2ed9c1226fb39ff8773704416fbab2da1bda3268c2cb20ec032daf96dca36c4f"
+    },
+    {
+      "path": "docs/sprints/ta077_multi_season_eval/ta077_step2_metrics/ta077_step2_corrected_20260520_133506_summary.json",
+      "size_bytes": 1841,
+      "modified_utc": "2026-05-20T20:35:06.502899+00:00",
+      "sha256": "07c97e31e2ca2ecbd3028594058891309ac978aebe586f4ade6d6bd738f6464f"
+    },
+    {
+      "path": "docs/sprints/ta077_multi_season_eval/ta077_step2_metrics/ta077_step2_corrected_20260520_133506_report.md",
+      "size_bytes": 1032,
+      "modified_utc": "2026-05-20T20:35:06.502899+00:00",
+      "sha256": "ad209fbccb31e1b590171dabc6b28c8e8c09af623709629af23cb64949d83ac2"
+    },
+    {
+      "path": "docs/sprints/ta077_multi_season_eval/ta077_step3_guardrails/ta070_s70_3_20260520_203722_summary.json",
+      "size_bytes": 4554,
+      "modified_utc": "2026-05-20T20:37:22.813626+00:00",
+      "sha256": "fc4e60d1e9c75e75f83d1ba53b90fec9326962f34d4a050882dc5cdc2be7d0b2"
+    },
+    {
+      "path": "docs/sprints/ta077_multi_season_eval/ta077_step3_guardrails/ta070_s70_3_20260520_203722_root_cause.md",
+      "size_bytes": 1958,
+      "modified_utc": "2026-05-20T20:37:22.812618+00:00",
+      "sha256": "e67e5a1a2888017e28ccfe045d19af80bb097ceeae675e8c7eabf84299218b56"
+    },
+    {
+      "path": "docs/sprints/ta077_multi_season_eval/ta077_step3_guardrails/ta077_step3_guardrails_corrected_20260520_133923_summary.json",
+      "size_bytes": 3149,
+      "modified_utc": "2026-05-20T20:39:23.910222+00:00",
+      "sha256": "bc407aa45b66f6c596a007f3e5dc4a0f53c410dd704c9bd2d414459d8b32d258"
+    },
+    {
+      "path": "docs/sprints/ta077_multi_season_eval/ta077_step3_guardrails/ta077_step3_guardrails_corrected_20260520_133923_report.md",
+      "size_bytes": 1013,
+      "modified_utc": "2026-05-20T20:39:23.910222+00:00",
+      "sha256": "769af27d987f40685e34a445d5323c72b75c498fee68c12863bbe65188da4d42"
+    },
+    {
+      "path": "docs/sprints/ta077_multi_season_eval/ta077_step4_plan/ta077_step4_plan_20260520_142758_summary.json",
+      "size_bytes": 3185,
+      "modified_utc": "2026-05-20T21:27:58.028394+00:00",
+      "sha256": "ad51853f1c22edb4c96313e90571afa70c91403bbc362e7ca62807ff5b733117"
+    },
+    {
+      "path": "docs/sprints/ta077_multi_season_eval/ta077_step4_plan/ta077_step4_plan_20260520_142758_report.md",
+      "size_bytes": 2500,
+      "modified_utc": "2026-05-20T21:27:58.029394+00:00",
+      "sha256": "bb2f52054513f88f32cba0d945c3c8a2fa249e98a87ccba6a724fa6b54c3c164"
+    }
+  ],
+  "missing": []
+}

@@ -267,7 +267,7 @@ DB_CONFIG = {
     'port': 5432,
     'database': 'nfl_analytics_test',
     'user': 'postgres',
-    'password': 'aprilv120'
+    'password': 'REDACTED_DB_PASSWORD'
 }
 ```
 

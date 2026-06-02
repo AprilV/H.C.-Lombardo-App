@@ -26,7 +26,7 @@ class HealthChecker:
                     port=5432,
                     database='nfl_analytics',
                     user='postgres',
-                    password='aprilv120',
+                    password='REDACTED_DB_PASSWORD',
                     connect_timeout=3
                 )
                 

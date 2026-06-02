@@ -89,7 +89,7 @@
 ### Acceptance Criteria
 - `SELECT COUNT(*) FROM hcl.games WHERE season = 2025` returns ~285
 - `/game-statistics` and `/matchup-analyzer` load correct pages
-- `grep -r "aprilv120"` returns nothing
+- `grep -r "REDACTED_DB_PASSWORD"` returns nothing
 
 ---
 
@@ -195,7 +195,7 @@
 - [ ] Final report submitted to Dr. Foster
 
 ### Acceptance Criteria
-- `grep -r "aprilv120"` returns nothing in any tracked file
+- `grep -r "REDACTED_DB_PASSWORD"` returns nothing in any tracked file
 - Production URL loads over HTTPS without warnings
 - Dr. Foster submission completed
 

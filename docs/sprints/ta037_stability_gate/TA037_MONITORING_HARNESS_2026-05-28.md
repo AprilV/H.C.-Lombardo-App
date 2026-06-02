@@ -14,6 +14,12 @@ Status: In Progress (Gate still blocked)
 ## Purpose
 Provide repeatable, timestamped API/frontend health snapshots required to execute and prove the 48-hour stability gate.
 
+## Runtime Safety Features
+- Single-instance lock file prevents concurrent monitor writers:
+  - `docs/sprints/ta037_stability_gate/ta037_stability_watch.lock`
+- Snapshot indexing now resumes from the existing JSONL tail on restart instead of resetting to `1`.
+- Each checkpoint row includes a `run_id` field for session-level traceability.
+
 ## Default Probe Targets
 - `http://127.0.0.1:5000/health`
 - `http://127.0.0.1:5000/api/teams`
@@ -28,6 +34,20 @@ python scripts/verification/ta037_stability_watch.py --duration-hours 0
 48-hour run (5-minute interval):
 ```bash
 python scripts/verification/ta037_stability_watch.py --duration-hours 48 --interval-seconds 300
+```
+
+Gate auto-status evaluation (latest run):
+```bash
+python scripts/verification/ta037_gate_status.py
+```
+
+Auto-status outputs:
+- `docs/sprints/ta037_stability_gate/ta037_gate_status_latest.json`
+- `docs/sprints/ta037_stability_gate/TA037_GATE_AUTOSTATUS_latest.md`
+
+Sprint 16 blocker orchestrator (TA-016 + TA-037 in one command):
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/verification/s16_blocker_autostatus.ps1
 ```
 
 ## Smoke Run Result (2026-05-28)

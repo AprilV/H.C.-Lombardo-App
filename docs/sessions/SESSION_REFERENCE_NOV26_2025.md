@@ -145,7 +145,7 @@ Needs: Manual intervention on Render dashboard or correct render.yaml
 
 ### Database Connection (Render)
 ```python
-RENDER_URL = "postgresql://nfl_user:rzkKyzQq9pTas14pXDJU3fm8cCZObAh5@dpg-d4j30ah5pdvs739551m0-a.oregon-postgres.render.com/nfl_analytics"
+RENDER_URL = "postgresql://nfl_user:REDACTED_DB_PASSWORD@dpg-d4j30ah5pdvs739551m0-a.oregon-postgres.render.com/nfl_analytics"
 ```
 
 ### Working API Endpoint Pattern

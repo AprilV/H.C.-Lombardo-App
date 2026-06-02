@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ML Neural Networks - 3D Visualization</title>
+    
+    <!-- Three.js for 3D Graphics -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/renderers/CSS2DRenderer.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            overflow: hidden;
+        }
+        
+        #neural-net-canvas {
+            width: 100%;
+            height: 100vh;
+        }
+        
+        .neural-net-label, .neural-net-title {
+            pointer-events: none;
+            user-select: none;
+        }
+        
+        .info-panel {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(139, 92, 246, 0.5);
+            border-radius: 12px;
+            padding: 20px;
+            max-width: 350px;
+            z-index: 100;
+        }
+        
+        .info-panel h2 {
+            color: #8b5cf6;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+        
+        .info-panel .metric {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            padding: 8px;
+            background: rgba(139, 92, 246, 0.1);
+            border-radius: 6px;
+        }
+        
+        .info-panel .metric-label {
+            color: #cbd5e1;
+            font-weight: 500;
+        }
+        
+        .info-panel .metric-value {
+            color: #8b5cf6;
+            font-weight: bold;
+        }
+        
+        .controls {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(59, 130, 246, 0.3);
+            border-radius: 12px;
+            padding: 15px;
+            z-index: 100;
+        }
+        
+        .controls button {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 5px;
+            transition: transform 0.2s;
+        }
+        
+        .controls button:hover {
+            transform: scale(1.05);
+        }
+        
+        .layer-legend {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(16, 185, 129, 0.3);
+            border-radius: 12px;
+            padding: 15px;
+            max-width: 250px;
+            z-index: 100;
+        }
+        
+        .layer-legend h3 {
+            color: #10b981;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .layer-item {
+            display: flex;
+            align-items: center;
+            margin: 8px 0;
+        }
+        
+        .layer-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 10px;
+            box-shadow: 0 0 10px currentColor;
+        }
+        
+        .layer-text {
+            color: #cbd5e1;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div id="neural-net-canvas"></div>
+    
+    <div class="info-panel">
+        <h2>🧠 Neural Network Model</h2>
+        <div class="metric">
+            <span class="metric-label">Architecture:</span>
+            <span class="metric-value">41→128→64→32→1</span>
+        </div>
+        <div class="metric">
+            <span class="metric-label">Test Accuracy:</span>
+            <span class="metric-value">65.55%</span>
+        </div>
+        <div class="metric">
+            <span class="metric-label">Training Games:</span>
+            <span class="metric-value">5,894</span>
+        </div>
+        <div class="metric">
+            <span class="metric-label">Features:</span>
+            <span class="metric-value">41 inputs</span>
+        </div>
+        <div class="metric">
+            <span class="metric-label">Framework:</span>
+            <span class="metric-value">scikit-learn</span>
+        </div>
+        <p style="margin-top: 15px; color: #94a3b8; font-size: 0.9rem;">
+            <strong>Drag</strong> to rotate | <strong>Scroll</strong> to zoom
+        </p>
+    </div>
+    
+    <div class="layer-legend">
+        <h3>🎨 Network Layers</h3>
+        <div class="layer-item">
+            <div class="layer-color" style="background: #3b82f6; color: #3b82f6;"></div>
+            <div class="layer-text">Input (41)</div>
+        </div>
+        <div class="layer-item">
+            <div class="layer-color" style="background: #10b981; color: #10b981;"></div>
+            <div class="layer-text">Hidden 1 (128)</div>
+        </div>
+        <div class="layer-item">
+            <div class="layer-color" style="background: #8b5cf6; color: #8b5cf6;"></div>
+            <div class="layer-text">Hidden 2 (64)</div>
+        </div>
+        <div class="layer-item">
+            <div class="layer-color" style="background: #ec4899; color: #ec4899;"></div>
+            <div class="layer-text">Hidden 3 (32)</div>
+        </div>
+        <div class="layer-item">
+            <div class="layer-color" style="background: #eab308; color: #eab308;"></div>
+            <div class="layer-text">Output (1)</div>
+        </div>
+    </div>
+    
+    <div class="controls">
+        <button onclick="resetCamera()">🔄 Reset View</button>
+        <button onclick="toggleAutoRotate()">🔁 Auto Rotate</button>
+    </div>
+    
+    <script>
+        let neuralNetScene, neuralNetCamera, neuralNetRenderer, neuralNetControls;
+        let neuralNetInitialized = false;
+        let neuralNetAnimationId;
+        let autoRotate = true;
+        
+        function init3DNeuralNetwork() {
+            if (neuralNetInitialized) return;
+            console.log('🧠 Initializing 3D Neural Network...');
+            
+            const container = document.getElementById('neural-net-canvas');
+            if (!container) {
+                console.error('❌ Neural network canvas container not found!');
+                return;
+            }
+            
+            neuralNetInitialized = true;
+            
+            // Scene setup
+            neuralNetScene = new THREE.Scene();
+            neuralNetScene.background = new THREE.Color(0x0f172a);
+            neuralNetScene.fog = new THREE.Fog(0x0f172a, 80, 200);
+            
+            // Camera
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            
+            neuralNetCamera = new THREE.PerspectiveCamera(60, width / height, 0.1, 1000);
+            neuralNetCamera.position.set(0, 30, 100);
+            neuralNetCamera.lookAt(0, 0, 0);
+            
+            // Renderer
+            neuralNetRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            neuralNetRenderer.setSize(width, height);
+            neuralNetRenderer.setPixelRatio(window.devicePixelRatio);
+            container.appendChild(neuralNetRenderer.domElement);
+            
+            // Controls
+            neuralNetControls = new THREE.OrbitControls(neuralNetCamera, neuralNetRenderer.domElement);
+            neuralNetControls.enableDamping = true;
+            neuralNetControls.dampingFactor = 0.05;
+            neuralNetControls.minDistance = 50;
+            neuralNetControls.maxDistance = 200;
+            neuralNetControls.autoRotate = autoRotate;
+            neuralNetControls.autoRotateSpeed = 0.5;
+            
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+            neuralNetScene.add(ambientLight);
+            
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(10, 10, 10);
+            neuralNetScene.add(directionalLight);
+            
+            const backLight = new THREE.DirectionalLight(0x6366f1, 0.4);
+            backLight.position.set(-10, -10, -10);
+            neuralNetScene.add(backLight);
+            
+            // Create neural network layers
+            createNeuralNetworkLayers();
+            
+            // Start animation
+            animateNeuralNet();
+            
+            console.log('✅ 3D Neural Network initialized successfully!');
+        }
+        
+        function createNeuralNetworkLayers() {
+            // Layer definitions matching our actual model architecture
+            const layers = [
+                { 
+                    count: 41, 
+                    color: 0x3b82f6, 
+                    label: 'Input Layer\\n41 Features', 
+                    z: 50,
+                    rows: 7,
+                    cols: 6
+                },
+                { 
+                    count: 128, 
+                    color: 0x10b981, 
+                    label: 'Hidden Layer 1\\n128 Neurons\\nReLU', 
+                    z: 25,
+                    rows: 8,
+                    cols: 16
+                },
+                { 
+                    count: 64, 
+                    color: 0x8b5cf6, 
+                    label: 'Hidden Layer 2\\n64 Neurons\\nReLU', 
+                    z: 0,
+                    rows: 8,
+                    cols: 8
+                },
+                { 
+                    count: 32, 
+                    color: 0xec4899, 
+                    label: 'Hidden Layer 3\\n32 Neurons\\nReLU', 
+                    z: -25,
+                    rows: 4,
+                    cols: 8
+                },
+                { 
+                    count: 1, 
+                    color: 0xeab308, 
+                    label: 'Output Layer\\n1 Prediction\\nSigmoid', 
+                    z: -50,
+                    rows: 1,
+                    cols: 1
+                }
+            ];
+            
+            const neuronGroups = [];
+            
+            // Create neurons for each layer
+            layers.forEach((layer, layerIndex) => {
+                const neurons = [];
+                const spacing = 3;
+                const offsetX = -(layer.cols - 1) * spacing / 2;
+                const offsetY = -(layer.rows - 1) * spacing / 2;
+                
+                for (let i = 0; i < layer.count; i++) {
+                    const row = Math.floor(i / layer.cols);
+                    const col = i % layer.cols;
+                    
+                    // Create neuron sphere
+                    const geometry = new THREE.SphereGeometry(0.5, 16, 16);
+                    const material = new THREE.MeshPhongMaterial({
+                        color: layer.color,
+                        emissive: layer.color,
+                        emissiveIntensity: 0.3,
+                        shininess: 100,
+                        transparent: true,
+                        opacity: 0.9
+                    });
+                    
+                    const neuron = new THREE.Mesh(geometry, material);
+                    neuron.position.set(
+                        offsetX + col * spacing,
+                        offsetY + row * spacing,
+                        layer.z
+                    );
+                    
+                    // Store original color for animation
+                    neuron.userData = {
+                        originalColor: layer.color,
+                        layer: layerIndex,
+                        index: i,
+                        phase: Math.random() * Math.PI * 2
+                    };
+                    
+                    neuralNetScene.add(neuron);
+                    neurons.push(neuron);
+                }
+                
+                neuronGroups.push(neurons);
+            });
+            
+            // Create connections between layers
+            for (let i = 0; i < neuronGroups.length - 1; i++) {
+                const currentLayer = neuronGroups[i];
+                const nextLayer = neuronGroups[i + 1];
+                
+                // Sample connections (not all neurons to avoid clutter)
+                const connectionSampleRate = Math.max(1, Math.floor(currentLayer.length / 20));
+                
+                currentLayer.forEach((neuron, idx) => {
+                    if (idx % connectionSampleRate === 0) {
+                        // Connect to sample of next layer neurons
+                        const nextSampleRate = Math.max(1, Math.floor(nextLayer.length / 5));
+                        nextLayer.forEach((nextNeuron, nextIdx) => {
+                            if (nextIdx % nextSampleRate === 0) {
+                                const points = [neuron.position, nextNeuron.position];
+                                const geometry = new THREE.BufferGeometry().setFromPoints(points);
+                                const material = new THREE.LineBasicMaterial({
+                                    color: 0x94a3b8,
+                                    transparent: true,
+                                    opacity: 0.35
+                                });
+                                const line = new THREE.Line(geometry, material);
+                                neuralNetScene.add(line);
+                            }
+                        });
+                    }
+                });
+            }
+            
+            // Add grid helper
+            const gridHelper = new THREE.GridHelper(100, 20, 0x1e293b, 0x0f172a);
+            gridHelper.position.y = -20;
+            neuralNetScene.add(gridHelper);
+        }
+        
+        function animateNeuralNet() {
+            neuralNetAnimationId = requestAnimationFrame(animateNeuralNet);
+            
+            // Update controls
+            if (neuralNetControls) {
+                neuralNetControls.update();
+            }
+            
+            // Animate neurons (pulsing effect)
+            const time = Date.now() * 0.001;
+            neuralNetScene.traverse((object) => {
+                if (object.userData && object.userData.layer !== undefined) {
+                    const phase = object.userData.phase;
+                    const pulse = Math.sin(time * 2 + phase) * 0.15 + 1;
+                    object.scale.set(pulse, pulse, pulse);
+                    
+                    // Adjust emissive intensity
+                    if (object.material && object.material.emissiveIntensity !== undefined) {
+                        object.material.emissiveIntensity = 0.2 + Math.sin(time * 2 + phase) * 0.2;
+                    }
+                }
+            });
+            
+            // Render scene
+            if (neuralNetRenderer && neuralNetScene && neuralNetCamera) {
+                neuralNetRenderer.render(neuralNetScene, neuralNetCamera);
+            }
+        }
+        
+        // Handle window resize for neural network
+        window.addEventListener('resize', () => {
+            if (neuralNetInitialized && neuralNetCamera && neuralNetRenderer) {
+                const container = document.getElementById('neural-net-canvas');
+                if (container) {
+                    const width = window.innerWidth;
+                    const height = window.innerHeight;
+                    neuralNetCamera.aspect = width / height;
+                    neuralNetCamera.updateProjectionMatrix();
+                    neuralNetRenderer.setSize(width, height);
+                }
+            }
+        });
+        
+        function resetCamera() {
+            neuralNetCamera.position.set(0, 30, 100);
+            neuralNetControls.target.set(0, 0, 0);
+            neuralNetControls.update();
+        }
+        
+        function toggleAutoRotate() {
+            autoRotate = !autoRotate;
+            neuralNetControls.autoRotate = autoRotate;
+        }
+        
+        // Initialize on load
+        window.addEventListener('load', init3DNeuralNetwork);
+    </script>
+</body>
+</html>

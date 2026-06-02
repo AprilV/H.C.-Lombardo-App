@@ -1,0 +1,6 @@
+scope,season,week,games_total,winner_evaluable_games,winner_correct_games,winner_accuracy_pct,winner_coverage_pct,spread_evaluable_games,spread_correct_games,spread_accuracy_pct,spread_coverage_pct,margin_mae_points,margin_mae_coverage_pct,total_evaluable_games,total_correct_games,total_accuracy_pct,total_coverage_pct,total_mae_points,total_mae_coverage_pct,vegas_spread_line_count,vegas_spread_line_coverage_pct,vegas_total_line_count,vegas_total_line_coverage_pct,predicted_score_count,predicted_score_coverage_pct
+season,2021,,272,272,107,39.34,100.0,268,135,50.37,98.53,15.472,100.0,15,11,73.33,5.51,10.789,100.0,272,100.0,272,100.0,272,100.0
+season,2022,,271,271,94,34.69,100.0,261,143,54.79,96.31,12.807,100.0,19,10,52.63,7.01,10.395,100.0,271,100.0,271,100.0,271,100.0
+season,2023,,272,272,114,41.91,100.0,258,126,48.84,94.85,14.208,100.0,31,14,45.16,11.4,10.239,100.0,272,100.0,272,100.0,272,100.0
+season,2024,,272,272,104,38.24,100.0,268,126,47.01,98.53,14.081,100.0,14,10,71.43,5.15,9.73,100.0,272,100.0,272,100.0,272,100.0
+season,2025,,272,272,110,40.44,100.0,220,116,52.73,80.88,13.75,100.0,11,4,36.36,4.04,10.637,99.26,222,81.62,222,81.62,270,99.26

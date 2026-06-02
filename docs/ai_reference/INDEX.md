@@ -93,6 +93,30 @@ These documents provide **domain rules and logic** and MUST be used when working
 
 Operational documents do NOT override contracts or best practices.
 
+### 4.1 VERIFICATION COMMAND DISCOVERY (OPERATIONAL)
+
+For repeatable local backend verification runs, use these canonical locations:
+
+- **STARTUP_GUIDE.md**  
+   Reference for operational invocation and expected PASS signatures for the core backend chain.
+
+- **scripts/maintenance/verify_backend_core_chain.ps1**  
+   One-command maintenance wrapper (fail-closed) for core backend verification.
+
+- **scripts/verification/test_backend_core_chain.py**  
+   Orchestrates health + HCL teams + ML verification chain checks.
+
+- **scripts/verification/test_ml_api.py**  
+   ML verification chain including reconciliation contract regression invocation.
+
+- **scripts/verification/test_reconciliation_contract.py**  
+   Reconciliation v3 contract and range-sensitive fingerprint regression guard.
+
+When verification command usage conflicts with a higher-authority document:
+→ Follow authority hierarchy
+→ STOP
+→ ASK QUESTIONS
+
 ---
 
 ## 5. DOCUMENT AUTHORITY HIERARCHY (SUMMARY)

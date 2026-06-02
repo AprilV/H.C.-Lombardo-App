@@ -1,0 +1,24 @@
+{
+  "generated_at": "2026-05-20T13:30:40",
+  "overall_metrics": {
+    "winner_accuracy_pct": 25.0,
+    "spread_accuracy_pct": null,
+    "total_accuracy_pct": null,
+    "margin_mae": null,
+    "total_mae": null
+  },
+  "ai_vs_vegas_overall": {
+    "compared_games": 0,
+    "ai_wins": 0,
+    "vegas_wins": 0,
+    "ties": 0,
+    "ai_win_pct": 0.0,
+    "vegas_win_pct": 0.0,
+    "tie_pct": 0.0
+  },
+  "ai_vs_vegas_by_season": {},
+  "source_paths": {
+    "combined_csv": "C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_step1_lock\\ta070_s70_1_20260520_201725_combined.csv",
+    "s70_2_summary": "C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_step2_metrics\\ta070_s70_2_20260520_203040_summary.json"
+  }
+}

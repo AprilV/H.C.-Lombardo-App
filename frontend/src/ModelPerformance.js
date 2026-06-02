@@ -9,14 +9,25 @@ function ModelPerformance() {
   const seasonOptions = getRecentSeasons(6, 1999, defaultSeason);
 
   const [performanceData, setPerformanceData] = useState(null);
+  const [seasonVsVegas, setSeasonVsVegas] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState(null);
   const [error, setError] = useState(null);
   const [selectedSeason, setSelectedSeason] = useState(defaultSeason);
 
   useEffect(() => {
     fetchPerformance();
-    const interval = setInterval(fetchPerformance, 30000); // Refresh every 30 seconds
-    return () => clearInterval(interval);
+    const interval = setInterval(() => fetchPerformance({ silent: true }), 10000); // Refresh every 10 seconds
+    const onFocus = () => fetchPerformance({ silent: true });
+    window.addEventListener('focus', onFocus);
+    document.addEventListener('visibilitychange', onFocus);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('focus', onFocus);
+      document.removeEventListener('visibilitychange', onFocus);
+    };
   }, [selectedSeason]);
 
   const fetchPerformanceForSeason = async (season) => {
@@ -24,22 +35,47 @@ function ModelPerformance() {
     return response.json();
   };
 
-  const fetchPerformance = async () => {
+  const fetchSeasonVsVegasForSeason = async (season) => {
+    const response = await fetch(`${API_URL}/api/ml/season-ai-vs-vegas/${season}`);
+    return response.json();
+  };
+
+  const fetchPerformance = async ({ silent = false } = {}) => {
+    if (!silent) {
+      setRefreshing(true);
+    }
     try {
-      const data = await fetchPerformanceForSeason(selectedSeason);
+      const [data, vsVegasData] = await Promise.all([
+        fetchPerformanceForSeason(selectedSeason),
+        fetchSeasonVsVegasForSeason(selectedSeason)
+      ]);
       
       if (data.success) {
         setPerformanceData(data);
+        setSeasonVsVegas(vsVegasData?.success ? vsVegasData : null);
+        setLastUpdated(new Date());
         setError(null);
       } else {
         setError(data.error || 'Failed to load performance data');
       }
       setLoading(false);
     } catch (err) {
-      console.error('Failed to fetch performance:', err);
-      setError('Unable to connect to API');
+      if (!silent) {
+        setError('Unable to connect to API');
+      }
       setLoading(false);
+    } finally {
+      if (!silent) {
+        setRefreshing(false);
+      }
     }
+  };
+
+  const formatLastUpdated = () => {
+    if (!lastUpdated) {
+      return 'Waiting for first sync';
+    }
+    return `Last updated ${lastUpdated.toLocaleTimeString()}`;
   };
 
   if (loading) {
@@ -145,9 +181,22 @@ function ModelPerformance() {
   const perfTier = getPerformanceTier(winRate);
 
   // Vegas comparison
-  const vegasAccuracy = parseFloat(vegasSummary?.win_accuracy) || 52.5;
-  const beatVegas = winRate - vegasAccuracy;
-  const vegasStatus = winRate >= vegasAccuracy ? 'BEATING' : 'BELOW';
+  const aiVsVegasAiPct = seasonVsVegas
+    ? Number(seasonVsVegas.ai_percentage || 0)
+    : winRate;
+  const aiVsVegasVegasPct = seasonVsVegas
+    ? Number(seasonVsVegas.vegas_percentage || 0)
+    : (parseFloat(vegasSummary?.win_accuracy) || 52.5);
+  const beatVegas = aiVsVegasAiPct - aiVsVegasVegasPct;
+  const vegasStatus = aiVsVegasAiPct >= aiVsVegasVegasPct ? 'BEATING' : 'BELOW';
+
+  const aiVsVegasRecord = seasonVsVegas
+    ? `${seasonVsVegas.ai_wins} - ${seasonVsVegas.vegas_wins}`
+    : `${overall.correct_predictions}/${overall.total_games} wins`;
+
+  const aiVsVegasDetail = seasonVsVegas
+    ? `Ties ${seasonVsVegas.ties} | Games ${seasonVsVegas.total_games}`
+    : `${vegasSummary?.evaluable_games || 0} evaluable games`;
 
   return (
     <div className="performance-container">
@@ -165,16 +214,29 @@ function ModelPerformance() {
             </button>
           ))}
         </div>
+        <div className="live-status-row">
+          <div className="live-status-text">
+            Live sync every 10s | {formatLastUpdated()}
+          </div>
+          <button
+            className="refresh-now-btn"
+            type="button"
+            onClick={() => fetchPerformance()}
+            disabled={refreshing}
+          >
+            {refreshing ? 'Refreshing...' : 'Refresh Now'}
+          </button>
+        </div>
       </div>
 
       {/* HERO - AI vs Vegas Comparison */}
       <div className="vegas-hero">
-        <h2 className="hero-title">🎯 {primaryModel === 'elo' ? 'Elo' : 'AI'} vs Vegas Performance - {selectedSeason} Season</h2>
+        <h2 className="hero-title">🎯 AI vs Vegas Performance - {selectedSeason} Season</h2>
         <div className="hero-comparison">
           <div className="comparison-side ai-side">
-            <div className="side-label">{primaryModel === 'elo' ? 'H.C. LOMBARDO ELO' : 'H.C. LOMBARDO AI'}</div>
-            <div className="side-number ai-number">{winRate.toFixed(1)}%</div>
-            <div className="side-detail">{overall.correct_predictions}/{overall.total_games} wins</div>
+            <div className="side-label">H.C. LOMBARDO AI (SPREAD H2H)</div>
+            <div className="side-number ai-number">{aiVsVegasAiPct.toFixed(1)}%</div>
+            <div className="side-detail">Record: {aiVsVegasRecord}</div>
             <div className="side-tier" style={{ color: perfTier.color }}>
               {perfTier.emoji} {perfTier.tier}
             </div>
@@ -193,9 +255,9 @@ function ModelPerformance() {
           </div>
 
           <div className="comparison-side vegas-side">
-            <div className="side-label">VEGAS SPREADS</div>
-            <div className="side-number vegas-number">{vegasAccuracy.toFixed(1)}%</div>
-            <div className="side-detail">{vegasSummary?.evaluable_games || 0} evaluable games</div>
+            <div className="side-label">VEGAS SPREADS (SPREAD H2H)</div>
+            <div className="side-number vegas-number">{aiVsVegasVegasPct.toFixed(1)}%</div>
+            <div className="side-detail">{aiVsVegasDetail}</div>
             <div className="side-tier" style={{ color: '#6b7280' }}>
               📈 Benchmark
             </div>
@@ -205,26 +267,53 @@ function ModelPerformance() {
 
       {/* Quick Stats */}
       <div className="quick-stats">
-        <div className="quick-stat">
-          <div className="stat-icon-big">🎲</div>
-          <div className="stat-value-big">{overall.total_games}</div>
-          <div className="stat-label-small">Primary Model Games</div>
-        </div>
-        <div className="quick-stat">
-          <div className="stat-icon-big">✅</div>
-          <div className="stat-value-big">{overall.correct_predictions}</div>
-          <div className="stat-label-small">Correct Picks</div>
-        </div>
-        <div className="quick-stat">
-          <div className="stat-icon-big">📏</div>
-          <div className="stat-value-big">{avgError.toFixed(1)}</div>
-          <div className="stat-label-small">Margin Error</div>
-        </div>
-        <div className="quick-stat">
-          <div className="stat-icon-big">📅</div>
-          <div className="stat-value-big">Wk {overall.first_week}-{overall.latest_week}</div>
-          <div className="stat-label-small">{selectedSeason} Season</div>
-        </div>
+        {seasonVsVegas ? (
+          <>
+            <div className="quick-stat">
+              <div className="stat-icon-big">🎲</div>
+              <div className="stat-value-big">{seasonVsVegas.total_games}</div>
+              <div className="stat-label-small">H2H Games</div>
+            </div>
+            <div className="quick-stat">
+              <div className="stat-icon-big">🤖</div>
+              <div className="stat-value-big">{seasonVsVegas.ai_wins}</div>
+              <div className="stat-label-small">AI Wins</div>
+            </div>
+            <div className="quick-stat">
+              <div className="stat-icon-big">🎰</div>
+              <div className="stat-value-big">{seasonVsVegas.vegas_wins}</div>
+              <div className="stat-label-small">Vegas Wins</div>
+            </div>
+            <div className="quick-stat">
+              <div className="stat-icon-big">🤝</div>
+              <div className="stat-value-big">{seasonVsVegas.ties}</div>
+              <div className="stat-label-small">Ties</div>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="quick-stat">
+              <div className="stat-icon-big">🎲</div>
+              <div className="stat-value-big">{overall.total_games}</div>
+              <div className="stat-label-small">Primary Model Games</div>
+            </div>
+            <div className="quick-stat">
+              <div className="stat-icon-big">✅</div>
+              <div className="stat-value-big">{overall.correct_predictions}</div>
+              <div className="stat-label-small">Correct Picks</div>
+            </div>
+            <div className="quick-stat">
+              <div className="stat-icon-big">📏</div>
+              <div className="stat-value-big">{avgError.toFixed(1)}</div>
+              <div className="stat-label-small">Margin Error</div>
+            </div>
+            <div className="quick-stat">
+              <div className="stat-icon-big">📅</div>
+              <div className="stat-value-big">Wk {overall.first_week}-{overall.latest_week}</div>
+              <div className="stat-label-small">{selectedSeason} Season</div>
+            </div>
+          </>
+        )}
       </div>
 
       <div className="performance-insights">

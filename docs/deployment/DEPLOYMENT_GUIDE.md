@@ -273,7 +273,7 @@ ssh -i ~/.ssh/hc-lombardo-key.pem ubuntu@34.198.25.249 \
 ```env
 DB_NAME=nfl_analytics
 DB_USER=nfl_user
-DB_PASSWORD=nfl2024
+DB_PASSWORD=REDACTED_DB_PASSWORD
 DB_HOST=localhost
 DB_PORT=5432
 ```
@@ -371,7 +371,7 @@ backend:
 **Version**: PostgreSQL 14  
 **Database**: `nfl_analytics`  
 **User**: `nfl_user`  
-**Password**: `nfl2024`
+**Password**: `REDACTED_DB_PASSWORD`
 
 **Access:**
 ```bash
@@ -379,7 +379,7 @@ backend:
 psql -U nfl_user -h localhost -d nfl_analytics
 
 # Set password in environment
-export PGPASSWORD=nfl2024
+export PGPASSWORD=REDACTED_DB_PASSWORD
 psql -U nfl_user -h localhost -d nfl_analytics
 ```
 
@@ -674,7 +674,7 @@ cd ~/H.C.-Lombardo-App
 cat > .env << EOF
 DB_NAME=nfl_analytics
 DB_USER=nfl_user
-DB_PASSWORD=nfl2024
+DB_PASSWORD=REDACTED_DB_PASSWORD
 DB_HOST=localhost
 DB_PORT=5432
 EOF

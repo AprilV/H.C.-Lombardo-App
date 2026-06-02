@@ -1,0 +1,215 @@
+﻿BRANCH
+## master...origin/master
+ M .github/workflows/nfl-data-update-TEST.yml
+ M .github/workflows/nfl-data-update.yml
+ M README.md
+ M api_server.py
+ M docs/ai_reference/STARTUP_GUIDE.md
+ M docs/ai_reference/STARTUP_MODES.md
+ M docs/ai_reference/TOPOLOGY.md
+ M docs/deployment/DEPLOYMENT_GUIDE.md
+ M docs/devlog/archive/index.json
+ M espn_data_fetcher.py
+ M scripts/maintenance/dashboard_closure_gate.py
+ M scripts/maintenance/scrape_teamrankings.py
+?? .deploy-worktree/
+?? docs/deployment/AWS_ACCOUNT_RECOVERY_RUNBOOK.md
+?? docs/devlog/archive/2026-05-14.json
+?? docs/devlog/archive/2026-05-15.json
+?? docs/sprints/ta077_multi_season_eval/
+?? frontend/.env.development
+?? frontend/frontend_build_upload_posix_v2.zip
+?? frontend/frontend_build_upload_posix_v3.zip
+?? frontend/index.html
+?? frontend/main.js
+?? frontend_build_upload.zip
+?? frontend_build_upload_posix.zip
+?? frontend_build_upload_posix_live_20260516.zip
+?? frontend_build_upload_posix_live_20260516_v2.zip
+?? frontend_build_upload_posix_live_current.zip
+?? frontend_build_upload_posix_v3.zip
+?? scripts/verification/ta077_multi_season_evaluation.py
+?? sessions/SESSION_RESUME_2026-05-08_1247.md
+?? sessions/SESSION_RESUME_2026-05-14_1316.md
+?? sessions/SESSION_RESUME_2026-05-14_1505.md
+?? sessions/SESSION_RESUME_2026-05-16_1234.md
+?? task_script.py
+?? temp_js_extract/
+
+COUNTS
+MODIFIED_TRACKED=12
+STAGED=0
+UNTRACKED=150
+UNPUSHED_COMMITS=0
+
+MODIFIED_TRACKED
+.github/workflows/nfl-data-update.yml
+.github/workflows/nfl-data-update-TEST.yml
+api_server.py
+docs/ai_reference/STARTUP_GUIDE.md
+docs/ai_reference/STARTUP_MODES.md
+docs/ai_reference/TOPOLOGY.md
+docs/deployment/DEPLOYMENT_GUIDE.md
+docs/devlog/archive/index.json
+espn_data_fetcher.py
+README.md
+scripts/maintenance/dashboard_closure_gate.py
+scripts/maintenance/scrape_teamrankings.py
+
+STAGED
+(none)
+
+UNTRACKED
+.deploy-worktree/
+docs/deployment/AWS_ACCOUNT_RECOVERY_RUNBOOK.md
+docs/devlog/archive/2026-05-14.json
+docs/devlog/archive/2026-05-15.json
+docs/sprints/ta077_multi_season_eval/TA077_EVALUATION_PLAN.md
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172536/season_2024/ta070_s70_1_20260518_172537_combined.csv
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172536/season_2024/ta070_s70_1_20260518_172537_spread.csv
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172536/season_2024/ta070_s70_1_20260518_172537_summary.json
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172536/season_2024/ta070_s70_1_20260518_172537_total.csv
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172536/season_2024/ta070_s70_1_20260518_172537_winner.csv
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172536/season_2024/ta070_s70_2_20260518_172537_by_season.csv
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172536/season_2024/ta070_s70_2_20260518_172537_by_week.csv
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172536/season_2024/ta070_s70_2_20260518_172537_summary.json
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172536/season_2024/ta070_s70_3_20260518_172538_root_cause.md
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172536/season_2024/ta070_s70_3_20260518_172538_summary.json
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172536/season_2024/ta070_s70_4_20260518_172538_audit_summary.md
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172536/season_2024/ta070_s70_4_20260518_172538_summary.json
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172536/ta077_multi_season_20260518_172536_by_season.csv
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172536/ta077_multi_season_20260518_172536_report.md
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172536/ta077_multi_season_20260518_172536_summary.json
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2021/ta070_s70_1_20260518_172621_combined.csv
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2021/ta070_s70_1_20260518_172621_spread.csv
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2021/ta070_s70_1_20260518_172621_summary.json
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2021/ta070_s70_1_20260518_172621_total.csv
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2021/ta070_s70_1_20260518_172621_winner.csv
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2021/ta070_s70_2_20260518_172621_by_season.csv
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2021/ta070_s70_2_20260518_172621_by_week.csv
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2021/ta070_s70_2_20260518_172621_summary.json
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2021/ta070_s70_3_20260518_172621_root_cause.md
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2021/ta070_s70_3_20260518_172621_summary.json
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2021/ta070_s70_4_20260518_172621_audit_summary.md
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2021/ta070_s70_4_20260518_172621_summary.json
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2022/ta070_s70_1_20260518_172622_combined.csv
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2022/ta070_s70_1_20260518_172622_spread.csv
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2022/ta070_s70_1_20260518_172622_summary.json
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2022/ta070_s70_1_20260518_172622_total.csv
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2022/ta070_s70_1_20260518_172622_winner.csv
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2022/ta070_s70_2_20260518_172622_by_season.csv
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2022/ta070_s70_2_20260518_172622_by_week.csv
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2022/ta070_s70_2_20260518_172622_summary.json
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2022/ta070_s70_3_20260518_172622_root_cause.md
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2022/ta070_s70_3_20260518_172622_summary.json
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2022/ta070_s70_4_20260518_172623_audit_summary.md
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2022/ta070_s70_4_20260518_172623_summary.json
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2023/ta070_s70_1_20260518_172623_combined.csv
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2023/ta070_s70_1_20260518_172623_spread.csv
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2023/ta070_s70_1_20260518_172623_summary.json
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2023/ta070_s70_1_20260518_172623_total.csv
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2023/ta070_s70_1_20260518_172623_winner.csv
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2023/ta070_s70_2_20260518_172623_by_season.csv
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2023/ta070_s70_2_20260518_172623_by_week.csv
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2023/ta070_s70_2_20260518_172623_summary.json
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2023/ta070_s70_3_20260518_172623_root_cause.md
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2023/ta070_s70_3_20260518_172623_summary.json
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2023/ta070_s70_4_20260518_172624_audit_summary.md
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2023/ta070_s70_4_20260518_172624_summary.json
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2024/ta070_s70_1_20260518_172624_combined.csv
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2024/ta070_s70_1_20260518_172624_spread.csv
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2024/ta070_s70_1_20260518_172624_summary.json
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2024/ta070_s70_1_20260518_172624_total.csv
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2024/ta070_s70_1_20260518_172624_winner.csv
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2024/ta070_s70_2_20260518_172624_by_season.csv
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2024/ta070_s70_2_20260518_172624_by_week.csv
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2024/ta070_s70_2_20260518_172624_summary.json
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2024/ta070_s70_3_20260518_172625_root_cause.md
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2024/ta070_s70_3_20260518_172625_summary.json
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2024/ta070_s70_4_20260518_172625_audit_summary.md
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2024/ta070_s70_4_20260518_172625_summary.json
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2025/ta070_s70_1_20260518_172625_combined.csv
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2025/ta070_s70_1_20260518_172625_spread.csv
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2025/ta070_s70_1_20260518_172625_summary.json
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2025/ta070_s70_1_20260518_172625_total.csv
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2025/ta070_s70_1_20260518_172625_winner.csv
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2025/ta070_s70_2_20260518_172625_by_season.csv
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2025/ta070_s70_2_20260518_172625_by_week.csv
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2025/ta070_s70_2_20260518_172625_summary.json
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2025/ta070_s70_3_20260518_172626_root_cause.md
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2025/ta070_s70_3_20260518_172626_summary.json
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2025/ta070_s70_4_20260518_172626_audit_summary.md
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/season_2025/ta070_s70_4_20260518_172626_summary.json
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/ta077_multi_season_20260518_172620_by_season.csv
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/ta077_multi_season_20260518_172620_report.md
+docs/sprints/ta077_multi_season_eval/ta077_run_20260518_172620/ta077_multi_season_20260518_172620_summary.json
+frontend/.env.development
+frontend/frontend_build_upload_posix_v2.zip
+frontend/frontend_build_upload_posix_v3.zip
+frontend/index.html
+frontend/main.js
+frontend_build_upload.zip
+frontend_build_upload_posix.zip
+frontend_build_upload_posix_live_20260516.zip
+frontend_build_upload_posix_live_20260516_v2.zip
+frontend_build_upload_posix_live_current.zip
+frontend_build_upload_posix_v3.zip
+scripts/verification/ta077_multi_season_evaluation.py
+sessions/SESSION_RESUME_2026-05-08_1247.md
+sessions/SESSION_RESUME_2026-05-14_1316.md
+sessions/SESSION_RESUME_2026-05-14_1505.md
+sessions/SESSION_RESUME_2026-05-16_1234.md
+task_script.py
+temp_js_extract/_redirects
+temp_js_extract/admin-architecture.html
+temp_js_extract/admin-both-models.html
+temp_js_extract/admin-neural-network.html
+temp_js_extract/admin-topology.html
+temp_js_extract/amplify.json
+temp_js_extract/asset-manifest.json
+temp_js_extract/favicon.ico
+temp_js_extract/images/afc.png
+temp_js_extract/images/nfc.png
+temp_js_extract/images/teams/ari.png
+temp_js_extract/images/teams/atl.png
+temp_js_extract/images/teams/bal.png
+temp_js_extract/images/teams/buf.png
+temp_js_extract/images/teams/car.png
+temp_js_extract/images/teams/chi.png
+temp_js_extract/images/teams/cin.png
+temp_js_extract/images/teams/cle.png
+temp_js_extract/images/teams/dal.png
+temp_js_extract/images/teams/den.png
+temp_js_extract/images/teams/det.png
+temp_js_extract/images/teams/gb.png
+temp_js_extract/images/teams/hou.png
+temp_js_extract/images/teams/ind.png
+temp_js_extract/images/teams/jax.png
+temp_js_extract/images/teams/kc.png
+temp_js_extract/images/teams/lac.png
+temp_js_extract/images/teams/lar.png
+temp_js_extract/images/teams/lv.png
+temp_js_extract/images/teams/mia.png
+temp_js_extract/images/teams/min.png
+temp_js_extract/images/teams/ne.png
+temp_js_extract/images/teams/no.png
+temp_js_extract/images/teams/nyg.png
+temp_js_extract/images/teams/nyj.png
+temp_js_extract/images/teams/phi.png
+temp_js_extract/images/teams/pit.png
+temp_js_extract/images/teams/sea.png
+temp_js_extract/images/teams/sf.png
+temp_js_extract/images/teams/tb.png
+temp_js_extract/images/teams/ten.png
+temp_js_extract/images/teams/was.png
+temp_js_extract/index.html
+temp_js_extract/manifest.json
+temp_js_extract/performance-dashboard.html
+temp_js_extract/static/css/main.dcb3f9cc.css
+temp_js_extract/static/css/main.dcb3f9cc.css.map
+temp_js_extract/static/js/main.8287fca6.js
+temp_js_extract/static/js/main.8287fca6.js.LICENSE.txt
+temp_js_extract/static/js/main.8287fca6.js.map
+
+UNPUSHED_COMMITS
+(none)

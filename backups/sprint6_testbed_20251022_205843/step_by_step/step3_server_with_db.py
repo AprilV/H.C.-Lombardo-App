@@ -13,7 +13,7 @@ app = Flask(__name__)
 DB_CONFIG = {
     'dbname': 'nfl_analytics',
     'user': 'postgres',
-    'password': 'aprilv120',
+    'password': 'REDACTED_DB_PASSWORD',
     'host': 'localhost',
     'port': 5432
 }

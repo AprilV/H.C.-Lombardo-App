@@ -169,7 +169,7 @@ Record: Loads / Blank / Error / Partial
 ### 5.2 Known Bugs (Pre-confirmed)
 - [ ] Confirm App.js routing bug: `/game-statistics` → routes to wrong component
 - [ ] Confirm App.js routing bug: `/matchup-analyzer` → routes to wrong component
-- [ ] Confirm hardcoded password `aprilv120` still in: `api_server.py`, `api_routes_hcl.py`, `api_routes_live_scores.py`
+- [ ] Confirm hardcoded password `REDACTED_DB_PASSWORD` still in: `api_server.py`, `api_routes_hcl.py`, `api_routes_live_scores.py`
 - [ ] Confirm `background_updater.py` import issue
 - [ ] Confirm DEBUG print statements in `api_routes_live_scores.py`
 - [ ] Confirm `train_xgb_winner.py` uses `hcl_test` schema (wrong)

@@ -1,0 +1,1 @@
+season,week,game_id,game_date,away_team,home_team,predicted_margin,actual_margin,margin_abs_error,ai_spread,vegas_spread,predicted_at,kickoff_time_utc,prediction_provenance,benchmark_pregame_include,predicted_cover_outcome,actual_cover_outcome,spread_pick_correct

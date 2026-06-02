@@ -1,0 +1,33 @@
+{
+  "generated_at_utc": "2026-05-20T21:40:53.017643+00:00",
+  "scope": "Sprint 15 TA-077 competitiveness decision record",
+  "ticket": "TA-077",
+  "decision": {
+    "status": "NO-GO",
+    "reason": "TA-077 competitiveness claims are blocked by unresolved leakage integrity failure.",
+    "effective_for": "Sprint 15 planning and advisor-ready status communications"
+  },
+  "evidence_snapshot": {
+    "winner_accuracy_pct": 38.93,
+    "spread_accuracy_pct": 50.67,
+    "total_accuracy_pct": 54.44,
+    "margin_mae_points": 14.06,
+    "total_mae_points": 10.36,
+    "ai_vs_vegas_ai_wins": 193,
+    "ai_vs_vegas_vegas_wins": 477,
+    "ai_vs_vegas_ties": 639,
+    "ai_vs_vegas_ai_win_pct": 14.74,
+    "ai_vs_vegas_vegas_win_pct": 36.44,
+    "leakage_pct": 98.82,
+    "line_lock_pct": 93.05,
+    "overall_guardrail_pass": false,
+    "seasons_pass_both": 0,
+    "seasons_total": 5
+  },
+  "promotion_conditions": [
+    "Leakage guardrail pass at overall and all-season level.",
+    "Line-lock guardrail pass at overall and all-season level.",
+    "Refreshed AI-vs-Vegas deltas recomputed on integrity-clean cohort."
+  ],
+  "source_evidence_pack": "docs/sprints/ta077_multi_season_eval/ta077_step5_evidence_pack/ta077_step5_evidence_pack_20260520_144000_summary.json"
+}

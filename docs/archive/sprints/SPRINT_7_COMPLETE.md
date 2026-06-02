@@ -214,7 +214,7 @@ WHERE tgs.team = 'BAL'
 DB_HOST=localhost
 DB_PORT=5432
 DB_USER=postgres
-DB_PASSWORD=aprilv120
+DB_PASSWORD=REDACTED_DB_PASSWORD
 DB_NAME_HCL=nfl_analytics_test  # HCL historical data database
 ```
 

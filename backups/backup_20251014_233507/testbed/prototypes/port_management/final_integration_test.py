@@ -39,7 +39,7 @@ def test_scenario_2_with_database():
         conn = psycopg2.connect(
             dbname='nfl_analytics',
             user='postgres',
-            password='aprilv120',
+            password='REDACTED_DB_PASSWORD',
             host='localhost',
             port='5432'
         )

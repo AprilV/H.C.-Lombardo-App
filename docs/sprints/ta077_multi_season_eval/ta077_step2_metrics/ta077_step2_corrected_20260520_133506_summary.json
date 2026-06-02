@@ -1,0 +1,70 @@
+{
+  "generated_at": "2026-05-20T13:35:06",
+  "overall_metrics": {
+    "winner_accuracy_pct": 38.93,
+    "spread_accuracy_pct": 50.67,
+    "total_accuracy_pct": 54.44,
+    "margin_mae_points": 14.06,
+    "total_mae_points": 10.36
+  },
+  "ai_vs_vegas_overall": {
+    "compared_games": 1309,
+    "ai_wins": 193,
+    "vegas_wins": 477,
+    "ties": 639,
+    "ai_win_pct": 14.74,
+    "vegas_win_pct": 36.44,
+    "tie_pct": 48.82
+  },
+  "ai_vs_vegas_by_season": {
+    "2021": {
+      "compared_games": 272,
+      "ai_wins": 52,
+      "vegas_wins": 100,
+      "ties": 120,
+      "ai_win_pct": 19.12,
+      "vegas_win_pct": 36.76,
+      "tie_pct": 44.12
+    },
+    "2022": {
+      "compared_games": 271,
+      "ai_wins": 39,
+      "vegas_wins": 94,
+      "ties": 138,
+      "ai_win_pct": 14.39,
+      "vegas_win_pct": 34.69,
+      "tie_pct": 50.92
+    },
+    "2023": {
+      "compared_games": 272,
+      "ai_wins": 40,
+      "vegas_wins": 97,
+      "ties": 135,
+      "ai_win_pct": 14.71,
+      "vegas_win_pct": 35.66,
+      "tie_pct": 49.63
+    },
+    "2024": {
+      "compared_games": 272,
+      "ai_wins": 30,
+      "vegas_wins": 106,
+      "ties": 136,
+      "ai_win_pct": 11.03,
+      "vegas_win_pct": 38.97,
+      "tie_pct": 50.0
+    },
+    "2025": {
+      "compared_games": 222,
+      "ai_wins": 32,
+      "vegas_wins": 80,
+      "ties": 110,
+      "ai_win_pct": 14.41,
+      "vegas_win_pct": 36.04,
+      "tie_pct": 49.55
+    }
+  },
+  "source_paths": {
+    "combined_csv": "c:/ReactGitEC2/IS330/H.C Lombardo App/docs/sprints/ta077_multi_season_eval/ta077_step1_lock/ta070_s70_1_20260520_201725_combined.csv",
+    "s70_2_summary": "c:/ReactGitEC2/IS330/H.C Lombardo App/docs/sprints/ta077_multi_season_eval/ta077_step2_metrics/ta070_s70_2_20260520_203040_summary.json"
+  }
+}
