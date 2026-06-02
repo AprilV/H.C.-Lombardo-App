@@ -11,6 +11,7 @@ function Analytics() {
   
   // Data states
   const [summary, setSummary] = useState(null);
+  const [summaryNotice, setSummaryNotice] = useState('');
   const [bettingData, setBettingData] = useState([]);
   const [weatherData, setWeatherData] = useState([]);
   const [restData, setRestData] = useState([]);
@@ -58,14 +59,33 @@ function Analytics() {
 
   const fetchSummary = async () => {
     setLoading(true);
+    setSummaryNotice('');
     try {
       const response = await fetch(`${API_URL}/api/hcl/analytics/summary?season=${season}`);
-      const data = await response.json();
-      if (data.success) {
+      const data = await response.json().catch(() => null);
+      if (response.ok && data?.success) {
         setSummary(data.summary);
+        if (data.degraded && data.warning) {
+          setSummaryNotice(data.warning);
+        }
+      } else {
+        setSummary({
+          best_ats_team: null,
+          weather_impact: [],
+          best_rest_advantage: null,
+          most_games_referee: null,
+        });
+        setSummaryNotice(data?.error || `Summary unavailable (HTTP ${response.status})`);
       }
     } catch (err) {
       console.error('Error fetching summary:', err);
+      setSummary({
+        best_ats_team: null,
+        weather_impact: [],
+        best_rest_advantage: null,
+        most_games_referee: null,
+      });
+      setSummaryNotice('Unable to load analytics summary right now.');
     }
     setLoading(false);
   };
@@ -204,8 +224,14 @@ function Analytics() {
   const renderSummary = () => {
     if (!summary) return <div>Loading summary...</div>;
 
+    const atsWins = summary.best_ats_team?.wins ?? summary.best_ats_team?.ats_wins;
+    const atsLosses = summary.best_ats_team?.losses ?? summary.best_ats_team?.ats_losses;
+    const atsTies = summary.best_ats_team?.ties ?? summary.best_ats_team?.ats_ties;
+
     return (
       <>
+        {summaryNotice && <div className="analytics-notice">{summaryNotice}</div>}
+
         <div className="stat-legend">
           <h3>📖 Summary Overview</h3>
           <p><strong>ATS (Against The Spread):</strong> How often a team covers the betting spread</p>
@@ -222,8 +248,8 @@ function Analytics() {
                 <div className="stat-large">{summary.best_ats_team.ats_win_pct}%</div>
                 <div className="stat-label">ATS Win Rate</div>
                 <div className="record">
-                  {summary.best_ats_team.wins}-{summary.best_ats_team.losses}
-                  {summary.best_ats_team.ties > 0 && `-${summary.best_ats_team.ties}`}
+                  {atsWins}-{atsLosses}
+                  {atsTies > 0 && `-${atsTies}`}
                 </div>
               </div>
             )}

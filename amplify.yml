@@ -8,6 +8,39 @@ frontend:
     build:
       commands:
         - npm run build
+        - |
+          BUILD_DIR="build"
+          if [ ! -f "$BUILD_DIR/index.html" ] && [ -f "frontend/build/index.html" ]; then
+            BUILD_DIR="frontend/build"
+          fi
+
+          # Mirror BrowserRouter entry routes so direct deep-links resolve without console rewrites.
+          routes=(
+            "team-stats"
+            "team-comparison"
+            "matchup-analyzer"
+            "analytics"
+            "game-statistics"
+            "historical-data"
+            "ml-predictions"
+            "ml-predictions-redesign"
+            "ml-predictions-old"
+            "model-performance"
+            "settings"
+            "admin"
+          )
+
+          for route in "${routes[@]}"; do
+            mkdir -p "$BUILD_DIR/$route"
+            cp "$BUILD_DIR/index.html" "$BUILD_DIR/$route/index.html"
+          done
+
+          # Mirror team detail routes for all canonical NFL abbreviations.
+          teams=(ARI ATL BAL BUF CAR CHI CIN CLE DAL DEN DET GB HOU IND JAX KC LAC LAR LV MIA MIN NE NO NYG NYJ PHI PIT SEA SF TB TEN WAS)
+          for team in "${teams[@]}"; do
+            mkdir -p "$BUILD_DIR/team/$team"
+            cp "$BUILD_DIR/index.html" "$BUILD_DIR/team/$team/index.html"
+          done
   artifacts:
     baseDirectory: frontend/build
     files:
@@ -24,6 +57,5 @@ customHeaders:
     headers:
       - key: 'Cache-Control'
         value: 'no-cache'
-# SPA routing - redirect all paths to index.html
-# This must be configured in Amplify Console under "Rewrites and redirects"
-# Rule: Source=</^[^.]+$|\.(?!(css|gif|ico|jpg|js|png|txt|svg|woff|ttf|map|json)$)([^.]+$)/> Target=/index.html Type=200
+# Recommended: also configure a global SPA rewrite in Amplify Console when available.
+# This build includes route mirroring fallback so core deep-links still resolve.

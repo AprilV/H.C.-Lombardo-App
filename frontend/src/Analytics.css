@@ -5,6 +5,16 @@
   color: #fff;
 }
 
+.analytics-notice {
+  margin-bottom: 16px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 186, 73, 0.7);
+  background: rgba(255, 186, 73, 0.14);
+  color: #ffd88a;
+  font-weight: 600;
+}
+
 .analytics-header {
   display: flex;
   justify-content: space-between;
