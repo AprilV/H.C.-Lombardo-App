@@ -31,15 +31,14 @@ frontend:
           )
 
           for route in "${routes[@]}"; do
-            mkdir -p "$BUILD_DIR/$route"
-            cp "$BUILD_DIR/index.html" "$BUILD_DIR/$route/index.html"
+            cp "$BUILD_DIR/index.html" "$BUILD_DIR/$route"
           done
 
           # Mirror team detail routes for all canonical NFL abbreviations.
           teams=(ARI ATL BAL BUF CAR CHI CIN CLE DAL DEN DET GB HOU IND JAX KC LAC LAR LV MIA MIN NE NO NYG NYJ PHI PIT SEA SF TB TEN WAS)
+          mkdir -p "$BUILD_DIR/team"
           for team in "${teams[@]}"; do
-            mkdir -p "$BUILD_DIR/team/$team"
-            cp "$BUILD_DIR/index.html" "$BUILD_DIR/team/$team/index.html"
+            cp "$BUILD_DIR/index.html" "$BUILD_DIR/team/$team"
           done
   artifacts:
     baseDirectory: frontend/build
