@@ -1,0 +1,117 @@
+{
+  "generated_utc": "2026-06-02T04:13:59.177463+00:00",
+  "ta016_blocked": true,
+  "ta037_closure_ready": false,
+  "frontend_base": "https://staging.d2fwv8daemi5y2.amplifyapp.com",
+  "route_probes": [
+    {
+      "path": "/",
+      "status_code": 200,
+      "ok": true,
+      "error": null
+    },
+    {
+      "path": "/team-stats",
+      "status_code": 404,
+      "ok": false,
+      "error": null
+    },
+    {
+      "path": "/team-comparison",
+      "status_code": 404,
+      "ok": false,
+      "error": null
+    },
+    {
+      "path": "/matchup-analyzer",
+      "status_code": 404,
+      "ok": false,
+      "error": null
+    },
+    {
+      "path": "/analytics",
+      "status_code": 404,
+      "ok": false,
+      "error": null
+    },
+    {
+      "path": "/game-statistics",
+      "status_code": 404,
+      "ok": false,
+      "error": null
+    },
+    {
+      "path": "/historical-data",
+      "status_code": 404,
+      "ok": false,
+      "error": null
+    },
+    {
+      "path": "/ml-predictions",
+      "status_code": 404,
+      "ok": false,
+      "error": null
+    },
+    {
+      "path": "/model-performance",
+      "status_code": 404,
+      "ok": false,
+      "error": null
+    },
+    {
+      "path": "/admin",
+      "status_code": 404,
+      "ok": false,
+      "error": null
+    },
+    {
+      "path": "/settings",
+      "status_code": 404,
+      "ok": false,
+      "error": null
+    }
+  ],
+  "api_probe_url": "https://9dkkj5n2rc.execute-api.us-east-2.amazonaws.com/api/hcl/analytics/summary?season=2025",
+  "api_probe_status": 500,
+  "api_probe_ok": false,
+  "checks": [
+    {
+      "name": "ta016_probe_step",
+      "ok": true,
+      "detail": "ta016_probe_status.py completed"
+    },
+    {
+      "name": "ta037_gate_step",
+      "ok": true,
+      "detail": "ta037_gate_status.py completed"
+    },
+    {
+      "name": "ta016_artifact_present",
+      "ok": true,
+      "detail": "ta016_probe_status_latest.json parsed"
+    },
+    {
+      "name": "ta037_artifact_present",
+      "ok": true,
+      "detail": "ta037_gate_status_latest.json parsed"
+    },
+    {
+      "name": "frontend_deep_link_routes",
+      "ok": false,
+      "detail": "10 failing routes"
+    },
+    {
+      "name": "api_probe",
+      "ok": false,
+      "detail": "status=500"
+    }
+  ],
+  "blocker_count": 4,
+  "blockers": [
+    "TA-016 remains blocked (no reachable production endpoint)",
+    "TA-037 remains blocked (stability gate not closure-ready)",
+    "Frontend deep-link route probe has 10 failing routes",
+    "API probe endpoint did not return HTTP 200"
+  ],
+  "all_automatable_checks_passing": false
+}
