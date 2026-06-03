@@ -13,6 +13,8 @@ Sprint 10: XGBoost Model Integration
 Date: December 18, 2025
 """
 
+from __future__ import annotations
+
 import psycopg2
 import pandas as pd
 import numpy as np
