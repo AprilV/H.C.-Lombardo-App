@@ -181,22 +181,30 @@ function ModelPerformance() {
   const perfTier = getPerformanceTier(winRate);
 
   // Vegas comparison
-  const aiVsVegasAiPct = seasonVsVegas
+  const hasAtsData = Boolean(
+    seasonVsVegas
+    && Number.isFinite(Number(seasonVsVegas?.total_games))
+    && Number(seasonVsVegas?.total_games) > 0
+  );
+
+  const aiVsVegasAiPct = hasAtsData
     ? Number(seasonVsVegas.ai_percentage || 0)
-    : winRate;
-  const aiVsVegasVegasPct = seasonVsVegas
+    : 0;
+  const aiVsVegasVegasPct = hasAtsData
     ? Number(seasonVsVegas.vegas_percentage || 0)
-    : (parseFloat(vegasSummary?.win_accuracy) || 52.5);
+    : 0;
   const beatVegas = aiVsVegasAiPct - aiVsVegasVegasPct;
-  const vegasStatus = aiVsVegasAiPct >= aiVsVegasVegasPct ? 'BEATING' : 'BELOW';
+  const vegasStatus = !hasAtsData
+    ? 'UNAVAILABLE'
+    : (aiVsVegasAiPct >= aiVsVegasVegasPct ? 'BEATING' : 'BELOW');
 
-  const aiVsVegasRecord = seasonVsVegas
+  const aiVsVegasRecord = hasAtsData
     ? `${seasonVsVegas.ai_wins} - ${seasonVsVegas.vegas_wins}`
-    : `${overall.correct_predictions}/${overall.total_games} wins`;
+    : 'Unavailable';
 
-  const aiVsVegasDetail = seasonVsVegas
+  const aiVsVegasDetail = hasAtsData
     ? `Ties ${seasonVsVegas.ties} | Games ${seasonVsVegas.total_games}`
-    : `${vegasSummary?.evaluable_games || 0} evaluable games`;
+    : 'ATS season data unavailable';
 
   return (
     <div className="performance-container">
@@ -235,28 +243,43 @@ function ModelPerformance() {
         <div className="hero-comparison">
           <div className="comparison-side ai-side">
             <div className="side-label">H.C. LOMBARDO AI (SPREAD H2H)</div>
-            <div className="side-number ai-number">{aiVsVegasAiPct.toFixed(1)}%</div>
+            <div className="side-number ai-number">{hasAtsData ? `${aiVsVegasAiPct.toFixed(1)}%` : 'N/A'}</div>
             <div className="side-detail">Record: {aiVsVegasRecord}</div>
-            <div className="side-tier" style={{ color: perfTier.color }}>
-              {perfTier.emoji} {perfTier.tier}
-            </div>
+            {hasAtsData ? (
+              <div className="side-tier" style={{ color: perfTier.color }}>
+                {perfTier.emoji} {perfTier.tier}
+              </div>
+            ) : (
+              <div className="side-tier" style={{ color: '#6b7280' }}>
+                ATS unavailable
+              </div>
+            )}
           </div>
 
           <div className="comparison-middle">
             <div className={`delta-badge ${vegasStatus.toLowerCase()}`}>
-              <div className="delta-number">
-                {beatVegas > 0 ? '+' : ''}{beatVegas.toFixed(1)}%
-              </div>
-              <div className="delta-label">{vegasStatus} VEGAS</div>
+              {hasAtsData ? (
+                <>
+                  <div className="delta-number">
+                    {beatVegas > 0 ? '+' : ''}{beatVegas.toFixed(1)}%
+                  </div>
+                  <div className="delta-label">{vegasStatus} VEGAS</div>
+                </>
+              ) : (
+                <>
+                  <div className="delta-number">N/A</div>
+                  <div className="delta-label">ATS UNAVAILABLE</div>
+                </>
+              )}
             </div>
-            {beatVegas >= 2 && (
-              <div className="winning-streak">🔥 Significantly outperforming!</div>
+            {hasAtsData && beatVegas >= 2 && (
+              <div className="winning-streak">Significantly outperforming</div>
             )}
           </div>
 
           <div className="comparison-side vegas-side">
             <div className="side-label">VEGAS SPREADS (SPREAD H2H)</div>
-            <div className="side-number vegas-number">{aiVsVegasVegasPct.toFixed(1)}%</div>
+            <div className="side-number vegas-number">{hasAtsData ? `${aiVsVegasVegasPct.toFixed(1)}%` : 'N/A'}</div>
             <div className="side-detail">{aiVsVegasDetail}</div>
             <div className="side-tier" style={{ color: '#6b7280' }}>
               📈 Benchmark
@@ -267,7 +290,7 @@ function ModelPerformance() {
 
       {/* Quick Stats */}
       <div className="quick-stats">
-        {seasonVsVegas ? (
+        {hasAtsData ? (
           <>
             <div className="quick-stat">
               <div className="stat-icon-big">🎲</div>

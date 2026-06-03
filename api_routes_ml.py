@@ -138,6 +138,107 @@ def did_home_cover(spread, actual_margin):
     return result > 0
 
 
+def compute_simulated_ai_vs_vegas_rollup(conn, season, week=None):
+    """
+    Compute ATS head-to-head results by replaying completed games.
+
+    This keeps one denominator/outcome set for public AI-vs-Vegas surfaces.
+    """
+    cur = None
+    try:
+        where_clauses = [
+            "season = %s",
+            "home_score IS NOT NULL",
+            "away_score IS NOT NULL",
+            "COALESCE(is_postseason, FALSE) = FALSE",
+            "spread_line IS NOT NULL"
+        ]
+        params = [season]
+        if week is not None:
+            where_clauses.append("week = %s")
+            params.append(week)
+
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        cur.execute(
+            f"""
+            SELECT
+                week,
+                home_team,
+                away_team,
+                home_score,
+                away_score,
+                spread_line
+            FROM hcl.games
+            WHERE {' AND '.join(where_clauses)}
+            ORDER BY week ASC, game_date ASC
+            """,
+            tuple(params)
+        )
+        completed_games = cur.fetchall() or []
+
+        if not completed_games:
+            return {
+                'ai_wins': 0,
+                'vegas_wins': 0,
+                'ties': 0,
+                'total_games': 0,
+                'data_source': 'simulated_historical',
+                'vegas_spread_source': 'games.spread_line'
+            }
+
+        pred = get_predictor()
+        ai_wins = 0
+        vegas_wins = 0
+        ties = 0
+        total_games = 0
+
+        for game in completed_games:
+            game_week = game.get('week')
+            if game_week is None:
+                continue
+
+            try:
+                prediction = pred.predict_game(
+                    season,
+                    int(game_week),
+                    game.get('home_team'),
+                    game.get('away_team'),
+                    game.get('spread_line'),
+                    None
+                )
+            except Exception:
+                continue
+
+            ai_spread = prediction.get('ai_spread')
+            vegas_spread = game.get('spread_line')
+            if ai_spread is None or vegas_spread is None:
+                continue
+
+            actual_margin = game.get('home_score') - game.get('away_score')
+            ai_covered = did_home_cover(ai_spread, actual_margin)
+            vegas_covered = did_home_cover(vegas_spread, actual_margin)
+
+            total_games += 1
+            if ai_covered is True and vegas_covered is False:
+                ai_wins += 1
+            elif ai_covered is False and vegas_covered is True:
+                vegas_wins += 1
+            else:
+                ties += 1
+
+        return {
+            'ai_wins': ai_wins,
+            'vegas_wins': vegas_wins,
+            'ties': ties,
+            'total_games': total_games,
+            'data_source': 'simulated_historical',
+            'vegas_spread_source': 'games.spread_line'
+        }
+    finally:
+        if cur:
+            cur.close()
+
+
 def build_outcome_fingerprint(outcomes_by_game_id):
     """Return deterministic SHA256 fingerprint for {game_id: result} mapping."""
     if not outcomes_by_game_id:
@@ -826,164 +927,16 @@ def get_season_ai_vs_vegas(season):
     Get season-to-date AI vs Vegas spread performance
     Shows how many games AI beat Vegas on spread coverage
     """
+    conn = None
     try:
         conn = psycopg2.connect(**get_predictor().db_config)
-        cur = conn.cursor()
-        data_source = 'strict_pregame'
-
-        has_closing_spread = table_has_column(conn, 'hcl', 'games', 'closing_spread')
-        if has_closing_spread:
-            vegas_expr = "COALESCE(g.closing_spread, p.vegas_spread, g.spread_line)"
-            vegas_source = "closing_spread->prediction_vegas_spread->spread_line"
-        else:
-            vegas_expr = "COALESCE(p.vegas_spread, g.spread_line)"
-            vegas_source = "prediction_vegas_spread->spread_line"
-        
-        # Get all completed games with predictions for the season
-        cur.execute(
-            f"""
-            SELECT
-                p.game_id,
-                p.ai_spread,
-                {vegas_expr} AS vegas_spread,
-                g.home_score,
-                g.away_score
-            FROM hcl.ml_predictions p
-            JOIN hcl.games g ON p.game_id = g.game_id
-            WHERE p.season = %s
-              AND g.home_score IS NOT NULL
-              AND g.away_score IS NOT NULL
-              AND COALESCE(g.is_postseason, FALSE) = FALSE
-              AND p.ai_spread IS NOT NULL
-              AND {vegas_expr} IS NOT NULL
-              AND p.predicted_at IS NOT NULL
-              AND (
-                    (
-                        g.kickoff_time_utc IS NOT NULL
-                        AND p.predicted_at <= g.kickoff_time_utc
-                    )
-                    OR (
-                        g.kickoff_time_utc IS NULL
-                        AND COALESCE(p.game_date::date, g.game_date::date) IS NOT NULL
-                        AND p.predicted_at::date <= COALESCE(p.game_date::date, g.game_date::date)
-                    )
-              )
-            ORDER BY g.week, g.game_date
-            """,
-            (season,)
-        )
-        
-        games = cur.fetchall()
-        if not games:
-            # Legacy fallback: keep historical coverage visible when older rows lack
-            # pregame timestamp evidence but still have completed game outcomes.
-            cur.execute(
-                f"""
-                SELECT
-                    p.game_id,
-                    p.ai_spread,
-                    {vegas_expr} AS vegas_spread,
-                    g.home_score,
-                    g.away_score
-                FROM hcl.ml_predictions p
-                JOIN hcl.games g ON p.game_id = g.game_id
-                WHERE p.season = %s
-                  AND g.home_score IS NOT NULL
-                  AND g.away_score IS NOT NULL
-                  AND COALESCE(g.is_postseason, FALSE) = FALSE
-                  AND p.ai_spread IS NOT NULL
-                  AND {vegas_expr} IS NOT NULL
-                ORDER BY g.week, g.game_date
-                """,
-                (season,)
-            )
-            games = cur.fetchall()
-            if games:
-                data_source = 'legacy_relaxed_pregame'
-        
-        # Single-equation mode: compute AI vs Vegas from simulated completed games
-        # so all clients see one consistent denominator and outcome set.
-        games = []
-
-        ai_wins = 0
-        vegas_wins = 0
-        ties = 0
-        total = 0
-
-        if not games:
-            cur.execute(
-                """
-                SELECT
-                    week,
-                    home_team,
-                    away_team,
-                    home_score,
-                    away_score,
-                    spread_line
-                FROM hcl.games
-                WHERE season = %s
-                  AND home_score IS NOT NULL
-                  AND away_score IS NOT NULL
-                  AND COALESCE(is_postseason, FALSE) = FALSE
-                  AND spread_line IS NOT NULL
-                ORDER BY week, game_date
-                """,
-                (season,)
-            )
-            simulated_games = cur.fetchall() or []
-            if simulated_games:
-                data_source = 'simulated_historical'
-                pred = get_predictor()
-                for week, home_team, away_team, home_score, away_score, vegas_spread in simulated_games:
-                    try:
-                        prediction = pred.predict_game(
-                            season,
-                            int(week),
-                            home_team,
-                            away_team,
-                            vegas_spread,
-                            None
-                        )
-                    except Exception:
-                        continue
-
-                    ai_spread = prediction.get('ai_spread')
-                    if ai_spread is None:
-                        continue
-
-                    actual_margin = home_score - away_score
-                    total += 1
-
-                    ai_covered = did_home_cover(ai_spread, actual_margin)
-                    vegas_covered = did_home_cover(vegas_spread, actual_margin)
-
-                    if ai_covered is True and vegas_covered is False:
-                        ai_wins += 1
-                    elif ai_covered is False and vegas_covered is True:
-                        vegas_wins += 1
-                    else:
-                        ties += 1
-        
-        for game_id, ai_spread, vegas_spread, home_score, away_score in games:
-            actual_margin = home_score - away_score
-            total += 1
-
-            ai_covered = did_home_cover(ai_spread, actual_margin)
-            vegas_covered = did_home_cover(vegas_spread, actual_margin)
-            
-            # Compare
-            if ai_covered is True and vegas_covered is False:
-                ai_wins += 1
-            elif ai_covered is False and vegas_covered is True:
-                vegas_wins += 1
-            else:
-                ties += 1
-        
+        rollup = compute_simulated_ai_vs_vegas_rollup(conn, season)
+        ai_wins = int(rollup.get('ai_wins') or 0)
+        vegas_wins = int(rollup.get('vegas_wins') or 0)
+        ties = int(rollup.get('ties') or 0)
+        total = int(rollup.get('total_games') or 0)
         ai_pct = (ai_wins / total * 100) if total > 0 else 0
         vegas_pct = (vegas_wins / total * 100) if total > 0 else 0
-        
-        cur.close()
-        conn.close()
         
         return jsonify({
             'success': True,
@@ -994,12 +947,15 @@ def get_season_ai_vs_vegas(season):
             'total_games': total,
             'ai_percentage': round(ai_pct, 1),
             'vegas_percentage': round(vegas_pct, 1),
-            'vegas_spread_source': vegas_source,
-            'data_source': data_source
+            'vegas_spread_source': rollup.get('vegas_spread_source') or 'games.spread_line',
+            'data_source': rollup.get('data_source') or 'simulated_historical'
         })
         
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
+    finally:
+        if conn:
+            conn.close()
 
 
 @ml_api.route('/api/ml/season-ai-vs-vegas-audit/<int:season>', methods=['GET'])
@@ -1332,6 +1288,9 @@ def get_ai_vs_vegas_reconciliation():
       include_performance_contract: optional bool-like string, default true
             strict_mode: optional bool-like string, default false
             sample_limit: optional integer for mismatch samples (default 20, max 200)
+
+        Coverage behavior:
+            - if completed games exist for a season, zero ATS rows are treated as mismatch.
     """
     conn = None
     cur = None
@@ -1351,6 +1310,11 @@ def get_ai_vs_vegas_reconciliation():
         if sample_limit is None:
             sample_limit = 20
         sample_limit = max(1, min(sample_limit, 200))
+
+        def _pct(numerator, denominator):
+            if not denominator:
+                return 0.0
+            return round((numerator / denominator) * 100.0, 2)
 
         if strict_mode and not include_performance_contract:
             return jsonify({
@@ -1383,6 +1347,19 @@ def get_ai_vs_vegas_reconciliation():
         performance_fingerprints_by_season = {}
 
         for season in seasons:
+            cur.execute(
+                """
+                SELECT COUNT(*) AS completed_games
+                FROM hcl.games
+                WHERE season = %s
+                  AND home_score IS NOT NULL
+                  AND away_score IS NOT NULL
+                  AND COALESCE(is_postseason, FALSE) = FALSE
+                """,
+                (season,)
+            )
+            completed_games = int((cur.fetchone() or {}).get('completed_games') or 0)
+
             # Season summary contract (same logic as /api/ml/season-ai-vs-vegas/<season>).
             cur.execute(
                 f"""
@@ -1549,6 +1526,29 @@ def get_ai_vs_vegas_reconciliation():
                         ]
                     }
 
+            performance_total = (
+                int(performance.get('total_games') or 0)
+                if performance is not None else None
+            )
+            coverage = {
+                'completed_games': completed_games,
+                'summary_total_games': summary_total,
+                'summary_coverage_pct': _pct(summary_total, completed_games),
+                'summary_zero_coverage': (
+                    completed_games > 0 and summary_total == 0
+                ),
+                'performance_total_games': performance_total,
+                'performance_coverage_pct': (
+                    _pct(performance_total or 0, completed_games)
+                    if include_performance_contract else None
+                ),
+                'performance_zero_coverage': (
+                    include_performance_contract
+                    and completed_games > 0
+                    and (performance_total or 0) == 0
+                )
+            }
+
             season_check = {
                 'season': season,
                 'season_summary_contract': {
@@ -1571,6 +1571,7 @@ def get_ai_vs_vegas_reconciliation():
                         if include_performance_contract else None
                     )
                 },
+                'coverage': coverage,
                 'summary_vs_performance_match': perf_match,
                 'strict_mode_enabled': strict_mode,
                 'strict_match': strict_match,
@@ -1592,6 +1593,10 @@ def get_ai_vs_vegas_reconciliation():
                 reasons.append('fingerprint_mismatch')
             if strict_mode and strict_match is False:
                 reasons.append('strict_row_mismatch')
+            if coverage.get('summary_zero_coverage'):
+                reasons.append('summary_zero_coverage')
+            if coverage.get('performance_zero_coverage'):
+                reasons.append('performance_zero_coverage')
 
             if reasons:
                 mismatches.append({
@@ -1628,6 +1633,24 @@ def get_ai_vs_vegas_reconciliation():
             1 for fp in performance_fingerprints_by_season.values() if fp
         ) if include_performance_contract else 0
 
+        completed_season_count = sum(
+            1 for check in checks
+            if int((check.get('coverage') or {}).get('completed_games') or 0) > 0
+        )
+        summary_covered_season_count = sum(
+            1 for check in checks
+            if int((check.get('coverage') or {}).get('summary_total_games') or 0) > 0
+        )
+        performance_covered_season_count = sum(
+            1 for check in checks
+            if int((check.get('coverage') or {}).get('performance_total_games') or 0) > 0
+        ) if include_performance_contract else 0
+        zero_coverage_season_count = sum(
+            1 for check in checks
+            if bool((check.get('coverage') or {}).get('summary_zero_coverage'))
+            or bool((check.get('coverage') or {}).get('performance_zero_coverage'))
+        )
+
         return jsonify({
             'success': True,
             'start_season': start_season,
@@ -1643,6 +1666,12 @@ def get_ai_vs_vegas_reconciliation():
                 'postseason_included': False,
                 'version': 'ai_vegas_reconciliation_v3'
             },
+            'coverage_contract': {
+                'completed_games_basis': 'hcl.games regular-season completed rows',
+                'zero_coverage_is_mismatch': True,
+                'summary_requires_non_zero_when_completed': True,
+                'performance_requires_non_zero_when_completed': bool(include_performance_contract)
+            },
             'season_count': len(checks),
             'checks': checks,
             'fingerprint_summary': {
@@ -1654,6 +1683,12 @@ def get_ai_vs_vegas_reconciliation():
                 'summary_non_null_count': summary_non_null_count,
                 'performance_non_null_count': performance_non_null_count,
                 'summary_vs_performance_chain_match': chain_match
+            },
+            'coverage_summary': {
+                'completed_season_count': completed_season_count,
+                'summary_covered_season_count': summary_covered_season_count,
+                'performance_covered_season_count': performance_covered_season_count,
+                'zero_coverage_season_count': zero_coverage_season_count
             },
             'mismatch_count': len(mismatches),
             'mismatches': mismatches,
@@ -2348,6 +2383,8 @@ def get_performance_stats():
         spread_h2h_ai = 0
         spread_h2h_vegas = 0
         spread_h2h_ties = 0
+        spread_h2h_data_source = 'tracked_rows'
+        spread_h2h_vegas_source = 'ml_predictions.vegas_spread with games.spread_line fallback'
 
         for row in spread_h2h_rows:
             actual_margin = None
@@ -2370,6 +2407,19 @@ def get_performance_stats():
             spread_h2h_ai = _int(simulated_spread_h2h.get('ai_wins'))
             spread_h2h_vegas = _int(simulated_spread_h2h.get('vegas_wins'))
             spread_h2h_ties = _int(simulated_spread_h2h.get('ties'))
+            spread_h2h_data_source = 'simulated_historical'
+            spread_h2h_vegas_source = 'games.spread_line'
+
+        # Force a single public ATS contract for spread_h2h so this endpoint
+        # cannot drift from /api/ml/season-ai-vs-vegas/<season>.
+        unified_h2h = compute_simulated_ai_vs_vegas_rollup(conn, season, week=week)
+        spread_h2h_total = _int(unified_h2h.get('total_games'))
+        spread_h2h_ai = _int(unified_h2h.get('ai_wins'))
+        spread_h2h_vegas = _int(unified_h2h.get('vegas_wins'))
+        spread_h2h_ties = _int(unified_h2h.get('ties'))
+        spread_h2h_data_source = unified_h2h.get('data_source') or 'simulated_historical'
+        spread_h2h_vegas_source = unified_h2h.get('vegas_spread_source') or 'games.spread_line'
+        spread_h2h_legacy_mode = False
 
         model_breakdown = {
             'xgb': {
@@ -2402,7 +2452,8 @@ def get_performance_stats():
                 'ties': spread_h2h_ties,
                 'ai_percentage': _pct(spread_h2h_ai, spread_h2h_total),
                 'vegas_percentage': _pct(spread_h2h_vegas, spread_h2h_total),
-                'vegas_spread_source': 'ml_predictions.vegas_spread with games.spread_line fallback'
+                'vegas_spread_source': spread_h2h_vegas_source,
+                'data_source': spread_h2h_data_source
             },
             'vegas': {
                 'evaluable_games': vegas_evaluable,

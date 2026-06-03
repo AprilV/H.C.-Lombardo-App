@@ -51,6 +51,90 @@ def validate_common_contract(payload):
     return summary
 
 
+def validate_coverage_contract(payload, require_non_zero=True):
+    coverage_contract = payload.get('coverage_contract') or {}
+    require(
+        isinstance(coverage_contract.get('zero_coverage_is_mismatch'), bool),
+        "coverage_contract.zero_coverage_is_mismatch must be bool"
+    )
+
+    coverage_summary = payload.get('coverage_summary') or {}
+    require(
+        isinstance(coverage_summary.get('completed_season_count'), int),
+        "coverage_summary.completed_season_count must be int"
+    )
+    require(
+        isinstance(coverage_summary.get('summary_covered_season_count'), int),
+        "coverage_summary.summary_covered_season_count must be int"
+    )
+    require(
+        isinstance(coverage_summary.get('performance_covered_season_count'), int),
+        "coverage_summary.performance_covered_season_count must be int"
+    )
+    require(
+        isinstance(coverage_summary.get('zero_coverage_season_count'), int),
+        "coverage_summary.zero_coverage_season_count must be int"
+    )
+
+    checks = payload.get('checks') or []
+    require(isinstance(checks, list), "checks must be a list")
+    require(len(checks) > 0, "checks must contain at least one season")
+
+    completed_seasons = 0
+    include_performance = bool(payload.get('include_performance_contract'))
+
+    for check in checks:
+        season = check.get('season')
+        coverage = check.get('coverage') or {}
+
+        require(isinstance(coverage.get('completed_games'), int), f"coverage.completed_games must be int for season {season}")
+        require(isinstance(coverage.get('summary_total_games'), int), f"coverage.summary_total_games must be int for season {season}")
+        require(
+            isinstance(coverage.get('summary_coverage_pct'), (int, float)),
+            f"coverage.summary_coverage_pct must be numeric for season {season}"
+        )
+        require(
+            isinstance(coverage.get('summary_zero_coverage'), bool),
+            f"coverage.summary_zero_coverage must be bool for season {season}"
+        )
+
+        performance_total = coverage.get('performance_total_games')
+        performance_pct = coverage.get('performance_coverage_pct')
+        performance_zero = coverage.get('performance_zero_coverage')
+
+        require(
+            performance_total is None or isinstance(performance_total, int),
+            f"coverage.performance_total_games must be int|None for season {season}"
+        )
+        require(
+            performance_pct is None or isinstance(performance_pct, (int, float)),
+            f"coverage.performance_coverage_pct must be numeric|None for season {season}"
+        )
+        require(
+            isinstance(performance_zero, bool),
+            f"coverage.performance_zero_coverage must be bool for season {season}"
+        )
+
+        completed_games = coverage.get('completed_games')
+        if completed_games > 0:
+            completed_seasons += 1
+            if require_non_zero:
+                require(
+                    coverage.get('summary_total_games', 0) > 0,
+                    f"Season {season} has completed games but zero summary ATS rows"
+                )
+                if include_performance:
+                    require(
+                        (coverage.get('performance_total_games') or 0) > 0,
+                        f"Season {season} has completed games but zero performance ATS rows"
+                    )
+
+    if require_non_zero:
+        require(completed_seasons > 0, "No completed seasons found in requested range")
+
+    return coverage_summary
+
+
 def main():
     parser = argparse.ArgumentParser(description="Verify reconciliation v3 contract and chain behavior.")
     parser.add_argument('--base-url', default='http://127.0.0.1:5000', help='API base URL')
@@ -61,6 +145,11 @@ def main():
         type=int,
         default=2026,
         help='Extended range end used to verify range-sensitive chain hashing'
+    )
+    parser.add_argument(
+        '--allow-zero-coverage',
+        action='store_true',
+        help='Skip non-zero coverage gate checks (debug only)'
     )
     args = parser.parse_args()
 
@@ -74,6 +163,14 @@ def main():
 
         base_summary = validate_common_contract(base_payload)
         ext_summary = validate_common_contract(ext_payload)
+        base_coverage = validate_coverage_contract(
+            base_payload,
+            require_non_zero=(not args.allow_zero_coverage)
+        )
+        ext_coverage = validate_coverage_contract(
+            ext_payload,
+            require_non_zero=(not args.allow_zero_coverage)
+        )
 
         expected_base_count = args.end_season - args.start_season + 1
         expected_ext_count = args.extended_end_season - args.start_season + 1
@@ -83,10 +180,11 @@ def main():
         require(ext_summary['summary_chain_count'] == expected_ext_count, "Extended summary_chain_count mismatch")
         require(ext_summary['performance_chain_count'] == expected_ext_count, "Extended performance_chain_count mismatch")
 
-        require(base_payload.get('all_match') is True, "Expected base all_match=true")
-        require(ext_payload.get('all_match') is True, "Expected extended all_match=true")
-        require(base_payload.get('mismatch_count') == 0, "Expected base mismatch_count=0")
-        require(ext_payload.get('mismatch_count') == 0, "Expected extended mismatch_count=0")
+        if not args.allow_zero_coverage:
+            require(base_payload.get('all_match') is True, "Expected base all_match=true")
+            require(ext_payload.get('all_match') is True, "Expected extended all_match=true")
+            require(base_payload.get('mismatch_count') == 0, "Expected base mismatch_count=0")
+            require(ext_payload.get('mismatch_count') == 0, "Expected extended mismatch_count=0")
 
         require(base_summary['summary_vs_performance_chain_match'] is True, "Base chain_match expected true")
         require(ext_summary['summary_vs_performance_chain_match'] is True, "Extended chain_match expected true")
@@ -104,14 +202,18 @@ def main():
             f"PASS base {args.start_season}-{args.end_season}: "
             f"summary_count={base_summary['summary_chain_count']} "
             f"non_null={base_summary['summary_non_null_count']} "
+            f"covered={base_coverage['summary_covered_season_count']}/{base_coverage['completed_season_count']} "
             f"hash_prefix={base_summary['summary_chain_sha256'][:16]}"
         )
         print(
             f"PASS extended {args.start_season}-{args.extended_end_season}: "
             f"summary_count={ext_summary['summary_chain_count']} "
             f"non_null={ext_summary['summary_non_null_count']} "
+            f"covered={ext_coverage['summary_covered_season_count']}/{ext_coverage['completed_season_count']} "
             f"hash_prefix={ext_summary['summary_chain_sha256'][:16]}"
         )
+        if args.allow_zero_coverage:
+            print("NOTE allow-zero-coverage enabled: all_match/mismatch_count assertions skipped.")
         print("PASS chain hash is range-sensitive and contracts are stable.")
         return 0
 

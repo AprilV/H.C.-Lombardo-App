@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './MLPredictions.css';
 import { getDefaultSeason, getRecentSeasons } from './utils/season';
+import { getEspnTeamLogoUrl } from './utils/teamLogos';
 
 const API_URL = process.env.REACT_APP_API_URL ?? '';
 
@@ -48,7 +49,7 @@ function MLPredictions() {
 
   // Team logo helper
   const getTeamLogo = (team) => {
-    return `https://a.espncdn.com/i/teamlogos/nfl/500/${team}.png`;
+    return getEspnTeamLogoUrl(team);
   };
 
   // Format game date (avoid timezone shifts)
@@ -61,6 +62,19 @@ function MLPredictions() {
       month: 'short', 
       day: 'numeric'
     });
+  };
+
+  // Mirrors backend did_home_cover(spread, actual_margin): null=push, true=home covers.
+  const didHomeCover = (spread, actualMargin) => {
+    if (spread === null || spread === undefined || actualMargin === null || actualMargin === undefined) {
+      return null;
+    }
+
+    const result = Number(actualMargin) + Number(spread);
+    if (result === 0) {
+      return null;
+    }
+    return result > 0;
   };
 
   // Fetch upcoming week predictions on load
@@ -286,49 +300,37 @@ function MLPredictions() {
           // Count AI correct predictions (winner picks)
           const aiCorrect = finishedGames.filter(p => p.correct === true).length;
             
-            // Count AI spread coverage (favorite covered)
+            // Count AI spread coverage using canonical ATS home-cover rule.
             let aiSpreadCovered = 0;
             let aiSpreadPushes = 0;
             let aiSpreadTotal = 0;
             
             finishedGames.forEach(p => {
               const actualMargin = p.actual_home_score - p.actual_away_score;
-              const isPush = (actualMargin === -p.ai_spread);
-              
-              if (isPush) {
+              const aiCovered = didHomeCover(p.ai_spread, actualMargin);
+
+              if (aiCovered === null) {
                 aiSpreadPushes++;
               } else {
                 aiSpreadTotal++;
-                let covered = false;
-                if (p.ai_spread < 0) {
-                  covered = actualMargin > Math.abs(p.ai_spread);
-                } else {
-                  covered = actualMargin < -Math.abs(p.ai_spread);
-                }
-                if (covered) aiSpreadCovered++;
+                if (aiCovered) aiSpreadCovered++;
               }
             });
             
-            // Count Vegas spread coverage (favorite covered)
+            // Count Vegas spread coverage using canonical ATS home-cover rule.
             let vegasCovered = 0;
             let vegasPushes = 0;
             let vegasTotal = 0;
             
             finishedGames.forEach(p => {
               const actualMargin = p.actual_home_score - p.actual_away_score;
-              const isPush = (actualMargin === -p.vegas_spread);
-              
-              if (isPush) {
+              const vegasCoveredResult = didHomeCover(p.vegas_spread, actualMargin);
+
+              if (vegasCoveredResult === null) {
                 vegasPushes++;
               } else {
                 vegasTotal++;
-                let covered = false;
-                if (p.vegas_spread < 0) {
-                  covered = actualMargin > Math.abs(p.vegas_spread);
-                } else {
-                  covered = actualMargin < -Math.abs(p.vegas_spread);
-                }
-                if (covered) vegasCovered++;
+                if (vegasCoveredResult) vegasCovered++;
               }
             });
             
@@ -342,16 +344,10 @@ function MLPredictions() {
             
             valuePlays.forEach(p => {
               const actualMargin = p.actual_home_score - p.actual_away_score;
-              const aiResult = actualMargin + p.ai_spread;
-              
-              if (aiResult !== 0) {
-                let aiCovered = false;
-                if (p.ai_spread < 0) {
-                  aiCovered = actualMargin > Math.abs(p.ai_spread);
-                } else {
-                  aiCovered = actualMargin < -Math.abs(p.ai_spread);
-                }
-                if (aiCovered) valuePlayWins++;
+
+              const aiCovered = didHomeCover(p.ai_spread, actualMargin);
+              if (aiCovered === true) {
+                valuePlayWins++;
               }
             });
             
@@ -362,27 +358,8 @@ function MLPredictions() {
             finishedGames.forEach(p => {
               const actualMargin = p.actual_home_score - p.actual_away_score;
               
-              // Check AI spread coverage
-              const aiResult = actualMargin + p.ai_spread;
-              let aiCovered = false;
-              if (aiResult !== 0) {
-                if (p.ai_spread < 0) {
-                  aiCovered = actualMargin > Math.abs(p.ai_spread);
-                } else {
-                  aiCovered = actualMargin < -Math.abs(p.ai_spread);
-                }
-              }
-              
-              // Check Vegas spread coverage
-              const vegasResult = actualMargin + p.vegas_spread;
-              let vegasCovered = false;
-              if (vegasResult !== 0) {
-                if (p.vegas_spread < 0) {
-                  vegasCovered = actualMargin > Math.abs(p.vegas_spread);
-                } else {
-                  vegasCovered = actualMargin < -Math.abs(p.vegas_spread);
-                }
-              }
+              const aiCovered = didHomeCover(p.ai_spread, actualMargin);
+              const vegasCovered = didHomeCover(p.vegas_spread, actualMargin);
               
               // Compare (only count when one beat the other, not ties)
               if (aiCovered && !vegasCovered) aiBeatsVegas++;
@@ -477,40 +454,15 @@ function MLPredictions() {
             const aiWasCorrect = isFinished ? pred.correct : null;
             const actualMargin = isFinished ? pred.actual_home_score - pred.actual_away_score : null;
             
-            // Spread coverage: Check if the FAVORITE covered
-            // Negative spread = home favored, must win by MORE than the absolute value
-            // Positive spread = away favored, must win by MORE than the absolute value
-            
-            // For VEGAS: Check if favorite covered (display shows favorite)
+            // Spread coverage status uses canonical ATS home-cover rule.
             let vegasCovered = null;
             if (isFinished) {
-              const vegasResult = actualMargin + pred.vegas_spread;
-              if (vegasResult === 0) {
-                vegasCovered = null; // Push
-              } else if (pred.vegas_spread < 0) {
-                // Home team is favorite - must win by MORE than the spread
-                // Example: -6.5 spread means home must win by 7+
-                vegasCovered = actualMargin > Math.abs(pred.vegas_spread);
-              } else {
-                // Away team is favorite - must win by MORE than the spread
-                // Example: +6.5 spread means away must win by 7+
-                vegasCovered = actualMargin < -Math.abs(pred.vegas_spread);
-              }
+              vegasCovered = didHomeCover(pred.vegas_spread, actualMargin);
             }
             
-            // For AI: Check if favorite covered (display shows favorite)
             let aiSpreadCovered = null;
             if (isFinished) {
-              const aiResult = actualMargin + pred.ai_spread;
-              if (aiResult === 0) {
-                aiSpreadCovered = null; // Push
-              } else if (pred.ai_spread < 0) {
-                // Home team is favorite - must win by MORE than the spread
-                aiSpreadCovered = actualMargin > Math.abs(pred.ai_spread);
-              } else {
-                // Away team is favorite - must win by MORE than the spread
-                aiSpreadCovered = actualMargin < -Math.abs(pred.ai_spread);
-              }
+              aiSpreadCovered = didHomeCover(pred.ai_spread, actualMargin);
             }
 
             return (
