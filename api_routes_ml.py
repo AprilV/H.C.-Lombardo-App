@@ -1798,7 +1798,12 @@ def get_performance_stats():
 
         # Fallback for legacy historical rows that were scored without
         # result_recorded_at and/or strict pregame timestamp evidence.
-        if _int(xgb_summary.get('scored_games')) == 0 and completed_games > 0:
+        xgb_scored_games = _int(xgb_summary.get('scored_games'))
+        xgb_scored_coverage_pct = _pct(xgb_scored_games, completed_games)
+        if completed_games > 0 and (
+            xgb_scored_games == 0
+            or xgb_scored_coverage_pct < 50.0
+        ):
             legacy_xgb_where = [
                 "x.season = %s",
                 "COALESCE(g.is_postseason, FALSE) = FALSE",
@@ -3121,7 +3126,7 @@ def get_performance_stats():
             )
         if xgb_simulation_mode:
             warnings.append(
-                "Coverage note: using simulated historical XGBoost scoring from completed games because tracked rows are unavailable for this season."
+                "Coverage note: using simulated historical XGBoost scoring from completed games because tracked row coverage is currently insufficient for this season."
             )
         if spread_h2h_legacy_mode:
             warnings.append(
