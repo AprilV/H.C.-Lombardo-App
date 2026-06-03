@@ -898,6 +898,60 @@ def get_season_ai_vs_vegas(season):
         vegas_wins = 0
         ties = 0
         total = 0
+
+        if not games:
+            cur.execute(
+                """
+                SELECT
+                    week,
+                    home_team,
+                    away_team,
+                    home_score,
+                    away_score,
+                    spread_line
+                FROM hcl.games
+                WHERE season = %s
+                  AND home_score IS NOT NULL
+                  AND away_score IS NOT NULL
+                  AND COALESCE(is_postseason, FALSE) = FALSE
+                  AND spread_line IS NOT NULL
+                ORDER BY week, game_date
+                """,
+                (season,)
+            )
+            simulated_games = cur.fetchall() or []
+            if simulated_games:
+                data_source = 'simulated_historical'
+                pred = get_predictor()
+                for week, home_team, away_team, home_score, away_score, vegas_spread in simulated_games:
+                    try:
+                        prediction = pred.predict_game(
+                            season,
+                            int(week),
+                            home_team,
+                            away_team,
+                            vegas_spread,
+                            None
+                        )
+                    except Exception:
+                        continue
+
+                    ai_spread = prediction.get('ai_spread')
+                    if ai_spread is None:
+                        continue
+
+                    actual_margin = home_score - away_score
+                    total += 1
+
+                    ai_covered = did_home_cover(ai_spread, actual_margin)
+                    vegas_covered = did_home_cover(vegas_spread, actual_margin)
+
+                    if ai_covered is True and vegas_covered is False:
+                        ai_wins += 1
+                    elif ai_covered is False and vegas_covered is True:
+                        vegas_wins += 1
+                    else:
+                        ties += 1
         
         for game_id, ai_spread, vegas_spread, home_score, away_score in games:
             actual_margin = home_score - away_score
@@ -1637,11 +1691,13 @@ def get_performance_stats():
 
         # Legacy fallback flags used to annotate response warnings.
         xgb_legacy_mode = False
+        xgb_simulation_mode = False
         trend_legacy_mode = False
         spread_h2h_legacy_mode = False
         coverage_legacy_mode = False
         legacy_xgb_where = None
         legacy_xgb_params = None
+        simulated_spread_h2h = None
 
         xgb_pregame_clause = (
             "x.predicted_at IS NOT NULL "
@@ -1819,6 +1875,163 @@ def get_performance_stats():
                     tuple(legacy_xgb_params)
                 )
                 xgb_week_rows = cur.fetchall() or []
+
+        # Final fallback: simulate historical model performance directly from
+        # completed games when no tracked/scored rows exist for the season.
+        if _int(xgb_summary.get('scored_games')) == 0 and completed_games > 0:
+            sim_where = [
+                "season = %s",
+                "home_score IS NOT NULL",
+                "away_score IS NOT NULL",
+                "COALESCE(is_postseason, FALSE) = FALSE"
+            ]
+            sim_params = [season]
+            if week is not None:
+                sim_where.append("week = %s")
+                sim_params.append(week)
+
+            cur.execute(
+                f"""
+                SELECT
+                    game_id,
+                    week,
+                    home_team,
+                    away_team,
+                    home_score,
+                    away_score,
+                    spread_line
+                FROM hcl.games
+                WHERE {' AND '.join(sim_where)}
+                ORDER BY week ASC, game_date ASC
+                """,
+                tuple(sim_params)
+            )
+            simulated_games = cur.fetchall() or []
+
+            if simulated_games:
+                pred = get_predictor()
+                simulated_total = 0
+                simulated_correct = 0
+                simulated_mae_sum = 0.0
+                simulated_mae_count = 0
+                simulated_first_week = None
+                simulated_last_week = None
+                week_rollup = {}
+                spread_rollup = {
+                    'total_games': 0,
+                    'ai_wins': 0,
+                    'vegas_wins': 0,
+                    'ties': 0
+                }
+
+                for game in simulated_games:
+                    try:
+                        prediction = pred.predict_game(
+                            season,
+                            _int(game.get('week')),
+                            game.get('home_team'),
+                            game.get('away_team'),
+                            game.get('spread_line'),
+                            None
+                        )
+                    except Exception:
+                        continue
+
+                    week_value = _int(game.get('week'))
+                    home_score = game.get('home_score')
+                    away_score = game.get('away_score')
+                    if home_score is None or away_score is None:
+                        continue
+
+                    actual_margin = home_score - away_score
+                    if home_score > away_score:
+                        actual_winner = game.get('home_team')
+                    elif away_score > home_score:
+                        actual_winner = game.get('away_team')
+                    else:
+                        actual_winner = 'TIE'
+
+                    predicted_winner = prediction.get('predicted_winner')
+                    is_correct = int(predicted_winner == actual_winner)
+                    predicted_margin = prediction.get('predicted_margin')
+                    if predicted_margin is None:
+                        predicted_margin = prediction.get('ai_spread')
+
+                    simulated_total += 1
+                    simulated_correct += is_correct
+                    if simulated_first_week is None or week_value < simulated_first_week:
+                        simulated_first_week = week_value
+                    if simulated_last_week is None or week_value > simulated_last_week:
+                        simulated_last_week = week_value
+
+                    if week_value not in week_rollup:
+                        week_rollup[week_value] = {
+                            'week': week_value,
+                            'scored_games': 0,
+                            'correct_predictions': 0,
+                            'mae_sum': 0.0,
+                            'mae_count': 0
+                        }
+
+                    week_rollup[week_value]['scored_games'] += 1
+                    week_rollup[week_value]['correct_predictions'] += is_correct
+
+                    if predicted_margin is not None:
+                        margin_error = abs(predicted_margin - actual_margin)
+                        simulated_mae_sum += margin_error
+                        simulated_mae_count += 1
+                        week_rollup[week_value]['mae_sum'] += margin_error
+                        week_rollup[week_value]['mae_count'] += 1
+
+                    ai_spread = prediction.get('ai_spread')
+                    vegas_spread = game.get('spread_line')
+                    if ai_spread is not None and vegas_spread is not None:
+                        ai_covered = did_home_cover(ai_spread, actual_margin)
+                        vegas_covered = did_home_cover(vegas_spread, actual_margin)
+                        spread_rollup['total_games'] += 1
+                        if ai_covered is True and vegas_covered is False:
+                            spread_rollup['ai_wins'] += 1
+                        elif ai_covered is False and vegas_covered is True:
+                            spread_rollup['vegas_wins'] += 1
+                        else:
+                            spread_rollup['ties'] += 1
+
+                if simulated_total > 0:
+                    xgb_simulation_mode = True
+                    xgb_predicted = max(xgb_predicted, simulated_total)
+                    xgb_summary = {
+                        'scored_games': simulated_total,
+                        'correct_predictions': simulated_correct,
+                        'win_accuracy': _pct(simulated_correct, simulated_total),
+                        'avg_margin_error': (
+                            round(simulated_mae_sum / simulated_mae_count, 2)
+                            if simulated_mae_count
+                            else 0.0
+                        ),
+                        'first_week': simulated_first_week,
+                        'latest_week': simulated_last_week
+                    }
+
+                    xgb_week_rows = []
+                    for week_value in sorted(week_rollup.keys()):
+                        row = week_rollup[week_value]
+                        week_games = _int(row.get('scored_games'))
+                        week_correct = _int(row.get('correct_predictions'))
+                        week_mae_count = _int(row.get('mae_count'))
+                        week_mae_avg = (
+                            round(float(row.get('mae_sum') or 0.0) / week_mae_count, 1)
+                            if week_mae_count
+                            else 0.0
+                        )
+                        xgb_week_rows.append({
+                            'week': week_value,
+                            'scored_games': week_games,
+                            'correct_predictions': week_correct,
+                            'win_accuracy': _pct(week_correct, week_games),
+                            'avg_margin_error': week_mae_avg
+                        })
+
+                    simulated_spread_h2h = spread_rollup
 
         elo_summary = {
             'predicted_games': 0,
@@ -2134,6 +2347,12 @@ def get_performance_stats():
                 spread_h2h_vegas += 1
             else:
                 spread_h2h_ties += 1
+
+        if spread_h2h_total == 0 and simulated_spread_h2h:
+            spread_h2h_total = _int(simulated_spread_h2h.get('total_games'))
+            spread_h2h_ai = _int(simulated_spread_h2h.get('ai_wins'))
+            spread_h2h_vegas = _int(simulated_spread_h2h.get('vegas_wins'))
+            spread_h2h_ties = _int(simulated_spread_h2h.get('ties'))
 
         model_breakdown = {
             'xgb': {
@@ -2899,6 +3118,10 @@ def get_performance_stats():
         if xgb_legacy_mode:
             warnings.append(
                 "Coverage note: using legacy XGBoost scoring fallback because strict pregame tracked rows are unavailable for this season."
+            )
+        if xgb_simulation_mode:
+            warnings.append(
+                "Coverage note: using simulated historical XGBoost scoring from completed games because tracked rows are unavailable for this season."
             )
         if spread_h2h_legacy_mode:
             warnings.append(
