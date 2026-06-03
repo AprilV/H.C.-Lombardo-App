@@ -1,8 +1,12 @@
 version: 1
+env:
+  variables:
+    REACT_APP_API_URL: https://9dkkj5n2rc.execute-api.us-east-2.amazonaws.com
 frontend:
   phases:
     preBuild:
       commands:
+        - echo "Building with REACT_APP_API_URL=$REACT_APP_API_URL"
         - cd frontend
         - npm ci
     build:
