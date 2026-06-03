@@ -70,23 +70,28 @@ limiter = Limiter(
 )
 limiter.init_app(app)
 
+ALLOWED_CORS_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://localhost:5000",
+    "http://127.0.0.1:5000",
+    "http://localhost:5500",
+    "http://127.0.0.1:5500",
+    "http://localhost:5501",
+    "http://127.0.0.1:5501",
+    "https://master.d2tamnlcbzo0d5.amplifyapp.com",
+    "https://staging.d2fwv8daemi5y2.amplifyapp.com",
+    "https://www.hclombardo.com",
+    "https://hclombardo.com",
+    "https://nfl.aprilsykes.dev",
+    "null"
+]
+
 # Enable CORS for React frontend and local HTML files
 CORS(app, resources={
     r"/*": {
-        "origins": [
-            "http://localhost:3000", 
-            "http://127.0.0.1:3000", 
-            "http://localhost:5000", 
-            "http://127.0.0.1:5000", 
-            "http://localhost:5500",
-            "http://127.0.0.1:5500",
-            "http://localhost:5501",
-            "http://127.0.0.1:5501",
-            "https://master.d2tamnlcbzo0d5.amplifyapp.com",
-            "https://nfl.aprilsykes.dev",
-            "null"
-        ],
-        "methods": ["GET", "POST", "PUT", "DELETE"],
+        "origins": ALLOWED_CORS_ORIGINS,
+        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         "allow_headers": ["Content-Type"]
     }
 })
@@ -137,6 +142,18 @@ def add_transport_security_headers(response):
         scheme = str(forwarded_proto).split(',')[0].strip().lower()
         if scheme == 'https':
             response.headers.setdefault('Strict-Transport-Security', 'max-age=31536000; includeSubDomains')
+
+    # Fallback CORS headers for allowed origins to prevent browser blocks
+    # when middleware defaults differ across environments.
+    request_origin = request.headers.get('Origin')
+    if request_origin in ALLOWED_CORS_ORIGINS:
+        response.headers.setdefault('Access-Control-Allow-Origin', request_origin)
+        response.headers.setdefault('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+        response.headers.setdefault('Access-Control-Allow-Headers', 'Content-Type')
+        existing_vary = response.headers.get('Vary', '')
+        if 'Origin' not in existing_vary:
+            response.headers['Vary'] = 'Origin' if not existing_vary else f"{existing_vary}, Origin"
+
     return response
 
 # Database configuration
