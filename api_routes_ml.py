@@ -2832,6 +2832,19 @@ def get_available_weeks():
             """)
         
         weeks = [dict(row) for row in cur.fetchall()]
+
+        # Fallback: if tracking tables are empty, derive available weeks from games.
+        source = 'prediction_tables'
+        if not weeks:
+            cur.execute("""
+                SELECT season, week, COUNT(*) as game_count
+                FROM hcl.games
+                WHERE is_postseason = false
+                GROUP BY season, week
+                ORDER BY season DESC, week DESC
+            """)
+            weeks = [dict(row) for row in cur.fetchall()]
+            source = 'games_fallback'
         
         cur.close()
         conn.close()
@@ -2840,7 +2853,8 @@ def get_available_weeks():
             'success': True,
             'weeks': weeks,
             'total': len(weeks),
-            'elo_table_ready': elo_table_ready
+            'elo_table_ready': elo_table_ready,
+            'source': source
         })
         
     except Exception as e:
@@ -3142,6 +3156,14 @@ def get_combined_predictions(season, week):
         
         cur = conn.cursor(cursor_factory=RealDictCursor)
         
+        cur.execute("""
+            SELECT COUNT(*) AS total_games
+            FROM hcl.games
+            WHERE season = %s AND week = %s
+        """, (season, week))
+        scheduled_row = cur.fetchone() or {}
+        scheduled_count = int(scheduled_row.get('total_games') or 0)
+
         # Get XGBoost predictions WITH Vegas spread from games table
         cur.execute("""
             SELECT 
@@ -3173,6 +3195,81 @@ def get_combined_predictions(season, week):
                 ORDER BY e.game_id
             """, (season, week))
             elo_predictions = {row['game_id']: dict(row) for row in cur.fetchall()}
+
+        # Fallback: regenerate from model runtime when DB tracking tables are empty/partial.
+        xgb_needs_refresh = (
+            len(xgb_predictions) == 0
+            or (scheduled_count > 0 and len(xgb_predictions) < scheduled_count)
+        )
+
+        elo_needs_refresh = (
+            elo_table_ready
+            and (
+                len(elo_predictions) == 0
+                or (scheduled_count > 0 and len(elo_predictions) < scheduled_count)
+            )
+        )
+
+        if xgb_needs_refresh:
+            try:
+                with contextlib.redirect_stdout(io.StringIO()):
+                    generated_xgb = get_predictor().predict_week(season, week)
+
+                for row in generated_xgb or []:
+                    game_id = row.get('game_id')
+                    if not game_id or game_id in xgb_predictions:
+                        continue
+
+                    xgb_predictions[game_id] = {
+                        'game_id': game_id,
+                        'season': row.get('season', season),
+                        'week': row.get('week', week),
+                        'home_team': row.get('home_team'),
+                        'away_team': row.get('away_team'),
+                        'game_date': row.get('game_date'),
+                        'predicted_winner': row.get('predicted_winner'),
+                        'home_win_prob': row.get('home_win_prob', 0.5),
+                        'away_win_prob': row.get('away_win_prob', 0.5),
+                        'ai_spread': row.get('ai_spread', 0),
+                        'split_prediction': row.get('split_prediction', False),
+                        'vegas_spread': row.get('vegas_spread'),
+                        'vegas_total': row.get('total_line'),
+                        'home_score': row.get('actual_home_score'),
+                        'away_score': row.get('actual_away_score')
+                    }
+            except Exception:
+                # Keep endpoint resilient: if regeneration fails, return DB-backed rows.
+                pass
+
+        if elo_needs_refresh:
+            try:
+                with contextlib.redirect_stdout(io.StringIO()):
+                    generated_elo = get_elo_predictor().predict_week(season, week)
+
+                for row in generated_elo or []:
+                    game_id = row.get('game_id')
+                    if not game_id or game_id in elo_predictions:
+                        continue
+
+                    elo_predictions[game_id] = {
+                        'game_id': game_id,
+                        'season': row.get('season', season),
+                        'week': row.get('week', week),
+                        'home_team': row.get('home_team'),
+                        'away_team': row.get('away_team'),
+                        'game_date': row.get('game_date'),
+                        'predicted_winner': row.get('predicted_winner'),
+                        'confidence': row.get('confidence', 0.5),
+                        'elo_spread': row.get('elo_spread', 0),
+                        'split_prediction': row.get('split_prediction', False),
+                        'vegas_spread': row.get('vegas_spread'),
+                        'vegas_total': row.get('vegas_total'),
+                        'home_score': row.get('actual_home_score'),
+                        'away_score': row.get('actual_away_score')
+                    }
+            except Exception:
+                # Keep endpoint resilient: if regeneration fails, return DB-backed rows.
+                pass
         
         cur.close()
         conn.close()

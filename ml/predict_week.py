@@ -440,12 +440,26 @@ class WeeklyPredictor:
         """
         
         df = pd.read_sql(query, conn)
-        conn.close()
         
         if len(df) == 0:
-            print("[ERROR] No upcoming games found")
+            # Offseason fallback: use latest regular-season week in DB so the UI
+            # still has prediction content instead of a blank state.
+            fallback_query = """
+                SELECT season, week
+                FROM hcl.games
+                WHERE is_postseason = false
+                GROUP BY season, week
+                ORDER BY season DESC, week DESC
+                LIMIT 1;
+            """
+            df = pd.read_sql(fallback_query, conn)
+
+        conn.close()
+
+        if len(df) == 0:
+            print("[ERROR] No upcoming or fallback games found")
             return []
-        
+
         season = int(df.iloc[0]['season'])
         week = int(df.iloc[0]['week'])
         
