@@ -822,6 +822,7 @@ def get_season_ai_vs_vegas(season):
     try:
         conn = psycopg2.connect(**get_predictor().db_config)
         cur = conn.cursor()
+        data_source = 'strict_pregame'
 
         has_closing_spread = table_has_column(conn, 'hcl', 'games', 'closing_spread')
         if has_closing_spread:
@@ -866,6 +867,32 @@ def get_season_ai_vs_vegas(season):
         )
         
         games = cur.fetchall()
+        if not games:
+            # Legacy fallback: keep historical coverage visible when older rows lack
+            # pregame timestamp evidence but still have completed game outcomes.
+            cur.execute(
+                f"""
+                SELECT
+                    p.game_id,
+                    p.ai_spread,
+                    {vegas_expr} AS vegas_spread,
+                    g.home_score,
+                    g.away_score
+                FROM hcl.ml_predictions p
+                JOIN hcl.games g ON p.game_id = g.game_id
+                WHERE p.season = %s
+                  AND g.home_score IS NOT NULL
+                  AND g.away_score IS NOT NULL
+                  AND COALESCE(g.is_postseason, FALSE) = FALSE
+                  AND p.ai_spread IS NOT NULL
+                  AND {vegas_expr} IS NOT NULL
+                ORDER BY g.week, g.game_date
+                """,
+                (season,)
+            )
+            games = cur.fetchall()
+            if games:
+                data_source = 'legacy_relaxed_pregame'
         
         ai_wins = 0
         vegas_wins = 0
@@ -902,7 +929,8 @@ def get_season_ai_vs_vegas(season):
             'total_games': total,
             'ai_percentage': round(ai_pct, 1),
             'vegas_percentage': round(vegas_pct, 1),
-            'vegas_spread_source': vegas_source
+            'vegas_spread_source': vegas_source,
+            'data_source': data_source
         })
         
     except Exception as e:
@@ -1607,6 +1635,14 @@ def get_performance_stats():
                 return 0.0
             return round((numerator / denominator) * 100.0, 2)
 
+        # Legacy fallback flags used to annotate response warnings.
+        xgb_legacy_mode = False
+        trend_legacy_mode = False
+        spread_h2h_legacy_mode = False
+        coverage_legacy_mode = False
+        legacy_xgb_where = None
+        legacy_xgb_params = None
+
         xgb_pregame_clause = (
             "x.predicted_at IS NOT NULL "
             "AND ((g.kickoff_time_utc IS NOT NULL AND x.predicted_at <= g.kickoff_time_utc) "
@@ -1703,6 +1739,86 @@ def get_performance_stats():
             tuple(xgb_params)
         )
         xgb_week_rows = cur.fetchall() or []
+
+        # Fallback for legacy historical rows that were scored without
+        # result_recorded_at and/or strict pregame timestamp evidence.
+        if _int(xgb_summary.get('scored_games')) == 0 and completed_games > 0:
+            legacy_xgb_where = [
+                "x.season = %s",
+                "COALESCE(g.is_postseason, FALSE) = FALSE",
+                "x.predicted_winner IS NOT NULL",
+                "g.home_score IS NOT NULL",
+                "g.away_score IS NOT NULL"
+            ]
+            legacy_xgb_params = [season]
+            if week is not None:
+                legacy_xgb_where.append("x.week = %s")
+                legacy_xgb_params.append(week)
+
+            legacy_correct_case = (
+                "CASE "
+                "WHEN (g.home_score > g.away_score AND x.predicted_winner = g.home_team) "
+                "  OR (g.away_score > g.home_score AND x.predicted_winner = g.away_team) "
+                "THEN 1 ELSE 0 END"
+            )
+            legacy_margin_error_expr = (
+                "COALESCE(x.margin_prediction_error, "
+                "ABS(COALESCE(x.predicted_margin, x.ai_spread, 0) - (g.home_score - g.away_score)))"
+            )
+
+            cur.execute(
+                f"""
+                SELECT
+                    COUNT(*) AS scored_games,
+                    COALESCE(SUM({legacy_correct_case}), 0) AS correct_predictions,
+                    COALESCE(
+                        CAST(AVG(CASE WHEN ({legacy_correct_case}) = 1 THEN 100.0 ELSE 0.0 END) AS NUMERIC(10,2)),
+                        0
+                    ) AS win_accuracy,
+                    COALESCE(CAST(AVG({legacy_margin_error_expr}) AS NUMERIC(10,2)), 0) AS avg_margin_error,
+                    MIN(x.week) AS first_week,
+                    MAX(x.week) AS latest_week
+                FROM hcl.ml_predictions x
+                JOIN hcl.games g ON g.game_id = x.game_id
+                WHERE {' AND '.join(legacy_xgb_where)}
+                """,
+                tuple(legacy_xgb_params)
+            )
+            legacy_xgb_summary = cur.fetchone() or {}
+            legacy_scored_games = _int(legacy_xgb_summary.get('scored_games'))
+
+            if legacy_scored_games > 0:
+                xgb_legacy_mode = True
+                xgb_predicted = max(xgb_predicted, legacy_scored_games)
+                xgb_summary = {
+                    'scored_games': legacy_scored_games,
+                    'correct_predictions': _int(legacy_xgb_summary.get('correct_predictions')),
+                    'win_accuracy': _float(legacy_xgb_summary.get('win_accuracy')),
+                    'avg_margin_error': _float(legacy_xgb_summary.get('avg_margin_error')),
+                    'first_week': legacy_xgb_summary.get('first_week'),
+                    'latest_week': legacy_xgb_summary.get('latest_week')
+                }
+
+                cur.execute(
+                    f"""
+                    SELECT
+                        x.week,
+                        COUNT(*) AS scored_games,
+                        COALESCE(SUM({legacy_correct_case}), 0) AS correct_predictions,
+                        COALESCE(
+                            CAST(AVG(CASE WHEN ({legacy_correct_case}) = 1 THEN 100.0 ELSE 0.0 END) AS NUMERIC(10,1)),
+                            0
+                        ) AS win_accuracy,
+                        COALESCE(CAST(AVG({legacy_margin_error_expr}) AS NUMERIC(10,1)), 0) AS avg_margin_error
+                    FROM hcl.ml_predictions x
+                    JOIN hcl.games g ON g.game_id = x.game_id
+                    WHERE {' AND '.join(legacy_xgb_where)}
+                    GROUP BY x.week
+                    ORDER BY x.week ASC
+                    """,
+                    tuple(legacy_xgb_params)
+                )
+                xgb_week_rows = cur.fetchall() or []
 
         elo_summary = {
             'predicted_games': 0,
@@ -1979,6 +2095,25 @@ def get_performance_stats():
         )
         spread_h2h_rows = cur.fetchall() or []
 
+        if not spread_h2h_rows and xgb_legacy_mode and legacy_xgb_where and legacy_xgb_params:
+            cur.execute(
+                f"""
+                SELECT
+                    x.ai_spread,
+                    COALESCE(x.vegas_spread, g.spread_line) AS vegas_spread,
+                    g.home_score,
+                    g.away_score
+                FROM hcl.ml_predictions x
+                JOIN hcl.games g ON g.game_id = x.game_id
+                WHERE {' AND '.join(legacy_xgb_where)}
+                  AND x.ai_spread IS NOT NULL
+                  AND COALESCE(x.vegas_spread, g.spread_line) IS NOT NULL
+                """,
+                tuple(legacy_xgb_params)
+            )
+            spread_h2h_rows = cur.fetchall() or []
+            spread_h2h_legacy_mode = bool(spread_h2h_rows)
+
         spread_h2h_total = 0
         spread_h2h_ai = 0
         spread_h2h_vegas = 0
@@ -2176,6 +2311,49 @@ def get_performance_stats():
                     for row in (cur.fetchall() or [])
                 }
 
+                if trend_seasons and all(
+                    _int((trend_xgb_scored_map.get(s) or {}).get('scored_games')) == 0
+                    for s in trend_seasons
+                ):
+                    legacy_trend_correct_case = (
+                        "CASE "
+                        "WHEN (g.home_score > g.away_score AND x.predicted_winner = g.home_team) "
+                        "  OR (g.away_score > g.home_score AND x.predicted_winner = g.away_team) "
+                        "THEN 1 ELSE 0 END"
+                    )
+                    cur.execute(
+                        f"""
+                        SELECT
+                            x.season,
+                            COUNT(*) AS scored_games,
+                            COALESCE(SUM({legacy_trend_correct_case}), 0) AS correct_predictions
+                        FROM hcl.ml_predictions x
+                        JOIN hcl.games g ON g.game_id = x.game_id
+                        WHERE x.season = ANY(%s)
+                          AND COALESCE(g.is_postseason, FALSE) = FALSE
+                          AND x.predicted_winner IS NOT NULL
+                          AND g.home_score IS NOT NULL
+                          AND g.away_score IS NOT NULL
+                        GROUP BY x.season
+                        """,
+                        (trend_seasons,)
+                    )
+                    legacy_trend_rows = cur.fetchall() or []
+                    for row in legacy_trend_rows:
+                        trend_season = _int(row.get('season'))
+                        legacy_scored = _int(row.get('scored_games'))
+                        legacy_correct = _int(row.get('correct_predictions'))
+                        if legacy_scored > 0:
+                            trend_xgb_scored_map[trend_season] = {
+                                'scored_games': legacy_scored,
+                                'correct_predictions': legacy_correct
+                            }
+                            trend_xgb_pred_map[trend_season] = max(
+                                _int(trend_xgb_pred_map.get(trend_season)),
+                                legacy_scored
+                            )
+                    trend_legacy_mode = bool(legacy_trend_rows)
+
                 trend_elo_pred_map = {}
                 trend_elo_scored_map = {}
                 trend_agreement_map = {}
@@ -2358,6 +2536,48 @@ def get_performance_stats():
                     else:
                         trend_spread_h2h_map[trend_season]['ties'] += 1
 
+                if trend_seasons and not trend_spread_h2h_map:
+                    cur.execute(
+                        """
+                        SELECT
+                            x.season,
+                            x.ai_spread,
+                            COALESCE(x.vegas_spread, g.spread_line) AS vegas_spread,
+                            g.home_score,
+                            g.away_score
+                        FROM hcl.ml_predictions x
+                        JOIN hcl.games g ON g.game_id = x.game_id
+                        WHERE x.season = ANY(%s)
+                          AND g.home_score IS NOT NULL
+                          AND g.away_score IS NOT NULL
+                          AND COALESCE(g.is_postseason, FALSE) = FALSE
+                          AND x.ai_spread IS NOT NULL
+                          AND COALESCE(x.vegas_spread, g.spread_line) IS NOT NULL
+                        """,
+                        (trend_seasons,)
+                    )
+                    for row in (cur.fetchall() or []):
+                        trend_season = _int(row.get('season'))
+                        actual_margin = row.get('home_score') - row.get('away_score')
+                        ai_covered = did_home_cover(row.get('ai_spread'), actual_margin)
+                        vegas_covered = did_home_cover(row.get('vegas_spread'), actual_margin)
+
+                        if trend_season not in trend_spread_h2h_map:
+                            trend_spread_h2h_map[trend_season] = {
+                                'total_games': 0,
+                                'ai_wins': 0,
+                                'vegas_wins': 0,
+                                'ties': 0
+                            }
+
+                        trend_spread_h2h_map[trend_season]['total_games'] += 1
+                        if ai_covered is True and vegas_covered is False:
+                            trend_spread_h2h_map[trend_season]['ai_wins'] += 1
+                        elif ai_covered is False and vegas_covered is True:
+                            trend_spread_h2h_map[trend_season]['vegas_wins'] += 1
+                        else:
+                            trend_spread_h2h_map[trend_season]['ties'] += 1
+
                 for trend_season in trend_seasons:
                     trend_completed = trend_games_map.get(trend_season, 0)
 
@@ -2509,6 +2729,36 @@ def get_performance_stats():
                 xgb_scored = _int(xgb_row.get('scored_games'))
                 xgb_correct = _int(xgb_row.get('correct_predictions'))
 
+                if completed > 0 and xgb_predicted == 0 and xgb_scored == 0:
+                    legacy_coverage_correct_case = (
+                        "CASE "
+                        "WHEN (g.home_score > g.away_score AND x.predicted_winner = g.home_team) "
+                        "  OR (g.away_score > g.home_score AND x.predicted_winner = g.away_team) "
+                        "THEN 1 ELSE 0 END"
+                    )
+                    cur.execute(
+                        f"""
+                        SELECT
+                            COUNT(*) AS scored_games,
+                            COALESCE(SUM({legacy_coverage_correct_case}), 0) AS correct_predictions
+                        FROM hcl.ml_predictions x
+                        JOIN hcl.games g ON g.game_id = x.game_id
+                        WHERE x.season = %s
+                          AND COALESCE(g.is_postseason, FALSE) = FALSE
+                          AND x.predicted_winner IS NOT NULL
+                          AND g.home_score IS NOT NULL
+                          AND g.away_score IS NOT NULL
+                        """,
+                        (coverage_season,)
+                    )
+                    legacy_cov_row = cur.fetchone() or {}
+                    legacy_cov_scored = _int(legacy_cov_row.get('scored_games'))
+                    if legacy_cov_scored > 0:
+                        xgb_predicted = legacy_cov_scored
+                        xgb_scored = legacy_cov_scored
+                        xgb_correct = _int(legacy_cov_row.get('correct_predictions'))
+                        coverage_legacy_mode = True
+
                 elo_predicted = 0
                 elo_scored = 0
                 elo_correct = 0
@@ -2645,6 +2895,23 @@ def get_performance_stats():
         }
 
         warnings = []
+
+        if xgb_legacy_mode:
+            warnings.append(
+                "Coverage note: using legacy XGBoost scoring fallback because strict pregame tracked rows are unavailable for this season."
+            )
+        if spread_h2h_legacy_mode:
+            warnings.append(
+                "Coverage note: spread head-to-head metrics are using legacy fallback rows without strict pregame timestamp evidence."
+            )
+        if trend_legacy_mode:
+            warnings.append(
+                "Coverage note: multi-season trend includes legacy fallback scoring for historical seasons lacking strict pregame tracked rows."
+            )
+        if coverage_legacy_mode:
+            warnings.append(
+                "Coverage note: coverage contract includes legacy fallback scoring for one or more seasons."
+            )
 
         integrity_where = ["mp.season = %s"]
         integrity_params = [season]
