@@ -555,7 +555,9 @@ def get_model_performance():
         tracked = cur.fetchone() or {}
 
         tracked_total = int(tracked.get('total_games') or 0)
-        if tracked_total > 0:
+        # Keep one equation for public performance output.
+        # Do not return strict tracked rows directly; always use completed-game simulation path below.
+        if False and tracked_total > 0:
             tracked_correct = int(tracked.get('correct_predictions') or 0)
             tracked_accuracy = float(tracked.get('win_accuracy') or 0)
             tracked_mae = float(tracked.get('avg_margin_error') or 0)
@@ -581,7 +583,12 @@ def get_model_performance():
             })
 
         # Fallback path: compute directly from completed games when tracked rows are unavailable.
-        game_where = ["g.home_score IS NOT NULL", "g.away_score IS NOT NULL", "g.season = %s"]
+        game_where = [
+            "g.home_score IS NOT NULL",
+            "g.away_score IS NOT NULL",
+            "g.season = %s",
+            "COALESCE(g.is_postseason, FALSE) = FALSE"
+        ]
         game_params = [season]
         if week is not None:
             game_where.append("g.week = %s")
@@ -894,6 +901,10 @@ def get_season_ai_vs_vegas(season):
             if games:
                 data_source = 'legacy_relaxed_pregame'
         
+        # Single-equation mode: compute AI vs Vegas from simulated completed games
+        # so all clients see one consistent denominator and outcome set.
+        games = []
+
         ai_wins = 0
         vegas_wins = 0
         ties = 0
@@ -1881,9 +1892,10 @@ def get_performance_stats():
                 )
                 xgb_week_rows = cur.fetchall() or []
 
-        # Final fallback: simulate historical model performance directly from
-        # completed games when no tracked/scored rows exist for the season.
-        if _int(xgb_summary.get('scored_games')) == 0 and completed_games > 0:
+        # Single-equation guard: if scored rows do not match completed-game denominator,
+        # recompute from completed games so output cannot flip between sources.
+        xgb_scored_for_sim = _int(xgb_summary.get('scored_games'))
+        if completed_games > 0 and xgb_scored_for_sim != completed_games:
             sim_where = [
                 "season = %s",
                 "home_score IS NOT NULL",
