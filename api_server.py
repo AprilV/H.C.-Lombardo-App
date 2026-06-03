@@ -118,10 +118,15 @@ def _is_local_request():
     return host in {'localhost', '127.0.0.1', '::1'}
 
 
+def _is_api_gateway_proxy_request():
+    """Detect API Gateway proxied requests where upstream transport may be plain HTTP."""
+    return bool(request.headers.get('X-Amzn-Trace-Id'))
+
+
 @app.before_request
 def enforce_https_in_production():
     """Redirect non-local HTTP requests to HTTPS when behind a reverse proxy."""
-    if app.debug or _is_local_request() or request.method == 'OPTIONS':
+    if app.debug or _is_local_request() or _is_api_gateway_proxy_request() or request.method == 'OPTIONS':
         return None
 
     forwarded_proto = request.headers.get('X-Forwarded-Proto', request.scheme)
