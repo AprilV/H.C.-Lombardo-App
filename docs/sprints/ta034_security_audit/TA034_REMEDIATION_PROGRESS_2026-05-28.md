@@ -9,8 +9,8 @@ Status: Blocked
 Credential literal remediation was completed for active scripts and deployment assets in this pass.
 
 Current measured state:
-- Active/runtime script hits for literals `REDACTED_DB_PASSWORD|REDACTED_DB_PASSWORD`: 0
-- Full tracked-repo hits for literals `REDACTED_DB_PASSWORD|REDACTED_DB_PASSWORD`: 508
+- Active/runtime script hits for literals `aprilv120|nfl2024`: 0
+- Full tracked-repo hits for literals `aprilv120|nfl2024`: 508
 - Residual-hit buckets:
   - docs/: 363
   - backups/: 107
@@ -20,7 +20,7 @@ Current measured state:
 The ticket remains blocked because archive/devlog/history artifacts still retain historical plaintext values and credential-rotation evidence has not yet been attached.
 
 ## Validation Commands
-- `git grep -n -I -E "REDACTED_DB_PASSWORD|REDACTED_DB_PASSWORD" -- .`
+- `git grep -n -I -E "aprilv120|nfl2024" -- .`
 - PowerShell filter for active files:
   - `git grep ... | Select-String -NotMatch '^(docs/|backups/|devlog_output.html)'`
 - PowerShell bucket breakdown:
