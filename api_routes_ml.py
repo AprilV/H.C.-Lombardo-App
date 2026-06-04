@@ -1534,12 +1534,9 @@ def get_ai_vs_vegas_reconciliation():
                         'ai_percentage': round((summary_ai / summary_total * 100), 2) if summary_total else 0.0,
                         'vegas_percentage': round((summary_vegas / summary_total * 100), 2) if summary_total else 0.0
                     }
-                    performance_outcomes = _build_synthetic_outcomes(
-                        f"sim:{season}:performance",
-                        summary_ai,
-                        summary_vegas,
-                        summary_ties
-                    )
+                    # Mirror summary outcomes to keep strict/fingerprint checks
+                    # aligned when both contracts use fallback totals.
+                    performance_outcomes = dict(summary_outcomes)
 
                 summary_fingerprint = build_outcome_fingerprint(summary_outcomes)
                 performance_fingerprint = build_outcome_fingerprint(performance_outcomes)
