@@ -1283,6 +1283,7 @@ def get_ai_vs_vegas_reconciliation():
     Run season-range consistency checks for AI-vs-Vegas ATS scoring.
 
     Query params:
+            season: optional integer shortcut (sets start_season/end_season when not provided)
       start_season: optional integer (default: max(2021, end_season-4))
       end_season: optional integer (default: latest completed season)
       include_performance_contract: optional bool-like string, default true
@@ -1296,6 +1297,7 @@ def get_ai_vs_vegas_reconciliation():
     cur = None
     try:
         latest_completed = get_latest_completed_season()
+        season = request.args.get('season', type=int)
         start_season = request.args.get('start_season', type=int)
         end_season = request.args.get('end_season', type=int)
         include_performance_contract = (
@@ -1321,6 +1323,14 @@ def get_ai_vs_vegas_reconciliation():
                 'success': False,
                 'error': 'strict_mode requires include_performance_contract=true'
             }), 400
+
+        # Support season shortcut expected by callers: if provided and explicit
+        # range bounds are omitted, pin reconciliation to that single season.
+        if season is not None:
+            if start_season is None:
+                start_season = season
+            if end_season is None:
+                end_season = season
 
         if end_season is None:
             end_season = latest_completed
