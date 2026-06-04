@@ -14,6 +14,7 @@ import {
 import { Line } from 'react-chartjs-2';
 import './TeamDetail.css';
 import { getDefaultSeason } from './utils/season';
+import { getEspnTeamLogoUrl } from './utils/teamLogos';
 
 ChartJS.register(
   CategoryScale,
@@ -116,7 +117,7 @@ function TeamDetail() {
   };
 
   const getTeamLogo = (abbr) => {
-    return `https://a.espncdn.com/i/teamlogos/nfl/500/${abbr}.png`;
+    return getEspnTeamLogoUrl(abbr);
   };
 
   const getTeamColors = () => {

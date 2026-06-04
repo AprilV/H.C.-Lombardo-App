@@ -3,16 +3,13 @@ H.C. Lombardo NFL Analytics - Production API Server
 Flask + PostgreSQL + CORS for React frontend
 Serves both API endpoints and production React build
 """
-from flask import Flask, jsonify, send_from_directory, request, redirect, Response
+from flask import Flask, jsonify, send_from_directory, request, redirect
 from flask_cors import CORS
 import psycopg2
 import sys
 import os
 import logging
 import datetime as dt
-import base64
-import binascii
-import hmac
 from dotenv import load_dotenv
 from werkzeug.middleware.proxy_fix import ProxyFix
 from flask_limiter import Limiter
@@ -99,63 +96,6 @@ CORS(app, resources={
     }
 })
 
-
-def _env_flag(name, default=False):
-    raw_value = os.getenv(name)
-    if raw_value is None:
-        return bool(default)
-    return str(raw_value).strip().lower() in {"1", "true", "yes", "on"}
-
-
-SITE_AUTH_ENABLED = _env_flag('SITE_AUTH_ENABLED', default=False)
-SITE_AUTH_USERNAME = os.getenv('SITE_AUTH_USERNAME', '').strip()
-SITE_AUTH_PASSWORD = os.getenv('SITE_AUTH_PASSWORD', '')
-SITE_AUTH_REALM = os.getenv('SITE_AUTH_REALM', 'H.C. Lombardo User Testing')
-
-
-def _basic_auth_challenge():
-    return Response(
-        'Authentication required',
-        status=401,
-        headers={'WWW-Authenticate': f'Basic realm="{SITE_AUTH_REALM}"'}
-    )
-
-
-def _extract_basic_auth_credentials():
-    auth_header = request.headers.get('Authorization', '')
-    if not auth_header or not auth_header.startswith('Basic '):
-        return None, None
-
-    encoded = auth_header.split(' ', 1)[1].strip()
-    try:
-        decoded = base64.b64decode(encoded).decode('utf-8')
-    except (binascii.Error, UnicodeDecodeError):
-        return None, None
-
-    if ':' not in decoded:
-        return None, None
-
-    username, password = decoded.split(':', 1)
-    return username, password
-
-
-def _site_auth_is_valid():
-    if not SITE_AUTH_ENABLED:
-        return True
-
-    if not SITE_AUTH_USERNAME or not SITE_AUTH_PASSWORD:
-        logger.error('SITE_AUTH_ENABLED is true but username/password are not configured')
-        return False
-
-    username, password = _extract_basic_auth_credentials()
-    if username is None:
-        return False
-
-    return (
-        hmac.compare_digest(username, SITE_AUTH_USERNAME)
-        and hmac.compare_digest(password, SITE_AUTH_PASSWORD)
-    )
-
 # Register dashboard API routes
 if register_dashboard_routes:
     register_dashboard_routes(app)
@@ -197,27 +137,6 @@ def enforce_https_in_production():
         return redirect(secure_url, code=301)
 
     return None
-
-
-@app.before_request
-def enforce_site_authentication():
-    """Require Basic Auth for all non-local requests when site auth is enabled."""
-    if request.method == 'OPTIONS' or _is_local_request():
-        return None
-
-    if not SITE_AUTH_ENABLED:
-        return None
-
-    if not SITE_AUTH_USERNAME or not SITE_AUTH_PASSWORD:
-        return jsonify({
-            'error': 'site_auth_misconfigured',
-            'message': 'Authentication is enabled but credentials are missing.'
-        }), 503
-
-    if _site_auth_is_valid():
-        return None
-
-    return _basic_auth_challenge()
 
 
 @app.after_request
