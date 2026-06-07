@@ -3,6 +3,66 @@ import './ModelPerformance.css';
 import { getDefaultSeason, getRecentSeasons } from './utils/season';
 import { getPerformanceStatsUrl, getSeasonAiVsVegasUrl } from './utils/mlApi';
 
+function buildFallbackUrls(primaryUrl) {
+  const urls = [];
+  const seen = new Set();
+
+  const push = (value) => {
+    if (!value || seen.has(value)) {
+      return;
+    }
+    seen.add(value);
+    urls.push(value);
+  };
+
+  push(primaryUrl);
+
+  try {
+    const parsed = new URL(primaryUrl, window.location.origin);
+    const sameOriginUrl = `${window.location.origin}${parsed.pathname}${parsed.search}`;
+    push(sameOriginUrl);
+  } catch {
+    // Keep the original URL only if parsing fails.
+  }
+
+  return urls;
+}
+
+async function fetchJsonWithFallback(primaryUrl, authHeader = '') {
+  const urls = buildFallbackUrls(primaryUrl);
+  let lastError = null;
+
+  for (const url of urls) {
+    try {
+      const response = await fetch(url, {
+        credentials: 'include',
+        headers: {
+          Accept: 'application/json',
+          ...(authHeader ? { Authorization: authHeader } : {})
+        }
+      });
+
+      if (!response.ok) {
+        const body = await response.text();
+        const summary = body ? body.slice(0, 140) : `HTTP ${response.status}`;
+
+        if (response.status === 401) {
+          lastError = new Error(`AUTH_REQUIRED: ${summary}`);
+        } else {
+          lastError = new Error(`HTTP_${response.status}: ${summary}`);
+        }
+        continue;
+      }
+
+      return await response.json();
+    } catch (error) {
+      lastError = error;
+    }
+  }
+
+  throw lastError || new Error('Unable to reach API endpoint');
+}
+
 function ModelPerformance() {
   const defaultSeason = getDefaultSeason();
   const seasonOptions = getRecentSeasons(6, 1999, defaultSeason);
@@ -13,7 +73,14 @@ function ModelPerformance() {
   const [refreshing, setRefreshing] = useState(false);
   const [lastUpdated, setLastUpdated] = useState(null);
   const [error, setError] = useState(null);
+  const [authRequired, setAuthRequired] = useState(false);
+  const [authUsername, setAuthUsername] = useState('');
+  const [authPassword, setAuthPassword] = useState('');
   const [selectedSeason, setSelectedSeason] = useState(defaultSeason);
+
+  const authHeader = authUsername && authPassword
+    ? `Basic ${window.btoa(`${authUsername}:${authPassword}`)}`
+    : '';
 
   useEffect(() => {
     fetchPerformance();
@@ -30,13 +97,11 @@ function ModelPerformance() {
   }, [selectedSeason]);
 
   const fetchPerformanceForSeason = async (season) => {
-    const response = await fetch(getPerformanceStatsUrl(season));
-    return response.json();
+    return fetchJsonWithFallback(getPerformanceStatsUrl(season), authHeader);
   };
 
   const fetchSeasonVsVegasForSeason = async (season) => {
-    const response = await fetch(getSeasonAiVsVegasUrl(season));
-    return response.json();
+    return fetchJsonWithFallback(getSeasonAiVsVegasUrl(season), authHeader);
   };
 
   const fetchPerformance = async ({ silent = false } = {}) => {
@@ -53,6 +118,7 @@ function ModelPerformance() {
         setPerformanceData(data);
         setSeasonVsVegas(vsVegasData?.success ? vsVegasData : null);
         setLastUpdated(new Date());
+        setAuthRequired(false);
         setError(null);
       } else {
         setError(data.error || 'Failed to load performance data');
@@ -60,7 +126,13 @@ function ModelPerformance() {
       setLoading(false);
     } catch (err) {
       if (!silent) {
-        setError('Unable to connect to API');
+        const message = String(err?.message || err || '');
+        if (message.includes('AUTH_REQUIRED')) {
+          setAuthRequired(true);
+          setError('Authentication required for model endpoints. Sign in to the site/API auth gate and refresh.');
+        } else {
+          setError('Unable to connect to API');
+        }
       }
       setLoading(false);
     } finally {
@@ -94,6 +166,26 @@ function ModelPerformance() {
         <div className="error-message">
           <span className="error-icon">⚠️</span>
           <p>{error}</p>
+          {authRequired && (
+            <div className="auth-credential-panel">
+              <input
+                type="text"
+                className="auth-input"
+                placeholder="API username"
+                value={authUsername}
+                onChange={(event) => setAuthUsername(event.target.value)}
+                autoComplete="username"
+              />
+              <input
+                type="password"
+                className="auth-input"
+                placeholder="API password"
+                value={authPassword}
+                onChange={(event) => setAuthPassword(event.target.value)}
+                autoComplete="current-password"
+              />
+            </div>
+          )}
           <button onClick={fetchPerformance} className="retry-button">Retry</button>
         </div>
       </div>

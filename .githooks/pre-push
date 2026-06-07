@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Allow explicit bypass for emergency/local-only workflows.
+if [[ "${HCL_SKIP_PRE_PUSH_GUARD:-}" == "1" ]]; then
+  echo "[HCL pre-push] Skipping verification because HCL_SKIP_PRE_PUSH_GUARD=1"
+  exit 0
+fi
+
+repo_root="$(git rev-parse --show-toplevel)"
+verify_script="$repo_root/scripts/maintenance/verify_backend_core_chain.ps1"
+
+if [[ ! -f "$verify_script" ]]; then
+  echo "[HCL pre-push] FAIL: missing verifier script: $verify_script"
+  exit 1
+fi
+
+echo "[HCL pre-push] Running core backend verification chain..."
+
+# Public auth checks can be configured in either place:
+# 1) environment variables (highest priority)
+# 2) repo-local git config:
+#      git config --local hcl.prepush.baseUrl "https://..."
+#      git config --local hcl.prepush.publicSiteUrl "https://..."
+base_url="${HCL_PREPUSH_BASE_URL:-$(git config --local --get hcl.prepush.baseUrl || true)}"
+public_site_url="${HCL_PREPUSH_PUBLIC_SITE_URL:-$(git config --local --get hcl.prepush.publicSiteUrl || true)}"
+
+if [[ -n "${base_url}" && -n "${public_site_url}" ]]; then
+  if command -v pwsh >/dev/null 2>&1; then
+    pwsh -NoProfile -ExecutionPolicy Bypass -File "$verify_script" -BaseUrl "$base_url" -PublicSiteUrl "$public_site_url"
+  else
+    powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$verify_script" -BaseUrl "$base_url" -PublicSiteUrl "$public_site_url"
+  fi
+else
+  if command -v pwsh >/dev/null 2>&1; then
+    pwsh -NoProfile -ExecutionPolicy Bypass -File "$verify_script"
+  else
+    powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$verify_script"
+  fi
+fi
+
+echo "[HCL pre-push] PASS: verification gate cleared."

@@ -318,6 +318,26 @@
   backdrop-filter: blur(10px);
 }
 
+.auth-credential-panel {
+  margin: 14px auto;
+  display: grid;
+  gap: 10px;
+  max-width: 320px;
+}
+
+.auth-input {
+  width: 100%;
+  border: 1px solid rgba(148, 163, 184, 0.45);
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.75);
+  color: #f8fafc;
+  padding: 9px 10px;
+}
+
+.auth-input::placeholder {
+  color: #94a3b8;
+}
+
 .tier-emoji {
   font-size: 1.5rem;
 }

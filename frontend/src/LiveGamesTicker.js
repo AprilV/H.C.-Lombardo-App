@@ -18,9 +18,10 @@ const getTeamLogoName = (abbr) => {
   return (teamLogoMap[abbr] || abbr).toLowerCase();
 };
 
-function LiveGamesTicker() {
+function LiveGamesTicker({ authHeader = '' }) {
   const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [authBlocked, setAuthBlocked] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const scrollContainerRef = useRef(null);
   const isPausedRef = useRef(false);
@@ -31,9 +32,10 @@ function LiveGamesTicker() {
 
   useEffect(() => {
     fetchGames();
+    if (authBlocked) return undefined;
     const interval = setInterval(fetchGames, 30000); // Refresh every 30 seconds
     return () => clearInterval(interval);
-  }, []);
+  }, [authBlocked]);
 
   // Keep ref in sync with state so the scroll interval reads the latest value
   useEffect(() => {
@@ -180,7 +182,22 @@ function LiveGamesTicker() {
 
   const fetchGames = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/live-scores`);
+      const response = await fetch(`${API_URL}/api/live-scores`, {
+        credentials: 'include',
+        headers: {
+          Accept: 'application/json',
+          ...(authHeader ? { Authorization: authHeader } : {})
+        }
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        if (response.status === 401) {
+          setAuthBlocked(true);
+        }
+        throw new Error(`HTTP ${response.status}: ${errorText.slice(0, 120)}`);
+      }
+
       const data = await response.json();
       
       if (data.success && data.games) {
@@ -199,6 +216,7 @@ function LiveGamesTicker() {
         });
         setGames(gamesWithPacificTime);
       }
+      setAuthBlocked(false);
       setLoading(false);
     } catch (err) {
       console.error('Failed to fetch live games:', err);

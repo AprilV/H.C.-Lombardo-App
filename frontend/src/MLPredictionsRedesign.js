@@ -20,7 +20,35 @@ function MLPredictionsRedesign() {
   const [refreshing, setRefreshing] = useState(false);
   const [lastUpdated, setLastUpdated] = useState(null);
   const [error, setError] = useState(null);
+  const [authRequired, setAuthRequired] = useState(false);
+  const [authUsername, setAuthUsername] = useState('');
+  const [authPassword, setAuthPassword] = useState('');
   const [view, setView] = useState('winner-picks'); // 'winner-picks', 'spreads'
+
+  const authHeader = authUsername && authPassword
+    ? `Basic ${window.btoa(`${authUsername}:${authPassword}`)}`
+    : '';
+
+  const fetchJson = async (url) => {
+    const response = await fetch(url, {
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+        ...(authHeader ? { Authorization: authHeader } : {})
+      }
+    });
+
+    if (!response.ok) {
+      const body = await response.text();
+      const summary = body ? body.slice(0, 120) : `HTTP ${response.status}`;
+      if (response.status === 401) {
+        throw new Error(`AUTH_REQUIRED: ${summary}`);
+      }
+      throw new Error(`HTTP_${response.status}: ${summary}`);
+    }
+
+    return response.json();
+  };
 
   useEffect(() => {
     fetchAvailableWeeks();
@@ -70,8 +98,7 @@ function MLPredictionsRedesign() {
 
   const fetchAvailableWeeks = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/ml/available-weeks`);
-      const data = await response.json();
+      const data = await fetchJson(`${API_URL}/api/ml/available-weeks`);
       if (data.success) {
         setAvailableWeeks(data.weeks || []);
       }
@@ -83,15 +110,20 @@ function MLPredictionsRedesign() {
   const fetchUpcomingPredictions = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${API_URL}/api/ml/predict-upcoming`);
-      const data = await response.json();
+      const data = await fetchJson(`${API_URL}/api/ml/predict-upcoming`);
       
       if (data.season && data.week) {
         setSeason(data.season);
         setWeek(data.week);
       }
+      setAuthRequired(false);
     } catch (err) {
-      setError('Failed to load upcoming predictions');
+      if (String(err?.message || '').includes('AUTH_REQUIRED')) {
+        setAuthRequired(true);
+        setError('Authentication required for ML endpoints. Enter credentials and retry.');
+      } else {
+        setError('Failed to load upcoming predictions');
+      }
     }
     setLoading(false);
   };
@@ -103,18 +135,23 @@ function MLPredictionsRedesign() {
       setError(null);
     }
     try {
-      const response = await fetch(`${API_URL}/api/predictions/combined/${season}/${week}`);
-      const data = await response.json();
+      const data = await fetchJson(`${API_URL}/api/predictions/combined/${season}/${week}`);
       
       if (data.success) {
         setCombinedData(data.predictions || []);
         setLastUpdated(new Date());
+        setAuthRequired(false);
       } else {
         setError(data.message || 'No predictions available');
       }
     } catch (err) {
       if (!silent) {
-        setError('Failed to load predictions');
+        if (String(err?.message || '').includes('AUTH_REQUIRED')) {
+          setAuthRequired(true);
+          setError('Authentication required for ML endpoints. Enter credentials and retry.');
+        } else {
+          setError('Failed to load predictions');
+        }
       }
     }
     if (!silent) {
@@ -128,17 +165,21 @@ function MLPredictionsRedesign() {
       setSeasonStatsLoading(true);
     }
     try {
-      const response = await fetch(getSeasonAiVsVegasUrl(selectedSeason));
-      const data = await response.json();
+      const data = await fetchJson(getSeasonAiVsVegasUrl(selectedSeason));
 
       if (data.success) {
         setSeasonStats(data);
         setLastUpdated(new Date());
+        setAuthRequired(false);
       } else {
         setSeasonStats(null);
       }
     } catch (err) {
       if (!silent) {
+        if (String(err?.message || '').includes('AUTH_REQUIRED')) {
+          setAuthRequired(true);
+          setError('Authentication required for ML endpoints. Enter credentials and retry.');
+        }
         setSeasonStats(null);
       }
     }
@@ -628,6 +669,29 @@ function MLPredictionsRedesign() {
       {error && (
         <div className="error-message">
           <p>{error}</p>
+          {authRequired && (
+            <div className="ml-auth-panel">
+              <input
+                type="text"
+                className="ml-auth-input"
+                placeholder="API username"
+                value={authUsername}
+                onChange={(event) => setAuthUsername(event.target.value)}
+                autoComplete="username"
+              />
+              <input
+                type="password"
+                className="ml-auth-input"
+                placeholder="API password"
+                value={authPassword}
+                onChange={(event) => setAuthPassword(event.target.value)}
+                autoComplete="current-password"
+              />
+              <button className="load-btn" type="button" onClick={refreshAll}>
+                Retry Authenticated Fetch
+              </button>
+            </div>
+          )}
         </div>
       )}
 

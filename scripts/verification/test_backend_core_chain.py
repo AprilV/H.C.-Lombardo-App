@@ -9,6 +9,7 @@ import requests
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 ML_CHAIN_SCRIPT = PROJECT_ROOT / "scripts" / "verification" / "test_ml_api.py"
+AUTH_GATE_SCRIPT = PROJECT_ROOT / "scripts" / "verification" / "test_auth_release_gate.py"
 
 
 def run_health_check(base_url: str) -> bool:
@@ -62,7 +63,7 @@ def run_hcl_teams_check(base_url: str, season: int) -> bool:
 
 
 def run_ml_chain(base_url: str) -> bool:
-    print("\n[3/3] ML verification chain")
+    print("\n[3/4] ML verification chain")
     if not ML_CHAIN_SCRIPT.exists():
         print(f"  FAIL: missing script {ML_CHAIN_SCRIPT}")
         return False
@@ -83,10 +84,48 @@ def run_ml_chain(base_url: str) -> bool:
     return True
 
 
+def run_auth_release_gate(base_url: str, season: int, public_site_url: str | None = None) -> bool:
+    print("\n[4/4] auth release gate")
+    if not AUTH_GATE_SCRIPT.exists():
+        print(f"  FAIL: missing script {AUTH_GATE_SCRIPT}")
+        return False
+
+    command = [
+        sys.executable,
+        str(AUTH_GATE_SCRIPT),
+        "--base-url",
+        base_url,
+        "--season",
+        str(season),
+    ]
+
+    if public_site_url:
+        command.extend(["--public-site-url", public_site_url])
+
+    result = subprocess.run(command, cwd=str(PROJECT_ROOT), capture_output=True, text=True)
+
+    if result.stdout:
+        print(result.stdout.strip())
+    if result.stderr:
+        print(result.stderr.strip())
+
+    if result.returncode != 0:
+        print(f"  FAIL: auth release gate exited {result.returncode}")
+        return False
+
+    print("  PASS")
+    return True
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Run core backend verification chain checks.")
     parser.add_argument("--base-url", default="http://localhost:5000", help="API base URL")
     parser.add_argument("--season", type=int, default=2025, help="Season for HCL teams endpoint check")
+    parser.add_argument(
+        "--public-site-url",
+        default="",
+        help="Optional public website URL (adds /manifest.json auth check)",
+    )
     args = parser.parse_args()
 
     print("=" * 80)
@@ -99,6 +138,14 @@ def main() -> int:
         ("health", run_health_check(args.base_url)),
         ("hcl_teams", run_hcl_teams_check(args.base_url, args.season)),
         ("ml_chain", run_ml_chain(args.base_url)),
+        (
+            "auth_release_gate",
+            run_auth_release_gate(
+                args.base_url,
+                args.season,
+                args.public_site_url.strip() or None,
+            ),
+        ),
     ]
 
     passed = sum(1 for _, ok in checks if ok)

@@ -1,6 +1,7 @@
 param(
     [string]$BaseUrl = "http://localhost:5000",
     [int]$Season = 2025,
+    [string]$PublicSiteUrl = "",
     [string]$PythonExe = ".venv/Scripts/python.exe"
 )
 
@@ -26,7 +27,17 @@ if (-not (Test-Path $verifyScript)) {
 }
 
 Write-Host "Running core backend verification chain ..." -ForegroundColor Cyan
-& $pythonPath $verifyScript --base-url $BaseUrl --season $Season
+$commandArgs = @(
+    $verifyScript,
+    "--base-url", $BaseUrl,
+    "--season", $Season
+)
+
+if ($PublicSiteUrl -and $PublicSiteUrl.Trim().Length -gt 0) {
+    $commandArgs += @("--public-site-url", $PublicSiteUrl.Trim())
+}
+
+& $pythonPath @commandArgs
 
 if ($LASTEXITCODE -ne 0) {
     Write-Host "FAIL: Core backend verification chain reported regressions." -ForegroundColor Red

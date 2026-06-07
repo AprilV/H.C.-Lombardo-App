@@ -9,9 +9,13 @@ import time
 import sys
 import os
 from pathlib import Path
+from dotenv import load_dotenv
 
 ROOT    = Path(__file__).parent
 VENV_PY = ROOT / '.venv' / 'Scripts' / 'python.exe'
+
+# Ensure local .env credentials are available for startup prechecks.
+load_dotenv()
 
 
 def get_python_executable():

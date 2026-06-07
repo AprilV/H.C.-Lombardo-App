@@ -785,6 +785,25 @@
   max-width: 600px;
 }
 
+.ml-auth-panel {
+  margin: 12px auto 0;
+  display: grid;
+  gap: 8px;
+  max-width: 320px;
+}
+
+.ml-auth-input {
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 8px;
+  padding: 8px 10px;
+  background: rgba(15, 23, 42, 0.7);
+  color: #fff;
+}
+
+.ml-auth-input::placeholder {
+  color: rgba(226, 232, 240, 0.8);
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .picks-grid {

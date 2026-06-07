@@ -29,6 +29,12 @@ function App() {
   const testConnection = async () => {
     try {
       const response = await fetch(`${API_URL}/health`);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`HTTP ${response.status}: ${errorText.slice(0, 120)}`);
+      }
+
       const data = await response.json();
       setServerStatus(data);
     } catch (err) {

@@ -7,6 +7,9 @@ import requests
 import psycopg2
 import time
 from typing import Dict, Tuple
+from dotenv import load_dotenv
+
+load_dotenv()
 
 class HealthChecker:
     """Performs health checks on all system components"""
@@ -61,7 +64,6 @@ class HealthChecker:
                 response = requests.get(url, timeout=3)
                 
                 if response.status_code == 200:
-                    data = response.json()
                     print(f"   ✅ {endpoint_name} responding (Status: {response.status_code})")
                     return True, f"HTTP {response.status_code}"
                 else:

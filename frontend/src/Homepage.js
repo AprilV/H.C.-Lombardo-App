@@ -40,8 +40,15 @@ function Homepage() {
   const [teams, setTeams] = useState([]);
   const [predictions, setPredictions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [authError, setAuthError] = useState('');
+  const [authUsername, setAuthUsername] = useState('');
+  const [authPassword, setAuthPassword] = useState('');
   const navigate = useNavigate();
   const { theme, changeTheme } = useTheme();
+
+  const authHeader = authUsername && authPassword
+    ? `Basic ${window.btoa(`${authUsername}:${authPassword}`)}`
+    : '';
 
   useEffect(() => {
     fetchTeams();
@@ -51,9 +58,25 @@ function Homepage() {
   const fetchTeams = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${API_URL}/api/hcl/teams?season=${defaultSeason}`);
+      const response = await fetch(`${API_URL}/api/hcl/teams?season=${defaultSeason}`, {
+        credentials: 'include',
+        headers: {
+          Accept: 'application/json',
+          ...(authHeader ? { Authorization: authHeader } : {})
+        }
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        if (response.status === 401) {
+          setAuthError('Authentication is required for API access. Sign in to the protected API host and refresh.');
+        }
+        throw new Error(`HTTP ${response.status}: ${errorText.slice(0, 120)}`);
+      }
+
       const data = await response.json();
       setTeams(data.teams || []);
+      setAuthError('');
     } catch (err) {
       console.error('Failed to fetch teams:', err);
     } finally {
@@ -63,7 +86,22 @@ function Homepage() {
 
   const fetchPredictions = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/ml/predict-upcoming`);
+      const response = await fetch(`${API_URL}/api/ml/predict-upcoming`, {
+        credentials: 'include',
+        headers: {
+          Accept: 'application/json',
+          ...(authHeader ? { Authorization: authHeader } : {})
+        }
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        if (response.status === 401) {
+          setAuthError('Authentication is required for API access. Sign in to the protected API host and refresh.');
+        }
+        throw new Error(`HTTP ${response.status}: ${errorText.slice(0, 120)}`);
+      }
+
       const data = await response.json();
       if (data.predictions && data.predictions.length > 0) {
         // Transform to match our ticker format
@@ -78,6 +116,7 @@ function Homepage() {
         }));
         setPredictions(simplified);
       }
+      setAuthError('');
     } catch (err) {
       console.error('Failed to fetch predictions:', err);
     }
@@ -144,7 +183,41 @@ function Homepage() {
       </div>
 
       {/* Live Games Ticker */}
-      <LiveGamesTicker />
+      <LiveGamesTicker authHeader={authHeader} />
+
+      {authError && (
+        <div className="homepage-auth-warning" role="alert">
+          <p>{authError}</p>
+          <div className="homepage-auth-panel">
+            <input
+              type="text"
+              className="homepage-auth-input"
+              placeholder="API username"
+              value={authUsername}
+              onChange={(event) => setAuthUsername(event.target.value)}
+              autoComplete="username"
+            />
+            <input
+              type="password"
+              className="homepage-auth-input"
+              placeholder="API password"
+              value={authPassword}
+              onChange={(event) => setAuthPassword(event.target.value)}
+              autoComplete="current-password"
+            />
+            <button
+              className="refresh-btn-home"
+              type="button"
+              onClick={() => {
+                fetchTeams();
+                fetchPredictions();
+              }}
+            >
+              Retry Authenticated Fetch
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* AI Prediction Methodology */}
       <div className="prediction-methodology">
