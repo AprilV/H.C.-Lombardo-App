@@ -45,15 +45,16 @@ _performance_stats_cache_lock = threading.Lock()
 _performance_stats_cache_ttl_seconds = int(os.getenv('ML_PERFORMANCE_STATS_CACHE_TTL_SECONDS', '120'))
 
 
-def _performance_cache_key(season, week):
-    return f"{season}:{week if week is not None else 'all'}"
+def _performance_cache_key(season, week, lite_mode=False):
+    mode = 'lite' if lite_mode else 'full'
+    return f"{season}:{week if week is not None else 'all'}:{mode}"
 
 
-def _get_cached_performance_stats(season, week):
+def _get_cached_performance_stats(season, week, lite_mode=False):
     if _performance_stats_cache_ttl_seconds <= 0:
         return None
 
-    key = _performance_cache_key(season, week)
+    key = _performance_cache_key(season, week, lite_mode)
     now_ts = time.time()
     with _performance_stats_cache_lock:
         entry = _performance_stats_cache.get(key)
@@ -65,11 +66,11 @@ def _get_cached_performance_stats(season, week):
         return entry.get('payload')
 
 
-def _set_cached_performance_stats(season, week, payload):
+def _set_cached_performance_stats(season, week, payload, lite_mode=False):
     if _performance_stats_cache_ttl_seconds <= 0:
         return
 
-    key = _performance_cache_key(season, week)
+    key = _performance_cache_key(season, week, lite_mode)
     with _performance_stats_cache_lock:
         _performance_stats_cache[key] = {
             'cached_at': time.time(),
@@ -1814,8 +1815,9 @@ def get_performance_stats():
         if season is None:
             season = get_latest_completed_season()
         week = request.args.get('week', type=int)
+        lite_mode = str(request.args.get('lite', '')).strip().lower() in ('1', 'true', 'yes', 'on')
 
-        cached_payload = _get_cached_performance_stats(season, week)
+        cached_payload = _get_cached_performance_stats(season, week, lite_mode)
         if cached_payload is not None:
             return jsonify(cached_payload)
 
@@ -2620,7 +2622,7 @@ def get_performance_stats():
 
         trend_seasons = []
         season_trend = []
-        if week is None:
+        if (not lite_mode) and week is None:
             cur.execute(
                 """
                 SELECT DISTINCT season
@@ -3050,7 +3052,7 @@ def get_performance_stats():
             }
         }
 
-        if week is None:
+        if (not lite_mode) and week is None:
             coverage_start = request.args.get('coverage_start_season', type=int)
             coverage_end = request.args.get('coverage_end_season', type=int)
 
@@ -3303,123 +3305,128 @@ def get_performance_stats():
                 "Coverage note: coverage contract includes legacy fallback scoring for one or more seasons."
             )
 
-        integrity_where = ["mp.season = %s"]
-        integrity_params = [season]
-        if week is not None:
-            integrity_where.append("mp.week = %s")
-            integrity_params.append(week)
-
-        cur.execute(
-            f"""
-            SELECT
-                COUNT(*) FILTER (
-                    WHERE mp.predicted_at IS NOT NULL
-                      AND COALESCE(mp.game_date::date, g.game_date::date) IS NOT NULL
-                ) AS rows_checked,
-                COALESCE(
-                    SUM(
-                        CASE
-                            WHEN mp.predicted_at IS NOT NULL
-                             AND COALESCE(mp.game_date::date, g.game_date::date) IS NOT NULL
-                             AND mp.predicted_at::date > COALESCE(mp.game_date::date, g.game_date::date)
-                            THEN 1 ELSE 0
-                        END
-                    ),
-                    0
-                ) AS predicted_after_game_date_count
-            FROM hcl.ml_predictions mp
-            JOIN hcl.games g ON g.game_id = mp.game_id
-            WHERE {' AND '.join(integrity_where)}
-                            AND COALESCE(g.is_postseason, FALSE) = FALSE
-            """,
-            tuple(integrity_params)
-        )
-        leakage_row = cur.fetchone() or {}
-        leakage_checked = _int(leakage_row.get('rows_checked'))
-        leakage_count = _int(leakage_row.get('predicted_after_game_date_count'))
-        leakage_pct = _pct(leakage_count, leakage_checked)
-        integrity['leakage'].update({
-            'rows_checked': leakage_checked,
-            'predicted_after_game_date_count': leakage_count,
-            'predicted_after_game_date_pct': leakage_pct
-        })
-
-        cur.execute(
-            f"""
-            SELECT
-                COUNT(*) AS rows_checked,
-                COALESCE(
-                    SUM(
-                        CASE
-                            WHEN mp.actual_winner = mp.away_team AND mp.actual_margin > 0 THEN 1
-                            WHEN mp.actual_winner = mp.home_team AND mp.actual_margin < 0 THEN 1
-                            ELSE 0
-                        END
-                    ),
-                    0
-                ) AS inconsistent_count
-            FROM hcl.ml_predictions mp
-            WHERE {' AND '.join(integrity_where)}
-              AND mp.result_recorded_at IS NOT NULL
-              AND mp.actual_winner IN (mp.home_team, mp.away_team)
-              AND mp.actual_margin IS NOT NULL
-            """,
-            tuple(integrity_params)
-        )
-        margin_row = cur.fetchone() or {}
-        margin_checked = _int(margin_row.get('rows_checked'))
-        margin_count = _int(margin_row.get('inconsistent_count'))
-        margin_pct = _pct(margin_count, margin_checked)
-        integrity['margin_sign'].update({
-            'rows_checked': margin_checked,
-            'inconsistent_count': margin_count,
-            'inconsistent_pct': margin_pct
-        })
-
-        cur.execute(
-            f"""
-            SELECT
-                COUNT(*) AS rows_checked,
-                COALESCE(
-                    SUM(
-                        CASE
-                            WHEN mp.predicted_home_score IS NULL
-                              OR mp.predicted_away_score IS NULL
-                              OR mp.vegas_total IS NULL THEN 0
-                            WHEN ROUND((mp.predicted_home_score + mp.predicted_away_score)::NUMERIC, 1)
-                               = ROUND(mp.vegas_total::NUMERIC, 1)
-                            THEN 1 ELSE 0
-                        END
-                    ),
-                    0
-                ) AS line_locked_count
-            FROM hcl.ml_predictions mp
-            WHERE {' AND '.join(integrity_where)}
-            """,
-            tuple(integrity_params)
-        )
-        line_lock_row = cur.fetchone() or {}
-        line_lock_checked = _int(line_lock_row.get('rows_checked'))
-        line_lock_count = _int(line_lock_row.get('line_locked_count'))
-        line_lock_pct = _pct(line_lock_count, line_lock_checked)
-        integrity['totals_line_lock'].update({
-            'rows_checked': line_lock_checked,
-            'line_locked_count': line_lock_count,
-            'line_locked_pct': line_lock_pct
-        })
-
-        if leakage_pct > integrity['leakage']['threshold_pct']:
+        if lite_mode:
             warnings.append(
-                f"Integrity warning: {leakage_pct}% of tracked XGBoost rows have predicted_at after game_date"
+                "Lite mode: season trend, coverage contract, and integrity audits are omitted for faster response."
             )
-        if margin_pct > integrity['margin_sign']['threshold_pct']:
-            warnings.append(
-                f"Integrity warning: {margin_pct}% of scored XGBoost rows have inconsistent actual_margin sign"
+        else:
+            integrity_where = ["mp.season = %s"]
+            integrity_params = [season]
+            if week is not None:
+                integrity_where.append("mp.week = %s")
+                integrity_params.append(week)
+
+            cur.execute(
+                f"""
+                SELECT
+                    COUNT(*) FILTER (
+                        WHERE mp.predicted_at IS NOT NULL
+                          AND COALESCE(mp.game_date::date, g.game_date::date) IS NOT NULL
+                    ) AS rows_checked,
+                    COALESCE(
+                        SUM(
+                            CASE
+                                WHEN mp.predicted_at IS NOT NULL
+                                 AND COALESCE(mp.game_date::date, g.game_date::date) IS NOT NULL
+                                 AND mp.predicted_at::date > COALESCE(mp.game_date::date, g.game_date::date)
+                                THEN 1 ELSE 0
+                            END
+                        ),
+                        0
+                    ) AS predicted_after_game_date_count
+                FROM hcl.ml_predictions mp
+                JOIN hcl.games g ON g.game_id = mp.game_id
+                WHERE {' AND '.join(integrity_where)}
+                                AND COALESCE(g.is_postseason, FALSE) = FALSE
+                """,
+                tuple(integrity_params)
             )
-        if line_lock_pct >= integrity['totals_line_lock']['threshold_pct']:
-            warnings.append(
-                f"Integrity warning: {line_lock_pct}% of rows have predicted total locked to vegas_total"
+            leakage_row = cur.fetchone() or {}
+            leakage_checked = _int(leakage_row.get('rows_checked'))
+            leakage_count = _int(leakage_row.get('predicted_after_game_date_count'))
+            leakage_pct = _pct(leakage_count, leakage_checked)
+            integrity['leakage'].update({
+                'rows_checked': leakage_checked,
+                'predicted_after_game_date_count': leakage_count,
+                'predicted_after_game_date_pct': leakage_pct
+            })
+
+            cur.execute(
+                f"""
+                SELECT
+                    COUNT(*) AS rows_checked,
+                    COALESCE(
+                        SUM(
+                            CASE
+                                WHEN mp.actual_winner = mp.away_team AND mp.actual_margin > 0 THEN 1
+                                WHEN mp.actual_winner = mp.home_team AND mp.actual_margin < 0 THEN 1
+                                ELSE 0
+                            END
+                        ),
+                        0
+                    ) AS inconsistent_count
+                FROM hcl.ml_predictions mp
+                WHERE {' AND '.join(integrity_where)}
+                  AND mp.result_recorded_at IS NOT NULL
+                  AND mp.actual_winner IN (mp.home_team, mp.away_team)
+                  AND mp.actual_margin IS NOT NULL
+                """,
+                tuple(integrity_params)
             )
+            margin_row = cur.fetchone() or {}
+            margin_checked = _int(margin_row.get('rows_checked'))
+            margin_count = _int(margin_row.get('inconsistent_count'))
+            margin_pct = _pct(margin_count, margin_checked)
+            integrity['margin_sign'].update({
+                'rows_checked': margin_checked,
+                'inconsistent_count': margin_count,
+                'inconsistent_pct': margin_pct
+            })
+
+            cur.execute(
+                f"""
+                SELECT
+                    COUNT(*) AS rows_checked,
+                    COALESCE(
+                        SUM(
+                            CASE
+                                WHEN mp.predicted_home_score IS NULL
+                                  OR mp.predicted_away_score IS NULL
+                                  OR mp.vegas_total IS NULL THEN 0
+                                WHEN ROUND((mp.predicted_home_score + mp.predicted_away_score)::NUMERIC, 1)
+                                   = ROUND(mp.vegas_total::NUMERIC, 1)
+                                THEN 1 ELSE 0
+                            END
+                        ),
+                        0
+                    ) AS line_locked_count
+                FROM hcl.ml_predictions mp
+                WHERE {' AND '.join(integrity_where)}
+                """,
+                tuple(integrity_params)
+            )
+            line_lock_row = cur.fetchone() or {}
+            line_lock_checked = _int(line_lock_row.get('rows_checked'))
+            line_lock_count = _int(line_lock_row.get('line_locked_count'))
+            line_lock_pct = _pct(line_lock_count, line_lock_checked)
+            integrity['totals_line_lock'].update({
+                'rows_checked': line_lock_checked,
+                'line_locked_count': line_lock_count,
+                'line_locked_pct': line_lock_pct
+            })
+
+            if leakage_pct > integrity['leakage']['threshold_pct']:
+                warnings.append(
+                    f"Integrity warning: {leakage_pct}% of tracked XGBoost rows have predicted_at after game_date"
+                )
+            if margin_pct > integrity['margin_sign']['threshold_pct']:
+                warnings.append(
+                    f"Integrity warning: {margin_pct}% of scored XGBoost rows have inconsistent actual_margin sign"
+                )
+            if line_lock_pct >= integrity['totals_line_lock']['threshold_pct']:
+                warnings.append(
+                    f"Integrity warning: {line_lock_pct}% of rows have predicted total locked to vegas_total"
+                )
 
         overall = {
             'total_games': primary_summary.get('scored_games', 0),
@@ -3438,6 +3445,7 @@ def get_performance_stats():
 
         response_payload = {
             'success': True,
+            'lite_mode': lite_mode,
             'season': season,
             'week': week,
             'completed_games': completed_games,
@@ -3452,7 +3460,7 @@ def get_performance_stats():
             'warnings': warnings
         }
 
-        _set_cached_performance_stats(season, week, response_payload)
+        _set_cached_performance_stats(season, week, response_payload, lite_mode)
         return jsonify(response_payload)
 
     except Exception as e:

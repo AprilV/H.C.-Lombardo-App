@@ -204,9 +204,9 @@ function HistoricalData() {
 
   return (
     <div className="historical-data">
-      <div className="header">
+      <div className="historical-header">
         <h1>📊 Historical Team Statistics Spreadsheet</h1>
-        <p className="subtitle">Custom stat viewer - select team, season, and choose your stats</p>
+        <p className="historical-subtitle">Custom stat viewer - select team, season, and choose your stats</p>
       </div>
 
       {/* Instructions */}

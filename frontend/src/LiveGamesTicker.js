@@ -1,22 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './LiveGamesTicker.css';
+import { getEspnTeamLogoUrl } from './utils/teamLogos';
 
 const API_URL = process.env.REACT_APP_API_URL ?? '';
 const TICKER_SCROLL_STEP_PX = 1;
 const TICKER_SCROLL_INTERVAL_MS = 11;
 const TICKER_RESUME_DELAY_MS = 1500;
-
-// Map team abbreviations to logo filenames
-const teamLogoMap = {
-  'WSH': 'was',  // Washington
-  'LAR': 'lar',  // LA Rams
-  'LAC': 'lac',  // LA Chargers
-  'LA': 'lar',   // LA fallback to Rams
-};
-
-const getTeamLogoName = (abbr) => {
-  return (teamLogoMap[abbr] || abbr).toLowerCase();
-};
 
 function LiveGamesTicker({ authHeader = '' }) {
   const [games, setGames] = useState([]);
@@ -283,7 +272,7 @@ function LiveGamesTicker({ authHeader = '' }) {
               <div className="ticker-matchup">
                 <div className={`ticker-team ${game.away_score > game.home_score && game.status === 'final' ? 'winner' : ''}`}>
                   <img 
-                    src={`/images/teams/${getTeamLogoName(game.away_team)}.png`} 
+                    src={getEspnTeamLogoUrl(game.away_team)} 
                     alt={game.away_team}
                     className="team-logo"
                     onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }}
@@ -294,7 +283,7 @@ function LiveGamesTicker({ authHeader = '' }) {
                 <div className="ticker-vs">@</div>
                 <div className={`ticker-team ${game.home_score > game.away_score && game.status === 'final' ? 'winner' : ''}`}>
                   <img 
-                    src={`/images/teams/${getTeamLogoName(game.home_team)}.png`} 
+                    src={getEspnTeamLogoUrl(game.home_team)} 
                     alt={game.home_team}
                     className="team-logo"
                     onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }}

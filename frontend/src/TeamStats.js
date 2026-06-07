@@ -1,20 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import './TeamStats.css';
+import { getEspnTeamLogoUrl } from './utils/teamLogos';
 
 const API_URL = process.env.REACT_APP_API_URL ?? '';
-
-// Map team abbreviations to logo filenames
-const teamLogoMap = {
-  'WSH': 'was',  // Washington
-  'WAS': 'was',  // Washington (alternate)
-  'LAR': 'lar',  // LA Rams
-  'LAC': 'lac',  // LA Chargers
-};
-
-const getTeamLogoName = (abbr) => {
-  return (teamLogoMap[abbr] || abbr).toLowerCase();
-};
 
 function TeamStats() {
   const [searchParams] = useSearchParams();
@@ -75,9 +64,6 @@ function TeamStats() {
       const data = await response.json();
       // Extract team object if it's nested
       const teamData = data.team || data;
-      console.log('Team Details Response:', data);
-      console.log('Extracted Team Data:', teamData);
-      console.log('Wins:', teamData.wins, 'Losses:', teamData.losses, 'PPG:', teamData.ppg);
       setTeamDetails(teamData);
       setError(null);
     } catch (err) {
@@ -210,7 +196,7 @@ function TeamStats() {
           <div className="results-card">
             <div className="team-header-large">
               <img 
-                src={`/images/teams/${getTeamLogoName(teamDetails.abbreviation)}.png`}
+                src={getEspnTeamLogoUrl(teamDetails.abbreviation)}
                 alt={`${teamDetails.name} logo`}
                 className="team-logo-large"
                 onError={(e) => {e.target.style.display='none'}}

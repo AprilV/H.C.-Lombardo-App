@@ -1725,11 +1725,11 @@ body,
 [data-theme="executive-dark"] .historical-data {
   background: linear-gradient(135deg, #0A0F1E 0%, #0F172A 100%) !important;
 }
-[data-theme="executive-dark"] .historical-data .header {
+[data-theme="executive-dark"] .historical-data .historical-header {
   background: linear-gradient(135deg, rgba(245,158,11,0.06) 0%, rgba(217,119,6,0.06) 100%) !important;
   border-color: rgba(245,158,11,0.25) !important;
 }
-[data-theme="executive-dark"] .historical-data .header h1 {
+[data-theme="executive-dark"] .historical-data .historical-header h1 {
   background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%) !important;
   -webkit-background-clip: text !important;
   -webkit-text-fill-color: transparent !important;

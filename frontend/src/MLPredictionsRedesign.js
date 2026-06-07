@@ -213,6 +213,24 @@ function MLPredictionsRedesign() {
     return getEspnTeamLogoUrl(team);
   };
 
+  const formatTeamLabel = (team) => {
+    if (!team || typeof team !== 'string') {
+      return 'TBD';
+    }
+
+    const trimmed = team.trim();
+    if (!trimmed) {
+      return 'TBD';
+    }
+
+    const normalized = trimmed.toUpperCase();
+    if (['UNDEFINED', 'NULL', 'NAN', 'NONE', 'N/A', 'NA', 'TBD', '-'].includes(normalized)) {
+      return 'TBD';
+    }
+
+    return trimmed;
+  };
+
   const formatSpreadForHome = (team, spread) => {
     if (!team || spread === null || spread === undefined || Number.isNaN(Number(spread))) {
       return 'N/A';
@@ -281,7 +299,7 @@ function MLPredictionsRedesign() {
                         <div className="consensus-badge">✓ CONSENSUS</div>
                         <div className="winner-display">
                           <img src={getTeamLogo(eloWinner)} alt={eloWinner} className="winner-logo" />
-                          <span className="winner-team">{eloWinner}</span>
+                          <span className="winner-team">{formatTeamLabel(eloWinner)}</span>
                         </div>
                         <div className="confidence-bar">
                           <div className="confidence-fill" style={{width: `${avgConf * 100}%`}}></div>
@@ -314,7 +332,7 @@ function MLPredictionsRedesign() {
                           <div className="split-model">📈 Elo</div>
                           <div className="split-winner">
                             <img src={getTeamLogo(eloWinner)} alt={eloWinner} className="split-logo" />
-                            <span>{eloWinner}</span>
+                            <span>{formatTeamLabel(eloWinner)}</span>
                           </div>
                           <div className="split-conf">{(eloConf * 100).toFixed(0)}%</div>
                         </div>
@@ -323,7 +341,7 @@ function MLPredictionsRedesign() {
                           <div className="split-model">🤖 AI</div>
                           <div className="split-winner">
                             <img src={getTeamLogo(xgbWinner)} alt={xgbWinner} className="split-logo" />
-                            <span>{xgbWinner}</span>
+                            <span>{formatTeamLabel(xgbWinner)}</span>
                           </div>
                           <div className="split-conf">{(xgbConf * 100).toFixed(0)}%</div>
                         </div>
@@ -351,7 +369,7 @@ function MLPredictionsRedesign() {
                               alt={hasElo ? eloWinner : xgbWinner}
                               className="split-logo"
                             />
-                            <span>{hasElo ? eloWinner : xgbWinner}</span>
+                            <span>{formatTeamLabel(hasElo ? eloWinner : xgbWinner)}</span>
                           </div>
                           <div className="split-conf">
                             {hasElo ? `${(eloConf * 100).toFixed(0)}%` : `${(xgbConf * 100).toFixed(0)}%`}

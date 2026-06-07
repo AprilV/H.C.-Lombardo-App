@@ -4,20 +4,9 @@ import { useTheme } from './contexts/ThemeContext';
 import './Homepage.css';
 import LiveGamesTicker from './LiveGamesTicker';
 import { getDefaultSeason } from './utils/season';
+import { getEspnTeamLogoUrl } from './utils/teamLogos';
 
 const API_URL = process.env.REACT_APP_API_URL ?? '';
-
-// Map team abbreviations to logo filenames
-const teamLogoMap = {
-  'WSH': 'was',  // Washington
-  'WAS': 'was',  // Washington (alternate)
-  'LAR': 'lar',  // LA Rams
-  'LAC': 'lac',  // LA Chargers
-};
-
-const getTeamLogoName = (abbr) => {
-  return (teamLogoMap[abbr] || abbr).toLowerCase();
-};
 
 // NFL Divisions
 const NFL_STRUCTURE = {
@@ -275,7 +264,7 @@ function Homepage() {
                           onClick={() => handleTeamClick(abbr)}
                         >
                           <img 
-                            src={`/images/teams/${getTeamLogoName(abbr)}.png`}
+                            src={getEspnTeamLogoUrl(abbr)}
                             alt={team.team_name || team.team || abbr}
                             className="team-logo-small"
                             onError={(e) => {e.target.style.display='none'}}

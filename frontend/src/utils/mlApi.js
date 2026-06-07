@@ -8,12 +8,16 @@ const normalizeSeason = (season) => {
   return parsed;
 };
 
-export const getPerformanceStatsUrl = (season, { week } = {}) => {
+export const getPerformanceStatsUrl = (season, { week, lite } = {}) => {
   const safeSeason = normalizeSeason(season);
   const params = new URLSearchParams({ season: String(safeSeason) });
 
   if (week !== undefined && week !== null) {
     params.set('week', String(week));
+  }
+
+  if (lite) {
+    params.set('lite', '1');
   }
 
   return `${API_URL}/api/ml/performance-stats?${params.toString()}`;

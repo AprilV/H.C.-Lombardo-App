@@ -1,7 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './ModelPerformance.css';
 import { getDefaultSeason, getRecentSeasons } from './utils/season';
 import { getPerformanceStatsUrl, getSeasonAiVsVegasUrl } from './utils/mlApi';
+
+const PERFORMANCE_POLL_INTERVAL_MS = 60000;
+const RETRYABLE_STATUS_CODES = new Set([429, 502, 503, 504]);
 
 function buildFallbackUrls(primaryUrl) {
   const urls = [];
@@ -28,35 +31,49 @@ function buildFallbackUrls(primaryUrl) {
   return urls;
 }
 
-async function fetchJsonWithFallback(primaryUrl, authHeader = '') {
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+async function fetchJsonWithFallback(primaryUrl, authHeader = '', { retries = 2, retryDelayMs = 900 } = {}) {
   const urls = buildFallbackUrls(primaryUrl);
   let lastError = null;
 
   for (const url of urls) {
-    try {
-      const response = await fetch(url, {
-        credentials: 'include',
-        headers: {
-          Accept: 'application/json',
-          ...(authHeader ? { Authorization: authHeader } : {})
-        }
-      });
+    for (let attempt = 0; attempt <= retries; attempt += 1) {
+      try {
+        const response = await fetch(url, {
+          credentials: 'include',
+          headers: {
+            Accept: 'application/json',
+            ...(authHeader ? { Authorization: authHeader } : {})
+          }
+        });
 
-      if (!response.ok) {
-        const body = await response.text();
-        const summary = body ? body.slice(0, 140) : `HTTP ${response.status}`;
+        if (!response.ok) {
+          const body = await response.text();
+          const summary = body ? body.slice(0, 140) : `HTTP ${response.status}`;
+          const canRetry = RETRYABLE_STATUS_CODES.has(response.status) && attempt < retries;
 
-        if (response.status === 401) {
-          lastError = new Error(`AUTH_REQUIRED: ${summary}`);
-        } else {
-          lastError = new Error(`HTTP_${response.status}: ${summary}`);
+          if (canRetry) {
+            await sleep(retryDelayMs * (attempt + 1));
+            continue;
+          }
+
+          if (response.status === 401) {
+            lastError = new Error(`AUTH_REQUIRED: ${summary}`);
+          } else {
+            lastError = new Error(`HTTP_${response.status}: ${summary}`);
+          }
+          break;
         }
-        continue;
+
+        return await response.json();
+      } catch (error) {
+        lastError = error;
+        if (attempt < retries) {
+          await sleep(retryDelayMs * (attempt + 1));
+          continue;
+        }
       }
-
-      return await response.json();
-    } catch (error) {
-      lastError = error;
     }
   }
 
@@ -77,6 +94,9 @@ function ModelPerformance() {
   const [authUsername, setAuthUsername] = useState('');
   const [authPassword, setAuthPassword] = useState('');
   const [selectedSeason, setSelectedSeason] = useState(defaultSeason);
+  const isFetchingRef = useRef(false);
+  const lastFetchAtRef = useRef(0);
+  const requestSequenceRef = useRef(0);
 
   const authHeader = authUsername && authPassword
     ? `Basic ${window.btoa(`${authUsername}:${authPassword}`)}`
@@ -84,8 +104,16 @@ function ModelPerformance() {
 
   useEffect(() => {
     fetchPerformance();
-    const interval = setInterval(() => fetchPerformance({ silent: true }), 10000); // Refresh every 10 seconds
-    const onFocus = () => fetchPerformance({ silent: true });
+
+    // Keep automatic refresh light because performance-stats is an expensive endpoint.
+    const interval = setInterval(() => fetchPerformance({ silent: true }), PERFORMANCE_POLL_INTERVAL_MS);
+
+    const onFocus = () => {
+      if (document.visibilityState === 'visible') {
+        fetchPerformance({ silent: true });
+      }
+    };
+
     window.addEventListener('focus', onFocus);
     document.addEventListener('visibilitychange', onFocus);
 
@@ -97,7 +125,7 @@ function ModelPerformance() {
   }, [selectedSeason]);
 
   const fetchPerformanceForSeason = async (season) => {
-    return fetchJsonWithFallback(getPerformanceStatsUrl(season), authHeader);
+    return fetchJsonWithFallback(getPerformanceStatsUrl(season, { lite: true }), authHeader);
   };
 
   const fetchSeasonVsVegasForSeason = async (season) => {
@@ -105,19 +133,45 @@ function ModelPerformance() {
   };
 
   const fetchPerformance = async ({ silent = false } = {}) => {
+    const requestSeason = selectedSeason;
+
+    if (silent && isFetchingRef.current) {
+      return;
+    }
+
+    if (silent && !document.hidden) {
+      const elapsedMs = Date.now() - lastFetchAtRef.current;
+      if (elapsedMs < 15000) {
+        return;
+      }
+    }
+
+    if (silent) {
+      isFetchingRef.current = true;
+    }
+
+    const requestSequence = requestSequenceRef.current + 1;
+    requestSequenceRef.current = requestSequence;
+
     if (!silent) {
       setRefreshing(true);
     }
+
     try {
       const [data, vsVegasData] = await Promise.all([
-        fetchPerformanceForSeason(selectedSeason),
-        fetchSeasonVsVegasForSeason(selectedSeason)
+        fetchPerformanceForSeason(requestSeason),
+        fetchSeasonVsVegasForSeason(requestSeason)
       ]);
+
+      if (requestSequence !== requestSequenceRef.current) {
+        return;
+      }
       
       if (data.success) {
         setPerformanceData(data);
         setSeasonVsVegas(vsVegasData?.success ? vsVegasData : null);
         setLastUpdated(new Date());
+        lastFetchAtRef.current = Date.now();
         setAuthRequired(false);
         setError(null);
       } else {
@@ -125,17 +179,28 @@ function ModelPerformance() {
       }
       setLoading(false);
     } catch (err) {
+      if (requestSequence !== requestSequenceRef.current) {
+        return;
+      }
       if (!silent) {
         const message = String(err?.message || err || '');
         if (message.includes('AUTH_REQUIRED')) {
           setAuthRequired(true);
           setError('Authentication required for model endpoints. Sign in to the site/API auth gate and refresh.');
+        } else if (message.includes('HTTP_503') || message.includes('HTTP_502') || message.includes('HTTP_504')) {
+          setError('Model performance service is temporarily busy. Please retry in a few seconds.');
         } else {
           setError('Unable to connect to API');
         }
       }
       setLoading(false);
     } finally {
+      if (silent) {
+        isFetchingRef.current = false;
+      }
+      if (requestSequence !== requestSequenceRef.current) {
+        return;
+      }
       if (!silent) {
         setRefreshing(false);
       }
