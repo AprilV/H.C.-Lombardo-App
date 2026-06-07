@@ -5,6 +5,7 @@ import { getPerformanceStatsUrl, getSeasonAiVsVegasUrl } from './utils/mlApi';
 
 const PERFORMANCE_POLL_INTERVAL_MS = 60000;
 const RETRYABLE_STATUS_CODES = new Set([429, 502, 503, 504]);
+const ENABLE_MODEL_PERF_AUTO_SYNC = process.env.REACT_APP_MODEL_PERF_AUTO_SYNC === '1';
 
 function buildFallbackUrls(primaryUrl) {
   const urls = [];
@@ -105,7 +106,11 @@ function ModelPerformance() {
   useEffect(() => {
     fetchPerformance();
 
-    // Keep automatic refresh light because performance-stats is an expensive endpoint.
+    if (!ENABLE_MODEL_PERF_AUTO_SYNC) {
+      return undefined;
+    }
+
+    // Optional autosync is disabled by default for cost control.
     const interval = setInterval(() => fetchPerformance({ silent: true }), PERFORMANCE_POLL_INTERVAL_MS);
 
     const onFocus = () => {
@@ -380,7 +385,7 @@ function ModelPerformance() {
         </div>
         <div className="live-status-row">
           <div className="live-status-text">
-            Live sync every 10s | {formatLastUpdated()}
+            {ENABLE_MODEL_PERF_AUTO_SYNC ? 'Live sync every 60s' : 'Manual refresh only'} | {formatLastUpdated()}
           </div>
           <button
             className="refresh-now-btn"
