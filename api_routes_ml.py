@@ -15,6 +15,8 @@ import io
 import csv
 import hashlib
 import contextlib
+import time
+import threading
 import psycopg2
 from psycopg2.extras import RealDictCursor
 import json
@@ -36,6 +38,43 @@ ml_api = Blueprint('ml_api', __name__)
 predictor = None
 elo_predictor = None
 elo_tracker = None
+
+# Cache expensive performance rollups to reduce worker starvation under burst traffic.
+_performance_stats_cache = {}
+_performance_stats_cache_lock = threading.Lock()
+_performance_stats_cache_ttl_seconds = int(os.getenv('ML_PERFORMANCE_STATS_CACHE_TTL_SECONDS', '120'))
+
+
+def _performance_cache_key(season, week):
+    return f"{season}:{week if week is not None else 'all'}"
+
+
+def _get_cached_performance_stats(season, week):
+    if _performance_stats_cache_ttl_seconds <= 0:
+        return None
+
+    key = _performance_cache_key(season, week)
+    now_ts = time.time()
+    with _performance_stats_cache_lock:
+        entry = _performance_stats_cache.get(key)
+        if not entry:
+            return None
+        if now_ts - entry.get('cached_at', 0) >= _performance_stats_cache_ttl_seconds:
+            _performance_stats_cache.pop(key, None)
+            return None
+        return entry.get('payload')
+
+
+def _set_cached_performance_stats(season, week, payload):
+    if _performance_stats_cache_ttl_seconds <= 0:
+        return
+
+    key = _performance_cache_key(season, week)
+    with _performance_stats_cache_lock:
+        _performance_stats_cache[key] = {
+            'cached_at': time.time(),
+            'payload': payload
+        }
 
 def get_predictor():
     """Lazy load the XGBoost predictor"""
@@ -1776,6 +1815,10 @@ def get_performance_stats():
             season = get_latest_completed_season()
         week = request.args.get('week', type=int)
 
+        cached_payload = _get_cached_performance_stats(season, week)
+        if cached_payload is not None:
+            return jsonify(cached_payload)
+
         conn = psycopg2.connect(**get_predictor().db_config)
         elo_table_ready = table_exists(conn, 'hcl', 'ml_predictions_elo')
         cur = conn.cursor(cursor_factory=RealDictCursor)
@@ -3393,7 +3436,7 @@ def get_performance_stats():
         cur.close()
         conn.close()
 
-        return jsonify({
+        response_payload = {
             'success': True,
             'season': season,
             'week': week,
@@ -3407,7 +3450,10 @@ def get_performance_stats():
             'elo_table_ready': elo_table_ready,
             'integrity': integrity,
             'warnings': warnings
-        })
+        }
+
+        _set_cached_performance_stats(season, week, response_payload)
+        return jsonify(response_payload)
 
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
