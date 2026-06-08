@@ -185,14 +185,14 @@ class EloTracker:
     def load_current_ratings(self, filepath: str = 'ml/models/elo_ratings_current.json'):
         """Load Elo ratings from file"""
         if not os.path.exists(filepath):
-            print(f"⚠️  No saved ratings found at {filepath}")
+            print(f"[WARN] No saved ratings found at {filepath}")
             return False
         
         with open(filepath, 'r') as f:
             data = json.load(f)
         
         self.elo.set_ratings(data['ratings'])
-        print(f"✅ Loaded ratings from {filepath}")
+        print(f"[OK] Loaded ratings from {filepath}")
         print(f"   Last updated: {data['last_updated']}")
         return True
     

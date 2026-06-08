@@ -96,6 +96,44 @@
   cursor: not-allowed;
 }
 
+.trust-status-row {
+  margin: 10px auto 0;
+  max-width: 900px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+.trust-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: rgba(15, 23, 42, 0.45);
+  color: #cbd5e1;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.trust-pill-value {
+  font-weight: 800;
+}
+
+.trust-pill-value.ok {
+  color: #34d399;
+}
+
+.trust-pill-value.warning {
+  color: #fbbf24;
+}
+
+.trust-pill-value.neutral {
+  color: #93c5fd;
+}
+
 /* VEGAS HERO COMPARISON */
 .vegas-hero {
   background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
@@ -937,6 +975,15 @@
   .week-label {
     width: 60px;
     font-size: 0.8rem;
+  }
+
+  .live-status-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .trust-status-row {
+    justify-content: flex-start;
   }
 
   .insights-grid {

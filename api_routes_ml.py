@@ -43,6 +43,9 @@ elo_tracker = None
 _performance_stats_cache = {}
 _performance_stats_cache_lock = threading.Lock()
 _performance_stats_cache_ttl_seconds = int(os.getenv('ML_PERFORMANCE_STATS_CACHE_TTL_SECONDS', '120'))
+_ai_vs_vegas_rollup_cache = {}
+_ai_vs_vegas_rollup_cache_lock = threading.Lock()
+_ai_vs_vegas_rollup_cache_ttl_seconds = int(os.getenv('ML_AI_VS_VEGAS_CACHE_TTL_SECONDS', '900'))
 
 
 def _performance_cache_key(season, week, lite_mode=False):
@@ -64,6 +67,39 @@ def _get_cached_performance_stats(season, week, lite_mode=False):
             _performance_stats_cache.pop(key, None)
             return None
         return entry.get('payload')
+
+
+def _ai_vs_vegas_cache_key(season, week=None):
+    return f"{season}:{week if week is not None else 'all'}"
+
+
+def _get_cached_ai_vs_vegas_rollup(season, week=None):
+    if _ai_vs_vegas_rollup_cache_ttl_seconds <= 0:
+        return None
+
+    key = _ai_vs_vegas_cache_key(season, week)
+    now_ts = time.time()
+    with _ai_vs_vegas_rollup_cache_lock:
+        entry = _ai_vs_vegas_rollup_cache.get(key)
+        if not entry:
+            return None
+        if now_ts - entry.get('cached_at', 0) >= _ai_vs_vegas_rollup_cache_ttl_seconds:
+            _ai_vs_vegas_rollup_cache.pop(key, None)
+            return None
+        payload = entry.get('payload') or {}
+        return dict(payload)
+
+
+def _set_cached_ai_vs_vegas_rollup(season, week, payload):
+    if _ai_vs_vegas_rollup_cache_ttl_seconds <= 0:
+        return
+
+    key = _ai_vs_vegas_cache_key(season, week)
+    with _ai_vs_vegas_rollup_cache_lock:
+        _ai_vs_vegas_rollup_cache[key] = {
+            'cached_at': time.time(),
+            'payload': dict(payload or {})
+        }
 
 
 def _set_cached_performance_stats(season, week, payload, lite_mode=False):
@@ -184,6 +220,10 @@ def compute_simulated_ai_vs_vegas_rollup(conn, season, week=None):
 
     This keeps one denominator/outcome set for public AI-vs-Vegas surfaces.
     """
+    cached_rollup = _get_cached_ai_vs_vegas_rollup(season, week)
+    if cached_rollup is not None:
+        return cached_rollup
+
     cur = None
     try:
         where_clauses = [
@@ -217,7 +257,7 @@ def compute_simulated_ai_vs_vegas_rollup(conn, season, week=None):
         completed_games = cur.fetchall() or []
 
         if not completed_games:
-            return {
+            empty_rollup = {
                 'ai_wins': 0,
                 'vegas_wins': 0,
                 'ties': 0,
@@ -225,6 +265,8 @@ def compute_simulated_ai_vs_vegas_rollup(conn, season, week=None):
                 'data_source': 'simulated_historical',
                 'vegas_spread_source': 'games.spread_line'
             }
+            _set_cached_ai_vs_vegas_rollup(season, week, empty_rollup)
+            return empty_rollup
 
         pred = get_predictor()
         ai_wins = 0
@@ -266,7 +308,7 @@ def compute_simulated_ai_vs_vegas_rollup(conn, season, week=None):
             else:
                 ties += 1
 
-        return {
+        rollup = {
             'ai_wins': ai_wins,
             'vegas_wins': vegas_wins,
             'ties': ties,
@@ -274,6 +316,8 @@ def compute_simulated_ai_vs_vegas_rollup(conn, season, week=None):
             'data_source': 'simulated_historical',
             'vegas_spread_source': 'games.spread_line'
         }
+        _set_cached_ai_vs_vegas_rollup(season, week, rollup)
+        return rollup
     finally:
         if cur:
             cur.close()
@@ -2028,10 +2072,19 @@ def get_performance_stats():
                 )
                 xgb_week_rows = cur.fetchall() or []
 
-        # Single-equation guard: if scored rows do not match completed-game denominator,
-        # recompute from completed games so output cannot flip between sources.
+        # Single-equation guard: only recompute from completed games when tracked
+        # coverage is materially insufficient. This avoids expensive full-season
+        # simulation when a season already has high strict tracked coverage.
         xgb_scored_for_sim = _int(xgb_summary.get('scored_games'))
-        if completed_games > 0 and xgb_scored_for_sim != completed_games:
+        xgb_scored_coverage_pct = _pct(xgb_scored_for_sim, completed_games)
+        simulation_min_coverage_pct = float(
+            os.getenv('ML_XGB_SIMULATION_MIN_COVERAGE_PCT', '50') or '50'
+        )
+        if (
+            completed_games > 0
+            and xgb_scored_for_sim != completed_games
+            and xgb_scored_coverage_pct < simulation_min_coverage_pct
+        ):
             sim_where = [
                 "season = %s",
                 "home_score IS NOT NULL",
@@ -3445,10 +3498,18 @@ def get_performance_stats():
 
         response_payload = {
             'success': True,
+            'generated_at_utc': datetime.utcnow().isoformat() + 'Z',
             'lite_mode': lite_mode,
             'season': season,
             'week': week,
             'completed_games': completed_games,
+            'source_flags': {
+                'xgb_legacy_mode': xgb_legacy_mode,
+                'xgb_simulation_mode': xgb_simulation_mode,
+                'spread_h2h_legacy_mode': spread_h2h_legacy_mode,
+                'trend_legacy_mode': trend_legacy_mode,
+                'coverage_legacy_mode': coverage_legacy_mode
+            },
             'overall': overall,
             'by_week': by_week,
             'by_week_models': by_week_models,

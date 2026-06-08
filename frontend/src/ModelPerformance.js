@@ -163,10 +163,7 @@ function ModelPerformance() {
     }
 
     try {
-      const [data, vsVegasData] = await Promise.all([
-        fetchPerformanceForSeason(requestSeason),
-        fetchSeasonVsVegasForSeason(requestSeason)
-      ]);
+      const data = await fetchPerformanceForSeason(requestSeason);
 
       if (requestSequence !== requestSequenceRef.current) {
         return;
@@ -174,11 +171,27 @@ function ModelPerformance() {
       
       if (data.success) {
         setPerformanceData(data);
-        setSeasonVsVegas(vsVegasData?.success ? vsVegasData : null);
+        setSeasonVsVegas(null);
         setLastUpdated(new Date());
         lastFetchAtRef.current = Date.now();
         setAuthRequired(false);
         setError(null);
+
+        // ATS parity can be significantly slower; update it asynchronously so
+        // core performance signals remain available immediately.
+        fetchSeasonVsVegasForSeason(requestSeason)
+          .then((vsVegasData) => {
+            if (requestSequence !== requestSequenceRef.current) {
+              return;
+            }
+            setSeasonVsVegas(vsVegasData?.success ? vsVegasData : null);
+          })
+          .catch(() => {
+            if (requestSequence !== requestSequenceRef.current) {
+              return;
+            }
+            setSeasonVsVegas(null);
+          });
       } else {
         setError(data.error || 'Failed to load performance data');
       }
@@ -266,10 +279,13 @@ function ModelPerformance() {
   const seasonTrend = performanceData?.season_trend || [];
   const integrity = performanceData?.integrity || {};
   const warnings = performanceData?.warnings || [];
+  const sourceFlags = performanceData?.source_flags || {};
+  const generatedAtUtc = performanceData?.generated_at_utc || null;
   const xgbSummary = modelBreakdown?.xgb || {};
   const eloSummary = modelBreakdown?.elo || {};
   const agreementSummary = modelBreakdown?.agreement || {};
   const vegasSummary = modelBreakdown?.vegas || {};
+  const spreadH2H = modelBreakdown?.spread_h2h || {};
   const completedGames = Number(performanceData?.completed_games || 0);
 
   const xgbGames = Number(xgbSummary?.scored_games || 0);
@@ -367,6 +383,26 @@ function ModelPerformance() {
     ? `Ties ${seasonVsVegas.ties} | Games ${seasonVsVegas.total_games}`
     : 'ATS season data unavailable';
 
+  const spreadParityDelta = hasAtsData
+    ? Math.abs(Number(spreadH2H?.total_games || 0) - Number(seasonVsVegas?.total_games || 0))
+    : null;
+  const spreadParityStatus = !hasAtsData
+    ? 'Unavailable'
+    : (spreadParityDelta === 0 ? 'Aligned' : `Mismatch (${spreadParityDelta} games)`);
+
+  const isLegacyOrSimulated = Boolean(
+    sourceFlags?.xgb_legacy_mode
+    || sourceFlags?.xgb_simulation_mode
+    || sourceFlags?.spread_h2h_legacy_mode
+  );
+
+  const sourceStatusLabel = isLegacyOrSimulated ? 'Fallback Active' : 'Tracked/Unified';
+  const sourceStatusClass = isLegacyOrSimulated ? 'warning' : 'ok';
+
+  const generatedAtLabel = generatedAtUtc
+    ? new Date(generatedAtUtc).toLocaleTimeString()
+    : 'Unavailable';
+
   return (
     <div className="performance-container">
       {/* Season Selector */}
@@ -395,6 +431,29 @@ function ModelPerformance() {
           >
             {refreshing ? 'Refreshing...' : 'Refresh Now'}
           </button>
+        </div>
+
+        <div className="trust-status-row">
+          <div className="trust-pill">
+            Source Status:
+            <span className={`trust-pill-value ${sourceStatusClass}`}>{sourceStatusLabel}</span>
+          </div>
+          <div className="trust-pill">
+            ATS Parity:
+            <span className={`trust-pill-value ${spreadParityDelta === 0 ? 'ok' : 'warning'}`}>{spreadParityStatus}</span>
+          </div>
+          <div className="trust-pill">
+            Vegas Source:
+            <span className="trust-pill-value neutral">{spreadH2H?.vegas_spread_source || 'Unavailable'}</span>
+          </div>
+          <div className="trust-pill">
+            Data Source:
+            <span className="trust-pill-value neutral">{spreadH2H?.data_source || 'Unavailable'}</span>
+          </div>
+          <div className="trust-pill">
+            Server Generated:
+            <span className="trust-pill-value neutral">{generatedAtLabel}</span>
+          </div>
         </div>
       </div>
 
@@ -816,8 +875,8 @@ function ModelPerformance() {
       {/* Last Updated */}
       <div className="last-updated">
         <span className="update-icon">🔄</span>
-        Last updated: {new Date().toLocaleTimeString()}
-        <span className="auto-refresh">• Auto-refreshes every 30 seconds</span>
+        Last updated: {lastUpdated ? lastUpdated.toLocaleTimeString() : 'Unavailable'}
+        <span className="auto-refresh">• {ENABLE_MODEL_PERF_AUTO_SYNC ? 'Auto-refreshes every 60 seconds' : 'Manual refresh only'}</span>
       </div>
     </div>
   );
