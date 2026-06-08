@@ -1,0 +1,42 @@
+{
+  "task": "TA-020",
+  "subtask": "s20_3",
+  "ratings_file": "C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\ml\\models\\elo_ratings_current.json",
+  "file_last_updated": "2026-05-05T19:13:58.076584",
+  "file_ratings_count": 32,
+  "route_last_updated": "2026-05-05T19:13:58.076584",
+  "route_ratings_count": 32,
+  "ratings_status": 200,
+  "predict_status": 200,
+  "target_season": 2023,
+  "target_week": 22,
+  "predict_source": "runtime_generation_path",
+  "predict_total_games": 1,
+  "predict_message": null,
+  "top_team_file": "SEA",
+  "top_rating_file": 1607.8,
+  "top_team_route": "SEA",
+  "top_rating_route": 1607.8,
+  "predictor_top_rating": 1607.8,
+  "prediction_sample": {
+    "game_id": "2023_22_SF_KC",
+    "home_team": "KC",
+    "away_team": "SF",
+    "home_elo": 1524.2,
+    "away_elo": 1554.0,
+    "home_rating_current": 1524.2,
+    "away_rating_current": 1554.0,
+    "predicted_winner": "KC"
+  },
+  "checks": {
+    "ratings_route_status_200": true,
+    "predict_route_status_200": true,
+    "ratings_last_updated_matches_file": true,
+    "ratings_count_32": true,
+    "top_ranking_matches_file": true,
+    "predictor_uses_current_ratings": true,
+    "predict_route_generation_path": true,
+    "predict_payload_uses_current_ratings": true
+  },
+  "all_checks_passed": true
+}
