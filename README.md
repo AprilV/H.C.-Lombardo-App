@@ -60,10 +60,11 @@ Expected output includes successful database connectivity, and API/frontend read
 
 ### Testing Before Deployment
 1. Make changes in local environment
-2. Test thoroughly with `python startup.py` (or `START-DEV.bat`)
-3. Open a pull request and review changes
-4. Merge to `master`
-5. Dashboard changes in `pmforge_dashboard/index.html` auto-publish to `gh-pages` via GitHub Actions
+2. Test thoroughly with `python startup.py` (or `START-DEV.bat`) and `python health_check.py`
+3. Commit only the intended release scope
+4. Push your current branch with `git push origin HEAD`
+5. Merge or promote into the active release branch configured in deployment tooling
+6. Dashboard changes in `pmforge_dashboard/index.html` auto-publish to `gh-pages` via GitHub Actions
 
 ## Core Files
 
@@ -107,9 +108,9 @@ PostgreSQL on EC2 localhost:
 
 ## Important Notes
 
-- **No separate production/test environments** - This IS the test environment
+- **Local validation is mandatory before any push**
 - **Production is live** on AWS Amplify + EC2
-- **Always test locally before pushing to GitHub**
+- **Do not assume deployment branch names** - verify current frontend release branch in Amplify before release pushes
 - **Read AI reference docs before making changes**
 
 ## Support

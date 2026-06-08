@@ -291,12 +291,12 @@ DB_PORT=5432
 - **App Name**: H.C.-Lombardo-App
 - **Region**: us-east-1 (same as EC2)
 - **Repository**: https://github.com/AprilV/H.C.-Lombardo-App
-- **Branch**: master (auto-deploy enabled)
+- **Release Branch**: Verify active branch in Amplify before each release push (do not assume)
 - **Build Instance**: Standard (8 GB RAM)
 
 ### URLs
-- **Amplify Default**: https://master.d2tamnlcbzo0d5.amplifyapp.com
-- **Custom Domain**: https://nfl.aprilsykes.dev (via CNAME)
+- **Amplify Default**: Branch-specific Amplify URL (verify in Amplify Console)
+- **Custom Domain**: Verify current mapped domain in Amplify Domain Management
 
 ### Build Configuration
 
@@ -335,15 +335,16 @@ backend:
 
 ### Build Process
 
-**Trigger**: Automatic on every `git push` to master branch
+**Trigger**: Depends on deployment mode for the active Amplify app
 
 **Steps:**
-1. Amplify detects new commit on GitHub
-2. Provisions build container (8 GB RAM)
-3. Runs `npm ci` to install dependencies
-4. Runs `npm run build` to create production bundle
-5. Deploys to CDN
-6. Build time: 2-3 minutes
+1. Confirm app mode in Amplify: Git-connected branch deploy vs manual artifact upload
+2. If Git-connected, push to the configured release branch
+3. Amplify provisions build container (8 GB RAM)
+4. Runs `npm ci` to install dependencies
+5. Runs `npm run build` to create production bundle
+6. Deploys to CDN
+7. Build time: 2-3 minutes
 
 **Build Logs**: Available in Amplify Console → App → Build history
 
@@ -567,9 +568,16 @@ python api_server.py  # http://localhost:5000
 
 #### 3. Commit to Git
 ```bash
-git add .
+git status
+git add -A
 git commit -m "Bundle release: TA-XXX, TA-YYY, TA-ZZZ"
-git push origin master
+git push origin HEAD
+```
+
+If your active Amplify release branch is different from your current local branch, push explicitly:
+
+```bash
+git push origin HEAD:<amplify-release-branch>
 ```
 
 Bundle policy:
@@ -580,10 +588,10 @@ Bundle policy:
 #### 4. Controlled Deployments (Bundle Release)
 
 **Frontend (AWS Amplify):**
-- Detects push automatically
-- Starts build within 30 seconds
-- Completes in 2-3 minutes
-- Live at https://nfl.aprilsykes.dev
+- Verify deployment mode first (Git-connected or manual artifact)
+- For Git-connected mode, push to the configured release branch
+- For manual mode, upload a zipped `frontend/build` artifact from Amplify Console
+- Confirm deployment record includes commit hash when Git-connected
 
 **Backend (AWS EC2):**
 - Manual pull and restart required
@@ -612,11 +620,12 @@ ssh -i ~/.ssh/hc-lombardo-key.pem ubuntu@34.198.25.249 \
 - [ ] Review git diff
 
 **After Pushing:**
+- [ ] Confirm Amplify deployment mode and target release branch
 - [ ] Monitor Amplify build logs (if frontend changes)
 - [ ] SSH to EC2 and restart API (if backend changes)
-- [ ] Test live site: https://nfl.aprilsykes.dev
+- [ ] Test live site on current Amplify URL/domain
 - [ ] Check browser console for errors
-- [ ] Verify API responses: https://api.aprilsykes.dev/health
+- [ ] Verify API responses on current API host `/health`
 
 ---
 
@@ -655,7 +664,7 @@ No 'Access-Control-Allow-Origin' header is present
 
 **Solution:**
 1. Add mapping in `teamLogoMap` (Frontend components)
-2. Push to GitHub (Amplify auto-deploys)
+2. Push to the active release branch or upload a manual build artifact (per Amplify mode)
 
 ### Issue 4: Database Connection Failed
 
@@ -787,11 +796,14 @@ ssh -i ~/.ssh/hc-lombardo-key.pem ubuntu@34.198.25.249 "tail -50 ~/H.C.-Lombardo
 ```bash
 # From local machine
 cd "c:\IS330\H.C Lombardo App"
-git add .
+git add -A
 git commit -m "Your changes"
-git push
+git push origin HEAD
 
-# Wait 2-3 minutes for Amplify build
+# If needed, push to the configured release branch:
+# git push origin HEAD:<amplify-release-branch>
+
+# Wait 2-3 minutes for Amplify build (Git-connected mode)
 # Then restart EC2 API (command above)
 ```
 

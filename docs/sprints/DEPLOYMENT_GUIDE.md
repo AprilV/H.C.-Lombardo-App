@@ -65,9 +65,11 @@ Once connected to GitHub:
 ```bash
 git add .
 git commit -m "Update feature"
-git push origin master
+git push origin HEAD
 # Vercel automatically deploys in ~2 minutes
 ```
+
+Use the repository branch configured as the production branch in Vercel.
 
 ---
 

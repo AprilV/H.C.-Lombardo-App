@@ -24,8 +24,8 @@ This document explains the complete network topology of the HC Lombardo App in b
 │  Current live frontend host (verify current)│
 │                                             │
 │  • React application (JavaScript)           │
-│  • Source: GitHub master branch             │
-│  • Auto-deploys on master push              │
+│  • Source: Active GitHub release branch     │
+│  • Deploy mode: Git-connected or artifact   │
 │  • Serves HTML/CSS/JS to browser            │
 └──────────┬──────────────────────────────────┘
            │ HTTP API calls
@@ -38,8 +38,8 @@ This document explains the complete network topology of the HC Lombardo App in b
 │  • api_server.py (main Flask app)           │
 │  • api_routes_hcl.py (team/game data)       │
 │  • api_routes_ml.py (predictions)           │
-│  • Source: GitHub master branch             │
-│  • Manual deployment via SSH                │
+│  • Source: Approved release branch          │
+│  • Manual deployment via SSH/SSM            │
 │  • Service: systemd (hc-lombardo.service)   │
 │  • 2 Gunicorn workers, 120s timeout         │
 └──────────┬──────────────────────────────────┘
@@ -60,7 +60,7 @@ This document explains the complete network topology of the HC Lombardo App in b
 - API: Verify current live API host in deployment docs
 - Database: localhost:5432 (on EC2)
 
-**Production Git Branch:** `master`
+**Production Git Branch:** Verify active release branch before every push
 
 ---
 
@@ -111,7 +111,7 @@ This document explains the complete network topology of the HC Lombardo App in b
 - API: http://127.0.0.1:5000
 - Database: localhost:5432 (on test EC2)
 
-**Test Git Branch:** `test`
+**Test Git Branch:** Optional, only if a dedicated test branch flow is currently active
 
 ---
 
@@ -121,14 +121,14 @@ This document explains the complete network topology of the HC Lombardo App in b
 |-----------|-----------|------|
 | **Frontend Hosting** | AWS Amplify | Developer's PC (npm start) |
 | **Frontend URL** | Current live host (verify) | http://localhost:3000 |
-| **Frontend Source** | GitHub master | Local filesystem (c:\ReactGitEC2\...\frontend) |
-| **Frontend Deployment** | Auto (Amplify watches master) | Manual (npm start) |
+| **Frontend Source** | GitHub active release branch | Local filesystem (c:\ReactGitEC2\...\frontend) |
+| **Frontend Deployment** | Git-connected branch deploy or manual artifact upload | Manual (npm start) |
 | **API Server Host** | Current production host (verify) | 127.0.0.1 |
-| **API Source** | GitHub master | GitHub test branch |
-| **API Deployment** | Manual SSH | bash deploy_to_test.sh |
+| **API Source** | GitHub approved release branch | Local workspace or optional test branch |
+| **API Deployment** | Manual SSH/SSM + service restart | Local run or optional deploy script |
 | **Service Name** | hc-lombardo.service | hc-lombardo-test.service |
 | **Database** | Live production data | Clone of production (snapshot) |
-| **Git Branch** | master | test |
+| **Git Branch** | Release branch (verify) | Working branch (verify) |
 
 ---
 
@@ -143,7 +143,7 @@ The React code running on your PC during testing is **THE EXACT SAME CODE** that
 ### 2. API Code is IDENTICAL
 
 The Python code on test EC2 is **THE EXACT SAME CODE** as production EC2. The only differences are:
-- **Git branch:** master (production) vs test (test)
+- **Git branch:** active release branch (production) vs optional validation branch (test)
 - **IP address:** Different EC2 instances
 - **Database:** Live data (production) vs snapshot (test)
 
@@ -156,9 +156,9 @@ The test database is **NOT live-synced** with production. It's a one-time clone 
 
 ### 4. Deployment Independence
 
-- **Frontend:** AWS Amplify auto-deploys when you push to master
-- **Backend Production:** Manual SSH deployment (git pull + systemctl restart)
-- **Backend Test:** bash deploy_to_test.sh script (git pull test + systemctl restart)
+- **Frontend:** Amplify deployment mode must be checked before push (Git-connected vs manual artifact)
+- **Backend Production:** Manual runtime update (pull approved branch + systemctl restart)
+- **Backend Test:** Optional and environment-dependent; do not assume test EC2 is available
 
 ---
 
@@ -209,30 +209,33 @@ React app displays data in browser
 ### Making Backend Changes (Python API)
 
 1. **Edit code on PC:** Modify api_routes_hcl.py or other Python files
-2. **Push to test branch:**
+2. **Validate locally before pushing:**
    ```powershell
-   git checkout test
-   git add .
+  python startup.py
+  python health_check.py
+  ./scripts/maintenance/verify_backend_core_chain.ps1
+  ```
+3. **Commit and push your working branch:**
+  ```powershell
+  git status
+  git add -A
    git commit -m "Fix: description"
-   git push origin test
+  git push origin HEAD
    ```
-3. **Deploy to test EC2:**
+4. **Promote to release branch and push:**
    ```powershell
-   bash deploy_to_test.sh
+  git push origin HEAD:<release-branch>
    ```
-4. **Run frontend locally:**
+5. **Run frontend locally:**
    ```powershell
    cd frontend
   $env:REACT_APP_API_URL="http://127.0.0.1:5000"
    npm start
    ```
-5. **Test in browser:** http://localhost:3000
-6. **If works, deploy to production:**
+6. **Test in browser:** http://localhost:3000
+7. **Deploy backend runtime (SSH/SSM) and restart service:**
    ```powershell
-   git checkout master
-   git merge test
-   git push origin master
-   ssh -i ~/.ssh/hc-lombardo-key.pem ubuntu@34.198.25.249 "cd /home/ubuntu/H.C.-Lombardo-App && git pull && sudo systemctl restart hc-lombardo.service"
+  ssh -i ~/.ssh/hc-lombardo-key.pem ubuntu@<current-ec2-host> "cd /home/ec2-user/H.C.-Lombardo-App || cd /home/ubuntu/H.C.-Lombardo-App; git fetch origin; git checkout <release-branch>; git pull --ff-only origin <release-branch>; sudo systemctl restart hc-lombardo.service"
    ```
 
 ### Making Frontend Changes (React UI)
@@ -246,11 +249,12 @@ React app displays data in browser
    ```
 3. **If works, deploy to production:**
    ```powershell
-   git checkout master
-   git add .
+  git status
+  git add -A
    git commit -m "UI: description"
-   git push origin master
-   # AWS Amplify auto-deploys (wait 2-3 minutes)
+  git push origin HEAD
+  # If needed: git push origin HEAD:<release-branch>
+  # Amplify deploys via configured mode (wait 2-3 minutes if Git-connected)
    ```
 
 **Note:** Frontend changes don't need test EC2 - you can test directly on localhost:3000 calling production API.

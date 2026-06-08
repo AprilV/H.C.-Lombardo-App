@@ -154,8 +154,10 @@ Mandatory rollover quality gate:
 ```bash
 git add pmforge_dashboard/index.html pmforge_dashboard/version.json
 git commit -m "Dashboard: description of changes"
-git push origin master
+git push origin HEAD
 ```
+
+Push from the approved dashboard source branch (currently `master` unless governance changes).
 
 `gh-pages` is published by workflow: `.github/workflows/dashboard-pages-deploy.yml`
 

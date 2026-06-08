@@ -67,8 +67,10 @@ Use manual edits only for exceptional recovery scenarios.
 ```
 git add pmforge_dashboard/index.html pmforge_dashboard/version.json
 git commit -m "TA-00X [section name] done"
-git push origin master
+git push origin HEAD
 ```
+
+Run this from the approved dashboard source branch (currently `master` unless governance changes).
 
 `gh-pages` deploy is automated by workflow: `.github/workflows/dashboard-pages-deploy.yml`
 

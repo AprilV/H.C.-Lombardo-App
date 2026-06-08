@@ -2,8 +2,9 @@
 
 ## Overview
 
-**Production EC2:** 34.198.25.249  
-**Test EC2:** 100.48.43.144
+Current runtime hosts and branch mappings must be verified before deployment:
+- Check runtime status in `docs/deployment/AWS_ACCOUNT_RECOVERY_STATUS.md`
+- Check active frontend release branch in AWS Amplify console
 
 Test environment is an EXACT MIRROR of production:
 - Same Ubuntu 24.04 LTS
@@ -23,7 +24,7 @@ bash setup_test_environment.sh
 This will:
 1. Install all required software on test EC2
 2. Clone GitHub repo
-3. Create `test` branch
+3. Optionally set up an isolated validation branch
 4. Clone production database to test
 5. Install Python dependencies
 6. Create and start systemd service
@@ -39,10 +40,16 @@ Edit code on your PC as usual.
 ### 2. Push to Test Branch
 
 ```bash
-git checkout test
-git add .
+git status
+git add -A
 git commit -m "Your change description"
-git push origin test
+git push origin HEAD
+```
+
+If your validation branch is different from your local branch:
+
+```bash
+git push origin HEAD:<validation-branch>
 ```
 
 ### 3. Deploy to Test Environment
@@ -53,9 +60,11 @@ bash deploy_to_test.sh
 
 This script:
 - SSHs to test EC2
-- Pulls latest `test` branch
+- Pulls the configured validation branch
 - Restarts the service
 - Shows status and health check
+
+If no test EC2 is active, validate locally with `python startup.py` and `python health_check.py`.
 
 ### 4. Verify Changes Work
 
@@ -74,13 +83,11 @@ curl http://100.48.43.144:5000/api/predictions/combined/2025/16
 ### 5. If Everything Works → Deploy to Production
 
 ```bash
-# Merge test into master
-git checkout master
-git merge test
-git push origin master
+# Push validated code to active production release branch
+git push origin HEAD:<release-branch>
 
 # Deploy to production
-ssh -i ~/.ssh/hc-lombardo-key.pem ubuntu@34.198.25.249 "cd /home/ubuntu/H.C.-Lombardo-App && git pull origin master && sudo systemctl restart hc-lombardo.service"
+ssh -i ~/.ssh/hc-lombardo-key.pem ubuntu@<production-ec2-host> "cd /home/ec2-user/H.C.-Lombardo-App || cd /home/ubuntu/H.C.-Lombardo-App; git fetch origin; git checkout <release-branch>; git pull --ff-only origin <release-branch>; sudo systemctl restart hc-lombardo.service"
 ```
 
 ## Common Commands
@@ -89,12 +96,12 @@ ssh -i ~/.ssh/hc-lombardo-key.pem ubuntu@34.198.25.249 "cd /home/ubuntu/H.C.-Lom
 
 **Test:**
 ```bash
-ssh -i ~/.ssh/hc-lombardo-key.pem ubuntu@100.48.43.144
+ssh -i ~/.ssh/hc-lombardo-key.pem ubuntu@<test-ec2-host>
 ```
 
 **Production:**
 ```bash
-ssh -i ~/.ssh/hc-lombardo-key.pem ubuntu@34.198.25.249
+ssh -i ~/.ssh/hc-lombardo-key.pem ubuntu@<production-ec2-host>
 ```
 
 ### Service Management
@@ -102,41 +109,41 @@ ssh -i ~/.ssh/hc-lombardo-key.pem ubuntu@34.198.25.249
 **Check status:**
 ```bash
 # Test
-ssh -i ~/.ssh/hc-lombardo-key.pem ubuntu@100.48.43.144 "sudo systemctl status hc-lombardo-test.service"
+ssh -i ~/.ssh/hc-lombardo-key.pem ubuntu@<test-ec2-host> "sudo systemctl status hc-lombardo-test.service"
 
 # Production
-ssh -i ~/.ssh/hc-lombardo-key.pem ubuntu@34.198.25.249 "sudo systemctl status hc-lombardo.service"
+ssh -i ~/.ssh/hc-lombardo-key.pem ubuntu@<production-ec2-host> "sudo systemctl status hc-lombardo.service"
 ```
 
 **View logs:**
 ```bash
 # Test
-ssh -i ~/.ssh/hc-lombardo-key.pem ubuntu@100.48.43.144 "sudo journalctl -u hc-lombardo-test.service -f"
+ssh -i ~/.ssh/hc-lombardo-key.pem ubuntu@<test-ec2-host> "sudo journalctl -u hc-lombardo-test.service -f"
 
 # Production
-ssh -i ~/.ssh/hc-lombardo-key.pem ubuntu@34.198.25.249 "sudo journalctl -u hc-lombardo.service -f"
+ssh -i ~/.ssh/hc-lombardo-key.pem ubuntu@<production-ec2-host> "sudo journalctl -u hc-lombardo.service -f"
 ```
 
 **Restart:**
 ```bash
 # Test
-ssh -i ~/.ssh/hc-lombardo-key.pem ubuntu@100.48.43.144 "sudo systemctl restart hc-lombardo-test.service"
+ssh -i ~/.ssh/hc-lombardo-key.pem ubuntu@<test-ec2-host> "sudo systemctl restart hc-lombardo-test.service"
 
 # Production
-ssh -i ~/.ssh/hc-lombardo-key.pem ubuntu@34.198.25.249 "sudo systemctl restart hc-lombardo.service"
+ssh -i ~/.ssh/hc-lombardo-key.pem ubuntu@<production-ec2-host> "sudo systemctl restart hc-lombardo.service"
 ```
 
 ### Database Access
 
 **Test:**
 ```bash
-ssh -i ~/.ssh/hc-lombardo-key.pem ubuntu@100.48.43.144
+ssh -i ~/.ssh/hc-lombardo-key.pem ubuntu@<test-ec2-host>
 PGPASSWORD=$DB_PASSWORD psql -U nfl_user -d nfl_analytics -h localhost
 ```
 
 **Production:**
 ```bash
-ssh -i ~/.ssh/hc-lombardo-key.pem ubuntu@34.198.25.249
+ssh -i ~/.ssh/hc-lombardo-key.pem ubuntu@<production-ec2-host>
 PGPASSWORD=$DB_PASSWORD psql -U nfl_user -d nfl_analytics -h localhost
 ```
 
@@ -146,27 +153,27 @@ PGPASSWORD=$DB_PASSWORD psql -U nfl_user -d nfl_analytics -h localhost
 
 Check logs:
 ```bash
-ssh -i ~/.ssh/hc-lombardo-key.pem ubuntu@100.48.43.144 "sudo journalctl -u hc-lombardo-test.service -n 50"
+ssh -i ~/.ssh/hc-lombardo-key.pem ubuntu@<test-ec2-host> "sudo journalctl -u hc-lombardo-test.service -n 50"
 ```
 
 ### Database connection issues
 
 Verify PostgreSQL is running:
 ```bash
-ssh -i ~/.ssh/hc-lombardo-key.pem ubuntu@100.48.43.144 "sudo systemctl status postgresql"
+ssh -i ~/.ssh/hc-lombardo-key.pem ubuntu@<test-ec2-host> "sudo systemctl status postgresql"
 ```
 
 ### Python dependency issues
 
 Reinstall:
 ```bash
-ssh -i ~/.ssh/hc-lombardo-key.pem ubuntu@100.48.43.144 "cd /home/ubuntu/H.C.-Lombardo-App && source venv/bin/activate && pip install -r requirements.txt"
+ssh -i ~/.ssh/hc-lombardo-key.pem ubuntu@<test-ec2-host> "cd /home/ubuntu/H.C.-Lombardo-App && source venv/bin/activate && pip install -r requirements.txt"
 ```
 
 ## Important Notes
 
-- Test and Production run on SEPARATE EC2 instances
-- Test database is a CLONE of production (not live-synced)
-- To refresh test database with latest production data, re-run step 6 of setup script
-- Always test changes on Test environment before deploying to Production
-- Both environments use the same DB user and require DB_PASSWORD from environment
+- Test and production may run on different EC2 hosts; verify active hosts before deployment
+- Test database is a clone of production (not live-synced)
+- To refresh test database with latest production data, re-run setup clone steps
+- Always validate locally before any release push
+- Do not assume `master`, `test`, or `staging` is the active release branch without checking deployment config
