@@ -7,6 +7,11 @@ import { getDefaultSeason } from './utils/season';
 import { getEspnTeamLogoUrl } from './utils/teamLogos';
 
 const API_URL = process.env.REACT_APP_API_URL ?? '';
+const FALLBACK_CONFERENCE_LOGO_URL = 'https://a.espncdn.com/i/teamlogos/leagues/500/nfl.png';
+const CONFERENCE_LOGO_URLS = {
+  AFC: '/images/afc.png',
+  NFC: '/images/nfc.png',
+};
 
 // NFL Divisions
 const NFL_STRUCTURE = {
@@ -22,6 +27,23 @@ const NFL_STRUCTURE = {
     'NFC South': ['ATL', 'CAR', 'NO', 'TB'],
     'NFC West': ['ARI', 'LAR', 'SF', 'SEA']
   }
+};
+
+const getConferenceClassName = (conference) => {
+  if (!conference || typeof conference !== 'string') {
+    return 'unknown';
+  }
+
+  return conference.trim().toLowerCase();
+};
+
+const getConferenceLogoUrl = (conference) => {
+  if (!conference || typeof conference !== 'string') {
+    return FALLBACK_CONFERENCE_LOGO_URL;
+  }
+
+  const normalized = conference.trim().toUpperCase();
+  return CONFERENCE_LOGO_URLS[normalized] || FALLBACK_CONFERENCE_LOGO_URL;
 };
 
 function Homepage() {
@@ -237,13 +259,22 @@ function Homepage() {
         <p className="season-subtitle">Click any team to view detailed statistics and analysis</p>
       </div>
 
-      {Object.entries(NFL_STRUCTURE).map(([conference, divisions]) => (
-        <div key={conference} className={`conference-section ${conference.toLowerCase()}-section`}>
-          <div className={`conference-header ${conference.toLowerCase()}`}>
+      {Object.entries(NFL_STRUCTURE).map(([conference, divisions]) => {
+        const conferenceClassName = getConferenceClassName(conference);
+        const conferenceLogoUrl = getConferenceLogoUrl(conference);
+
+        return (
+        <div key={conference} className={`conference-section ${conferenceClassName}-section`}>
+          <div className={`conference-header ${conferenceClassName}`}>
             <img 
-              src={`/images/${conference.toLowerCase()}.png`}
+              src={conferenceLogoUrl}
               alt={`${conference} Logo`}
               className="conference-logo-image"
+              onError={(event) => {
+                if (event.currentTarget.src !== FALLBACK_CONFERENCE_LOGO_URL) {
+                  event.currentTarget.src = FALLBACK_CONFERENCE_LOGO_URL;
+                }
+              }}
             />
             <h2 className="conference-title">{conference}</h2>
           </div>
@@ -282,7 +313,7 @@ function Homepage() {
             })}
           </div>
         </div>
-      ))}
+      )})}
 
       <div className="homepage-footer">
         <button onClick={fetchTeams} className="refresh-btn-home">
