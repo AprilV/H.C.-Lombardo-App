@@ -1,0 +1,377 @@
+{
+  "generated_at_utc": "2026-06-08T01:31:57.799702+00:00",
+  "schema": "hcl",
+  "cohort": "pregame",
+  "seasons": [
+    2021,
+    2022,
+    2023,
+    2024,
+    2025
+  ],
+  "run_dir": "docs/sprints/ta077_multi_season_eval/ta077_run_20260608_013152",
+  "gate_thresholds": {
+    "max_leakage_pct": 5.0,
+    "max_line_lock_pct": 95.0,
+    "min_total_coverage_pct": 5.0
+  },
+  "aggregate": {
+    "season_count": 5,
+    "weighted_winner_accuracy_pct": 39.09,
+    "weighted_spread_accuracy_pct": 50.67,
+    "weighted_total_accuracy_pct": 52.02,
+    "average_margin_mae_points": 14.074,
+    "average_total_mae_points": 11.406,
+    "average_total_coverage_pct": 94.1,
+    "average_line_lock_pct": 2.5,
+    "average_predicted_after_game_date_pct": 0.0,
+    "ai_vs_vegas_total_games": 1309,
+    "ai_vs_vegas_ai_wins": 193,
+    "ai_vs_vegas_vegas_wins": 477,
+    "ai_vs_vegas_ai_win_pct": 14.74,
+    "ai_vs_vegas_vegas_win_pct": 36.44,
+    "seasons_passing_all_gates": 5,
+    "seasons_failing_any_gate": 0
+  },
+  "by_season": [
+    {
+      "season": 2021,
+      "row_count": 272,
+      "winner_accuracy_pct": 39.34,
+      "spread_accuracy_pct": 50.37,
+      "total_accuracy_pct": 53.23,
+      "margin_mae_points": 15.472,
+      "total_mae_points": 11.926,
+      "winner_coverage_pct": 100.0,
+      "spread_coverage_pct": 98.53,
+      "total_coverage_pct": 96.69,
+      "cohort_mode": "pregame",
+      "predicted_total_equals_vegas_total_pct": 2.21,
+      "total_pick_evaluable_rows": 263,
+      "predicted_after_kickoff_pct": null,
+      "predicted_after_game_date_pct": 0.0,
+      "benchmark_pregame_rows": 272,
+      "finding_ids": "F4",
+      "ai_vs_vegas_total_games": 272,
+      "ai_vs_vegas_ai_wins": 52,
+      "ai_vs_vegas_vegas_wins": 100,
+      "ai_vs_vegas_ties": 120,
+      "ai_vs_vegas_ai_win_pct": 19.12,
+      "ai_vs_vegas_vegas_win_pct": 36.76,
+      "ai_vs_vegas_tie_pct": 44.12,
+      "leakage_pass": true,
+      "line_lock_pass": true,
+      "total_coverage_pass": true,
+      "overall_pass": true,
+      "winner_correct_games": 107,
+      "winner_evaluable_games": 272,
+      "spread_correct_games": 135,
+      "spread_evaluable_games": 268,
+      "total_correct_games": 140,
+      "total_evaluable_games": 263
+    },
+    {
+      "season": 2022,
+      "row_count": 271,
+      "winner_accuracy_pct": 34.69,
+      "spread_accuracy_pct": 54.79,
+      "total_accuracy_pct": 54.86,
+      "margin_mae_points": 12.807,
+      "total_mae_points": 10.989,
+      "winner_coverage_pct": 100.0,
+      "spread_coverage_pct": 96.31,
+      "total_coverage_pct": 94.83,
+      "cohort_mode": "pregame",
+      "predicted_total_equals_vegas_total_pct": 4.43,
+      "total_pick_evaluable_rows": 257,
+      "predicted_after_kickoff_pct": null,
+      "predicted_after_game_date_pct": 0.0,
+      "benchmark_pregame_rows": 271,
+      "finding_ids": "F4",
+      "ai_vs_vegas_total_games": 271,
+      "ai_vs_vegas_ai_wins": 39,
+      "ai_vs_vegas_vegas_wins": 94,
+      "ai_vs_vegas_ties": 138,
+      "ai_vs_vegas_ai_win_pct": 14.39,
+      "ai_vs_vegas_vegas_win_pct": 34.69,
+      "ai_vs_vegas_tie_pct": 50.92,
+      "leakage_pass": true,
+      "line_lock_pass": true,
+      "total_coverage_pass": true,
+      "overall_pass": true,
+      "winner_correct_games": 94,
+      "winner_evaluable_games": 271,
+      "spread_correct_games": 143,
+      "spread_evaluable_games": 261,
+      "total_correct_games": 141,
+      "total_evaluable_games": 257
+    },
+    {
+      "season": 2023,
+      "row_count": 272,
+      "winner_accuracy_pct": 41.91,
+      "spread_accuracy_pct": 48.84,
+      "total_accuracy_pct": 53.05,
+      "margin_mae_points": 14.208,
+      "total_mae_points": 10.728,
+      "winner_coverage_pct": 100.0,
+      "spread_coverage_pct": 94.85,
+      "total_coverage_pct": 96.32,
+      "cohort_mode": "pregame",
+      "predicted_total_equals_vegas_total_pct": 2.94,
+      "total_pick_evaluable_rows": 262,
+      "predicted_after_kickoff_pct": null,
+      "predicted_after_game_date_pct": 0.0,
+      "benchmark_pregame_rows": 272,
+      "finding_ids": "F4",
+      "ai_vs_vegas_total_games": 272,
+      "ai_vs_vegas_ai_wins": 40,
+      "ai_vs_vegas_vegas_wins": 97,
+      "ai_vs_vegas_ties": 135,
+      "ai_vs_vegas_ai_win_pct": 14.71,
+      "ai_vs_vegas_vegas_win_pct": 35.66,
+      "ai_vs_vegas_tie_pct": 49.63,
+      "leakage_pass": true,
+      "line_lock_pass": true,
+      "total_coverage_pass": true,
+      "overall_pass": true,
+      "winner_correct_games": 114,
+      "winner_evaluable_games": 272,
+      "spread_correct_games": 126,
+      "spread_evaluable_games": 258,
+      "total_correct_games": 139,
+      "total_evaluable_games": 262
+    },
+    {
+      "season": 2024,
+      "row_count": 272,
+      "winner_accuracy_pct": 38.24,
+      "spread_accuracy_pct": 47.01,
+      "total_accuracy_pct": 47.89,
+      "margin_mae_points": 14.081,
+      "total_mae_points": 11.044,
+      "winner_coverage_pct": 100.0,
+      "spread_coverage_pct": 98.53,
+      "total_coverage_pct": 95.96,
+      "cohort_mode": "pregame",
+      "predicted_total_equals_vegas_total_pct": 2.94,
+      "total_pick_evaluable_rows": 261,
+      "predicted_after_kickoff_pct": null,
+      "predicted_after_game_date_pct": 0.0,
+      "benchmark_pregame_rows": 272,
+      "finding_ids": "F4",
+      "ai_vs_vegas_total_games": 272,
+      "ai_vs_vegas_ai_wins": 30,
+      "ai_vs_vegas_vegas_wins": 106,
+      "ai_vs_vegas_ties": 136,
+      "ai_vs_vegas_ai_win_pct": 11.03,
+      "ai_vs_vegas_vegas_win_pct": 38.97,
+      "ai_vs_vegas_tie_pct": 50.0,
+      "leakage_pass": true,
+      "line_lock_pass": true,
+      "total_coverage_pass": true,
+      "overall_pass": true,
+      "winner_correct_games": 104,
+      "winner_evaluable_games": 272,
+      "spread_correct_games": 126,
+      "spread_evaluable_games": 268,
+      "total_correct_games": 125,
+      "total_evaluable_games": 261
+    },
+    {
+      "season": 2025,
+      "row_count": 256,
+      "winner_accuracy_pct": 41.41,
+      "spread_accuracy_pct": 52.73,
+      "total_accuracy_pct": 50.9,
+      "margin_mae_points": 13.804,
+      "total_mae_points": 12.342,
+      "winner_coverage_pct": 100.0,
+      "spread_coverage_pct": 85.94,
+      "total_coverage_pct": 86.72,
+      "cohort_mode": "pregame",
+      "predicted_total_equals_vegas_total_pct": 0.0,
+      "total_pick_evaluable_rows": 222,
+      "predicted_after_kickoff_pct": null,
+      "predicted_after_game_date_pct": 0.0,
+      "benchmark_pregame_rows": 256,
+      "finding_ids": "F4",
+      "ai_vs_vegas_total_games": 222,
+      "ai_vs_vegas_ai_wins": 32,
+      "ai_vs_vegas_vegas_wins": 80,
+      "ai_vs_vegas_ties": 110,
+      "ai_vs_vegas_ai_win_pct": 14.41,
+      "ai_vs_vegas_vegas_win_pct": 36.04,
+      "ai_vs_vegas_tie_pct": 49.55,
+      "leakage_pass": true,
+      "line_lock_pass": true,
+      "total_coverage_pass": true,
+      "overall_pass": true,
+      "winner_correct_games": 106,
+      "winner_evaluable_games": 256,
+      "spread_correct_games": 116,
+      "spread_evaluable_games": 220,
+      "total_correct_games": 113,
+      "total_evaluable_games": 222
+    }
+  ],
+  "artifacts": {
+    "2021": {
+      "s70_1_summary": "docs/sprints/ta077_multi_season_eval/ta077_run_20260608_013152/season_2021/ta070_s70_1_20260608_013152_summary.json",
+      "s70_1_combined": "docs/sprints/ta077_multi_season_eval/ta077_run_20260608_013152/season_2021/ta070_s70_1_20260608_013152_combined.csv",
+      "s70_2_summary": "docs/sprints/ta077_multi_season_eval/ta077_run_20260608_013152/season_2021/ta070_s70_2_20260608_013153_summary.json",
+      "s70_3_summary": "docs/sprints/ta077_multi_season_eval/ta077_run_20260608_013152/season_2021/ta070_s70_3_20260608_013153_summary.json",
+      "s70_4_summary": "docs/sprints/ta077_multi_season_eval/ta077_run_20260608_013152/season_2021/ta070_s70_4_20260608_013153_summary.json"
+    },
+    "2022": {
+      "s70_1_summary": "docs/sprints/ta077_multi_season_eval/ta077_run_20260608_013152/season_2022/ta070_s70_1_20260608_013153_summary.json",
+      "s70_1_combined": "docs/sprints/ta077_multi_season_eval/ta077_run_20260608_013152/season_2022/ta070_s70_1_20260608_013153_combined.csv",
+      "s70_2_summary": "docs/sprints/ta077_multi_season_eval/ta077_run_20260608_013152/season_2022/ta070_s70_2_20260608_013154_summary.json",
+      "s70_3_summary": "docs/sprints/ta077_multi_season_eval/ta077_run_20260608_013152/season_2022/ta070_s70_3_20260608_013154_summary.json",
+      "s70_4_summary": "docs/sprints/ta077_multi_season_eval/ta077_run_20260608_013152/season_2022/ta070_s70_4_20260608_013154_summary.json"
+    },
+    "2023": {
+      "s70_1_summary": "docs/sprints/ta077_multi_season_eval/ta077_run_20260608_013152/season_2023/ta070_s70_1_20260608_013154_summary.json",
+      "s70_1_combined": "docs/sprints/ta077_multi_season_eval/ta077_run_20260608_013152/season_2023/ta070_s70_1_20260608_013154_combined.csv",
+      "s70_2_summary": "docs/sprints/ta077_multi_season_eval/ta077_run_20260608_013152/season_2023/ta070_s70_2_20260608_013155_summary.json",
+      "s70_3_summary": "docs/sprints/ta077_multi_season_eval/ta077_run_20260608_013152/season_2023/ta070_s70_3_20260608_013155_summary.json",
+      "s70_4_summary": "docs/sprints/ta077_multi_season_eval/ta077_run_20260608_013152/season_2023/ta070_s70_4_20260608_013155_summary.json"
+    },
+    "2024": {
+      "s70_1_summary": "docs/sprints/ta077_multi_season_eval/ta077_run_20260608_013152/season_2024/ta070_s70_1_20260608_013156_summary.json",
+      "s70_1_combined": "docs/sprints/ta077_multi_season_eval/ta077_run_20260608_013152/season_2024/ta070_s70_1_20260608_013156_combined.csv",
+      "s70_2_summary": "docs/sprints/ta077_multi_season_eval/ta077_run_20260608_013152/season_2024/ta070_s70_2_20260608_013156_summary.json",
+      "s70_3_summary": "docs/sprints/ta077_multi_season_eval/ta077_run_20260608_013152/season_2024/ta070_s70_3_20260608_013156_summary.json",
+      "s70_4_summary": "docs/sprints/ta077_multi_season_eval/ta077_run_20260608_013152/season_2024/ta070_s70_4_20260608_013156_summary.json"
+    },
+    "2025": {
+      "s70_1_summary": "docs/sprints/ta077_multi_season_eval/ta077_run_20260608_013152/season_2025/ta070_s70_1_20260608_013157_summary.json",
+      "s70_1_combined": "docs/sprints/ta077_multi_season_eval/ta077_run_20260608_013152/season_2025/ta070_s70_1_20260608_013157_combined.csv",
+      "s70_2_summary": "docs/sprints/ta077_multi_season_eval/ta077_run_20260608_013152/season_2025/ta070_s70_2_20260608_013157_summary.json",
+      "s70_3_summary": "docs/sprints/ta077_multi_season_eval/ta077_run_20260608_013152/season_2025/ta070_s70_3_20260608_013157_summary.json",
+      "s70_4_summary": "docs/sprints/ta077_multi_season_eval/ta077_run_20260608_013152/season_2025/ta070_s70_4_20260608_013157_summary.json"
+    }
+  },
+  "execution_log": [
+    {
+      "command": "C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\.venv\\Scripts\\python.exe C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\scripts\\verification\\ta070_extract_prediction_actuals.py --schema hcl --seasons 2021 --out-dir C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2021 --cohort pregame",
+      "return_code": 0,
+      "stdout": "TA-070 s70_1 extraction complete\ndatabase=nfl_analytics\nschema=hcl\nseasons=[2021]\ncohort=pregame\nrows=272\ncombined=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2021\\ta070_s70_1_20260608_013152_combined.csv\nwinner=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2021\\ta070_s70_1_20260608_013152_winner.csv\nspread=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2021\\ta070_s70_1_20260608_013152_spread.csv\ntotal=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2021\\ta070_s70_1_20260608_013152_total.csv\nsummary=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2021\\ta070_s70_1_20260608_013152_summary.json",
+      "stderr": ""
+    },
+    {
+      "command": "C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\.venv\\Scripts\\python.exe C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\scripts\\verification\\ta070_compute_audit_metrics.py --out-dir C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2021",
+      "return_code": 0,
+      "stdout": "TA-070 s70_2 metrics complete\nsource=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2021\\ta070_s70_1_20260608_013152_combined.csv\nrows=272\nby_season=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2021\\ta070_s70_2_20260608_013153_by_season.csv\nby_week=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2021\\ta070_s70_2_20260608_013153_by_week.csv\nsummary=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2021\\ta070_s70_2_20260608_013153_summary.json",
+      "stderr": ""
+    },
+    {
+      "command": "C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\.venv\\Scripts\\python.exe C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\scripts\\verification\\ta070_root_cause_analysis.py --out-dir C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2021",
+      "return_code": 0,
+      "stdout": "TA-070 s70_3 root-cause analysis complete\nsource=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2021\\ta070_s70_1_20260608_013152_combined.csv\nseasons=[2021]\nsummary=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2021\\ta070_s70_3_20260608_013153_summary.json\nreport=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2021\\ta070_s70_3_20260608_013153_root_cause.md",
+      "stderr": ""
+    },
+    {
+      "command": "C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\.venv\\Scripts\\python.exe C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\scripts\\verification\\ta070_publish_audit_summary.py --out-dir C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2021",
+      "return_code": 0,
+      "stdout": "TA-070 s70_4 publish complete\nsummary=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2021\\ta070_s70_4_20260608_013153_summary.json\nreport=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2021\\ta070_s70_4_20260608_013153_audit_summary.md",
+      "stderr": ""
+    },
+    {
+      "command": "C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\.venv\\Scripts\\python.exe C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\scripts\\verification\\ta070_extract_prediction_actuals.py --schema hcl --seasons 2022 --out-dir C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2022 --cohort pregame",
+      "return_code": 0,
+      "stdout": "TA-070 s70_1 extraction complete\ndatabase=nfl_analytics\nschema=hcl\nseasons=[2022]\ncohort=pregame\nrows=271\ncombined=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2022\\ta070_s70_1_20260608_013153_combined.csv\nwinner=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2022\\ta070_s70_1_20260608_013153_winner.csv\nspread=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2022\\ta070_s70_1_20260608_013153_spread.csv\ntotal=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2022\\ta070_s70_1_20260608_013153_total.csv\nsummary=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2022\\ta070_s70_1_20260608_013153_summary.json",
+      "stderr": ""
+    },
+    {
+      "command": "C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\.venv\\Scripts\\python.exe C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\scripts\\verification\\ta070_compute_audit_metrics.py --out-dir C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2022",
+      "return_code": 0,
+      "stdout": "TA-070 s70_2 metrics complete\nsource=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2022\\ta070_s70_1_20260608_013153_combined.csv\nrows=271\nby_season=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2022\\ta070_s70_2_20260608_013154_by_season.csv\nby_week=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2022\\ta070_s70_2_20260608_013154_by_week.csv\nsummary=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2022\\ta070_s70_2_20260608_013154_summary.json",
+      "stderr": ""
+    },
+    {
+      "command": "C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\.venv\\Scripts\\python.exe C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\scripts\\verification\\ta070_root_cause_analysis.py --out-dir C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2022",
+      "return_code": 0,
+      "stdout": "TA-070 s70_3 root-cause analysis complete\nsource=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2022\\ta070_s70_1_20260608_013153_combined.csv\nseasons=[2022]\nsummary=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2022\\ta070_s70_3_20260608_013154_summary.json\nreport=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2022\\ta070_s70_3_20260608_013154_root_cause.md",
+      "stderr": ""
+    },
+    {
+      "command": "C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\.venv\\Scripts\\python.exe C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\scripts\\verification\\ta070_publish_audit_summary.py --out-dir C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2022",
+      "return_code": 0,
+      "stdout": "TA-070 s70_4 publish complete\nsummary=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2022\\ta070_s70_4_20260608_013154_summary.json\nreport=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2022\\ta070_s70_4_20260608_013154_audit_summary.md",
+      "stderr": ""
+    },
+    {
+      "command": "C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\.venv\\Scripts\\python.exe C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\scripts\\verification\\ta070_extract_prediction_actuals.py --schema hcl --seasons 2023 --out-dir C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2023 --cohort pregame",
+      "return_code": 0,
+      "stdout": "TA-070 s70_1 extraction complete\ndatabase=nfl_analytics\nschema=hcl\nseasons=[2023]\ncohort=pregame\nrows=272\ncombined=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2023\\ta070_s70_1_20260608_013154_combined.csv\nwinner=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2023\\ta070_s70_1_20260608_013154_winner.csv\nspread=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2023\\ta070_s70_1_20260608_013154_spread.csv\ntotal=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2023\\ta070_s70_1_20260608_013154_total.csv\nsummary=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2023\\ta070_s70_1_20260608_013154_summary.json",
+      "stderr": ""
+    },
+    {
+      "command": "C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\.venv\\Scripts\\python.exe C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\scripts\\verification\\ta070_compute_audit_metrics.py --out-dir C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2023",
+      "return_code": 0,
+      "stdout": "TA-070 s70_2 metrics complete\nsource=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2023\\ta070_s70_1_20260608_013154_combined.csv\nrows=272\nby_season=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2023\\ta070_s70_2_20260608_013155_by_season.csv\nby_week=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2023\\ta070_s70_2_20260608_013155_by_week.csv\nsummary=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2023\\ta070_s70_2_20260608_013155_summary.json",
+      "stderr": ""
+    },
+    {
+      "command": "C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\.venv\\Scripts\\python.exe C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\scripts\\verification\\ta070_root_cause_analysis.py --out-dir C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2023",
+      "return_code": 0,
+      "stdout": "TA-070 s70_3 root-cause analysis complete\nsource=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2023\\ta070_s70_1_20260608_013154_combined.csv\nseasons=[2023]\nsummary=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2023\\ta070_s70_3_20260608_013155_summary.json\nreport=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2023\\ta070_s70_3_20260608_013155_root_cause.md",
+      "stderr": ""
+    },
+    {
+      "command": "C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\.venv\\Scripts\\python.exe C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\scripts\\verification\\ta070_publish_audit_summary.py --out-dir C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2023",
+      "return_code": 0,
+      "stdout": "TA-070 s70_4 publish complete\nsummary=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2023\\ta070_s70_4_20260608_013155_summary.json\nreport=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2023\\ta070_s70_4_20260608_013155_audit_summary.md",
+      "stderr": ""
+    },
+    {
+      "command": "C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\.venv\\Scripts\\python.exe C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\scripts\\verification\\ta070_extract_prediction_actuals.py --schema hcl --seasons 2024 --out-dir C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2024 --cohort pregame",
+      "return_code": 0,
+      "stdout": "TA-070 s70_1 extraction complete\ndatabase=nfl_analytics\nschema=hcl\nseasons=[2024]\ncohort=pregame\nrows=272\ncombined=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2024\\ta070_s70_1_20260608_013156_combined.csv\nwinner=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2024\\ta070_s70_1_20260608_013156_winner.csv\nspread=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2024\\ta070_s70_1_20260608_013156_spread.csv\ntotal=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2024\\ta070_s70_1_20260608_013156_total.csv\nsummary=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2024\\ta070_s70_1_20260608_013156_summary.json",
+      "stderr": ""
+    },
+    {
+      "command": "C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\.venv\\Scripts\\python.exe C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\scripts\\verification\\ta070_compute_audit_metrics.py --out-dir C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2024",
+      "return_code": 0,
+      "stdout": "TA-070 s70_2 metrics complete\nsource=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2024\\ta070_s70_1_20260608_013156_combined.csv\nrows=272\nby_season=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2024\\ta070_s70_2_20260608_013156_by_season.csv\nby_week=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2024\\ta070_s70_2_20260608_013156_by_week.csv\nsummary=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2024\\ta070_s70_2_20260608_013156_summary.json",
+      "stderr": ""
+    },
+    {
+      "command": "C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\.venv\\Scripts\\python.exe C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\scripts\\verification\\ta070_root_cause_analysis.py --out-dir C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2024",
+      "return_code": 0,
+      "stdout": "TA-070 s70_3 root-cause analysis complete\nsource=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2024\\ta070_s70_1_20260608_013156_combined.csv\nseasons=[2024]\nsummary=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2024\\ta070_s70_3_20260608_013156_summary.json\nreport=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2024\\ta070_s70_3_20260608_013156_root_cause.md",
+      "stderr": ""
+    },
+    {
+      "command": "C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\.venv\\Scripts\\python.exe C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\scripts\\verification\\ta070_publish_audit_summary.py --out-dir C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2024",
+      "return_code": 0,
+      "stdout": "TA-070 s70_4 publish complete\nsummary=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2024\\ta070_s70_4_20260608_013156_summary.json\nreport=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2024\\ta070_s70_4_20260608_013156_audit_summary.md",
+      "stderr": ""
+    },
+    {
+      "command": "C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\.venv\\Scripts\\python.exe C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\scripts\\verification\\ta070_extract_prediction_actuals.py --schema hcl --seasons 2025 --out-dir C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2025 --cohort pregame",
+      "return_code": 0,
+      "stdout": "TA-070 s70_1 extraction complete\ndatabase=nfl_analytics\nschema=hcl\nseasons=[2025]\ncohort=pregame\nrows=256\ncombined=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2025\\ta070_s70_1_20260608_013157_combined.csv\nwinner=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2025\\ta070_s70_1_20260608_013157_winner.csv\nspread=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2025\\ta070_s70_1_20260608_013157_spread.csv\ntotal=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2025\\ta070_s70_1_20260608_013157_total.csv\nsummary=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2025\\ta070_s70_1_20260608_013157_summary.json",
+      "stderr": ""
+    },
+    {
+      "command": "C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\.venv\\Scripts\\python.exe C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\scripts\\verification\\ta070_compute_audit_metrics.py --out-dir C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2025",
+      "return_code": 0,
+      "stdout": "TA-070 s70_2 metrics complete\nsource=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2025\\ta070_s70_1_20260608_013157_combined.csv\nrows=256\nby_season=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2025\\ta070_s70_2_20260608_013157_by_season.csv\nby_week=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2025\\ta070_s70_2_20260608_013157_by_week.csv\nsummary=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2025\\ta070_s70_2_20260608_013157_summary.json",
+      "stderr": ""
+    },
+    {
+      "command": "C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\.venv\\Scripts\\python.exe C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\scripts\\verification\\ta070_root_cause_analysis.py --out-dir C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2025",
+      "return_code": 0,
+      "stdout": "TA-070 s70_3 root-cause analysis complete\nsource=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2025\\ta070_s70_1_20260608_013157_combined.csv\nseasons=[2025]\nsummary=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2025\\ta070_s70_3_20260608_013157_summary.json\nreport=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2025\\ta070_s70_3_20260608_013157_root_cause.md",
+      "stderr": ""
+    },
+    {
+      "command": "C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\.venv\\Scripts\\python.exe C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\scripts\\verification\\ta070_publish_audit_summary.py --out-dir C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2025",
+      "return_code": 0,
+      "stdout": "TA-070 s70_4 publish complete\nsummary=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2025\\ta070_s70_4_20260608_013157_summary.json\nreport=C:\\ReactGitEC2\\IS330\\H.C Lombardo App\\docs\\sprints\\ta077_multi_season_eval\\ta077_run_20260608_013152\\season_2025\\ta070_s70_4_20260608_013157_audit_summary.md",
+      "stderr": ""
+    }
+  ]
+}

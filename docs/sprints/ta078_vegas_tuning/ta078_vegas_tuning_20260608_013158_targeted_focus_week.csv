@@ -1,0 +1,15 @@
+season,week,week_label,game_id,target_spread,vegas_spread,abs_vegas_spread,baseline_spread,recommended_method,recommended_spread,vegas_err,baseline_err,recommended_err,err_improvement,baseline_vs_vegas,recommended_vs_vegas
+2025,10,2025-W10,2025_10_CLE_NYJ,-7.0,1.5,1.5,-7.5268,linear,2.2902,8.5,0.5268,9.2902,-8.7634,ai_better,vegas_better
+2025,10,2025-W10,2025_10_JAX_HOU,-7.0,1.5,1.5,-7.5268,linear,2.2902,8.5,0.5268,9.2902,-8.7634,ai_better,vegas_better
+2025,10,2025-W10,2025_10_NE_TB,5.0,-2.5,2.5,5.8625,linear,-4.4687,7.5,0.8625,9.4687,-8.6062,ai_better,vegas_better
+2025,10,2025-W10,2025_10_NO_CAR,10.0,-5.5,5.5,4.2286,linear,-3.6439,15.5,5.7714,13.6439,-7.8725,ai_better,ai_better
+2025,10,2025-W10,2025_10_PHI_GB,3.0,-1.5,1.5,3.5111,linear,-3.2817,4.5,0.5111,6.2817,-5.7706,ai_better,vegas_better
+2025,10,2025-W10,2025_10_LA_SF,16.0,5.5,5.5,2.2302,linear,-2.6351,10.5,13.7698,18.6351,-4.8653,vegas_better,vegas_better
+2025,10,2025-W10,2025_10_NYG_CHI,-4.0,-4.5,4.5,-2.3037,linear,-0.3464,0.5,1.6963,3.6536,-1.9572,vegas_better,vegas_better
+2025,10,2025-W10,2025_10_DET_WAS,22.0,8.5,8.5,-1.3589,linear,-0.8233,13.5,23.3589,22.8233,0.5355,vegas_better,vegas_better
+2025,10,2025-W10,2025_10_PIT_LAC,-15.0,-3.0,3.0,1.6855,linear,-2.3601,12.0,16.6855,12.6399,4.0456,vegas_better,vegas_better
+2025,10,2025-W10,2025_10_BAL_MIN,8.0,4.5,4.5,-4.8865,linear,0.9574,3.5,12.8865,7.0426,5.8439,vegas_better,vegas_better
+2025,10,2025-W10,2025_10_LV_DEN,-3.0,-9.5,9.5,10.1247,linear,-6.6202,6.5,13.1247,3.6202,9.5044,vegas_better,ai_better
+2025,10,2025-W10,2025_10_ARI_SEA,-22.0,-7.0,7.0,5.9415,linear,-4.5086,15.0,27.9415,17.4914,10.45,vegas_better,vegas_better
+2025,10,2025-W10,2025_10_ATL_IND,-6.0,-6.5,6.5,10.4837,linear,-6.8014,0.5,16.4837,0.8014,15.6822,vegas_better,vegas_better
+2025,10,2025-W10,2025_10_BUF_MIA,-17.0,8.5,8.5,12.4168,linear,-7.7773,25.5,29.4168,9.2227,20.194,vegas_better,ai_better
