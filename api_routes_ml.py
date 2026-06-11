@@ -1870,6 +1870,9 @@ def get_performance_stats():
             season = get_latest_completed_season()
         week = request.args.get('week', type=int)
         allow_simulated_recompute = str(request.args.get('allow_simulated_recompute', 'false')).strip().lower() in {'1', 'true', 'yes', 'on'}
+        include_trend = str(request.args.get('include_trend', 'false')).strip().lower() in {'1', 'true', 'yes', 'on'}
+        include_coverage_contract = str(request.args.get('include_coverage_contract', 'false')).strip().lower() in {'1', 'true', 'yes', 'on'}
+        include_integrity = str(request.args.get('include_integrity', 'false')).strip().lower() in {'1', 'true', 'yes', 'on'}
 
         conn = psycopg2.connect(**get_predictor().db_config)
         elo_table_ready = table_exists(conn, 'hcl', 'ml_predictions_elo')
@@ -2662,9 +2665,87 @@ def get_performance_stats():
                 'model': primary_model
             })
 
+        # Fast path for UI season tab loads: return tracked DB-backed metrics only.
+        # This avoids expensive multi-season/integrity scans that can trigger gateway timeouts.
+        if (
+            week is None
+            and not include_trend
+            and not include_coverage_contract
+            and not include_integrity
+            and not allow_simulated_recompute
+        ):
+            overall = {
+                'total_games': primary_summary.get('scored_games', 0),
+                'correct_predictions': primary_summary.get('correct_predictions', 0),
+                'win_accuracy': round(_float(primary_summary.get('win_accuracy')), 2),
+                'avg_margin_error': round(_float(primary_summary.get('avg_margin_error')), 2),
+                'avg_home_score_error': None,
+                'avg_away_score_error': None,
+                'first_week': primary_summary.get('first_week'),
+                'latest_week': primary_summary.get('latest_week'),
+                'model': primary_model
+            }
+
+            cur.close()
+            conn.close()
+
+            return jsonify({
+                'success': True,
+                'season': season,
+                'week': week,
+                'completed_games': completed_games,
+                'overall': overall,
+                'by_week': by_week,
+                'by_week_models': by_week_models,
+                'model_breakdown': model_breakdown,
+                'season_trend': [],
+                'coverage_contract': {
+                    'start_season': None,
+                    'end_season': None,
+                    'seasons': [],
+                    'totals': {
+                        'completed_games': 0,
+                        'xgb_predicted_games': 0,
+                        'xgb_scored_games': 0,
+                        'elo_predicted_games': 0,
+                        'elo_scored_games': 0,
+                        'both_models_games': 0,
+                        'xgb_predicted_coverage_pct': 0.0,
+                        'xgb_scored_coverage_pct': 0.0,
+                        'elo_predicted_coverage_pct': 0.0,
+                        'elo_scored_coverage_pct': 0.0,
+                        'both_models_coverage_pct': 0.0
+                    }
+                },
+                'elo_table_ready': elo_table_ready,
+                'integrity': {
+                    'leakage': {
+                        'rows_checked': 0,
+                        'predicted_after_game_date_count': 0,
+                        'predicted_after_game_date_pct': 0.0,
+                        'threshold_pct': 5.0
+                    },
+                    'margin_sign': {
+                        'rows_checked': 0,
+                        'inconsistent_count': 0,
+                        'inconsistent_pct': 0.0,
+                        'threshold_pct': 0.0
+                    },
+                    'totals_line_lock': {
+                        'rows_checked': 0,
+                        'line_locked_count': 0,
+                        'line_locked_pct': 0.0,
+                        'threshold_pct': 95.0
+                    }
+                },
+                'warnings': [],
+                'generated_at': datetime.now().isoformat(),
+                'perf_version': 'v4'
+            })
+
         trend_seasons = []
         season_trend = []
-        if week is None:
+        if week is None and include_trend:
             cur.execute(
                 """
                 SELECT DISTINCT season
@@ -3094,7 +3175,7 @@ def get_performance_stats():
             }
         }
 
-        if week is None:
+        if week is None and include_coverage_contract:
             coverage_start = request.args.get('coverage_start_season', type=int)
             coverage_end = request.args.get('coverage_end_season', type=int)
 
@@ -3347,123 +3428,124 @@ def get_performance_stats():
                 "Coverage note: coverage contract includes legacy fallback scoring for one or more seasons."
             )
 
-        integrity_where = ["mp.season = %s"]
-        integrity_params = [season]
-        if week is not None:
-            integrity_where.append("mp.week = %s")
-            integrity_params.append(week)
+        if include_integrity:
+            integrity_where = ["mp.season = %s"]
+            integrity_params = [season]
+            if week is not None:
+                integrity_where.append("mp.week = %s")
+                integrity_params.append(week)
 
-        cur.execute(
-            f"""
-            SELECT
-                COUNT(*) FILTER (
-                    WHERE mp.predicted_at IS NOT NULL
-                      AND COALESCE(mp.game_date::date, g.game_date::date) IS NOT NULL
-                ) AS rows_checked,
-                COALESCE(
-                    SUM(
-                        CASE
-                            WHEN mp.predicted_at IS NOT NULL
-                             AND COALESCE(mp.game_date::date, g.game_date::date) IS NOT NULL
-                             AND mp.predicted_at::date > COALESCE(mp.game_date::date, g.game_date::date)
-                            THEN 1 ELSE 0
-                        END
-                    ),
-                    0
-                ) AS predicted_after_game_date_count
-            FROM hcl.ml_predictions mp
-            JOIN hcl.games g ON g.game_id = mp.game_id
-            WHERE {' AND '.join(integrity_where)}
-                            AND COALESCE(g.is_postseason, FALSE) = FALSE
-            """,
-            tuple(integrity_params)
-        )
-        leakage_row = cur.fetchone() or {}
-        leakage_checked = _int(leakage_row.get('rows_checked'))
-        leakage_count = _int(leakage_row.get('predicted_after_game_date_count'))
-        leakage_pct = _pct(leakage_count, leakage_checked)
-        integrity['leakage'].update({
-            'rows_checked': leakage_checked,
-            'predicted_after_game_date_count': leakage_count,
-            'predicted_after_game_date_pct': leakage_pct
-        })
-
-        cur.execute(
-            f"""
-            SELECT
-                COUNT(*) AS rows_checked,
-                COALESCE(
-                    SUM(
-                        CASE
-                            WHEN mp.actual_winner = mp.away_team AND mp.actual_margin > 0 THEN 1
-                            WHEN mp.actual_winner = mp.home_team AND mp.actual_margin < 0 THEN 1
-                            ELSE 0
-                        END
-                    ),
-                    0
-                ) AS inconsistent_count
-            FROM hcl.ml_predictions mp
-            WHERE {' AND '.join(integrity_where)}
-              AND mp.result_recorded_at IS NOT NULL
-              AND mp.actual_winner IN (mp.home_team, mp.away_team)
-              AND mp.actual_margin IS NOT NULL
-            """,
-            tuple(integrity_params)
-        )
-        margin_row = cur.fetchone() or {}
-        margin_checked = _int(margin_row.get('rows_checked'))
-        margin_count = _int(margin_row.get('inconsistent_count'))
-        margin_pct = _pct(margin_count, margin_checked)
-        integrity['margin_sign'].update({
-            'rows_checked': margin_checked,
-            'inconsistent_count': margin_count,
-            'inconsistent_pct': margin_pct
-        })
-
-        cur.execute(
-            f"""
-            SELECT
-                COUNT(*) AS rows_checked,
-                COALESCE(
-                    SUM(
-                        CASE
-                            WHEN mp.predicted_home_score IS NULL
-                              OR mp.predicted_away_score IS NULL
-                              OR mp.vegas_total IS NULL THEN 0
-                            WHEN ROUND((mp.predicted_home_score + mp.predicted_away_score)::NUMERIC, 1)
-                               = ROUND(mp.vegas_total::NUMERIC, 1)
-                            THEN 1 ELSE 0
-                        END
-                    ),
-                    0
-                ) AS line_locked_count
-            FROM hcl.ml_predictions mp
-            WHERE {' AND '.join(integrity_where)}
-            """,
-            tuple(integrity_params)
-        )
-        line_lock_row = cur.fetchone() or {}
-        line_lock_checked = _int(line_lock_row.get('rows_checked'))
-        line_lock_count = _int(line_lock_row.get('line_locked_count'))
-        line_lock_pct = _pct(line_lock_count, line_lock_checked)
-        integrity['totals_line_lock'].update({
-            'rows_checked': line_lock_checked,
-            'line_locked_count': line_lock_count,
-            'line_locked_pct': line_lock_pct
-        })
-
-        if leakage_pct > integrity['leakage']['threshold_pct']:
-            warnings.append(
-                f"Integrity warning: {leakage_pct}% of tracked XGBoost rows have predicted_at after game_date"
+            cur.execute(
+                f"""
+                SELECT
+                    COUNT(*) FILTER (
+                        WHERE mp.predicted_at IS NOT NULL
+                          AND COALESCE(mp.game_date::date, g.game_date::date) IS NOT NULL
+                    ) AS rows_checked,
+                    COALESCE(
+                        SUM(
+                            CASE
+                                WHEN mp.predicted_at IS NOT NULL
+                                 AND COALESCE(mp.game_date::date, g.game_date::date) IS NOT NULL
+                                 AND mp.predicted_at::date > COALESCE(mp.game_date::date, g.game_date::date)
+                                THEN 1 ELSE 0
+                            END
+                        ),
+                        0
+                    ) AS predicted_after_game_date_count
+                FROM hcl.ml_predictions mp
+                JOIN hcl.games g ON g.game_id = mp.game_id
+                WHERE {' AND '.join(integrity_where)}
+                                AND COALESCE(g.is_postseason, FALSE) = FALSE
+                """,
+                tuple(integrity_params)
             )
-        if margin_pct > integrity['margin_sign']['threshold_pct']:
-            warnings.append(
-                f"Integrity warning: {margin_pct}% of scored XGBoost rows have inconsistent actual_margin sign"
+            leakage_row = cur.fetchone() or {}
+            leakage_checked = _int(leakage_row.get('rows_checked'))
+            leakage_count = _int(leakage_row.get('predicted_after_game_date_count'))
+            leakage_pct = _pct(leakage_count, leakage_checked)
+            integrity['leakage'].update({
+                'rows_checked': leakage_checked,
+                'predicted_after_game_date_count': leakage_count,
+                'predicted_after_game_date_pct': leakage_pct
+            })
+
+            cur.execute(
+                f"""
+                SELECT
+                    COUNT(*) AS rows_checked,
+                    COALESCE(
+                        SUM(
+                            CASE
+                                WHEN mp.actual_winner = mp.away_team AND mp.actual_margin > 0 THEN 1
+                                WHEN mp.actual_winner = mp.home_team AND mp.actual_margin < 0 THEN 1
+                                ELSE 0
+                            END
+                        ),
+                        0
+                    ) AS inconsistent_count
+                FROM hcl.ml_predictions mp
+                WHERE {' AND '.join(integrity_where)}
+                  AND mp.result_recorded_at IS NOT NULL
+                  AND mp.actual_winner IN (mp.home_team, mp.away_team)
+                  AND mp.actual_margin IS NOT NULL
+                """,
+                tuple(integrity_params)
             )
-        if line_lock_pct >= integrity['totals_line_lock']['threshold_pct']:
-            warnings.append(
-                f"Integrity warning: {line_lock_pct}% of rows have predicted total locked to vegas_total"
+            margin_row = cur.fetchone() or {}
+            margin_checked = _int(margin_row.get('rows_checked'))
+            margin_count = _int(margin_row.get('inconsistent_count'))
+            margin_pct = _pct(margin_count, margin_checked)
+            integrity['margin_sign'].update({
+                'rows_checked': margin_checked,
+                'inconsistent_count': margin_count,
+                'inconsistent_pct': margin_pct
+            })
+
+            cur.execute(
+                f"""
+                SELECT
+                    COUNT(*) AS rows_checked,
+                    COALESCE(
+                        SUM(
+                            CASE
+                                WHEN mp.predicted_home_score IS NULL
+                                  OR mp.predicted_away_score IS NULL
+                                  OR mp.vegas_total IS NULL THEN 0
+                                WHEN ROUND((mp.predicted_home_score + mp.predicted_away_score)::NUMERIC, 1)
+                                   = ROUND(mp.vegas_total::NUMERIC, 1)
+                                THEN 1 ELSE 0
+                            END
+                        ),
+                        0
+                    ) AS line_locked_count
+                FROM hcl.ml_predictions mp
+                WHERE {' AND '.join(integrity_where)}
+                """,
+                tuple(integrity_params)
             )
+            line_lock_row = cur.fetchone() or {}
+            line_lock_checked = _int(line_lock_row.get('rows_checked'))
+            line_lock_count = _int(line_lock_row.get('line_locked_count'))
+            line_lock_pct = _pct(line_lock_count, line_lock_checked)
+            integrity['totals_line_lock'].update({
+                'rows_checked': line_lock_checked,
+                'line_locked_count': line_lock_count,
+                'line_locked_pct': line_lock_pct
+            })
+
+            if leakage_pct > integrity['leakage']['threshold_pct']:
+                warnings.append(
+                    f"Integrity warning: {leakage_pct}% of tracked XGBoost rows have predicted_at after game_date"
+                )
+            if margin_pct > integrity['margin_sign']['threshold_pct']:
+                warnings.append(
+                    f"Integrity warning: {margin_pct}% of scored XGBoost rows have inconsistent actual_margin sign"
+                )
+            if line_lock_pct >= integrity['totals_line_lock']['threshold_pct']:
+                warnings.append(
+                    f"Integrity warning: {line_lock_pct}% of rows have predicted total locked to vegas_total"
+                )
 
         overall = {
             'total_games': primary_summary.get('scored_games', 0),

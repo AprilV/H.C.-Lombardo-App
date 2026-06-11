@@ -23,7 +23,7 @@ function ModelPerformance() {
   }, [selectedSeason]);
 
   const fetchPerformanceForSeason = async (season) => {
-    const response = await fetch(`${API_URL}/api/ml/performance-stats?season=${season}`);
+    const response = await fetch(`${API_URL}/api/ml/performance-stats?season=${season}&include_trend=false&include_coverage_contract=false&include_integrity=false&allow_simulated_recompute=false`);
     return response.json();
   };
 
