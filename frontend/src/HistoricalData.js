@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './HistoricalData.css';
 import { getDefaultSeason, MIN_NFL_SEASON } from './utils/season';
 
-const API_URL = process.env.REACT_APP_API_URL ?? '';
+const API_URL = (typeof window !== 'undefined' && (window.location.hostname === 'hclombardo.com' || window.location.hostname === 'www.hclombardo.com' || window.location.hostname.endsWith('.netlify.app'))) ? '' : (process.env.REACT_APP_API_URL ?? '');
 
 // All available statistics from nflverse data (ALL stats from team_game_stats aggregated)
 const ALL_STATS = [

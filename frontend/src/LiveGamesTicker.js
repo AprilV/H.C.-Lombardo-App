@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './LiveGamesTicker.css';
 
-const API_URL = process.env.REACT_APP_API_URL ?? '';
+const API_URL = (typeof window !== 'undefined' && (window.location.hostname === 'hclombardo.com' || window.location.hostname === 'www.hclombardo.com' || window.location.hostname.endsWith('.netlify.app'))) ? '' : (process.env.REACT_APP_API_URL ?? '');
 const TICKER_SCROLL_STEP_PX = 1;
 const TICKER_SCROLL_INTERVAL_MS = 11;
 const TICKER_RESUME_DELAY_MS = 1500;

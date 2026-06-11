@@ -5,7 +5,7 @@ import './Homepage.css';
 import LiveGamesTicker from './LiveGamesTicker';
 import { getDefaultSeason } from './utils/season';
 
-const API_URL = process.env.REACT_APP_API_URL ?? '';
+const API_URL = (typeof window !== 'undefined' && (window.location.hostname === 'hclombardo.com' || window.location.hostname === 'www.hclombardo.com' || window.location.hostname.endsWith('.netlify.app'))) ? '' : (process.env.REACT_APP_API_URL ?? '');
 
 // Map team abbreviations to logo filenames
 const teamLogoMap = {

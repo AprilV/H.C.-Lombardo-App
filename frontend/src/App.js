@@ -17,7 +17,7 @@ import Admin from './Admin';
 import Settings from './Settings';
 import './App.css';
 
-const API_URL = process.env.REACT_APP_API_URL ?? '';
+const API_URL = (typeof window !== 'undefined' && (window.location.hostname === 'hclombardo.com' || window.location.hostname === 'www.hclombardo.com' || window.location.hostname.endsWith('.netlify.app'))) ? '' : (process.env.REACT_APP_API_URL ?? '');
 
 function App() {
   useEffect(() => {
