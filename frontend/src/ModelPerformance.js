@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './ModelPerformance.css';
 import { getDefaultSeason, getRecentSeasons } from './utils/season';
-
-const API_URL = process.env.REACT_APP_API_URL ?? '';
+import { getPerformanceStatsUrl, getSeasonAiVsVegasUrl } from './utils/mlApi';
 
 function ModelPerformance() {
   const defaultSeason = getDefaultSeason();
@@ -31,12 +30,12 @@ function ModelPerformance() {
   }, [selectedSeason]);
 
   const fetchPerformanceForSeason = async (season) => {
-    const response = await fetch(`${API_URL}/api/ml/performance-stats?season=${season}`);
+    const response = await fetch(getPerformanceStatsUrl(season));
     return response.json();
   };
 
   const fetchSeasonVsVegasForSeason = async (season) => {
-    const response = await fetch(`${API_URL}/api/ml/season-ai-vs-vegas/${season}`);
+    const response = await fetch(getSeasonAiVsVegasUrl(season));
     return response.json();
   };
 

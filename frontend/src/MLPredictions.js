@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './MLPredictions.css';
 import { getDefaultSeason, getRecentSeasons } from './utils/season';
 import { getEspnTeamLogoUrl } from './utils/teamLogos';
+import { getSeasonAiVsVegasUrl } from './utils/mlApi';
 
 const API_URL = process.env.REACT_APP_API_URL ?? '';
 
@@ -164,7 +165,7 @@ function MLPredictions() {
 
   const fetchSeasonStats = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/ml/season-ai-vs-vegas/${season}`);
+      const response = await fetch(getSeasonAiVsVegasUrl(season));
       const data = await response.json();
       if (data.success) {
         setSeasonStats(data);
@@ -354,17 +355,59 @@ function MLPredictions() {
             // Count AI vs Vegas head-to-head
             let aiBeatsVegas = 0;
             let vegasBeatsAI = 0;
+            let aiVegasTies = 0;
+            let aiVegasTotal = 0;
             
             finishedGames.forEach(p => {
+              if (
+                p.ai_spread === null || p.ai_spread === undefined ||
+                p.vegas_spread === null || p.vegas_spread === undefined
+              ) {
+                return;
+              }
+
               const actualMargin = p.actual_home_score - p.actual_away_score;
               
               const aiCovered = didHomeCover(p.ai_spread, actualMargin);
               const vegasCovered = didHomeCover(p.vegas_spread, actualMargin);
+
+              aiVegasTotal++;
               
-              // Compare (only count when one beat the other, not ties)
-              if (aiCovered && !vegasCovered) aiBeatsVegas++;
-              else if (!aiCovered && vegasCovered) vegasBeatsAI++;
+              // Compare with explicit booleans so pushes are counted as ties.
+              if (aiCovered === true && vegasCovered === false) {
+                aiBeatsVegas++;
+              } else if (aiCovered === false && vegasCovered === true) {
+                vegasBeatsAI++;
+              } else {
+                aiVegasTies++;
+              }
             });
+
+            const hasSeasonAtsData = Boolean(
+              seasonStats
+              && Number.isFinite(Number(seasonStats.total_games))
+              && Number(seasonStats.total_games) > 0
+            );
+
+            const displayAiWins = hasSeasonAtsData
+              ? Number(seasonStats.ai_wins || 0)
+              : aiBeatsVegas;
+            const displayVegasWins = hasSeasonAtsData
+              ? Number(seasonStats.vegas_wins || 0)
+              : vegasBeatsAI;
+            const displayTies = hasSeasonAtsData
+              ? Number(seasonStats.ties || 0)
+              : aiVegasTies;
+            const displayTotalGames = hasSeasonAtsData
+              ? Number(seasonStats.total_games || 0)
+              : aiVegasTotal;
+
+            const displayAiPct = hasSeasonAtsData
+              ? Number(seasonStats.ai_percentage || 0)
+              : (displayTotalGames > 0 ? (displayAiWins / displayTotalGames) * 100 : null);
+            const displayVegasPct = hasSeasonAtsData
+              ? Number(seasonStats.vegas_percentage || 0)
+              : (displayTotalGames > 0 ? (displayVegasWins / displayTotalGames) * 100 : null);
 
             return (
               <div className="results-scorecard">
@@ -426,13 +469,16 @@ function MLPredictions() {
                     <div className="stat-content">
                       <div className="stat-label">AI vs Vegas (Season)</div>
                       <div className="stat-value">
-                        {seasonStats ? `${seasonStats.ai_wins} - ${seasonStats.vegas_wins}` : `${aiBeatsVegas} - ${vegasBeatsAI}`}
+                        {displayAiWins} - {displayVegasWins}
                       </div>
                       <div className="stat-percent">
-                        AI: {seasonStats ? seasonStats.ai_percentage : (aiBeatsVegas + vegasBeatsAI > 0 ? ((aiBeatsVegas / (aiBeatsVegas + vegasBeatsAI)) * 100).toFixed(1) : 0)}%
+                        AI: {displayAiPct === null ? 'N/A' : `${displayAiPct.toFixed(1)}%`}
                       </div>
                       <div className="stat-percent">
-                        Vegas: {seasonStats ? seasonStats.vegas_percentage : (aiBeatsVegas + vegasBeatsAI > 0 ? ((vegasBeatsAI / (aiBeatsVegas + vegasBeatsAI)) * 100).toFixed(1) : 0)}%
+                        Vegas: {displayVegasPct === null ? 'N/A' : `${displayVegasPct.toFixed(1)}%`}
+                      </div>
+                      <div className="stat-percent">
+                        Ties: {displayTies} | Games: {displayTotalGames}
                       </div>
                     </div>
                   </div>

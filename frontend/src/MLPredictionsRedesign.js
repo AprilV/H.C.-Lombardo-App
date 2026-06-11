@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import './MLPredictionsRedesign.css';
 import { getDefaultSeason, getRecentSeasons } from './utils/season';
+import { getEspnTeamLogoUrl } from './utils/teamLogos';
+import { getSeasonAiVsVegasUrl } from './utils/mlApi';
 
 const API_URL = process.env.REACT_APP_API_URL ?? '';
 
@@ -126,7 +128,7 @@ function MLPredictionsRedesign() {
       setSeasonStatsLoading(true);
     }
     try {
-      const response = await fetch(`${API_URL}/api/ml/season-ai-vs-vegas/${selectedSeason}`);
+      const response = await fetch(getSeasonAiVsVegasUrl(selectedSeason));
       const data = await response.json();
 
       if (data.success) {
@@ -167,8 +169,7 @@ function MLPredictionsRedesign() {
   };
 
   const getTeamLogo = (team) => {
-    if (!team) return '';
-    return `https://a.espncdn.com/i/teamlogos/nfl/500/${team}.png`;
+    return getEspnTeamLogoUrl(team);
   };
 
   const formatSpreadForHome = (team, spread) => {
@@ -452,6 +453,21 @@ function MLPredictionsRedesign() {
     );
   };
 
+  const hasSeasonAtsData = Boolean(
+    seasonStats
+    && Number.isFinite(Number(seasonStats.total_games))
+    && Number(seasonStats.total_games) > 0
+  );
+  const seasonAiPct = hasSeasonAtsData ? Number(seasonStats.ai_percentage || 0) : null;
+  const seasonVegasPct = hasSeasonAtsData ? Number(seasonStats.vegas_percentage || 0) : null;
+  const seasonDeltaPct = hasSeasonAtsData ? (seasonAiPct - seasonVegasPct) : null;
+  const seasonDeltaClass = hasSeasonAtsData
+    ? (seasonAiPct >= seasonVegasPct ? 'positive' : 'negative')
+    : '';
+  const seasonRecordText = hasSeasonAtsData
+    ? `Record: AI ${seasonStats.ai_wins} - Vegas ${seasonStats.vegas_wins} | Ties ${seasonStats.ties} | Games ${seasonStats.total_games}`
+    : 'ATS season data unavailable';
+
   if (loading) {
     return (
       <div className="ml-predictions-redesign">
@@ -566,31 +582,29 @@ function MLPredictionsRedesign() {
               <div className="benchmark-tile ai">
                 <div className="benchmark-label">AI Win %</div>
                 <div className="benchmark-value">
-                  {seasonStats ? Number(seasonStats.ai_percentage || 0).toFixed(1) : '0.0'}%
+                  {seasonAiPct === null ? 'N/A' : `${seasonAiPct.toFixed(1)}%`}
                 </div>
               </div>
 
               <div className="benchmark-tile vegas">
                 <div className="benchmark-label">Vegas Win %</div>
                 <div className="benchmark-value">
-                  {seasonStats ? Number(seasonStats.vegas_percentage || 0).toFixed(1) : '0.0'}%
+                  {seasonVegasPct === null ? 'N/A' : `${seasonVegasPct.toFixed(1)}%`}
                 </div>
               </div>
 
-              <div className={`benchmark-tile delta ${seasonStats && Number(seasonStats.ai_percentage || 0) >= Number(seasonStats.vegas_percentage || 0) ? 'positive' : 'negative'}`}>
+              <div className={["benchmark-tile delta", seasonDeltaClass].filter(Boolean).join(' ')}>
                 <div className="benchmark-label">AI vs Vegas</div>
                 <div className="benchmark-value">
-                  {seasonStats
-                    ? `${(Number(seasonStats.ai_percentage || 0) - Number(seasonStats.vegas_percentage || 0) >= 0 ? '+' : '')}${(Number(seasonStats.ai_percentage || 0) - Number(seasonStats.vegas_percentage || 0)).toFixed(1)}%`
-                    : '0.0%'}
+                  {seasonDeltaPct === null
+                    ? 'N/A'
+                    : `${seasonDeltaPct >= 0 ? '+' : ''}${seasonDeltaPct.toFixed(1)}%`}
                 </div>
               </div>
             </div>
 
             <div className="season-benchmark-detail">
-              {seasonStats
-                ? `Record: AI ${seasonStats.ai_wins} - Vegas ${seasonStats.vegas_wins} | Ties ${seasonStats.ties} | Games ${seasonStats.total_games}`
-                : 'Season benchmark data unavailable'}
+              {seasonRecordText}
             </div>
           </>
         )}
