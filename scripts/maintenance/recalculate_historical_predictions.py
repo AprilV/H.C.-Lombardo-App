@@ -15,7 +15,7 @@ import json
 import os
 import sys
 import warnings
-from datetime import UTC, datetime, time, timedelta
+from datetime import datetime, time, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
@@ -71,7 +71,7 @@ def _parse_datetime(value: Any) -> datetime | None:
 def _predicted_at_from_game_date(game_date_value: Any) -> datetime:
     parsed = _parse_datetime(game_date_value)
     if parsed is None:
-        return datetime.now(tz=UTC).replace(tzinfo=None)
+        return datetime.now(tz=timezone.utc).replace(tzinfo=None)
     return datetime.combine(parsed.date(), time(12, 0, 0))
 
 
@@ -432,7 +432,7 @@ def _season_summary(conn, season: int) -> dict[str, Any]:
 
 def _write_summary(summary: dict[str, Any]) -> Path:
     OUT_DIR.mkdir(parents=True, exist_ok=True)
-    stamp = datetime.now(tz=UTC).strftime("%Y%m%d_%H%M%S")
+    stamp = datetime.now(tz=timezone.utc).strftime("%Y%m%d_%H%M%S")
     out_path = OUT_DIR / f"historical_recalc_{stamp}.json"
     out_path.write_text(json.dumps(summary, indent=2), encoding="utf-8")
     return out_path
@@ -512,7 +512,7 @@ def main() -> None:
     conn.close()
 
     summary = {
-        "generated_at_utc": datetime.now(tz=UTC).isoformat(),
+        "generated_at_utc": datetime.now(tz=timezone.utc).isoformat(),
         "scope": "historical recalculation",
         "start_season": args.start_season,
         "end_season": args.end_season,
