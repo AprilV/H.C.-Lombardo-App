@@ -256,6 +256,59 @@
   margin-bottom: 30px;
 }
 
+.customer-answer-section {
+  background: linear-gradient(135deg, rgba(18, 66, 54, 0.45), rgba(20, 48, 88, 0.45));
+  border: 1px solid rgba(16, 185, 129, 0.45);
+  border-radius: 14px;
+  padding: 22px;
+  margin-bottom: 26px;
+}
+
+.customer-answer-section h3 {
+  margin: 0 0 10px 0;
+  color: #d8fff1;
+  font-size: 1.35rem;
+}
+
+.customer-answer-text {
+  margin: 0 0 14px 0;
+  color: #dbe7f7;
+  font-size: 1rem;
+  line-height: 1.55;
+}
+
+.customer-answer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.customer-answer-card {
+  background: rgba(3, 10, 26, 0.36);
+  border: 1px solid rgba(148, 190, 255, 0.3);
+  border-radius: 10px;
+  padding: 14px;
+}
+
+.customer-answer-card h4 {
+  margin: 0 0 8px 0;
+  color: #a8ccff;
+  font-size: 0.95rem;
+}
+
+.customer-answer-value {
+  margin: 0;
+  color: #f3fffb;
+  font-size: 1.55rem;
+  font-weight: 800;
+}
+
+.customer-answer-detail {
+  margin: 6px 0 0 0;
+  color: #c6d9f1;
+  font-size: 0.88rem;
+}
+
 .quick-stat {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.15);

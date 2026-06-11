@@ -183,6 +183,9 @@ function ModelPerformance() {
   const edgePp = hasAtsData ? toNumber(seasonVsVegas.edgePp) : 0;
   const netUnits = hasAtsData ? toNumber(seasonVsVegas.netUnits) : 0;
   const roiPct = hasAtsData ? toNumber(seasonVsVegas.roiPct) : 0;
+  const vegasNetUnits = hasAtsData ? ((vegasWins * STANDARD_WIN_PER_UNIT_RISKED) - aiWins) : 0;
+  const vegasRoiPct = hasAtsData && decidedGames > 0 ? (vegasNetUnits / decidedGames) * 100 : 0;
+  const netDifference = hasAtsData ? (netUnits - vegasNetUnits) : 0;
 
   const selectedSeasonRow = useMemo(() => (
     seasonRows.find((row) => row.season === selectedSeason)
@@ -271,6 +274,40 @@ function ModelPerformance() {
             <div className="side-tier">Compared games: {totalGames}</div>
           </div>
         </div>
+      </div>
+
+      <div className="customer-answer-section">
+        <h3>Quick Customer Answer</h3>
+        {hasAtsData ? (
+          <>
+            <p className="customer-answer-text">
+              {netUnits >= 0
+                ? `If you followed HC Lombardo AI this season, you would be up ${netUnits.toFixed(2)} units so far.`
+                : `If you followed HC Lombardo AI this season, you would be down ${Math.abs(netUnits).toFixed(2)} units so far.`}
+            </p>
+            <div className="customer-answer-grid">
+              <div className="customer-answer-card">
+                <h4>HC Lombardo AI Result</h4>
+                <p className="customer-answer-value">{netUnits >= 0 ? '+' : ''}{netUnits.toFixed(2)} units</p>
+                <p className="customer-answer-detail">Return: {formatPct(roiPct)}</p>
+              </div>
+              <div className="customer-answer-card">
+                <h4>Vegas AI Result</h4>
+                <p className="customer-answer-value">{vegasNetUnits >= 0 ? '+' : ''}{vegasNetUnits.toFixed(2)} units</p>
+                <p className="customer-answer-detail">Return: {formatPct(vegasRoiPct)}</p>
+              </div>
+              <div className="customer-answer-card">
+                <h4>Bottom Line</h4>
+                <p className="customer-answer-value">{netDifference >= 0 ? '+' : ''}{netDifference.toFixed(2)} units</p>
+                <p className="customer-answer-detail">HC Lombardo AI minus Vegas AI</p>
+              </div>
+            </div>
+          </>
+        ) : (
+          <p className="customer-answer-text">
+            Not enough game results are available yet for a clear customer answer.
+          </p>
+        )}
       </div>
 
       <div className="quick-stats">
