@@ -199,6 +199,11 @@ function ModelPerformance() {
     ? `${seasonVsVegas.ai_wins} - ${seasonVsVegas.vegas_wins}`
     : 'Unavailable';
 
+  const decidedAtsGames = hasAtsData
+    ? Number(seasonVsVegas.ai_wins || 0) + Number(seasonVsVegas.vegas_wins || 0)
+    : 0;
+  const lowSampleAts = hasAtsData && decidedAtsGames < 30;
+
   const aiVsVegasDetail = hasAtsData
     ? `Ties ${seasonVsVegas.ties} | Games ${seasonVsVegas.total_games}`
     : 'ATS season data unavailable';
@@ -343,16 +348,19 @@ function ModelPerformance() {
             <div className="insight-icon">🧠</div>
             <div className="insight-content">
               <h4>XGBoost</h4>
-              <p>
+                    {beatVegas > 0 ? '+' : ''}{beatVegas.toFixed(1)} pts
                 Accuracy: {xgbGames > 0 ? `${(parseFloat(xgbSummary?.win_accuracy) || 0).toFixed(1)}%` : 'N/A'}
-                {' '}| Scored: {xgbGames}
+                  <div className="highlight-label">EDGE VS VEGAS (PP)</div>
                 {' '}| Coverage: {(parseFloat(xgbSummary?.coverage_pct) || 0).toFixed(1)}%
               </p>
               <p className="data-availability">{getModelDataStatus('XGBoost', xgbSummary)}</p>
             </div>
-          </div>
+            {hasAtsData && beatVegas >= 2 && !lowSampleAts && (
 
           <div className="insight-card">
+            {hasAtsData && lowSampleAts && (
+              <div className="winning-streak">Low decided sample ({decidedAtsGames})</div>
+            )}
             <div className="insight-icon">📈</div>
             <div className="insight-content">
               <h4>Elo</h4>
@@ -595,12 +603,12 @@ function ModelPerformance() {
               <h4>Accuracy vs Vegas</h4>
               <p>
                 {winRate >= 60 
-                  ? `Beating Vegas spreads (~52-55%)! Model is performing exceptionally well.`
+                  ? `Strong winner-pick accuracy for this sample.`
                   : winRate >= 55
-                  ? `Above Vegas average. Model shows predictive value.`
+                  ? `Above-average winner-pick accuracy.`
                   : winRate >= 50
-                  ? `Competitive with Vegas spreads. Room for improvement.`
-                  : `Below Vegas benchmarks. May need model retraining or feature updates.`
+                  ? `Near coin-flip winner-pick accuracy. Room for improvement.`
+                  : `Below 50% winner-pick accuracy. Model likely needs retraining or feature changes.`
                 }
               </p>
             </div>

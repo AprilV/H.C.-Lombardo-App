@@ -2674,6 +2674,20 @@ def get_performance_stats():
             and not include_integrity
             and not allow_simulated_recompute
         ):
+            fast_warnings = []
+            if xgb_legacy_mode:
+                fast_warnings.append(
+                    "Coverage note: using legacy XGBoost scoring fallback because strict pregame tracked rows are unavailable for this season."
+                )
+            if xgb_simulation_mode:
+                fast_warnings.append(
+                    "Coverage note: using simulated historical XGBoost scoring from completed games because tracked row coverage is currently insufficient for this season."
+                )
+            if spread_h2h_legacy_mode:
+                fast_warnings.append(
+                    "Coverage note: spread head-to-head metrics are using legacy fallback rows without strict pregame timestamp evidence."
+                )
+
             overall = {
                 'total_games': primary_summary.get('scored_games', 0),
                 'correct_predictions': primary_summary.get('correct_predictions', 0),
@@ -2718,27 +2732,13 @@ def get_performance_stats():
                     }
                 },
                 'elo_table_ready': elo_table_ready,
-                'integrity': {
-                    'leakage': {
-                        'rows_checked': 0,
-                        'predicted_after_game_date_count': 0,
-                        'predicted_after_game_date_pct': 0.0,
-                        'threshold_pct': 5.0
-                    },
-                    'margin_sign': {
-                        'rows_checked': 0,
-                        'inconsistent_count': 0,
-                        'inconsistent_pct': 0.0,
-                        'threshold_pct': 0.0
-                    },
-                    'totals_line_lock': {
-                        'rows_checked': 0,
-                        'line_locked_count': 0,
-                        'line_locked_pct': 0.0,
-                        'threshold_pct': 95.0
-                    }
+                'integrity': None,
+                'warnings': fast_warnings,
+                'data_quality': {
+                    'strict_pregame_xgb': not (xgb_legacy_mode or xgb_simulation_mode),
+                    'strict_pregame_spread_h2h': not spread_h2h_legacy_mode,
+                    'integrity_computed': False
                 },
-                'warnings': [],
                 'generated_at': datetime.now().isoformat(),
                 'perf_version': 'v4'
             })
