@@ -930,6 +930,7 @@ def get_season_ai_vs_vegas(season):
     conn = None
     cur = None
     try:
+        allow_simulated_fallback = str(request.args.get('allow_simulated_fallback', 'false')).strip().lower() in {'1', 'true', 'yes', 'on'}
         conn = psycopg2.connect(**get_predictor().db_config)
         cur = conn.cursor(cursor_factory=RealDictCursor)
 
@@ -1014,7 +1015,7 @@ def get_season_ai_vs_vegas(season):
                     vegas_wins += 1
                 else:
                     ties += 1
-        else:
+        elif allow_simulated_fallback:
             rollup = compute_simulated_ai_vs_vegas_rollup(conn, season)
             ai_wins = int(rollup.get('ai_wins') or 0)
             vegas_wins = int(rollup.get('vegas_wins') or 0)
@@ -1022,6 +1023,9 @@ def get_season_ai_vs_vegas(season):
             total = int(rollup.get('total_games') or 0)
             data_source = rollup.get('data_source') or 'simulated_historical'
             vegas_source = rollup.get('vegas_spread_source') or 'games.spread_line'
+        else:
+            data_source = 'no_tracked_rows'
+            vegas_source = vegas_source
 
         ai_pct = (ai_wins / total * 100) if total > 0 else 0
         vegas_pct = (vegas_wins / total * 100) if total > 0 else 0
@@ -1865,6 +1869,7 @@ def get_performance_stats():
         if season is None:
             season = get_latest_completed_season()
         week = request.args.get('week', type=int)
+        allow_simulated_recompute = str(request.args.get('allow_simulated_recompute', 'false')).strip().lower() in {'1', 'true', 'yes', 'on'}
 
         conn = psycopg2.connect(**get_predictor().db_config)
         elo_table_ready = table_exists(conn, 'hcl', 'ml_predictions_elo')
@@ -2076,7 +2081,7 @@ def get_performance_stats():
         # Single-equation guard: if scored rows do not match completed-game denominator,
         # recompute from completed games so output cannot flip between sources.
         xgb_scored_for_sim = _int(xgb_summary.get('scored_games'))
-        if completed_games > 0 and xgb_scored_for_sim != completed_games:
+        if allow_simulated_recompute and completed_games > 0 and xgb_scored_for_sim != completed_games:
             sim_where = [
                 "season = %s",
                 "home_score IS NOT NULL",
