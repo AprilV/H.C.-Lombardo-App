@@ -1,1 +1,3 @@
+/api/*  https://9dkkj5n2rc.execute-api.us-east-2.amazonaws.com/api/:splat  200
+/health  https://9dkkj5n2rc.execute-api.us-east-2.amazonaws.com/health  200
 /*  /index.html  200
