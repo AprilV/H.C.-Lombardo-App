@@ -184,28 +184,38 @@ function ModelPerformance() {
     && Number(seasonVsVegas?.total_games) > 0
   );
 
-  const aiVsVegasAiPct = hasAtsData
-    ? Number(seasonVsVegas.ai_percentage || 0)
+  const aiWins = hasAtsData ? Number(seasonVsVegas.ai_wins || 0) : 0;
+  const vegasWins = hasAtsData ? Number(seasonVsVegas.vegas_wins || 0) : 0;
+  const ties = hasAtsData ? Number(seasonVsVegas.ties || 0) : 0;
+  const totalAtsGames = hasAtsData ? Number(seasonVsVegas.total_games || 0) : 0;
+  const decidedAtsGames = hasAtsData ? aiWins + vegasWins : 0;
+
+  const aiVsVegasAiPctDecided = decidedAtsGames > 0
+    ? (aiWins / decidedAtsGames) * 100
     : 0;
-  const aiVsVegasVegasPct = hasAtsData
-    ? Number(seasonVsVegas.vegas_percentage || 0)
+  const aiVsVegasVegasPctDecided = decidedAtsGames > 0
+    ? (vegasWins / decidedAtsGames) * 100
     : 0;
-  const beatVegas = aiVsVegasAiPct - aiVsVegasVegasPct;
-  const vegasStatus = !hasAtsData
+  const aiVsVegasAiPctTotal = totalAtsGames > 0
+    ? (aiWins / totalAtsGames) * 100
+    : 0;
+  const aiVsVegasVegasPctTotal = totalAtsGames > 0
+    ? (vegasWins / totalAtsGames) * 100
+    : 0;
+
+  const beatVegasDecidedPp = aiVsVegasAiPctDecided - aiVsVegasVegasPctDecided;
+  const beatVegasTotalPp = aiVsVegasAiPctTotal - aiVsVegasVegasPctTotal;
+  const vegasStatus = !hasAtsData || decidedAtsGames === 0
     ? 'UNAVAILABLE'
-    : (aiVsVegasAiPct >= aiVsVegasVegasPct ? 'BEATING' : 'BELOW');
+    : (aiVsVegasAiPctDecided >= aiVsVegasVegasPctDecided ? 'BEATING' : 'BELOW');
 
   const aiVsVegasRecord = hasAtsData
-    ? `${seasonVsVegas.ai_wins} - ${seasonVsVegas.vegas_wins}`
+    ? `${aiWins} - ${vegasWins} - ${ties}`
     : 'Unavailable';
-
-  const decidedAtsGames = hasAtsData
-    ? Number(seasonVsVegas.ai_wins || 0) + Number(seasonVsVegas.vegas_wins || 0)
-    : 0;
   const lowSampleAts = hasAtsData && decidedAtsGames < 30;
 
   const aiVsVegasDetail = hasAtsData
-    ? `Ties ${seasonVsVegas.ties} | Games ${seasonVsVegas.total_games}`
+    ? `Decided ${decidedAtsGames}/${totalAtsGames} | Ties ${ties}`
     : 'ATS season data unavailable';
 
   return (
@@ -242,11 +252,15 @@ function ModelPerformance() {
       {/* HERO - AI vs Vegas Comparison */}
       <div className="vegas-hero">
         <h2 className="hero-title">🎯 AI vs Vegas Performance - {selectedSeason} Season</h2>
+        <p className="season-trend-subtitle">
+          Primary comparison uses decided ATS games only (pushes/ties excluded).
+          {' '}Current model winner accuracy: {winRate.toFixed(1)}% ({primarySummary?.correct_predictions || 0}/{primarySummary?.scored_games || 0}).
+        </p>
         <div className="hero-comparison">
           <div className="comparison-side ai-side">
             <div className="side-label">H.C. LOMBARDO AI (SPREAD H2H)</div>
-            <div className="side-number ai-number">{hasAtsData ? `${aiVsVegasAiPct.toFixed(1)}%` : 'N/A'}</div>
-            <div className="side-detail">Record: {aiVsVegasRecord}</div>
+            <div className="side-number ai-number">{hasAtsData ? `${aiVsVegasAiPctDecided.toFixed(1)}%` : 'N/A'}</div>
+            <div className="side-detail">Record (AI-Vegas-Tie): {aiVsVegasRecord}</div>
             {hasAtsData ? (
               <div className="side-tier" style={{ color: perfTier.color }}>
                 {perfTier.emoji} {perfTier.tier}
@@ -263,9 +277,9 @@ function ModelPerformance() {
               {hasAtsData ? (
                 <>
                   <div className="delta-number">
-                    {beatVegas > 0 ? '+' : ''}{beatVegas.toFixed(1)}%
+                    {beatVegasDecidedPp > 0 ? '+' : ''}{beatVegasDecidedPp.toFixed(1)} pts
                   </div>
-                  <div className="delta-label">{vegasStatus} VEGAS</div>
+                  <div className="delta-label">{vegasStatus} VEGAS (DECIDED)</div>
                 </>
               ) : (
                 <>
@@ -274,14 +288,17 @@ function ModelPerformance() {
                 </>
               )}
             </div>
-            {hasAtsData && beatVegas >= 2 && (
+            {hasAtsData && beatVegasDecidedPp >= 2 && !lowSampleAts && (
               <div className="winning-streak">Significantly outperforming</div>
+            )}
+            {hasAtsData && lowSampleAts && (
+              <div className="winning-streak">Low decided sample ({decidedAtsGames})</div>
             )}
           </div>
 
           <div className="comparison-side vegas-side">
             <div className="side-label">VEGAS SPREADS (SPREAD H2H)</div>
-            <div className="side-number vegas-number">{hasAtsData ? `${aiVsVegasVegasPct.toFixed(1)}%` : 'N/A'}</div>
+            <div className="side-number vegas-number">{hasAtsData ? `${aiVsVegasVegasPctDecided.toFixed(1)}%` : 'N/A'}</div>
             <div className="side-detail">{aiVsVegasDetail}</div>
             <div className="side-tier" style={{ color: '#6b7280' }}>
               📈 Benchmark
@@ -348,19 +365,16 @@ function ModelPerformance() {
             <div className="insight-icon">🧠</div>
             <div className="insight-content">
               <h4>XGBoost</h4>
-                    {beatVegas > 0 ? '+' : ''}{beatVegas.toFixed(1)} pts
+              <p>
                 Accuracy: {xgbGames > 0 ? `${(parseFloat(xgbSummary?.win_accuracy) || 0).toFixed(1)}%` : 'N/A'}
-                  <div className="highlight-label">EDGE VS VEGAS (PP)</div>
+                {' '}| Scored: {xgbGames}
                 {' '}| Coverage: {(parseFloat(xgbSummary?.coverage_pct) || 0).toFixed(1)}%
               </p>
               <p className="data-availability">{getModelDataStatus('XGBoost', xgbSummary)}</p>
             </div>
-            {hasAtsData && beatVegas >= 2 && !lowSampleAts && (
+          </div>
 
           <div className="insight-card">
-            {hasAtsData && lowSampleAts && (
-              <div className="winning-streak">Low decided sample ({decidedAtsGames})</div>
-            )}
             <div className="insight-icon">📈</div>
             <div className="insight-content">
               <h4>Elo</h4>
@@ -401,6 +415,20 @@ function ModelPerformance() {
               </p>
               <p className="data-availability">
                 Evaluable spread rows: {vegasSummary?.evaluable_games || 0}/{completedGames}
+              </p>
+            </div>
+          </div>
+
+          <div className="insight-card">
+            <div className="insight-icon">🧮</div>
+            <div className="insight-content">
+              <h4>ATS Math Check</h4>
+              <p>
+                Decided edge: {beatVegasDecidedPp > 0 ? '+' : ''}{beatVegasDecidedPp.toFixed(1)} pts
+                {' '}| All-games edge: {beatVegasTotalPp > 0 ? '+' : ''}{beatVegasTotalPp.toFixed(1)} pts
+              </p>
+              <p className="data-availability">
+                Decided basis excludes ties; all-games basis includes ties.
               </p>
             </div>
           </div>
