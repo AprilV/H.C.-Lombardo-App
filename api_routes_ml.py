@@ -1137,6 +1137,45 @@ def get_season_ai_vs_vegas_audit(season):
         params.append(limit)
         cur.execute(query, tuple(params))
         rows = cur.fetchall() or []
+        data_source = 'strict_pregame'
+
+        if not rows:
+            legacy_where = [
+                "p.season = %s",
+                "g.home_score IS NOT NULL",
+                "g.away_score IS NOT NULL",
+                "COALESCE(g.is_postseason, FALSE) = FALSE",
+                "p.ai_spread IS NOT NULL",
+                f"{vegas_expr} IS NOT NULL"
+            ]
+            legacy_params = [season]
+
+            if week is not None:
+                legacy_where.append("g.week = %s")
+                legacy_params.append(week)
+
+            legacy_query = f"""
+                SELECT
+                    p.game_id,
+                    g.week,
+                    g.game_date,
+                    p.home_team,
+                    p.away_team,
+                    p.ai_spread,
+                    {vegas_expr} AS vegas_spread,
+                    g.home_score,
+                    g.away_score
+                FROM hcl.ml_predictions p
+                JOIN hcl.games g ON p.game_id = g.game_id
+                WHERE {' AND '.join(legacy_where)}
+                ORDER BY g.week ASC, g.game_date ASC, p.game_id ASC
+                LIMIT %s
+            """
+            legacy_params.append(limit)
+            cur.execute(legacy_query, tuple(legacy_params))
+            rows = cur.fetchall() or []
+            if rows:
+                data_source = 'legacy_relaxed_pregame'
 
         details = []
         ai_wins = 0
@@ -1253,6 +1292,7 @@ def get_season_ai_vs_vegas_audit(season):
             'result_filter': result_filter or None,
             'format': output_format,
             'vegas_spread_source': vegas_source,
+            'data_source': data_source,
             'summary': summary,
             'returned_summary': returned_summary,
             'contract': {
@@ -1843,6 +1883,164 @@ def get_ai_vs_vegas_reconciliation():
             'mismatch_count': len(mismatches),
             'mismatches': mismatches,
             'all_match': len(mismatches) == 0
+        })
+
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+    finally:
+        if cur:
+            cur.close()
+        if conn:
+            conn.close()
+
+
+@ml_api.route('/api/ml/ai-vs-vegas-scoreboard/<int:season>', methods=['GET'])
+def get_ai_vs_vegas_scoreboard(season):
+    """
+    Bettor-focused weekly + yearly scoreboard.
+
+    Returns, for each week, how often HC Lombardo AI was right vs Vegas AI,
+    plus season totals and winner labels.
+    """
+    conn = None
+    cur = None
+    try:
+        conn = psycopg2.connect(**get_predictor().db_config)
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+
+        has_games_closing_spread = table_has_column(conn, 'hcl', 'games', 'closing_spread')
+        if has_games_closing_spread:
+            vegas_expr = "COALESCE(g.closing_spread, p.vegas_spread, g.spread_line)"
+            vegas_source = 'closing_spread->prediction_vegas_spread->spread_line'
+        else:
+            vegas_expr = "COALESCE(p.vegas_spread, g.spread_line)"
+            vegas_source = 'prediction_vegas_spread->spread_line'
+
+        where_clauses = [
+            "p.season = %s",
+            "g.home_score IS NOT NULL",
+            "g.away_score IS NOT NULL",
+            "COALESCE(g.is_postseason, FALSE) = FALSE",
+            "p.ai_spread IS NOT NULL",
+            f"{vegas_expr} IS NOT NULL"
+        ]
+        params = [season]
+
+        cur.execute(
+            f"""
+            SELECT
+                p.game_id,
+                g.week,
+                g.game_date,
+                p.home_team,
+                p.away_team,
+                p.ai_spread,
+                {vegas_expr} AS vegas_spread,
+                g.home_score,
+                g.away_score
+            FROM hcl.ml_predictions p
+            JOIN hcl.games g ON p.game_id = g.game_id
+            WHERE {' AND '.join(where_clauses)}
+            ORDER BY g.week ASC, g.game_date ASC, p.game_id ASC
+            """,
+            tuple(params)
+        )
+        rows = cur.fetchall() or []
+
+        weekly = {}
+        season_ai_right = 0
+        season_vegas_right = 0
+        season_pushes = 0
+
+        for row in rows:
+            week = int(row.get('week') or 0)
+            actual_margin = row['home_score'] - row['away_score']
+            ai_covered = did_home_cover(row.get('ai_spread'), actual_margin)
+            vegas_covered = did_home_cover(row.get('vegas_spread'), actual_margin)
+
+            if week not in weekly:
+                weekly[week] = {
+                    'week': week,
+                    'games': 0,
+                    'ai_right': 0,
+                    'vegas_right': 0,
+                    'pushes': 0,
+                    'details': []
+                }
+
+            weekly[week]['games'] += 1
+
+            if ai_covered is True and vegas_covered is False:
+                winner = 'hc_lombardo_ai'
+                weekly[week]['ai_right'] += 1
+                season_ai_right += 1
+            elif ai_covered is False and vegas_covered is True:
+                winner = 'vegas_ai'
+                weekly[week]['vegas_right'] += 1
+                season_vegas_right += 1
+            else:
+                winner = 'push'
+                weekly[week]['pushes'] += 1
+                season_pushes += 1
+
+            weekly[week]['details'].append({
+                'game_id': row['game_id'],
+                'game_date': row['game_date'].isoformat() if row['game_date'] else None,
+                'home_team': row['home_team'],
+                'away_team': row['away_team'],
+                'home_score': row['home_score'],
+                'away_score': row['away_score'],
+                'ai_spread': float(row['ai_spread']) if row['ai_spread'] is not None else None,
+                'vegas_spread': float(row['vegas_spread']) if row['vegas_spread'] is not None else None,
+                'winner': winner,
+                'ai_result': 'right' if winner == 'hc_lombardo_ai' else ('wrong' if winner == 'vegas_ai' else 'push'),
+                'vegas_result': 'right' if winner == 'vegas_ai' else ('wrong' if winner == 'hc_lombardo_ai' else 'push')
+            })
+
+        weekly_rows = []
+        for wk in sorted(weekly.keys()):
+            row = weekly[wk]
+            decided = row['ai_right'] + row['vegas_right']
+            ai_pct = round((row['ai_right'] / decided) * 100, 1) if decided else 0.0
+            vegas_pct = round((row['vegas_right'] / decided) * 100, 1) if decided else 0.0
+            if row['ai_right'] > row['vegas_right']:
+                week_winner = 'hc_lombardo_ai'
+            elif row['vegas_right'] > row['ai_right']:
+                week_winner = 'vegas_ai'
+            else:
+                week_winner = 'tie'
+
+            row['decided_games'] = decided
+            row['ai_pct'] = ai_pct
+            row['vegas_pct'] = vegas_pct
+            row['week_winner'] = week_winner
+            weekly_rows.append(row)
+
+        season_decided = season_ai_right + season_vegas_right
+        season_ai_pct = round((season_ai_right / season_decided) * 100, 1) if season_decided else 0.0
+        season_vegas_pct = round((season_vegas_right / season_decided) * 100, 1) if season_decided else 0.0
+        if season_ai_right > season_vegas_right:
+            season_winner = 'hc_lombardo_ai'
+        elif season_vegas_right > season_ai_right:
+            season_winner = 'vegas_ai'
+        else:
+            season_winner = 'tie'
+
+        return jsonify({
+            'success': True,
+            'season': season,
+            'vegas_spread_source': vegas_source,
+            'season_summary': {
+                'games': len(rows),
+                'decided_games': season_decided,
+                'ai_right': season_ai_right,
+                'vegas_right': season_vegas_right,
+                'pushes': season_pushes,
+                'ai_pct': season_ai_pct,
+                'vegas_pct': season_vegas_pct,
+                'season_winner': season_winner
+            },
+            'weekly': weekly_rows
         })
 
     except Exception as e:

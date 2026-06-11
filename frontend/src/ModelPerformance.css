@@ -851,6 +851,35 @@
   font-weight: 700;
 }
 
+.result-pill {
+  display: inline-block;
+  min-width: 62px;
+  text-align: center;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+}
+
+.result-pill.right {
+  background: rgba(16, 185, 129, 0.2);
+  color: #6ee7b7;
+  border: 1px solid rgba(16, 185, 129, 0.65);
+}
+
+.result-pill.wrong {
+  background: rgba(239, 68, 68, 0.2);
+  color: #fca5a5;
+  border: 1px solid rgba(239, 68, 68, 0.65);
+}
+
+.result-pill.push {
+  background: rgba(148, 163, 184, 0.2);
+  color: #cbd5e1;
+  border: 1px solid rgba(148, 163, 184, 0.55);
+}
+
 /* Loading & Error States */
 .loading-spinner,
 .error-message,
