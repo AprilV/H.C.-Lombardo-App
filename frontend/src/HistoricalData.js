@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import './HistoricalData.css';
 import { getDefaultSeason, MIN_NFL_SEASON } from './utils/season';
 
@@ -82,7 +81,6 @@ function HistoricalData() {
   const [selectedStats, setSelectedStats] = useState(['ppg', 'total_yards_per_game', 'passing_yards_per_game', 'rushing_yards_per_game']); // Default 4 stats
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const navigate = useNavigate();
 
   // Generate season years from oldest supported season through current default season.
   const seasons = [];
@@ -92,12 +90,14 @@ function HistoricalData() {
 
   useEffect(() => {
     loadTeamsList();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedSeason]);
 
   useEffect(() => {
     if (selectedTeam && selectedSeason) {
       loadTeamData();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedTeam, selectedSeason]);
 
   const loadTeamsList = async () => {

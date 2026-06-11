@@ -15,11 +15,11 @@ function MLPredictions() {
   const [week, setWeek] = useState(null);
   const [loading, setLoading] = useState(false);
   const [predictions, setPredictions] = useState([]);
-  const [eloPredictions, setEloPredictions] = useState([]);
-  const [combinedPredictions, setCombinedPredictions] = useState([]);
-  const [eloRatings, setEloRatings] = useState(null);
-  const [modelInfo, setModelInfo] = useState(null);
-  const [explanation, setExplanation] = useState(null);
+  const [, setEloPredictions] = useState([]);
+  const [, setCombinedPredictions] = useState([]);
+  const [, setEloRatings] = useState(null);
+  const [, setModelInfo] = useState(null);
+  const [, setExplanation] = useState(null);
   const [error, setError] = useState(null);
   const [seasonStats, setSeasonStats] = useState(null);
   const [liveScores, setLiveScores] = useState({});
@@ -93,6 +93,7 @@ function MLPredictions() {
   // Keep season-level AI vs Vegas metrics in sync with the selected season.
   useEffect(() => {
     fetchSeasonStats();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [season]);
 
   // Fetch predictions when model type changes
@@ -106,6 +107,7 @@ function MLPredictions() {
         fetchCombinedPredictions();
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [predictionModel, week, season]);
 
   const fetchEloRatings = async () => {

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import './TeamComparison.css';
 import { getDefaultSeason, MIN_NFL_SEASON } from './utils/season';
 
@@ -99,12 +98,10 @@ function TeamComparison() {
     'completion_pct', 'qb_rating', 'third_down_pct', 'turnovers_per_game'
   ]));
   const [showStatPicker, setShowStatPicker] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [expandedGameA, setExpandedGameA] = useState(null);
   const [expandedGameB, setExpandedGameB] = useState(null);
-  
-  const navigate = useNavigate();
 
   // Generate season years from oldest supported season through current default season.
   const seasons = [];
@@ -115,10 +112,12 @@ function TeamComparison() {
   // Load teams when season changes
   useEffect(() => {
     if (seasonA) loadTeamsA();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [seasonA]);
 
   useEffect(() => {
     if (seasonB) loadTeamsB();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [seasonB]);
 
   // Load team data when selection changes

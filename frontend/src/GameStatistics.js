@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import './GameStatistics.css';
 import { getDefaultSeason, MIN_NFL_SEASON } from './utils/season';
 
@@ -107,8 +106,6 @@ function GameStatistics() {
   const [expandedGameB, setExpandedGameB] = useState(null);
   const [scheduleFilter, setScheduleFilter] = useState('all'); // 'all', 'division', 'home', 'away'
   
-  const navigate = useNavigate();
-
   // Generate season years from oldest supported season through current default season.
   const seasons = [];
   for (let year = currentSeason; year >= MIN_NFL_SEASON; year--) {
@@ -120,6 +117,7 @@ function GameStatistics() {
     if (seasonA) {
       loadTeamsA();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [seasonA]);
 
   // Load Team B teams when season changes
@@ -127,6 +125,7 @@ function GameStatistics() {
     if (seasonB) {
       loadTeamsB();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [seasonB]);
 
   // Load Team A data when selected

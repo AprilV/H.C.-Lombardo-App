@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import './MatchupAnalyzer.css';
 import { getDefaultSeason } from './utils/season';
 
@@ -93,12 +92,12 @@ function MatchupAnalyzer() {
     'Offense': true,
   });
   
-  const navigate = useNavigate();
   const season = getDefaultSeason();
 
   // Load teams on mount
   useEffect(() => {
     loadTeams();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Load team data when selection changes
@@ -106,12 +105,14 @@ function MatchupAnalyzer() {
     if (selectedTeamA) {
       loadTeamData('A', selectedTeamA);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedTeamA]);
 
   useEffect(() => {
     if (selectedTeamB) {
       loadTeamData('B', selectedTeamB);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedTeamB]);
 
   const loadTeams = async () => {
@@ -321,7 +322,7 @@ function MatchupAnalyzer() {
                   <div key={category} className="diff-category">
                     <h4>{category}</h4>
                     {stats.map(stat => {
-                      const { diff, display, better } = calculateDifferential(
+                      const { display, better } = calculateDifferential(
                         teamAData[stat.key],
                         teamBData[stat.key],
                         stat.format

@@ -45,6 +45,7 @@ function Analytics() {
   useEffect(() => {
     fetchSummary();
     fetchTeams();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [season]);
 
   useEffect(() => {
@@ -52,12 +53,14 @@ function Analytics() {
     if (activeTab === 'weather') fetchWeatherData();
     if (activeTab === 'rest') fetchRestData();
     if (activeTab === 'referees') fetchRefereeData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, season]);
 
   useEffect(() => {
     if (activeTab === 'custom') {
       fetchCustomData();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedStats, selectedTeam, season, activeTab]);
 
   const fetchSummary = async () => {

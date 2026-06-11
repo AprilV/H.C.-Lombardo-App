@@ -38,14 +38,13 @@ const NFL_STRUCTURE = {
 function Homepage() {
   const defaultSeason = getDefaultSeason();
   const [teams, setTeams] = useState([]);
-  const [predictions, setPredictions] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const { theme, changeTheme } = useTheme();
 
   useEffect(() => {
     fetchTeams();
-    fetchPredictions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchTeams = async () => {
@@ -58,28 +57,6 @@ function Homepage() {
       console.error('Failed to fetch teams:', err);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const fetchPredictions = async () => {
-    try {
-      const response = await fetch(`${API_URL}/api/ml/predict-upcoming`);
-      const data = await response.json();
-      if (data.predictions && data.predictions.length > 0) {
-        // Transform to match our ticker format
-        const simplified = data.predictions.map(p => ({
-          home_team: p.home_team,
-          away_team: p.away_team,
-          ai_spread: p.ai_spread,
-          vegas_spread: p.vegas_spread,
-          ai_total: Math.round(p.predicted_home_score + p.predicted_away_score),
-          vegas_total: p.total_line,
-          week: data.week
-        }));
-        setPredictions(simplified);
-      }
-    } catch (err) {
-      console.error('Failed to fetch predictions:', err);
     }
   };
 

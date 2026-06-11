@@ -10,7 +10,7 @@ function MLPredictionsRedesign() {
 
   const [season, setSeason] = useState(defaultSeason);
   const [week, setWeek] = useState(null);
-  const [availableWeeks, setAvailableWeeks] = useState([]);
+  const [, setAvailableWeeks] = useState([]);
   const [loading, setLoading] = useState(false);
   const [combinedData, setCombinedData] = useState([]);
   const [seasonStats, setSeasonStats] = useState(null);
@@ -29,12 +29,14 @@ function MLPredictionsRedesign() {
     if (week && season) {
       fetchCombinedPredictions();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [week, season]);
 
   useEffect(() => {
     if (season) {
       fetchSeasonStats(season);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [season]);
 
   useEffect(() => {
@@ -64,6 +66,7 @@ function MLPredictionsRedesign() {
       window.removeEventListener('focus', onFocus);
       document.removeEventListener('visibilitychange', onFocus);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [season, week]);
 
   const fetchAvailableWeeks = async () => {

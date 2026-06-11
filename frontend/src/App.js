@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider } from './contexts/ThemeContext';
 import SideMenu from './SideMenu';
@@ -20,8 +20,6 @@ import './App.css';
 const API_URL = process.env.REACT_APP_API_URL ?? '';
 
 function App() {
-  const [serverStatus, setServerStatus] = useState(null);
-
   useEffect(() => {
     testConnection();
   }, []);
@@ -29,8 +27,7 @@ function App() {
   const testConnection = async () => {
     try {
       const response = await fetch(`${API_URL}/health`);
-      const data = await response.json();
-      setServerStatus(data);
+      await response.json();
     } catch (err) {
       console.error('Connection test failed:', err);
     }

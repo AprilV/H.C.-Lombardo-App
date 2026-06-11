@@ -28,6 +28,7 @@ function ModelPerformance() {
       window.removeEventListener('focus', onFocus);
       document.removeEventListener('visibilitychange', onFocus);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedSeason]);
 
   const fetchPerformanceForSeason = async (season) => {

@@ -33,6 +33,7 @@ function LiveGamesTicker() {
     fetchGames();
     const interval = setInterval(fetchGames, 30000); // Refresh every 30 seconds
     return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Keep ref in sync with state so the scroll interval reads the latest value
@@ -158,11 +159,8 @@ function LiveGamesTicker() {
     
     // Subtract 3 hours for Pacific
     let ptHours = hours - 3;
-    let dayAdjust = 0;
-    
     if (ptHours < 0) {
       ptHours += 24;
-      dayAdjust = -1; // Previous day
     }
     
     // Convert back to 12-hour
