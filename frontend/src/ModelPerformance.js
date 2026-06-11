@@ -27,24 +27,29 @@ function ModelPerformance() {
     return response.json();
   };
 
-  const fetchSeasonVsVegasForSeason = async (season) => {
-    const response = await fetch(`${API_URL}/api/ml/season-ai-vs-vegas/${season}`);
-    return response.json();
-  };
-
   const fetchPerformance = async ({ silent = false } = {}) => {
     if (!silent) {
       setRefreshing(true);
     }
     try {
-      const [data, vsVegasData] = await Promise.all([
-        fetchPerformanceForSeason(selectedSeason),
-        fetchSeasonVsVegasForSeason(selectedSeason)
-      ]);
+      const data = await fetchPerformanceForSeason(selectedSeason);
       
       if (data.success) {
         setPerformanceData(data);
-        setSeasonVsVegas(vsVegasData?.success ? vsVegasData : null);
+        const spreadH2h = data?.model_breakdown?.spread_h2h;
+        if (spreadH2h && Number(spreadH2h.total_games || 0) > 0) {
+          setSeasonVsVegas({
+            success: true,
+            ai_wins: Number(spreadH2h.ai_wins || 0),
+            vegas_wins: Number(spreadH2h.vegas_wins || 0),
+            ties: Number(spreadH2h.ties || 0),
+            total_games: Number(spreadH2h.total_games || 0),
+            ai_percentage: Number(spreadH2h.ai_percentage || 0),
+            vegas_percentage: Number(spreadH2h.vegas_percentage || 0)
+          });
+        } else {
+          setSeasonVsVegas(null);
+        }
         setLastUpdated(new Date());
         setError(null);
       } else {
