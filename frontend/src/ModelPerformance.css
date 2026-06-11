@@ -746,6 +746,58 @@
   font-size: 0.76rem;
 }
 
+.season-table-section {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 25px;
+  margin-bottom: 30px;
+}
+
+.season-table-section h3 {
+  color: #4a9eff;
+  margin: 0 0 8px 0;
+  font-size: 1.3rem;
+}
+
+.season-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.season-results-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 860px;
+}
+
+.season-results-table th,
+.season-results-table td {
+  padding: 11px 10px;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.9rem;
+}
+
+.season-results-table th {
+  color: #9dc9ff;
+  font-weight: 700;
+}
+
+.season-results-table td {
+  color: #e4edf8;
+}
+
+.positive-cell {
+  color: #10b981 !important;
+  font-weight: 700;
+}
+
+.negative-cell {
+  color: #f87171 !important;
+  font-weight: 700;
+}
+
 /* Loading & Error States */
 .loading-spinner,
 .error-message,
