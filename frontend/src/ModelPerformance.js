@@ -18,16 +18,7 @@ function ModelPerformance() {
 
   useEffect(() => {
     fetchPerformance();
-    const interval = setInterval(() => fetchPerformance({ silent: true }), 10000); // Refresh every 10 seconds
-    const onFocus = () => fetchPerformance({ silent: true });
-    window.addEventListener('focus', onFocus);
-    document.addEventListener('visibilitychange', onFocus);
-
-    return () => {
-      clearInterval(interval);
-      window.removeEventListener('focus', onFocus);
-      document.removeEventListener('visibilitychange', onFocus);
-    };
+    return undefined;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedSeason]);
 

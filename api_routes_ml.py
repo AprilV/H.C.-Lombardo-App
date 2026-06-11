@@ -928,13 +928,101 @@ def get_season_ai_vs_vegas(season):
     Shows how many games AI beat Vegas on spread coverage
     """
     conn = None
+    cur = None
     try:
         conn = psycopg2.connect(**get_predictor().db_config)
-        rollup = compute_simulated_ai_vs_vegas_rollup(conn, season)
-        ai_wins = int(rollup.get('ai_wins') or 0)
-        vegas_wins = int(rollup.get('vegas_wins') or 0)
-        ties = int(rollup.get('ties') or 0)
-        total = int(rollup.get('total_games') or 0)
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+
+        has_games_closing_spread = table_has_column(conn, 'hcl', 'games', 'closing_spread')
+        if has_games_closing_spread:
+            vegas_expr = "COALESCE(g.closing_spread, p.vegas_spread, g.spread_line)"
+            vegas_source = 'closing_spread->prediction_vegas_spread->spread_line'
+        else:
+            vegas_expr = "COALESCE(p.vegas_spread, g.spread_line)"
+            vegas_source = 'prediction_vegas_spread->spread_line'
+
+        strict_where = [
+            "p.season = %s",
+            "g.home_score IS NOT NULL",
+            "g.away_score IS NOT NULL",
+            "COALESCE(g.is_postseason, FALSE) = FALSE",
+            "p.ai_spread IS NOT NULL",
+            f"{vegas_expr} IS NOT NULL",
+            "p.predicted_at IS NOT NULL",
+            "((g.kickoff_time_utc IS NOT NULL AND p.predicted_at <= g.kickoff_time_utc) "
+            " OR (g.kickoff_time_utc IS NULL "
+            "     AND COALESCE(p.game_date::date, g.game_date::date) IS NOT NULL "
+            "     AND p.predicted_at::date <= COALESCE(p.game_date::date, g.game_date::date)))"
+        ]
+
+        cur.execute(
+            f"""
+            SELECT
+                p.ai_spread,
+                {vegas_expr} AS vegas_spread,
+                g.home_score,
+                g.away_score
+            FROM hcl.ml_predictions p
+            JOIN hcl.games g ON p.game_id = g.game_id
+            WHERE {' AND '.join(strict_where)}
+            ORDER BY g.week ASC, g.game_date ASC
+            """,
+            (season,)
+        )
+        rows = cur.fetchall() or []
+        data_source = 'strict_pregame'
+
+        if not rows:
+            cur.execute(
+                f"""
+                SELECT
+                    p.ai_spread,
+                    {vegas_expr} AS vegas_spread,
+                    g.home_score,
+                    g.away_score
+                FROM hcl.ml_predictions p
+                JOIN hcl.games g ON p.game_id = g.game_id
+                WHERE p.season = %s
+                  AND g.home_score IS NOT NULL
+                  AND g.away_score IS NOT NULL
+                  AND COALESCE(g.is_postseason, FALSE) = FALSE
+                  AND p.ai_spread IS NOT NULL
+                  AND {vegas_expr} IS NOT NULL
+                ORDER BY g.week ASC, g.game_date ASC
+                """,
+                (season,)
+            )
+            rows = cur.fetchall() or []
+            if rows:
+                data_source = 'legacy_relaxed_pregame'
+
+        ai_wins = 0
+        vegas_wins = 0
+        ties = 0
+        total = 0
+
+        if rows:
+            for row in rows:
+                actual_margin = row.get('home_score') - row.get('away_score')
+                ai_covered = did_home_cover(row.get('ai_spread'), actual_margin)
+                vegas_covered = did_home_cover(row.get('vegas_spread'), actual_margin)
+
+                total += 1
+                if ai_covered is True and vegas_covered is False:
+                    ai_wins += 1
+                elif ai_covered is False and vegas_covered is True:
+                    vegas_wins += 1
+                else:
+                    ties += 1
+        else:
+            rollup = compute_simulated_ai_vs_vegas_rollup(conn, season)
+            ai_wins = int(rollup.get('ai_wins') or 0)
+            vegas_wins = int(rollup.get('vegas_wins') or 0)
+            ties = int(rollup.get('ties') or 0)
+            total = int(rollup.get('total_games') or 0)
+            data_source = rollup.get('data_source') or 'simulated_historical'
+            vegas_source = rollup.get('vegas_spread_source') or 'games.spread_line'
+
         ai_pct = (ai_wins / total * 100) if total > 0 else 0
         vegas_pct = (vegas_wins / total * 100) if total > 0 else 0
         
@@ -947,13 +1035,15 @@ def get_season_ai_vs_vegas(season):
             'total_games': total,
             'ai_percentage': round(ai_pct, 1),
             'vegas_percentage': round(vegas_pct, 1),
-            'vegas_spread_source': rollup.get('vegas_spread_source') or 'games.spread_line',
-            'data_source': rollup.get('data_source') or 'simulated_historical'
+            'vegas_spread_source': vegas_source,
+            'data_source': data_source
         })
         
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
     finally:
+        if cur:
+            cur.close()
         if conn:
             conn.close()
 
@@ -2466,16 +2556,8 @@ def get_performance_stats():
             spread_h2h_data_source = 'simulated_historical'
             spread_h2h_vegas_source = 'games.spread_line'
 
-        # Force a single public ATS contract for spread_h2h so this endpoint
-        # cannot drift from /api/ml/season-ai-vs-vegas/<season>.
-        unified_h2h = compute_simulated_ai_vs_vegas_rollup(conn, season, week=week)
-        spread_h2h_total = _int(unified_h2h.get('total_games'))
-        spread_h2h_ai = _int(unified_h2h.get('ai_wins'))
-        spread_h2h_vegas = _int(unified_h2h.get('vegas_wins'))
-        spread_h2h_ties = _int(unified_h2h.get('ties'))
-        spread_h2h_data_source = unified_h2h.get('data_source') or 'simulated_historical'
-        spread_h2h_vegas_source = unified_h2h.get('vegas_spread_source') or 'games.spread_line'
-        spread_h2h_legacy_mode = False
+        # Keep tracked rows as primary for stable historical outputs.
+        # Simulation is only used as fallback when no tracked ATS rows are available.
 
         model_breakdown = {
             'xgb': {
