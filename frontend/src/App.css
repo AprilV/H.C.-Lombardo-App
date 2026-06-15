@@ -1,21 +1,9 @@
 /* ============================================
    THEME SYSTEM — CSS Custom Properties
-   Default: NFL theme (blue/red gradient)
+  Default: Executive Dark theme (navy/slate/amber)
    ============================================ */
 
 :root,
-[data-theme="nfl"] {
-  --bg-primary: linear-gradient(135deg, #013369 0%, #D50A0A 50%, #013369 100%);
-  --bg-secondary: rgba(255, 255, 255, 0.1);
-  --bg-card: rgba(255, 255, 255, 0.95);
-  --text-primary: #013369;
-  --text-secondary: #4b5563;
-  --accent-primary: #D50A0A;
-  --accent-secondary: #013369;
-  --border-color: rgba(255, 255, 255, 0.25);
-  --shadow: rgba(1, 51, 105, 0.3);
-}
-
 [data-theme="executive-dark"] {
   --bg-primary: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
   --bg-secondary: #27272A;
@@ -26,6 +14,18 @@
   --accent-secondary: #D97706;
   --border-color: #334155;
   --shadow: rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="nfl"] {
+  --bg-primary: linear-gradient(135deg, #013369 0%, #D50A0A 50%, #013369 100%);
+  --bg-secondary: rgba(255, 255, 255, 0.1);
+  --bg-card: rgba(255, 255, 255, 0.95);
+  --text-primary: #013369;
+  --text-secondary: #4b5563;
+  --accent-primary: #D50A0A;
+  --accent-secondary: #013369;
+  --border-color: rgba(255, 255, 255, 0.25);
+  --shadow: rgba(1, 51, 105, 0.3);
 }
 
 [data-theme="classic-light"] {
@@ -56,7 +56,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: linear-gradient(135deg, #013369 0%, #D50A0A 50%, #013369 100%);
+  background: linear-gradient(135deg, #0A0F1E 0%, #0F172A 100%);
   min-height: 100vh;
 }
 
@@ -66,6 +66,10 @@ body,
   width: 100%;
   max-width: 100%;
   overflow-x: hidden;
+}
+
+[data-theme="nfl"] body {
+  background: linear-gradient(135deg, #013369 0%, #D50A0A 50%, #013369 100%);
 }
 
 [data-theme="executive-dark"] body {
@@ -119,6 +123,7 @@ body,
    =================================== */
 
 .nfl-background {
+  display: none;
   position: absolute;
   top: 0;
   left: 0;
@@ -127,6 +132,10 @@ body,
   overflow: hidden;
   pointer-events: none;
   z-index: 0;
+}
+
+[data-theme="nfl"] .nfl-background {
+  display: block;
 }
 
 .nfl-scroll {
