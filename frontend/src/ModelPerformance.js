@@ -193,19 +193,19 @@ function ModelPerformance() {
         <p className="customer-answer-text">{seasonSummary.proof_line || 'No data for this season yet.'}</p>
         <div className="customer-answer-grid">
           <div className="customer-answer-card">
-            <h4>AI ATS Wins</h4>
+            <h4>AI ATS Covers</h4>
             <p className="customer-answer-value">{toNumber(seasonSummary.ai_wins)}</p>
             <p className="customer-answer-detail">{formatPct(seasonSummary.ai_pct)}</p>
           </div>
           <div className="customer-answer-card">
-            <h4>Vegas ATS Wins</h4>
+            <h4>Vegas ATS Covers</h4>
             <p className="customer-answer-value">{toNumber(seasonSummary.vegas_wins)}</p>
             <p className="customer-answer-detail">{formatPct(seasonSummary.vegas_pct)}</p>
           </div>
           <div className="customer-answer-card">
-            <h4>Pushes</h4>
+            <h4>True ATS Pushes</h4>
             <p className="customer-answer-value">{toNumber(seasonSummary.pushes)}</p>
-            <p className="customer-answer-detail">Shown, not counted for either side</p>
+            <p className="customer-answer-detail">Only games that landed exactly on the line</p>
           </div>
           <div className="customer-answer-card">
             <h4>Total Games</h4>
@@ -241,19 +241,19 @@ function ModelPerformance() {
               <p className="customer-answer-detail">{selectedWeekRow.scoreline}</p>
             </div>
             <div className="customer-answer-card">
-              <h4>AI ATS Wins</h4>
+              <h4>AI ATS Covers</h4>
               <p className="customer-answer-value">{toNumber(selectedWeekRow.ai_wins)}</p>
               <p className="customer-answer-detail">{formatPct(selectedWeekRow.ai_pct)}</p>
             </div>
             <div className="customer-answer-card">
-              <h4>Vegas ATS Wins</h4>
+              <h4>Vegas ATS Covers</h4>
               <p className="customer-answer-value">{toNumber(selectedWeekRow.vegas_wins)}</p>
               <p className="customer-answer-detail">{formatPct(selectedWeekRow.vegas_pct)}</p>
             </div>
             <div className="customer-answer-card">
-              <h4>Pushes</h4>
+              <h4>True ATS Pushes</h4>
               <p className="customer-answer-value">{toNumber(selectedWeekRow.pushes)}</p>
-              <p className="customer-answer-detail">Week ties on error distance</p>
+              <p className="customer-answer-detail">Only games that landed exactly on the line</p>
             </div>
           </div>
         ) : (
@@ -264,7 +264,7 @@ function ModelPerformance() {
       <div className="season-table-section">
         <h3>Season Game-By-Game Results</h3>
         <p className="season-trend-subtitle">
-          ATS winner is determined by final score versus Vegas closing spread.
+          ATS outcomes use independent AI and Vegas cover results. Push means the game landed exactly on the line.
         </p>
 
         {gameRows.length > 0 ? (

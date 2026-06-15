@@ -2021,8 +2021,12 @@ def get_ai_vs_vegas_scoreboard(season):
         weekly = {}
         game_rows = []
         season_ai_wins = 0
+        season_ai_losses = 0
+        season_ai_pushes = 0
         season_vegas_wins = 0
-        season_pushes = 0
+        season_vegas_losses = 0
+        season_vegas_pushes = 0
+        season_true_pushes = 0
 
         def ats_pick_result(pick_side, home_cover):
             if home_cover is None or pick_side == 'no_edge':
@@ -2058,32 +2062,62 @@ def get_ai_vs_vegas_scoreboard(season):
             ai_result = ats_pick_result(ai_pick_side, home_cover)
             vegas_result = ats_pick_result(vegas_pick_side, home_cover)
 
-            if ai_result == 'win' and vegas_result != 'win':
-                winner = 'hc_lombardo_ai'
+            if ai_result == 'win':
                 season_ai_wins += 1
+            elif ai_result == 'loss':
+                season_ai_losses += 1
+            else:
+                season_ai_pushes += 1
+
+            if vegas_result == 'win':
+                season_vegas_wins += 1
+            elif vegas_result == 'loss':
+                season_vegas_losses += 1
+            else:
+                season_vegas_pushes += 1
+
+            if home_cover is None:
+                season_true_pushes += 1
+
+            if home_cover is None:
+                winner = 'push'
+            elif ai_result == 'win' and vegas_result != 'win':
+                winner = 'hc_lombardo_ai'
             elif vegas_result == 'win' and ai_result != 'win':
                 winner = 'vegas_ai'
-                season_vegas_wins += 1
             else:
-                winner = 'push'
-                season_pushes += 1
+                winner = 'tie'
 
             if week not in weekly:
                 weekly[week] = {
                     'week': week,
                     'games': 0,
                     'ai_wins': 0,
+                    'ai_losses': 0,
+                    'ai_pushes': 0,
                     'vegas_wins': 0,
-                    'pushes': 0
+                    'vegas_losses': 0,
+                    'vegas_pushes': 0,
+                    'true_pushes': 0
                 }
 
             weekly[week]['games'] += 1
-            if winner == 'hc_lombardo_ai':
+            if ai_result == 'win':
                 weekly[week]['ai_wins'] += 1
-            elif winner == 'vegas_ai':
-                weekly[week]['vegas_wins'] += 1
+            elif ai_result == 'loss':
+                weekly[week]['ai_losses'] += 1
             else:
-                weekly[week]['pushes'] += 1
+                weekly[week]['ai_pushes'] += 1
+
+            if vegas_result == 'win':
+                weekly[week]['vegas_wins'] += 1
+            elif vegas_result == 'loss':
+                weekly[week]['vegas_losses'] += 1
+            else:
+                weekly[week]['vegas_pushes'] += 1
+
+            if home_cover is None:
+                weekly[week]['true_pushes'] += 1
 
             ai_pick_team = (
                 row['home_team'] if ai_pick_side == 'home'
@@ -2136,22 +2170,23 @@ def get_ai_vs_vegas_scoreboard(season):
             else:
                 week_winner = 'tie'
 
-            row['decided_games'] = row['ai_wins'] + row['vegas_wins']
+            row['decided_games'] = max(0, row['games'] - row['true_pushes'])
             row['ai_pct'] = round((row['ai_wins'] / row['games']) * 100, 1) if row['games'] else 0.0
             row['vegas_pct'] = round((row['vegas_wins'] / row['games']) * 100, 1) if row['games'] else 0.0
+            row['pushes'] = row['true_pushes']
             row['week_winner'] = week_winner
-            row['scoreline'] = f"AI {row['ai_wins']} - Vegas {row['vegas_wins']} - {row['pushes']} push"
+            row['scoreline'] = f"AI covers {row['ai_wins']}, Vegas covers {row['vegas_wins']}, true pushes {row['true_pushes']}"
             weekly_rows.append(row)
 
         total_games = len(game_rows)
-        decided_games = season_ai_wins + season_vegas_wins
+        decided_games = max(0, total_games - season_true_pushes)
         season_ai_pct = round((season_ai_wins / total_games) * 100, 1) if total_games else 0.0
         season_vegas_pct = round((season_vegas_wins / total_games) * 100, 1) if total_games else 0.0
 
-        if season_ai_wins > season_vegas_wins:
+        if season_ai_pct > season_vegas_pct:
             season_winner = 'hc_lombardo_ai'
             verdict_text = 'Follow HC Lombardo AI'
-        elif season_vegas_wins > season_ai_wins:
+        elif season_vegas_pct > season_ai_pct:
             season_winner = 'vegas_ai'
             verdict_text = 'Follow Vegas'
         else:
@@ -2159,9 +2194,9 @@ def get_ai_vs_vegas_scoreboard(season):
             verdict_text = 'Too close to call'
 
         proof_line = (
-            f"AI covered in {season_ai_wins} games. "
-            f"Vegas covered in {season_vegas_wins}. "
-            f"{season_pushes} pushes. ({total_games} games)"
+            f"AI ATS record: {season_ai_wins}-{season_ai_losses}-{season_ai_pushes}. "
+            f"Vegas ATS record: {season_vegas_wins}-{season_vegas_losses}-{season_vegas_pushes}. "
+            f"True ATS pushes: {season_true_pushes}. ({total_games} games)"
         )
 
         return jsonify({
@@ -2172,8 +2207,13 @@ def get_ai_vs_vegas_scoreboard(season):
                 'games': total_games,
                 'decided_games': decided_games,
                 'ai_wins': season_ai_wins,
+                'ai_losses': season_ai_losses,
+                'ai_pushes': season_ai_pushes,
                 'vegas_wins': season_vegas_wins,
-                'pushes': season_pushes,
+                'vegas_losses': season_vegas_losses,
+                'vegas_pushes': season_vegas_pushes,
+                'pushes': season_true_pushes,
+                'true_pushes': season_true_pushes,
                 'ai_pct': season_ai_pct,
                 'vegas_pct': season_vegas_pct,
                 'season_winner': season_winner,
