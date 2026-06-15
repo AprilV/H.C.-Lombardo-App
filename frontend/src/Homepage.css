@@ -719,6 +719,153 @@
   font-weight: 600;
 }
 
+/* ============================================================
+   NON-NFL THEME CLEANUP (executive-dark + classic-light)
+   Keep NFL theme bold; make non-NFL themes muted and professional.
+   ============================================================ */
+
+[data-theme="executive-dark"] .homepage-header,
+[data-theme="classic-light"] .homepage-header {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 12px var(--shadow);
+}
+
+[data-theme="executive-dark"] .homepage-header h1,
+[data-theme="executive-dark"] .homepage-header h2,
+[data-theme="classic-light"] .homepage-header h1,
+[data-theme="classic-light"] .homepage-header h2 {
+  color: var(--text-primary);
+  text-shadow: none;
+}
+
+[data-theme="executive-dark"] .season-subtitle,
+[data-theme="classic-light"] .season-subtitle {
+  color: var(--text-secondary);
+}
+
+[data-theme="executive-dark"] .conference-header,
+[data-theme="classic-light"] .conference-header {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 12px var(--shadow);
+}
+
+[data-theme="executive-dark"] .conference-header::before,
+[data-theme="classic-light"] .conference-header::before {
+  display: none;
+}
+
+[data-theme="executive-dark"] .conference-title,
+[data-theme="classic-light"] .conference-title {
+  color: var(--text-primary);
+  text-shadow: none;
+}
+
+[data-theme="executive-dark"] .conference-header.nfc .conference-logo-image,
+[data-theme="classic-light"] .conference-header.nfc .conference-logo-image {
+  background: transparent;
+  border-radius: 0;
+  padding: 0;
+}
+
+[data-theme="executive-dark"] .division-card,
+[data-theme="classic-light"] .division-card {
+  background: var(--bg-card);
+  border-color: var(--border-color);
+  box-shadow: 0 4px 10px var(--shadow);
+}
+
+[data-theme="executive-dark"] .division-card:hover,
+[data-theme="classic-light"] .division-card:hover {
+  border-color: var(--accent-primary);
+  box-shadow: 0 6px 14px var(--shadow);
+}
+
+[data-theme="executive-dark"] .division-title,
+[data-theme="classic-light"] .division-title {
+  color: var(--text-primary);
+  border-bottom-color: var(--border-color);
+}
+
+[data-theme="executive-dark"] .team-row,
+[data-theme="classic-light"] .team-row {
+  background: var(--bg-secondary);
+}
+
+[data-theme="executive-dark"] .afc-section .team-row:hover,
+[data-theme="executive-dark"] .nfc-section .team-row:hover,
+[data-theme="classic-light"] .afc-section .team-row:hover,
+[data-theme="classic-light"] .nfc-section .team-row:hover {
+  background: var(--bg-card);
+  border-color: var(--accent-primary);
+  box-shadow: 0 3px 10px var(--shadow);
+}
+
+[data-theme="executive-dark"] .team-row:hover .team-name-short,
+[data-theme="executive-dark"] .team-row:hover .team-record,
+[data-theme="classic-light"] .team-row:hover .team-name-short,
+[data-theme="classic-light"] .team-row:hover .team-record {
+  color: var(--text-primary);
+}
+
+[data-theme="executive-dark"] .team-name-short,
+[data-theme="classic-light"] .team-name-short {
+  color: var(--text-primary);
+}
+
+[data-theme="executive-dark"] .team-record,
+[data-theme="classic-light"] .team-record {
+  color: var(--accent-primary);
+}
+
+[data-theme="executive-dark"] .refresh-btn-home,
+[data-theme="classic-light"] .refresh-btn-home {
+  background: linear-gradient(145deg, var(--accent-primary), var(--accent-secondary));
+  color: var(--bg-card);
+  box-shadow: 0 6px 16px var(--shadow);
+}
+
+[data-theme="executive-dark"] .refresh-btn-home:hover,
+[data-theme="classic-light"] .refresh-btn-home:hover {
+  box-shadow: 0 8px 20px var(--shadow);
+}
+
+[data-theme="executive-dark"] .prediction-methodology,
+[data-theme="classic-light"] .prediction-methodology {
+  background: var(--bg-secondary);
+  border-color: var(--border-color);
+  box-shadow: 0 4px 12px var(--shadow);
+}
+
+[data-theme="executive-dark"] .prediction-methodology h3,
+[data-theme="classic-light"] .prediction-methodology h3 {
+  color: var(--text-primary);
+  text-shadow: none;
+}
+
+[data-theme="executive-dark"] .method-card,
+[data-theme="classic-light"] .method-card {
+  background: var(--bg-card);
+  border-color: var(--border-color);
+}
+
+[data-theme="executive-dark"] .method-card:hover,
+[data-theme="classic-light"] .method-card:hover {
+  border-color: var(--accent-primary);
+  box-shadow: 0 6px 14px var(--shadow);
+}
+
+[data-theme="executive-dark"] .method-title,
+[data-theme="classic-light"] .method-title {
+  color: var(--text-primary);
+}
+
+[data-theme="executive-dark"] .method-desc,
+[data-theme="classic-light"] .method-desc {
+  color: var(--text-secondary);
+}
+
 /* Responsive Footer */
 @media (max-width: 768px) {
   .footer-credits {
