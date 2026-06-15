@@ -28,6 +28,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), 'ml'))
 from predict_week import WeeklyPredictor
 from predict_elo import EloPredictionSystem
 from elo_tracker import EloTracker
+from team_abbreviations import to_canonical_abbr
 
 # Create Blueprint
 ml_api = Blueprint('ml_api', __name__)
@@ -4326,11 +4327,11 @@ def get_combined_predictions(season, week):
         scheduled_row = cur.fetchone() or {}
         scheduled_count = int(scheduled_row.get('total_games') or 0)
 
-        # Get XGBoost predictions WITH Vegas spread from games table
+        # Get XGBoost predictions with normalized vegas_spread and raw game spread fallback.
         cur.execute("""
             SELECT 
                 p.*,
-                g.spread_line as vegas_spread,
+                g.spread_line as game_spread_line_raw,
                 g.total_line as vegas_total,
                 g.home_score,
                 g.away_score
@@ -4341,13 +4342,13 @@ def get_combined_predictions(season, week):
         """, (season, week))
         xgb_predictions = {row['game_id']: dict(row) for row in cur.fetchall()}
         
-        # Get Elo predictions WITH Vegas spread from games table (if available)
+        # Get Elo predictions with normalized vegas_spread and raw game spread fallback (if available).
         elo_predictions = {}
         if elo_table_ready:
             cur.execute("""
                 SELECT 
                     e.*,
-                    g.spread_line as vegas_spread,
+                    g.spread_line as game_spread_line_raw,
                     g.total_line as vegas_total,
                     g.home_score,
                     g.away_score
@@ -4395,6 +4396,7 @@ def get_combined_predictions(season, week):
                         'ai_spread': row.get('ai_spread', 0),
                         'split_prediction': row.get('split_prediction', False),
                         'vegas_spread': row.get('vegas_spread'),
+                        'game_spread_line_raw': row.get('game_spread_line_raw'),
                         'vegas_total': row.get('total_line'),
                         'home_score': row.get('actual_home_score'),
                         'away_score': row.get('actual_away_score')
@@ -4425,6 +4427,7 @@ def get_combined_predictions(season, week):
                         'elo_spread': row.get('elo_spread', 0),
                         'split_prediction': row.get('split_prediction', False),
                         'vegas_spread': row.get('vegas_spread'),
+                        'game_spread_line_raw': row.get('game_spread_line_raw'),
                         'vegas_total': row.get('vegas_total'),
                         'home_score': row.get('actual_home_score'),
                         'away_score': row.get('actual_away_score')
@@ -4439,6 +4442,14 @@ def get_combined_predictions(season, week):
         # Combine predictions
         combined = []
         all_game_ids = set(xgb_predictions.keys()) | set(elo_predictions.keys())
+
+        def normalize_display_vegas_spread(normalized_value, raw_game_spread):
+            if normalized_value is not None:
+                return float(normalized_value)
+            if raw_game_spread is not None:
+                # games.spread_line uses the opposite sign from the card display convention.
+                return float(-raw_game_spread)
+            return None
         
         for game_id in sorted(all_game_ids):
             xgb = xgb_predictions.get(game_id)
@@ -4479,7 +4490,10 @@ def get_combined_predictions(season, week):
             
             if xgb and elo:
                 # Both predictions available
-                agreement = xgb['predicted_winner'] == elo['predicted_winner']
+                agreement = (
+                    to_canonical_abbr(xgb.get('predicted_winner'))
+                    == to_canonical_abbr(elo.get('predicted_winner'))
+                )
                 
                 combined.append({
                     'game_id': game_id,
@@ -4510,7 +4524,10 @@ def get_combined_predictions(season, week):
                         'split_prediction': elo.get('split_prediction', False)
                     },
                     'agreement': agreement,
-                    'vegas_spread': float(xgb['vegas_spread']) if xgb.get('vegas_spread') is not None else None
+                    'vegas_spread': normalize_display_vegas_spread(
+                        xgb.get('vegas_spread'),
+                        xgb.get('game_spread_line_raw')
+                    )
                 })
             elif xgb:
                 # Only XGBoost available
@@ -4537,7 +4554,10 @@ def get_combined_predictions(season, week):
                     },
                     'elo': None,
                     'agreement': None,
-                    'vegas_spread': float(xgb['vegas_spread']) if xgb.get('vegas_spread') is not None else None
+                    'vegas_spread': normalize_display_vegas_spread(
+                        xgb.get('vegas_spread'),
+                        xgb.get('game_spread_line_raw')
+                    )
                 })
             elif elo:
                 # Only Elo available
@@ -4564,7 +4584,10 @@ def get_combined_predictions(season, week):
                         'spread': float(elo['elo_spread'])
                     },
                     'agreement': None,
-                    'vegas_spread': float(elo['vegas_spread']) if elo.get('vegas_spread') is not None else None
+                    'vegas_spread': normalize_display_vegas_spread(
+                        elo.get('vegas_spread'),
+                        elo.get('game_spread_line_raw')
+                    )
                 })
         
         # Calculate summary stats
