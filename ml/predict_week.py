@@ -302,8 +302,8 @@ class WeeklyPredictor:
         raw_ai_spread = -predicted_margin
         ai_spread = (raw_ai_spread * self.ai_spread_cal_scale) + self.ai_spread_cal_bias
         
-        # Winner from POINT SPREAD model (more specific than win/loss model)
-        spread_predicted_winner = home_team if predicted_margin > 0 else away_team
+        # Headline winner should come from the winner classifier output.
+        classifier_predicted_winner = home_team if win_prediction == 1 else away_team
         
         # Compare to Vegas spread
         spread_difference = None
@@ -321,8 +321,8 @@ class WeeklyPredictor:
             'away_win_prob': float(win_confidence[0]),
             'confidence': float(max(win_confidence)),
             
-            # Use spread model's winner as primary (more granular)
-            'predicted_winner': spread_predicted_winner,
+            # Headline winner is sourced from the winner classifier.
+            'predicted_winner': classifier_predicted_winner,
             
             # Score predictions
             'predicted_home_score': float(predicted_home_score),
@@ -369,10 +369,9 @@ class WeeklyPredictor:
         for idx, game in schedule.iterrows():
             print(f"Predicting: {game['away_team']} @ {game['home_team']}")
             
-            # NFLverse uses inverted sign convention: positive = home favored
-            # We need to flip to standard convention: negative = favored
+            # Use stored spread orientation directly to match training feature semantics.
             raw_spread = game.get('spread_line')
-            vegas_spread = -raw_spread if raw_spread is not None else None
+            vegas_spread = raw_spread if raw_spread is not None else None
             
             result = self.predict_game(
                 season=season,
