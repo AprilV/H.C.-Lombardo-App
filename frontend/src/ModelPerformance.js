@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import './ModelPerformance.css';
-import { getDefaultSeason, getRecentSeasons } from './utils/season';
+import { getDefaultSeason } from './utils/season';
 
 const API_URL = (typeof window !== 'undefined' && (window.location.hostname === 'hclombardo.com' || window.location.hostname === 'www.hclombardo.com' || window.location.hostname.endsWith('.netlify.app'))) ? '' : (process.env.REACT_APP_API_URL ?? '');
 
@@ -12,12 +12,13 @@ function toNumber(value) {
 function winnerLabel(winner) {
   if (winner === 'hc_lombardo_ai') return 'HC Lombardo AI';
   if (winner === 'vegas_ai') return 'Vegas AI';
+  if (winner === 'push') return 'Push';
   return 'Tie';
 }
 
 function resultPillClass(result) {
-  if (result === 'right') return 'result-pill right';
-  if (result === 'wrong') return 'result-pill wrong';
+  if (result === 'win' || result === 'right') return 'result-pill win';
+  if (result === 'loss' || result === 'wrong') return 'result-pill loss';
   return 'result-pill push';
 }
 
@@ -25,9 +26,24 @@ function formatPct(value) {
   return `${toNumber(value).toFixed(1)}%`;
 }
 
+function formatSpread(value) {
+  const n = Number(value);
+  if (!Number.isFinite(n)) return 'N/A';
+  return `${n > 0 ? '+' : ''}${n.toFixed(1)}`;
+}
+
 function ModelPerformance() {
   const defaultSeason = getDefaultSeason();
-  const seasonOptions = getRecentSeasons(25, 1999, defaultSeason);
+  const fallbackSeasonOptions = useMemo(() => {
+    const years = [];
+    for (let year = defaultSeason; year >= 2020; year -= 1) {
+      if (year === 2025) continue;
+      years.push(year);
+    }
+    return years;
+  }, [defaultSeason]);
+
+  const [seasonOptions, setSeasonOptions] = useState([]);
 
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -69,6 +85,32 @@ function ModelPerformance() {
     }
   };
 
+  const fetchSeasonOptions = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/ml/ai-vs-vegas-seasons`);
+      const data = await response.json();
+      if (!data.success) {
+        return;
+      }
+
+      const seasons = (data.seasons || []).map((row) => Number(row.season)).filter(Number.isFinite);
+      const sortedSeasons = [...new Set(seasons)].sort((a, b) => b - a);
+      if (sortedSeasons.length > 0) {
+        setSeasonOptions(sortedSeasons);
+        if (!sortedSeasons.includes(selectedSeason)) {
+          setSelectedSeason(sortedSeasons[0]);
+        }
+      }
+    } catch (err) {
+      // Keep current fallback if season list endpoint is unavailable.
+    }
+  };
+
+  useEffect(() => {
+    fetchSeasonOptions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   useEffect(() => {
     fetchScoreboard();
     return undefined;
@@ -84,6 +126,9 @@ function ModelPerformance() {
 
   const seasonSummary = scoreboard?.season_summary || {};
   const seasonWinner = winnerLabel(seasonSummary?.season_winner);
+  const gameRows = scoreboard?.games || [];
+
+  const displaySeasonOptions = seasonOptions.length > 0 ? seasonOptions : fallbackSeasonOptions;
 
   const formatLastUpdated = () => {
     if (!lastUpdated) return 'Waiting for first update';
@@ -118,7 +163,7 @@ function ModelPerformance() {
       <div className="season-selector-container">
         <h2 className="page-title">Should You Follow HC Lombardo AI Or Vegas AI?</h2>
         <div className="season-selector">
-          {seasonOptions.map((season) => (
+          {displaySeasonOptions.map((season) => (
             <button
               key={season}
               className={`season-btn ${selectedSeason === season ? 'active' : ''}`}
@@ -142,25 +187,31 @@ function ModelPerformance() {
       </div>
 
       <div className="customer-answer-section">
-        <h3>Season Winner ({selectedSeason})</h3>
+        <h3>Season Verdict ({selectedSeason})</h3>
         <p className="customer-answer-text">
-          Best chance so far: <strong>{seasonWinner}</strong>
+          <strong>{seasonSummary.verdict_text || seasonWinner}</strong>
         </p>
+        <p className="customer-answer-text">{seasonSummary.proof_line || 'No data for this season yet.'}</p>
         <div className="customer-answer-grid">
           <div className="customer-answer-card">
-            <h4>HC Lombardo AI Right</h4>
-            <p className="customer-answer-value">{toNumber(seasonSummary.ai_right)}</p>
+            <h4>AI ATS Wins</h4>
+            <p className="customer-answer-value">{toNumber(seasonSummary.ai_wins)}</p>
             <p className="customer-answer-detail">{formatPct(seasonSummary.ai_pct)}</p>
           </div>
           <div className="customer-answer-card">
-            <h4>Vegas AI Right</h4>
-            <p className="customer-answer-value">{toNumber(seasonSummary.vegas_right)}</p>
+            <h4>Vegas ATS Wins</h4>
+            <p className="customer-answer-value">{toNumber(seasonSummary.vegas_wins)}</p>
             <p className="customer-answer-detail">{formatPct(seasonSummary.vegas_pct)}</p>
           </div>
           <div className="customer-answer-card">
-            <h4>No Winner (Push)</h4>
+            <h4>Pushes</h4>
             <p className="customer-answer-value">{toNumber(seasonSummary.pushes)}</p>
-            <p className="customer-answer-detail">Games with no side winner</p>
+            <p className="customer-answer-detail">Shown, not counted for either side</p>
+          </div>
+          <div className="customer-answer-card">
+            <h4>Total Games</h4>
+            <p className="customer-answer-value">{toNumber(seasonSummary.games)}</p>
+            <p className="customer-answer-detail">Full played sample</p>
           </div>
         </div>
       </div>
@@ -177,7 +228,7 @@ function ModelPerformance() {
                 className={`season-btn ${toNumber(selectedWeek) === week ? 'active' : ''}`}
                 onClick={() => setSelectedWeek(week)}
               >
-                Week {week}: {wWinner}
+                Week {week}: {wWinner} ({row?.scoreline || 'No scoreline yet'})
               </button>
             );
           })}
@@ -188,17 +239,22 @@ function ModelPerformance() {
             <div className="customer-answer-card">
               <h4>Week {selectedWeekRow.week} Winner</h4>
               <p className="customer-answer-value">{winnerLabel(selectedWeekRow.week_winner)}</p>
-              <p className="customer-answer-detail">Best chance this week</p>
+              <p className="customer-answer-detail">{selectedWeekRow.scoreline}</p>
             </div>
             <div className="customer-answer-card">
-              <h4>HC Lombardo AI Right</h4>
-              <p className="customer-answer-value">{toNumber(selectedWeekRow.ai_right)}</p>
+              <h4>AI ATS Wins</h4>
+              <p className="customer-answer-value">{toNumber(selectedWeekRow.ai_wins)}</p>
               <p className="customer-answer-detail">{formatPct(selectedWeekRow.ai_pct)}</p>
             </div>
             <div className="customer-answer-card">
-              <h4>Vegas AI Right</h4>
-              <p className="customer-answer-value">{toNumber(selectedWeekRow.vegas_right)}</p>
+              <h4>Vegas ATS Wins</h4>
+              <p className="customer-answer-value">{toNumber(selectedWeekRow.vegas_wins)}</p>
               <p className="customer-answer-detail">{formatPct(selectedWeekRow.vegas_pct)}</p>
+            </div>
+            <div className="customer-answer-card">
+              <h4>Pushes</h4>
+              <p className="customer-answer-value">{toNumber(selectedWeekRow.pushes)}</p>
+              <p className="customer-answer-detail">Week ties on error distance</p>
             </div>
           </div>
         ) : (
@@ -207,42 +263,46 @@ function ModelPerformance() {
       </div>
 
       <div className="season-table-section">
-        <h3>Week {selectedWeek || 'N/A'} Game Results</h3>
+        <h3>Season Game-By-Game Results</h3>
         <p className="season-trend-subtitle">
-          Each game shows whether HC Lombardo AI was right or wrong compared to Vegas AI.
+          ATS winner is determined by final score versus Vegas closing spread.
         </p>
 
-        {selectedWeekRow && selectedWeekRow.details && selectedWeekRow.details.length > 0 ? (
+        {gameRows.length > 0 ? (
           <div className="season-table-wrapper">
             <table className="season-results-table">
               <thead>
                 <tr>
+                  <th>Week</th>
                   <th>Game</th>
                   <th>Final Score</th>
-                  <th>HC Lombardo AI Pick Line</th>
-                  <th>Vegas AI Line</th>
-                  <th>HC Lombardo AI</th>
-                  <th>Vegas AI</th>
+                  <th>Vegas Closing Spread</th>
+                  <th>AI ATS Pick</th>
+                  <th>AI Result</th>
+                  <th>Vegas ATS Pick</th>
+                  <th>Vegas Result</th>
                   <th>Winner</th>
                 </tr>
               </thead>
               <tbody>
-                {selectedWeekRow.details.map((g) => (
+                {gameRows.map((g) => (
                   <tr key={g.game_id}>
-                    <td>{g.away_team} @ {g.home_team}</td>
-                    <td>{toNumber(g.away_score)} - {toNumber(g.home_score)}</td>
-                    <td>{g.ai_spread}</td>
-                    <td>{g.vegas_spread}</td>
-                    <td><span className={resultPillClass(g.ai_result)}>{String(g.ai_result || '').toUpperCase()}</span></td>
-                    <td><span className={resultPillClass(g.vegas_result)}>{String(g.vegas_result || '').toUpperCase()}</span></td>
-                    <td>{winnerLabel(g.winner)}</td>
+                    <td>{toNumber(g.week)}</td>
+                    <td>{g.matchup}</td>
+                    <td>{g.final_score}</td>
+                    <td>{formatSpread(g.vegas_closing_spread ?? g.vegas_spread)}</td>
+                    <td>{g.ai_pick_team || 'No edge'}</td>
+                    <td><span className={resultPillClass(g.ai_result)}>{String(g.ai_result || 'push').toUpperCase()}</span></td>
+                    <td>{g.vegas_pick_team || 'No edge'}</td>
+                    <td><span className={resultPillClass(g.vegas_result)}>{String(g.vegas_result || 'push').toUpperCase()}</span></td>
+                    <td><span className={resultPillClass(g.winner === 'hc_lombardo_ai' ? 'win' : (g.winner === 'vegas_ai' ? 'loss' : 'push'))}>{winnerLabel(g.winner)}</span></td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
         ) : (
-          <p className="customer-answer-text">No game rows available for this week.</p>
+          <p className="customer-answer-text">No game rows available for this season.</p>
         )}
       </div>
 

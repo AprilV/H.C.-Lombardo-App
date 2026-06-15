@@ -1894,13 +1894,15 @@ def get_ai_vs_vegas_reconciliation():
             conn.close()
 
 
-@ml_api.route('/api/ml/ai-vs-vegas-scoreboard/<int:season>', methods=['GET'])
-def get_ai_vs_vegas_scoreboard(season):
+@ml_api.route('/api/ml/ai-vs-vegas-seasons', methods=['GET'])
+def get_ai_vs_vegas_seasons():
     """
-    Bettor-focused weekly + yearly scoreboard.
+    Return seasons available for the AI-vs-Vegas page.
 
-    Returns, for each week, how often HC Lombardo AI was right vs Vegas AI,
-    plus season totals and winner labels.
+    Display policy for this surface:
+    - Include 2020-2024 historical seasons.
+    - Exclude 2025 from display.
+    - Auto-include 2026+ seasons as soon as data exists.
     """
     conn = None
     cur = None
@@ -1916,20 +1918,87 @@ def get_ai_vs_vegas_scoreboard(season):
             vegas_expr = "COALESCE(p.vegas_spread, g.spread_line)"
             vegas_source = 'prediction_vegas_spread->spread_line'
 
-        where_clauses = [
-            "p.season = %s",
-            "g.home_score IS NOT NULL",
-            "g.away_score IS NOT NULL",
-            "COALESCE(g.is_postseason, FALSE) = FALSE",
-            "p.ai_spread IS NOT NULL",
-            f"{vegas_expr} IS NOT NULL"
+        cur.execute(
+            f"""
+            SELECT
+                p.season,
+                COUNT(*) AS compared_games,
+                MIN(g.week) AS first_week,
+                MAX(g.week) AS last_week
+            FROM hcl.ml_predictions p
+            JOIN hcl.games g ON p.game_id = g.game_id
+            WHERE g.home_score IS NOT NULL
+              AND g.away_score IS NOT NULL
+              AND COALESCE(g.is_postseason, FALSE) = FALSE
+              AND p.ai_spread IS NOT NULL
+              AND {vegas_expr} IS NOT NULL
+            GROUP BY p.season
+            ORDER BY p.season DESC
+            """
+        )
+        rows = cur.fetchall() or []
+
+        all_seasons_raw = [
+            {
+                'season': int(row.get('season')),
+                'compared_games': int(row.get('compared_games') or 0),
+                'first_week': int(row.get('first_week') or 0),
+                'last_week': int(row.get('last_week') or 0)
+            }
+            for row in rows
         ]
-        params = [season]
+
+        display_seasons = [
+            row for row in all_seasons_raw
+            if (2020 <= row['season'] <= 2024) or row['season'] >= 2026
+        ]
+
+        return jsonify({
+            'success': True,
+            'vegas_spread_source': vegas_source,
+            'seasons': display_seasons,
+            'all_seasons': display_seasons
+        })
+
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+    finally:
+        if cur:
+            cur.close()
+        if conn:
+            conn.close()
+
+
+@ml_api.route('/api/ml/ai-vs-vegas-scoreboard/<int:season>', methods=['GET'])
+def get_ai_vs_vegas_scoreboard(season):
+    """
+    Bettor-focused weekly + yearly ATS scoreboard using closing spread.
+
+    Scoring model:
+    - Actual ATS outcome is determined from final score vs Vegas closing spread.
+    - AI pick side is derived from AI spread vs Vegas spread.
+    - Vegas pick side follows the closing-line favorite convention.
+    - Weekly and season winners are head-to-head ATS wins; pushes are explicit.
+    """
+    conn = None
+    cur = None
+    try:
+        conn = psycopg2.connect(**get_predictor().db_config)
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+
+        has_games_closing_spread = table_has_column(conn, 'hcl', 'games', 'closing_spread')
+        if has_games_closing_spread:
+            vegas_expr = "COALESCE(g.closing_spread, p.vegas_spread, g.spread_line)"
+            vegas_source = 'closing_spread->prediction_vegas_spread->spread_line'
+        else:
+            vegas_expr = "COALESCE(p.vegas_spread, g.spread_line)"
+            vegas_source = 'prediction_vegas_spread->spread_line'
 
         cur.execute(
             f"""
             SELECT
                 p.game_id,
+                p.season,
                 g.week,
                 g.game_date,
                 p.home_team,
@@ -1940,107 +2009,182 @@ def get_ai_vs_vegas_scoreboard(season):
                 g.away_score
             FROM hcl.ml_predictions p
             JOIN hcl.games g ON p.game_id = g.game_id
-            WHERE {' AND '.join(where_clauses)}
+            WHERE p.season = %s
+              AND g.home_score IS NOT NULL
+              AND g.away_score IS NOT NULL
+              AND COALESCE(g.is_postseason, FALSE) = FALSE
+              AND p.ai_spread IS NOT NULL
+              AND {vegas_expr} IS NOT NULL
             ORDER BY g.week ASC, g.game_date ASC, p.game_id ASC
             """,
-            tuple(params)
+            (season,)
         )
         rows = cur.fetchall() or []
 
         weekly = {}
-        season_ai_right = 0
-        season_vegas_right = 0
+        game_rows = []
+        season_ai_wins = 0
+        season_vegas_wins = 0
         season_pushes = 0
+
+        def ats_pick_result(pick_side, home_cover):
+            if home_cover is None or pick_side == 'no_edge':
+                return 'push'
+            if pick_side == 'home':
+                return 'win' if home_cover is True else 'loss'
+            return 'win' if home_cover is False else 'loss'
 
         for row in rows:
             week = int(row.get('week') or 0)
-            actual_margin = row['home_score'] - row['away_score']
-            ai_covered = did_home_cover(row.get('ai_spread'), actual_margin)
-            vegas_covered = did_home_cover(row.get('vegas_spread'), actual_margin)
+            actual_margin = int(row['home_score']) - int(row['away_score'])
+
+            ai_spread = float(row['ai_spread'])
+            vegas_spread = float(row['vegas_spread'])
+            home_cover = did_home_cover(vegas_spread, actual_margin)
+
+            # AI pick side comes from the difference between AI line and closing line.
+            if ai_spread < vegas_spread:
+                ai_pick_side = 'home'
+            elif ai_spread > vegas_spread:
+                ai_pick_side = 'away'
+            else:
+                ai_pick_side = 'no_edge'
+
+            # Vegas pick side follows closing spread favorite convention.
+            if vegas_spread < 0:
+                vegas_pick_side = 'home'
+            elif vegas_spread > 0:
+                vegas_pick_side = 'away'
+            else:
+                vegas_pick_side = 'no_edge'
+
+            ai_result = ats_pick_result(ai_pick_side, home_cover)
+            vegas_result = ats_pick_result(vegas_pick_side, home_cover)
+
+            if ai_result == 'win' and vegas_result != 'win':
+                winner = 'hc_lombardo_ai'
+                season_ai_wins += 1
+            elif vegas_result == 'win' and ai_result != 'win':
+                winner = 'vegas_ai'
+                season_vegas_wins += 1
+            else:
+                winner = 'push'
+                season_pushes += 1
 
             if week not in weekly:
                 weekly[week] = {
                     'week': week,
                     'games': 0,
-                    'ai_right': 0,
-                    'vegas_right': 0,
-                    'pushes': 0,
-                    'details': []
+                    'ai_wins': 0,
+                    'vegas_wins': 0,
+                    'pushes': 0
                 }
 
             weekly[week]['games'] += 1
-
-            if ai_covered is True and vegas_covered is False:
-                winner = 'hc_lombardo_ai'
-                weekly[week]['ai_right'] += 1
-                season_ai_right += 1
-            elif ai_covered is False and vegas_covered is True:
-                winner = 'vegas_ai'
-                weekly[week]['vegas_right'] += 1
-                season_vegas_right += 1
+            if winner == 'hc_lombardo_ai':
+                weekly[week]['ai_wins'] += 1
+            elif winner == 'vegas_ai':
+                weekly[week]['vegas_wins'] += 1
             else:
-                winner = 'push'
                 weekly[week]['pushes'] += 1
-                season_pushes += 1
 
-            weekly[week]['details'].append({
+            ai_pick_team = (
+                row['home_team'] if ai_pick_side == 'home'
+                else row['away_team'] if ai_pick_side == 'away'
+                else 'No edge'
+            )
+            vegas_pick_team = (
+                row['home_team'] if vegas_pick_side == 'home'
+                else row['away_team'] if vegas_pick_side == 'away'
+                else 'No edge'
+            )
+            ats_winner_team = (
+                row['home_team'] if home_cover is True
+                else row['away_team'] if home_cover is False
+                else 'Push'
+            )
+
+            game_rows.append({
                 'game_id': row['game_id'],
+                'season': int(row['season']),
+                'week': week,
                 'game_date': row['game_date'].isoformat() if row['game_date'] else None,
+                'matchup': f"{row['away_team']} @ {row['home_team']}",
                 'home_team': row['home_team'],
                 'away_team': row['away_team'],
-                'home_score': row['home_score'],
-                'away_score': row['away_score'],
-                'ai_spread': float(row['ai_spread']) if row['ai_spread'] is not None else None,
-                'vegas_spread': float(row['vegas_spread']) if row['vegas_spread'] is not None else None,
+                'home_score': int(row['home_score']),
+                'away_score': int(row['away_score']),
+                'final_score': f"{row['away_team']} {int(row['away_score'])} - {row['home_team']} {int(row['home_score'])}",
+                'actual_margin': actual_margin,
+                'ai_spread': ai_spread,
+                'vegas_spread': vegas_spread,
+                'vegas_closing_spread': vegas_spread,
+                'ats_winner_team': ats_winner_team,
+                'ai_pick_side': ai_pick_side,
+                'ai_pick_team': ai_pick_team,
+                'vegas_pick_side': vegas_pick_side,
+                'vegas_pick_team': vegas_pick_team,
                 'winner': winner,
-                'ai_result': 'right' if winner == 'hc_lombardo_ai' else ('wrong' if winner == 'vegas_ai' else 'push'),
-                'vegas_result': 'right' if winner == 'vegas_ai' else ('wrong' if winner == 'hc_lombardo_ai' else 'push')
+                'ai_result': ai_result,
+                'vegas_result': vegas_result
             })
 
         weekly_rows = []
         for wk in sorted(weekly.keys()):
             row = weekly[wk]
-            decided = row['ai_right'] + row['vegas_right']
-            ai_pct = round((row['ai_right'] / decided) * 100, 1) if decided else 0.0
-            vegas_pct = round((row['vegas_right'] / decided) * 100, 1) if decided else 0.0
-            if row['ai_right'] > row['vegas_right']:
+            if row['ai_wins'] > row['vegas_wins']:
                 week_winner = 'hc_lombardo_ai'
-            elif row['vegas_right'] > row['ai_right']:
+            elif row['vegas_wins'] > row['ai_wins']:
                 week_winner = 'vegas_ai'
             else:
                 week_winner = 'tie'
 
-            row['decided_games'] = decided
-            row['ai_pct'] = ai_pct
-            row['vegas_pct'] = vegas_pct
+            row['decided_games'] = row['ai_wins'] + row['vegas_wins']
+            row['ai_pct'] = round((row['ai_wins'] / row['games']) * 100, 1) if row['games'] else 0.0
+            row['vegas_pct'] = round((row['vegas_wins'] / row['games']) * 100, 1) if row['games'] else 0.0
             row['week_winner'] = week_winner
+            row['scoreline'] = f"AI {row['ai_wins']} - Vegas {row['vegas_wins']} - {row['pushes']} push"
             weekly_rows.append(row)
 
-        season_decided = season_ai_right + season_vegas_right
-        season_ai_pct = round((season_ai_right / season_decided) * 100, 1) if season_decided else 0.0
-        season_vegas_pct = round((season_vegas_right / season_decided) * 100, 1) if season_decided else 0.0
-        if season_ai_right > season_vegas_right:
+        total_games = len(game_rows)
+        decided_games = season_ai_wins + season_vegas_wins
+        season_ai_pct = round((season_ai_wins / total_games) * 100, 1) if total_games else 0.0
+        season_vegas_pct = round((season_vegas_wins / total_games) * 100, 1) if total_games else 0.0
+
+        if season_ai_wins > season_vegas_wins:
             season_winner = 'hc_lombardo_ai'
-        elif season_vegas_right > season_ai_right:
+            verdict_text = 'Follow HC Lombardo AI'
+        elif season_vegas_wins > season_ai_wins:
             season_winner = 'vegas_ai'
+            verdict_text = 'Follow Vegas'
         else:
             season_winner = 'tie'
+            verdict_text = 'Too close to call'
+
+        proof_line = (
+            f"AI covered in {season_ai_wins} games. "
+            f"Vegas covered in {season_vegas_wins}. "
+            f"{season_pushes} pushes. ({total_games} games)"
+        )
 
         return jsonify({
             'success': True,
             'season': season,
             'vegas_spread_source': vegas_source,
             'season_summary': {
-                'games': len(rows),
-                'decided_games': season_decided,
-                'ai_right': season_ai_right,
-                'vegas_right': season_vegas_right,
+                'games': total_games,
+                'decided_games': decided_games,
+                'ai_wins': season_ai_wins,
+                'vegas_wins': season_vegas_wins,
                 'pushes': season_pushes,
                 'ai_pct': season_ai_pct,
                 'vegas_pct': season_vegas_pct,
-                'season_winner': season_winner
+                'season_winner': season_winner,
+                'verdict_text': verdict_text,
+                'proof_line': proof_line
             },
-            'weekly': weekly_rows
+            'weekly': weekly_rows,
+            'games': game_rows
         })
 
     except Exception as e:

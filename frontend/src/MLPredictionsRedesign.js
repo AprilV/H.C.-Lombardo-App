@@ -129,7 +129,7 @@ function MLPredictionsRedesign() {
       setSeasonStatsLoading(true);
     }
     try {
-      const response = await fetch(`${API_URL}/api/ml/season-ai-vs-vegas/${selectedSeason}`);
+      const response = await fetch(`${API_URL}/api/ml/ai-vs-vegas-scoreboard/${selectedSeason}`);
       const data = await response.json();
 
       if (data.success) {
@@ -557,8 +557,10 @@ function MLPredictionsRedesign() {
 
       <div className="season-benchmark" aria-live="polite">
         <div className="season-benchmark-header">
-          <h3>AI vs Vegas - {season} Season</h3>
-          <p>Spread head-to-head win rates</p>
+          <h3>Season Verdict - {season}</h3>
+          <p>
+            {seasonStats?.season_summary?.verdict_text || 'No played games yet'}
+          </p>
         </div>
 
         {seasonStatsLoading ? (
@@ -567,34 +569,45 @@ function MLPredictionsRedesign() {
           <>
             <div className="season-benchmark-grid">
               <div className="benchmark-tile ai">
-                <div className="benchmark-label">AI Win %</div>
+                <div className="benchmark-label">AI ATS Wins</div>
                 <div className="benchmark-value">
-                  {seasonStats ? Number(seasonStats.ai_percentage || 0).toFixed(1) : '0.0'}%
+                  {seasonStats ? Number(seasonStats?.season_summary?.ai_wins || 0) : 0}
                 </div>
               </div>
 
               <div className="benchmark-tile vegas">
-                <div className="benchmark-label">Vegas Win %</div>
+                <div className="benchmark-label">Vegas ATS Wins</div>
                 <div className="benchmark-value">
-                  {seasonStats ? Number(seasonStats.vegas_percentage || 0).toFixed(1) : '0.0'}%
+                  {seasonStats ? Number(seasonStats?.season_summary?.vegas_wins || 0) : 0}
                 </div>
               </div>
 
-              <div className={`benchmark-tile delta ${seasonStats && Number(seasonStats.ai_percentage || 0) >= Number(seasonStats.vegas_percentage || 0) ? 'positive' : 'negative'}`}>
-                <div className="benchmark-label">AI vs Vegas</div>
+              <div className="benchmark-tile delta positive">
+                <div className="benchmark-label">Pushes</div>
                 <div className="benchmark-value">
-                  {seasonStats
-                    ? `${(Number(seasonStats.ai_percentage || 0) - Number(seasonStats.vegas_percentage || 0) >= 0 ? '+' : '')}${(Number(seasonStats.ai_percentage || 0) - Number(seasonStats.vegas_percentage || 0)).toFixed(1)}%`
-                    : '0.0%'}
+                  {seasonStats ? Number(seasonStats?.season_summary?.pushes || 0) : 0}
+                </div>
+              </div>
+
+              <div className="benchmark-tile delta negative">
+                <div className="benchmark-label">Total Games</div>
+                <div className="benchmark-value">
+                  {seasonStats ? Number(seasonStats?.season_summary?.games || 0) : 0}
                 </div>
               </div>
             </div>
 
             <div className="season-benchmark-detail">
               {seasonStats
-                ? `Record: AI ${seasonStats.ai_wins} - Vegas ${seasonStats.vegas_wins} | Ties ${seasonStats.ties} | Games ${seasonStats.total_games}`
+                ? (seasonStats?.season_summary?.proof_line || 'No played games yet for this season.')
                 : 'Season benchmark data unavailable'}
             </div>
+
+            {seasonStats && (
+              <div className="season-benchmark-detail">
+                Full sample: AI {Number(seasonStats?.season_summary?.ai_pct || 0).toFixed(1)}% vs Vegas {Number(seasonStats?.season_summary?.vegas_pct || 0).toFixed(1)}%
+              </div>
+            )}
           </>
         )}
       </div>
