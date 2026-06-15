@@ -12,11 +12,20 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
+from pathlib import Path
 from typing import Any
 
 import pandas as pd
 import psycopg2
 from psycopg2.extensions import connection as PgConnection
+
+ROOT_DIR = Path(__file__).resolve().parents[2]
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
+ml_dir = ROOT_DIR / "ml"
+if str(ml_dir) not in sys.path:
+    sys.path.insert(0, str(ml_dir))
 
 from db_config import DATABASE_CONFIG
 from ml.predict_elo import EloPredictionSystem
