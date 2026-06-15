@@ -371,16 +371,19 @@ class WeeklyPredictor:
             
             # Use stored spread orientation directly to match training feature semantics.
             raw_spread = game.get('spread_line')
-            vegas_spread = raw_spread if raw_spread is not None else None
+            model_spread_line = raw_spread if raw_spread is not None else None
             
             result = self.predict_game(
                 season=season,
                 week=week,
                 home_team=game['home_team'],
                 away_team=game['away_team'],
-                spread_line=vegas_spread,
+                spread_line=model_spread_line,
                 total_line=game.get('total_line')
             )
+
+            # Persist vegas spread using the historical ml_predictions convention.
+            result['vegas_spread'] = float(-raw_spread) if raw_spread is not None else None
             
             # Add game metadata
             result['game_id'] = game['game_id']
