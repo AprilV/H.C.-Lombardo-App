@@ -37,7 +37,6 @@ function ModelPerformance() {
   const fallbackSeasonOptions = useMemo(() => {
     const years = [];
     for (let year = defaultSeason; year >= 2020; year -= 1) {
-      if (year === 2025) continue;
       years.push(year);
     }
     return years;

@@ -1948,10 +1948,7 @@ def get_ai_vs_vegas_seasons():
             for row in rows
         ]
 
-        display_seasons = [
-            row for row in all_seasons_raw
-            if (2020 <= row['season'] <= 2024) or row['season'] >= 2026
-        ]
+        display_seasons = [row for row in all_seasons_raw if row['season'] >= 2020]
 
         return jsonify({
             'success': True,
