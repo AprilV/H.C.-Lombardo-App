@@ -467,6 +467,20 @@ function Homepage() {
           <div className="dashboard-legend-item">
             <span className="legend-icon-spacer" aria-hidden="true"></span>
             <div className="dashboard-legend-copy">
+              <h3>Strong Play</h3>
+              <p>Both our systems agree on this pick (higher-confidence play).</p>
+            </div>
+          </div>
+          <div className="dashboard-legend-item">
+            <span className="legend-icon-spacer" aria-hidden="true"></span>
+            <div className="dashboard-legend-copy">
+              <h3>Lean</h3>
+              <p>Our systems point the same way but do not fully agree (lower-confidence, close call).</p>
+            </div>
+          </div>
+          <div className="dashboard-legend-item">
+            <span className="legend-icon-spacer" aria-hidden="true"></span>
+            <div className="dashboard-legend-copy">
               <h3>Spread</h3>
               <p>Points handicap used to balance both teams.</p>
             </div>
