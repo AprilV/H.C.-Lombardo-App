@@ -81,7 +81,6 @@ function Homepage() {
   const [bestBetsWeek, setBestBetsWeek] = useState(null);
   const [trackRecordLoading, setTrackRecordLoading] = useState(true);
   const [trackRecord, setTrackRecord] = useState(null);
-  const [trackRecordSeason, setTrackRecordSeason] = useState(defaultSeason);
   const [showHowItWorks, setShowHowItWorks] = useState(false);
   const navigate = useNavigate();
   const { theme, changeTheme } = useTheme();
@@ -113,7 +112,6 @@ function Homepage() {
 
       if (data.success) {
         setTrackRecord(data.season_summary || null);
-        setTrackRecordSeason(seasonToLoad);
       } else {
         setTrackRecord(null);
       }
