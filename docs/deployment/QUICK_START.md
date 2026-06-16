@@ -1,60 +1,34 @@
-# 🚀 H.C. LOMBARDO - QUICK START GUIDE
+# H.C. Lombardo Quick Start
 
-## SUPER SIMPLE - 2 COMMANDS
+Status: ACTIVE local-dev guide
+Last updated: 2026-06-16
 
-### ▶️ START EVERYTHING
-```
-Double-click: START.bat
-```
-**That's it!** Everything starts automatically:
-- ✅ Database check
-- ✅ API Server (port 5000)
-- ✅ React Frontend (port 3000)
-- ✅ Live Data Updater (every 15 min)
+## Start Local Services
 
-### ⏹️ STOP EVERYTHING
-```
-Double-click: STOP.bat
-```
-**Done!** All services shut down gracefully.
+Preferred command:
 
----
+- python startup.py
 
-## 📊 WHAT'S RUNNING
+Batch shortcut:
 
-After running START.bat:
+- START.bat
 
-| Service | URL | Status |
-|---------|-----|--------|
-| **Main Dashboard** | http://localhost:3000 | ✅ Auto-opens |
-| **API Server** | http://localhost:5000/health | ✅ Running |
-| **Database** | localhost:5432 | ✅ 32 teams |
-| **Dr. Foster** | dr.foster\index.html | ✅ Ready |
+## Stop Local Services
 
----
+Preferred command:
 
-## ⏱️ TIMING
+- python shutdown.py
 
-- **API Server**: Ready in 3 seconds
-- **React Frontend**: Compiles in 20-30 seconds
-- **Data Updater**: Starts immediately, updates every 15 minutes
+Batch shortcut:
 
----
+- STOP.bat
 
-## 🎯 THAT'S IT!
+## Expected Local Endpoints
 
-No more complicated startup procedures!
+- Frontend: http://localhost:3000
+- API health: http://localhost:5000/health
 
-**START** → Wait 30 seconds → Everything is running!  
-**STOP** → Everything shuts down cleanly!
+## Notes
 
----
-
-## 📝 NOTES
-
-- START.bat runs minimized windows (no clutter!)
-- STOP.bat uses shutdown.py (graceful shutdown)
-- Both scripts are automatic - no interaction needed
-- Dashboard auto-opens in your browser
-
-**It's that simple!** 🎉
+- This guide is local-development only.
+- For deployment and production topology, use docs/DEPLOY_AND_ARCHITECTURE.md.

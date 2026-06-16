@@ -1,105 +1,51 @@
 # Workspace Copilot Instructions
 
-## Session Turnover Location And Naming
-- Turnover and handoff markdown files must be stored in the top-level sessions folder: sessions/
-- For each new chat restart or handoff, create a new timestamped turnover file in sessions/.
-- Use this filename pattern with date plus time: SESSION_RESUME_YYYY-MM-DD_HHMM.md
-- Example: SESSION_RESUME_2026-04-27_1540.md
+## Session Turnover Naming
 
-## Turnover Format Reference
-- Use docs/sessions/SESSION_RESUME_2026-04-24_CHAT_RESTART.md as the structure and content-quality reference.
-- Preserve the same section style and execution-ready detail level.
-- Update all sections with current, verifiable state instead of copying stale values.
+- Store turnover files in sessions/
+- Filename format: SESSION_RESUME_YYYY-MM-DD_HHMM.md
+- Never overwrite previous turnover files
 
-## Traceability Requirement
-- Never overwrite a previous turnover file.
-- Always create a new timestamped file so each handoff remains traceable.
+## Mandatory Startup Guard
 
-## Mandatory New-Chat Startup Guard
-- At the start of every new chat or restart, run:
-	- `./scripts/maintenance/session_resume_guard.ps1 -Reason "New chat startup checkpoint"`
-- This command must run before implementation work so startup state is evidence-backed and drift-resistant.
-- After running the command, read the newest file in `sessions/` matching `SESSION_RESUME_YYYY-MM-DD_HHMM.md`.
-- Before implementation, provide a brief startup lock summary that includes:
-	- current scope priority (app-first vs dashboard)
-	- current uncommitted working set
-	- verification snapshot status
+At start of every new chat or restart:
 
-## Full-Scope Startup Lock Read Matrix (Required)
-- Read all files in this matrix before implementation unless listed under explicit exclusions.
+- Run ./scripts/maintenance/session_resume_guard.ps1 -Reason "New chat startup checkpoint"
+- Read newest sessions/SESSION_RESUME_YYYY-MM-DD_HHMM.md
+- Return startup lock summary before implementation with:
+  - workstream scope
+  - current uncommitted working set
+  - verification snapshot status
 
-Core governance (always):
-- `docs/ai_reference/READ_THIS_FIRST.md`
-- `docs/ai_reference/AI_EXECUTION_CONTRACT.md`
-- `docs/ai_reference/BEST_PRACTICES.md`
-- `docs/ai_reference/AI_VIOLATION_CHECKLIST.md`
-- `docs/ai_reference/INDEX.md`
+## Startup Read Set (Current Only)
 
-App and architecture context (always):
-- `CLAUDE.md`
-- `README.md`
-- `docs/ai_reference/ARCHITECTURE.md`
-- `docs/ai_reference/TOPOLOGY.md`
-- `docs/ai_reference/STARTUP_MODES.md`
-- `docs/ai_reference/STARTUP_GUIDE.md`
+Read these current references before implementation:
 
-Dashboard governance and operating context (always):
-- `docs/DASHBOARD_UPDATE_GUIDE.md`
-- `docs/SPRINT_EXECUTION_PROCESS.md`
-- `docs/dashboard_product/README.md`
-- `docs/dashboard_product/DASHBOARD_CHARTER.md`
-- `docs/dashboard_product/DASHBOARD_BACKLOG.md`
-- `docs/dashboard_product/DASHBOARD_RELEASE_NOTES.md`
-- `docs/dashboard_product/DASHBOARD_OPERATING_SOP.md`
-- `docs/dashboard_product/DASHBOARD_DATA_OWNERSHIP.md`
-- `docs/dashboard_product/DASHBOARD_METRICS.md`
-- `docs/dashboard_product/DASHBOARD_SPRINT_ROLLOVER_AUTOMATION_RUNBOOK.md`
+1. CODEX_START_HERE.md
+2. docs/DEPLOY_AND_ARCHITECTURE.md
+3. docs/DASHBOARD_UPDATE_GUIDE.md (only when touching dashboard scope)
 
-Dashboard automation phase context (always):
-- `docs/dashboard_product/DASHBOARD_AUTOMATION_PHASE0_KICKOFF.md`
-- `docs/dashboard_product/DASHBOARD_AUTOMATION_PHASE1_COVERAGE_MODEL.md`
-- `docs/dashboard_product/DASHBOARD_AUTOMATION_PHASE2_MIGRATION_VALIDATION.md`
-- `docs/dashboard_product/DASHBOARD_AUTOMATION_PHASE3_API_PERSISTENCE.md`
-- `docs/dashboard_product/DASHBOARD_AUTOMATION_PHASE4_FRONTEND_PERSISTED_WIRING.md`
-- `docs/dashboard_product/DASHBOARD_AUTOMATION_PHASE5_AUTOSYNC_METRICS_CHARTS.md`
+Do not treat historical/archive docs as current startup requirements.
 
-Domain docs (required when touching matching domain):
-- `docs/ai_reference/LIVE_SCORE_SETUP.md`
-- `docs/ai_reference/NFL_SPREAD_BETTING_GUIDE.md`
-- `docs/ai_reference/PREDICTION_TRACKING_SYSTEM.md`
-- `docs/ai_reference/QUICK_START_HCL.md`
+## Single-Line Drift Reset Trigger (Order 66)
 
-Turnover continuity (always):
-- `sessions/README.md`
-- Newest `sessions/SESSION_RESUME_YYYY-MM-DD_HHMM.md`
+If user message includes EXECUTE ORDER 66, RUN STARTUP LOCK, LOOK AT CHAT_STARTUP_LOCK AND EXECUTE, or references docs/ai_reference/CHAT_STARTUP_LOCK.md:
 
-Explicit exclusions unless user explicitly requests archive deep-read:
-- `docs/ai_reference/DEV_LOG_FULL.txt` (large historical archive)
-- `docs/devlog/archive/*` (historical logs)
-- `backups/**` (recovery artifacts; read only for restore/debug tasks)
-- If exclusions are used, startup lock summary must name each excluded path class and why it was excluded.
+1. Run ./scripts/maintenance/session_resume_guard.ps1 -Reason "Startup lock trigger"
+2. Read newest sessions/SESSION_RESUME_YYYY-MM-DD_HHMM.md
+3. Read startup read set listed above
+4. Report startup lock summary before implementation with:
+   - workstream scope
+   - current uncommitted working set
+   - verification snapshot status
+   - read-set status (complete/blocked)
 
-## Single-Line Drift Reset Trigger
-- If the user message includes `EXECUTE ORDER 66` OR `RUN STARTUP LOCK` OR `LOOK AT CHAT_STARTUP_LOCK AND EXECUTE` OR references `docs/ai_reference/CHAT_STARTUP_LOCK.md`, execute this protocol immediately before any other work:
-	1. Run `./scripts/maintenance/session_resume_guard.ps1 -Reason "Startup lock trigger"`.
-	2. Read the newest `sessions/SESSION_RESUME_YYYY-MM-DD_HHMM.md` file.
-	3. Re-read the Full-Scope Startup Lock Read Matrix above (excluding only explicit archive exclusions unless user requests otherwise).
-	4. Return a startup lock summary before implementation with:
-		- current scope priority (app-first vs dashboard)
-		- current uncommitted working set
-		- verification snapshot status
-		- read matrix status (complete/blocked)
-		- explicit exclusion list used for this startup lock
+## Report-Back Requirement (Every Task)
 
-## Dashboard Integrity Trigger (Final Sprint Safety)
-- If the user message includes `RUN DASHBOARD LINE AUDIT` OR `RUN FINAL SPRINT INTEGRITY AUDIT` OR references `docs/DASHBOARD_UPDATE_GUIDE.md` for dashboard integrity enforcement, execute this protocol before dashboard edits:
-	1. Read `docs/DASHBOARD_UPDATE_GUIDE.md` sections `Final Sprint Lockdown Protocol (No Backlog Allowed)` and `Line-by-Line Audit Gate (Mandatory Before Push)`.
-	2. Audit active sprint ticket integrity line-by-line before making changes (status, sprint assignment, subtasks, task detail records, parent closure detail records).
-	3. Return a baseline audit snapshot before edits with:
-		- sprint totals by status
-		- blocked ticket IDs
-		- non-compliant ticket IDs grouped by failure type
-		- top-card values (`Sprint Tasks Done`, `Open P1 Blockers`, `Total Open Tasks`)
-	4. Apply fixes only after baseline audit is reported.
-	5. Re-run the same audit after edits and report pass/fail deltas.
-	6. Do not infer status from incomplete evidence. If evidence is missing, stop and ask.
+End each task with:
+
+1. Files changed
+2. What was done (plain summary)
+3. Proof output (commands/results)
+4. What was not touched (out-of-scope confirmation)
+5. Any uncertainty that needs user confirmation
