@@ -9076,12 +9076,12 @@ function formatScheduleDateLabel(isoDate) {
 
 var DASH_SPRINT_STORAGE_KEY = 'pmforge_dashboard_selected_sprint_v1';
 var DASH_SPRINT_FOLLOW_CURRENT_KEY = 'pmforge_dashboard_follow_current_sprint_v1';
-var DASHBOARD_BUILD_STAMP = '__PMFORGE_BUILD_STAMP__';
+var DASHBOARD_BUILD_STAMP = 'e8c2d890|2026-06-16T21:13:54Z';
 var DASHBOARD_BUILD_STAMP_KEY = 'pmforge_dashboard_build_stamp_v1';
 
 function getDashboardBuildHash() {
     var raw = String(DASHBOARD_BUILD_STAMP || '').trim();
-    if (!raw || raw === '__PMFORGE_BUILD_STAMP__') return 'local';
+    if (!raw || raw === 'e8c2d890|2026-06-16T21:13:54Z') return 'local';
     var parts = raw.split('|');
     return String(parts[0] || raw).trim() || 'local';
 }
@@ -9090,7 +9090,7 @@ function enforceDashboardBuildFreshness() {
     try {
         if (!window.localStorage) return true;
         var current = String(DASHBOARD_BUILD_STAMP || '').trim();
-        if (!current || current === '__PMFORGE_BUILD_STAMP__') {
+        if (!current || current === 'e8c2d890|2026-06-16T21:13:54Z') {
             localStorage.removeItem(DASHBOARD_BUILD_STAMP_KEY);
             return true;
         }
@@ -13193,10 +13193,11 @@ function showSprintView(view, btn) {
         win.print();
     };
 
-    // Build sprint summary report (combines both weeks of a sprint)
-    function buildSprintSummaryText(sprintKey) {
+    // Build sprint summary report data (combines both weeks of a sprint)
+    function buildSprintSummaryData(sprintKey) {
         var weeks = WEEK_META.filter(function(w) { return w.sprintKey === sprintKey; });
-        if (!weeks.length) return '';
+        if (!weeks.length) return null;
+
         var brand = getBrandingSnapshot();
         var hoursData = getHoursData();
         var sprintName = weeks[0].sprint;
@@ -13204,17 +13205,33 @@ function showSprintView(view, btn) {
         var totalHours = 0;
         var allNotes = [];
         var weeklySnapshots = [];
+        var totals = {
+            updated: 0,
+            done: 0,
+            comments: 0,
+            evidence: 0,
+            latestTs: null
+        };
 
         weeks.forEach(function(w) {
             var d = hoursData['w' + w.num] || {};
             var activity = getAutomatedWeekActivity(w.num, sprintKey);
-            totalHours += parseFloat(d.hours || 0) || 0;
+            var weekHours = parseFloat(d.hours || 0) || 0;
+            totalHours += weekHours;
             if (d.notes) allNotes.push('Week ' + w.num + ' (' + w.dates + '): ' + d.notes);
+
+            totals.updated += activity.updatedCount;
+            totals.done += activity.doneIds.length;
+            totals.comments += activity.commentCount;
+            totals.evidence += activity.evidenceCount;
+            if (activity.latestTs && (!totals.latestTs || new Date(activity.latestTs) > new Date(totals.latestTs))) {
+                totals.latestTs = activity.latestTs;
+            }
 
             weeklySnapshots.push({
                 num: w.num,
                 dates: w.dates,
-                hours: parseFloat(d.hours || 0) || 0,
+                hours: weekHours,
                 updated: activity.updatedCount,
                 done: activity.doneIds.length,
                 comments: activity.commentCount,
@@ -13226,29 +13243,50 @@ function showSprintView(view, btn) {
         var dodSummary = getSprintDodSummary(sprintKey);
         var decisionSummary = getSprintDecisionSummary(sprintKey);
         var riskSummary = getSprintRiskSummary(sprintKey);
+        var goals = NEXT_SPRINT_GOALS[sprintName] || [];
+
+        return {
+            sprintKey: sprintKey,
+            sprintName: sprintName,
+            sprintDates: sprintDates,
+            brand: brand,
+            totalHours: totalHours,
+            allNotes: allNotes,
+            weeklySnapshots: weeklySnapshots,
+            dodSummary: dodSummary,
+            decisionSummary: decisionSummary,
+            riskSummary: riskSummary,
+            goals: goals,
+            totals: totals,
+            generatedAt: new Date().toISOString()
+        };
+    }
+
+    function buildSprintSummaryText(summary) {
+        if (!summary) return '';
 
         var lines = [
             '═══════════════════════════════════════════════',
             'SPRINT SUMMARY REPORT',
-            brand.suiteName + ' — ' + brand.projectTitle,
+            summary.brand.suiteName + ' — ' + summary.brand.projectTitle,
             '═══════════════════════════════════════════════',
             '',
-            'Sprint:       ' + sprintName,
-            'Sprint Dates: ' + sprintDates,
-            'Developer:    ' + brand.developerName,
-            brand.roleALabel + ':      ' + brand.roleAName,
-            'Context:      ' + brand.contextLine,
+            'Sprint:       ' + summary.sprintName,
+            'Sprint Dates: ' + summary.sprintDates,
+            'Developer:    ' + summary.brand.developerName,
+            summary.brand.roleALabel + ':      ' + summary.brand.roleAName,
+            'Context:      ' + summary.brand.contextLine,
             '',
             '───────────────────────────────────────────────',
             'HOURS SUMMARY',
             '───────────────────────────────────────────────',
-            'Total hours this sprint: ' + totalHours,
+            'Total hours this sprint: ' + summary.totalHours,
             '',
+            'WEEKLY AUTOMATION SNAPSHOT',
+            '───────────────────────────────────────────────'
         ];
 
-        lines.push('WEEKLY AUTOMATION SNAPSHOT');
-        lines.push('───────────────────────────────────────────────');
-        weeklySnapshots.forEach(function(row) {
+        summary.weeklySnapshots.forEach(function(row) {
             lines.push('Week ' + row.num + ' (' + row.dates + '): '
                 + row.hours + ' hrs · '
                 + row.updated + ' tickets updated · '
@@ -13261,26 +13299,135 @@ function showSprintView(view, btn) {
 
         lines.push('GOVERNANCE SNAPSHOT');
         lines.push('───────────────────────────────────────────────');
-        lines.push('Decision entries (' + sprintKey + '): ' + decisionSummary.count + ' (' + decisionSummary.ids + ')');
-        lines.push('DoD criteria active (' + sprintKey + '): ' + dodSummary.count);
-        lines.push('Risk snapshot (' + sprintKey + ' + All): total ' + riskSummary.total + ', open ' + riskSummary.open + ', resolved ' + riskSummary.resolved);
-        lines.push('DoD preview: ' + dodSummary.preview);
+        lines.push('Decision entries (' + summary.sprintKey + '): ' + summary.decisionSummary.count + ' (' + summary.decisionSummary.ids + ')');
+        lines.push('DoD criteria active (' + summary.sprintKey + '): ' + summary.dodSummary.count);
+        lines.push('Risk snapshot (' + summary.sprintKey + ' + All): total ' + summary.riskSummary.total + ', open ' + summary.riskSummary.open + ', resolved ' + summary.riskSummary.resolved);
+        lines.push('DoD preview: ' + summary.dodSummary.preview);
         lines.push('');
 
-        if (allNotes.length) {
+        if (summary.allNotes.length) {
             lines.push('WORK LOG');
             lines.push('───────────────────────────────────────────────');
-            allNotes.forEach(function(n) { lines.push(n); lines.push(''); });
+            summary.allNotes.forEach(function(n) { lines.push(n); lines.push(''); });
         }
-        // Sprint goals
-        var goals = NEXT_SPRINT_GOALS[sprintName] || [];
-        if (goals.length) {
+
+        if (summary.goals.length) {
             lines.push('SPRINT GOALS');
             lines.push('───────────────────────────────────────────────');
-            goals.forEach(function(g) { lines.push('• ' + g); });
+            summary.goals.forEach(function(g) { lines.push('• ' + g); });
             lines.push('');
         }
+
         return lines.join('\n');
+    }
+
+    function renderSprintSummaryHtml(summary) {
+        if (!summary) {
+            return '<div style="background:#fff;color:#1e293b;border-radius:0.5rem;padding:1rem;border:1px solid #e2e8f0;">No sprint summary data is available.</div>';
+        }
+
+        var generatedLabel = formatDateTimeShort(summary.generatedAt) || new Date().toLocaleString();
+        var latestActivityLabel = formatDateTimeShort(summary.totals.latestTs) || 'No dated activity captured yet.';
+        var snum = 0;
+
+        function metricCell(value, label) {
+            return '<div style="min-width:140px;">'
+                + '<div style="font-size:1.25rem;font-weight:800;color:#0f172a;line-height:1;">' + escapeHtmlLite(String(value || '0')) + '</div>'
+                + '<div style="font-size:0.68rem;color:#64748b;margin-top:0.15rem;text-transform:uppercase;letter-spacing:0.06em;">' + escapeHtmlLite(label) + '</div>'
+                + '</div>';
+        }
+
+        function sec(title, body) {
+            snum++;
+            return '<div style="margin-bottom:1.6rem;">'
+                + '<div style="display:flex;align-items:baseline;gap:0.6rem;margin-bottom:0.55rem;padding-bottom:0.4rem;border-bottom:2px solid #e2e8f0;">'
+                +   '<span style="font-size:0.72rem;font-weight:800;color:#94a3b8;min-width:1.1rem;">' + snum + '.</span>'
+                +   '<span style="font-size:0.78rem;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:#334155;">' + title + '</span>'
+                + '</div>'
+                + body
+                + '</div>';
+        }
+
+        var hoursBody =
+            '<div style="display:flex;gap:2.5rem;flex-wrap:wrap;padding:0.75rem 1rem;background:#f8fafc;border-radius:0.4rem;border:1px solid #e2e8f0;">'
+            + metricCell(summary.totalHours, 'Total Hours This Sprint')
+            + metricCell(summary.weeklySnapshots.length, 'Weeks In This Sprint')
+            + '</div>';
+
+        var automationBody =
+            '<div style="display:flex;gap:1.5rem;flex-wrap:wrap;padding:0.75rem 1rem;background:#f8fafc;border-radius:0.4rem;border:1px solid #e2e8f0;">'
+            + metricCell(summary.totals.updated, 'Tickets Updated')
+            + metricCell(summary.totals.done, 'Moved To Done')
+            + metricCell(summary.totals.comments, 'Comments Logged')
+            + metricCell(summary.totals.evidence, 'Evidence Updates')
+            + '</div>'
+            + '<div style="margin-top:0.65rem;border:1px solid #e2e8f0;border-radius:0.4rem;background:#f8fafc;overflow:hidden;">'
+            + summary.weeklySnapshots.map(function(row) {
+                return '<div style="padding:0.55rem 0.8rem;border-bottom:1px solid #e2e8f0;">'
+                    + '<div style="font-size:0.82rem;font-weight:700;color:#334155;">Week ' + row.num + ' (' + escapeHtmlLite(row.dates) + ')</div>'
+                    + '<div style="font-size:0.78rem;color:#475569;line-height:1.7;">'
+                    + row.hours + ' hrs · '
+                    + row.updated + ' tickets updated · '
+                    + row.done + ' moved to Done · '
+                    + row.comments + ' comments · '
+                    + row.evidence + ' evidence updates'
+                    + '</div>'
+                    + (row.latest ? '<div style="font-size:0.74rem;color:#64748b;">Latest activity: ' + escapeHtmlLite(row.latest) + '</div>' : '')
+                    + '</div>';
+            }).join('')
+            + '</div>'
+            + '<p style="margin:0.55rem 0 0; font-size:0.8rem; color:#475569;"><strong>Latest dated sprint activity:</strong> ' + escapeHtmlLite(latestActivityLabel) + '</p>';
+
+        var governanceBody =
+            '<ul style="margin:0;padding-left:1.35rem;color:#1e293b;line-height:1.8;">'
+            + '<li>Decision entries (' + summary.sprintKey + '): ' + summary.decisionSummary.count + ' (' + escapeHtmlLite(summary.decisionSummary.ids) + ')</li>'
+            + '<li>DoD criteria active (' + summary.sprintKey + '): ' + summary.dodSummary.count + '</li>'
+            + '<li>Risk snapshot (' + summary.sprintKey + ' + All): total ' + summary.riskSummary.total + ', open ' + summary.riskSummary.open + ', resolved ' + summary.riskSummary.resolved + '</li>'
+            + '<li>DoD preview: ' + escapeHtmlLite(summary.dodSummary.preview) + '</li>'
+            + '<li>Report generated at: ' + escapeHtmlLite(generatedLabel) + '</li>'
+            + '</ul>';
+
+        var workLogBody = summary.allNotes.length
+            ? ('<ul style="margin:0;padding-left:1.4rem;color:#1e293b;line-height:1.85;">'
+                + summary.allNotes.map(function(note) { return '<li style="margin-bottom:0.2rem;">' + escapeHtmlLite(note) + '</li>'; }).join('')
+                + '</ul>')
+            : '<p style="margin:0;color:#64748b;">No sprint work-log notes were captured for this sprint.</p>';
+
+        var goalsBody = summary.goals.length
+            ? ('<ul style="margin:0;padding-left:1.4rem;color:#1e293b;line-height:1.85;">'
+                + summary.goals.map(function(goal) { return '<li style="margin-bottom:0.2rem;">' + escapeHtmlLite(goal) + '</li>'; }).join('')
+                + '</ul>')
+            : '<p style="margin:0;color:#64748b;">No sprint goals were configured for this sprint.</p>';
+
+        return ''
+            + '<div style="background:#fff;color:#1e293b;border-radius:0.5rem;font-family:Georgia,\'Times New Roman\',serif;font-size:0.9rem;line-height:1.7;overflow:hidden;">'
+            + '<div style="background:#0f172a;padding:1.25rem 1.75rem;display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:0.75rem;">'
+            +   '<div>'
+            +     '<div style="font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.14em;color:#94a3b8;font-family:\'Segoe UI\',system-ui,sans-serif;margin-bottom:0.2rem;">' + summary.brand.contextLine + '</div>'
+            +     '<div style="font-size:1.15rem;font-weight:700;color:#f8fafc;font-family:\'Segoe UI\',system-ui,sans-serif;">Sprint Summary Report</div>'
+            +   '</div>'
+            +   '<div style="text-align:right;">'
+            +     '<div style="font-size:0.78rem;font-weight:600;color:#f8fafc;font-family:\'Segoe UI\',system-ui,sans-serif;">' + escapeHtmlLite(summary.sprintKey) + '</div>'
+            +     '<div style="font-size:0.72rem;color:#94a3b8;font-family:\'Segoe UI\',system-ui,sans-serif;">' + escapeHtmlLite(summary.sprintDates) + '</div>'
+            +   '</div>'
+            + '</div>'
+            + '<div style="background:#f8fafc;border-bottom:1px solid #e2e8f0;padding:0.65rem 1.75rem;display:flex;flex-wrap:wrap;gap:1.5rem;font-family:\'Segoe UI\',system-ui,sans-serif;font-size:0.78rem;color:#475569;">'
+            +   '<div><span style="font-weight:700;color:#334155;">Developer:</span> ' + escapeHtmlLite(summary.brand.developerName) + '</div>'
+            +   '<div><span style="font-weight:700;color:#334155;">' + escapeHtmlLite(summary.brand.roleALabel) + ':</span> ' + escapeHtmlLite(summary.brand.roleAName) + '</div>'
+            +   '<div><span style="font-weight:700;color:#334155;">Sprint:</span> ' + escapeHtmlLite(summary.sprintName) + '</div>'
+            + '</div>'
+            + '<div style="padding:1.75rem 1.75rem 1.25rem;">'
+            + sec('Hours Summary', hoursBody)
+            + sec('Weekly Automation Snapshot', automationBody)
+            + sec('Governance Snapshot', governanceBody)
+            + sec('Work Log', workLogBody)
+            + sec('Sprint Goals', goalsBody)
+            + '</div>'
+            + '<div style="border-top:1px solid #e2e8f0;padding:0.6rem 1.75rem;background:#f8fafc;display:flex;justify-content:space-between;font-family:\'Segoe UI\',system-ui,sans-serif;font-size:0.7rem;color:#94a3b8;">'
+            +   '<span>' + escapeHtmlLite(summary.brand.suiteName) + ' · Sprint Summary</span>'
+            +   '<span>' + escapeHtmlLite(summary.brand.organization) + ' · ' + escapeHtmlLite(summary.brand.contextLine) + '</span>'
+            + '</div>'
+            + '</div>';
     }
 
     // Build dropdown options — filtered by sprint or show all
@@ -13352,10 +13499,11 @@ function showSprintView(view, btn) {
         var val = sel.value;
         if (val && val.indexOf('summary-') === 0) {
             var sprintKey = val.replace('summary-', '');
-            var text = buildSprintSummaryText(sprintKey);
+            var summary = buildSprintSummaryData(sprintKey);
+            var text = buildSprintSummaryText(summary);
             window._reportPlainText = text;
             var out = document.getElementById('report-output');
-            if (out) out.innerHTML = '<pre style="background:#fff;border:1px solid #e2e8f0;border-radius:0.5rem;padding:1.5rem;font-family:monospace;font-size:0.82rem;color:#1e293b;white-space:pre-wrap;line-height:1.7;">' + text.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</pre>';
+            if (out) out.innerHTML = renderSprintSummaryHtml(summary);
         } else {
             if (_origRenderReport) _origRenderReport();
         }
