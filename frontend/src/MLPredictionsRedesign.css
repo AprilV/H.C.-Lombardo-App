@@ -37,6 +37,99 @@
   margin-bottom: 0.8rem;
 }
 
+.ml-predictions-redesign .dashboard-legend-panel {
+  margin: 0.3rem 0 0.5rem;
+  padding: 0.5rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--dashboard-card-radius);
+  box-shadow: var(--dashboard-card-shadow);
+}
+
+.ml-predictions-redesign .dashboard-legend-header h2 {
+  color: var(--text-primary);
+  font-size: 0.83rem;
+  margin-bottom: 0.08rem;
+}
+
+.ml-predictions-redesign .dashboard-legend-header p {
+  color: var(--text-secondary);
+  font-size: 0.66rem;
+  margin-bottom: 0.35rem;
+}
+
+.ml-predictions-redesign .dashboard-legend-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.3rem;
+  align-items: stretch;
+}
+
+.ml-predictions-redesign .dashboard-legend-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.3rem;
+  border: 1px solid var(--border-color);
+  border-radius: 7px;
+  background: color-mix(in srgb, var(--bg-card) 92%, transparent);
+  padding: 0.3rem 0.4rem;
+  min-height: 2.4rem;
+  transition: all 0.2s ease;
+}
+
+.ml-predictions-redesign .dashboard-legend-item:hover {
+  background: color-mix(in srgb, var(--accent-primary) 12%, var(--bg-card));
+  border-color: var(--accent-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px var(--shadow);
+}
+
+.ml-predictions-redesign .dashboard-legend-copy {
+  min-width: 0;
+}
+
+.ml-predictions-redesign .dashboard-legend-copy h3 {
+  color: var(--text-primary);
+  font-size: 0.66rem;
+  margin-bottom: 0.05rem;
+}
+
+.ml-predictions-redesign .dashboard-legend-copy p {
+  color: var(--text-secondary);
+  font-size: 0.62rem;
+  line-height: 1.2;
+}
+
+.ml-predictions-redesign .symbol-chip {
+  border-radius: 999px;
+  border: 1px solid var(--border-color);
+  background: color-mix(in srgb, var(--bg-card) 92%, transparent);
+  color: var(--text-secondary);
+  font-size: 0.62rem;
+  font-weight: 700;
+  padding: 0.14rem 0.4rem;
+}
+
+.ml-predictions-redesign .legend-icon-chip {
+  color: var(--text-primary);
+  min-width: 1.7rem;
+  text-align: center;
+  padding: 0.1rem 0.3rem;
+  flex-shrink: 0;
+}
+
+.ml-predictions-redesign .symbol-chip.strong-play {
+  color: var(--confidence-strong-fg);
+  background: var(--confidence-strong-bg);
+  border-color: var(--confidence-strong-border);
+}
+
+.ml-predictions-redesign .symbol-chip.lean-play {
+  color: var(--confidence-lean-fg);
+  background: var(--confidence-lean-bg);
+  border-color: var(--confidence-lean-border);
+}
+
 .week-selector-redesign {
   display: flex;
   flex-direction: column;

@@ -127,6 +127,63 @@ const buildCoverOutcome = ({ gameStatus, actual, homeTeam, awayTeam, pickTeam, v
   };
 };
 
+const LEGEND_ITEMS = [
+  {
+    icon: '⭐',
+    chipClass: 'legend-icon-chip',
+    title: 'Star Rating',
+    description: 'Bigger edge vs Vegas = more stars (1-5). 5 stars = biggest disagreement with the Vegas line.'
+  },
+  {
+    icon: '🥇',
+    chipClass: 'legend-icon-chip strong-play',
+    title: 'Strong Play',
+    description: 'Both our systems agree on the same side and there\'s a meaningful edge (3+ pts). Higher confidence.'
+  },
+  {
+    icon: '🥈',
+    chipClass: 'legend-icon-chip lean-play',
+    title: 'Lean',
+    description: 'Lower confidence: the systems do not fully agree on the side, or the edge is small. Close call.'
+  },
+  {
+    icon: '🛡️',
+    chipClass: 'legend-icon-chip',
+    title: 'Pick / Cover',
+    description: 'The side we recommend. "Cover" means that team beats the spread (wins, or loses by less than the spread).'
+  },
+  {
+    icon: 'Δ',
+    chipClass: 'legend-icon-chip',
+    title: 'Edge',
+    description: 'Gap between model spread and Vegas spread. Bigger gaps mean more perceived value.'
+  },
+  {
+    icon: '📊',
+    chipClass: 'legend-icon-chip',
+    title: 'Power Rating Spread',
+    description: 'Our team-strength system\'s predicted point margin.'
+  },
+  {
+    icon: '🤖',
+    chipClass: 'legend-icon-chip',
+    title: 'AI Model Spread',
+    description: 'Our AI\'s predicted point margin.'
+  },
+  {
+    icon: '🎰',
+    chipClass: 'legend-icon-chip',
+    title: 'Vegas Spread',
+    description: 'The official sportsbook betting line.'
+  },
+  {
+    icon: '✓ / ✗ / ⏳',
+    chipClass: 'legend-icon-chip',
+    title: '✓ Covered / ✗ Missed / ⏳ Pending',
+    description: 'Whether the pick beat the spread once the game is final (pending until played).'
+  }
+];
+
 function MLPredictionsRedesign() {
   const defaultSeason = getDefaultSeason();
   const seasonOptions = getRecentSeasons(7, 2020, defaultSeason);
@@ -466,6 +523,24 @@ function MLPredictionsRedesign() {
           Load Week
         </button>
       </div>
+
+      <section className="dashboard-legend-panel" aria-labelledby="predictions-legend-title">
+        <div className="dashboard-legend-header">
+          <h2 id="predictions-legend-title">Legend Key</h2>
+          <p>Quick reference for bettor cards and spread terms.</p>
+        </div>
+        <div className="dashboard-legend-grid">
+          {LEGEND_ITEMS.map((item) => (
+            <div className="dashboard-legend-item" key={item.title}>
+              <span className={`symbol-chip ${item.chipClass}`}>{item.icon}</span>
+              <div className="dashboard-legend-copy">
+                <h3>{item.title}</h3>
+                <p>{item.description}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
 
       <div className="predictions-live-row">
         <div className="predictions-live-text">
