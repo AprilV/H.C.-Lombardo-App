@@ -9861,6 +9861,12 @@ function buildActiveSprintSnapshot(sprintNum, archiveSnapshot) {
         snapshot.metrics.daysSub = 'Sprint ends ' + endLabel + ' · weekends excluded' + noWorkSuffix;
     }
 
+    var hasArchivedBurndown = !!(archiveSnapshot
+        && archiveSnapshot.burndown
+        && Array.isArray(archiveSnapshot.burndown.actual)
+        && archiveSnapshot.burndown.actual.some(function(v) { return typeof v === 'number'; }));
+    var preserveArchivedSeries = isClosedCurrentSprint && hasArchivedBurndown;
+
     var legacyActual = Array.isArray(snapshot.burndown.actual) ? snapshot.burndown.actual : [];
     var idealLen = (dayCtx && dayCtx.totalDays) ? dayCtx.totalDays : (snapshot.burndown.ideal.length || 10);
     var actual = new Array(idealLen).fill(null);
@@ -9878,7 +9884,7 @@ function buildActiveSprintSnapshot(sprintNum, archiveSnapshot) {
     }
 
     var startAnchorActive = false;
-    if (burndownProgress.total > 0) {
+    if (!preserveArchivedSeries && burndownProgress.total > 0) {
         var dayIndex = Math.max(0, Math.min(idealLen - 1, (dayCtx ? dayCtx.dayNum : 1) - 1));
 
         // Add a start anchor when early-sprint actuals are sparse so the chart
@@ -9901,10 +9907,14 @@ function buildActiveSprintSnapshot(sprintNum, archiveSnapshot) {
         snapshot.burndown.ideal = buildIdealBurndownSeries(burndownProgress.total, idealLen);
     }
 
-    snapshot.burndown.actual = actual;
-    snapshot.burndown.max = Math.max(snapshot.burndown.max || 0, burndownProgress.total || 0, 10);
+    if (!preserveArchivedSeries) {
+        snapshot.burndown.actual = actual;
+        snapshot.burndown.max = Math.max(snapshot.burndown.max || 0, burndownProgress.total || 0, 10);
+    }
 
-    recomputeBurnupSeriesFromBacklog(snapshot, items);
+    if (!isClosedCurrentSprint) {
+        recomputeBurnupSeriesFromBacklog(snapshot, items);
+    }
 
     var velocityIndex = typeof snapshot.velocity.activeIndex === 'number'
         ? snapshot.velocity.activeIndex
@@ -9915,7 +9925,9 @@ function buildActiveSprintSnapshot(sprintNum, archiveSnapshot) {
         snapshot.velocity.activeIndex = velocityIndex;
     }
 
-    syncVelocitySeriesFromBacklog(snapshot, items, sprintNum);
+    if (!isClosedCurrentSprint) {
+        syncVelocitySeriesFromBacklog(snapshot, items, sprintNum);
+    }
 
     snapshot.severity = severity;
 
@@ -9957,6 +9969,9 @@ function getEffectiveSprintSnapshot(sprintNum) {
         var archived = cloneSprintSnapshot(archiveSnapshot) || createRuntimeSprintSnapshot(n);
         var liveItems = window.PB_ITEMS || [];
         var status = getSprintStatusByDate(n);
+        var boardCounts = getBoardCompletionCounts(n);
+        var ticketCounts = getCommittedSprintTicketCounts(liveItems, n);
+        var counts = computeLiveTaskCounts(n);
         var sprintMeta = (SPRINT_SCHEDULE || []).find(function(sp) { return sp.num === n; }) || null;
         var endLabel = sprintMeta ? new Date(sprintMeta.end).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' }) : '';
         var startLabel = sprintMeta ? new Date(sprintMeta.start).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' }) : '';
@@ -9980,8 +9995,23 @@ function getEffectiveSprintSnapshot(sprintNum) {
             archived.metrics.daysVal = '—';
         }
 
-        recomputeBurnupSeriesFromBacklog(archived, liveItems);
-        syncVelocitySeriesFromBacklog(archived, liveItems, n);
+        if (boardCounts.total > 0) {
+            archived.metrics.taskPct = boardCounts.pct + '%';
+            archived.metrics.taskCount = boardCounts.done + ' of ' + boardCounts.total + ' subtasks complete';
+        } else if (ticketCounts.totalPoints > 0) {
+            archived.metrics.taskPct = ticketCounts.pctPoints + '%';
+            archived.metrics.taskCount = ticketCounts.donePoints + ' of ' + ticketCounts.totalPoints + ' effort points complete';
+        }
+
+        archived.p1Count = counts.p1Count;
+        archived.p1Sub = counts.p1Sub;
+        archived.openCount = counts.openCount;
+        archived.openSub = counts.openSub;
+
+        if (status === 'active') {
+            recomputeBurnupSeriesFromBacklog(archived, liveItems);
+            syncVelocitySeriesFromBacklog(archived, liveItems, n);
+        }
 
         var archivedCounts = getCommittedSprintTicketCounts(liveItems, n);
         if (archivedCounts.totalPoints > 0) {
