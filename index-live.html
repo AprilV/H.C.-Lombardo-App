@@ -9051,12 +9051,12 @@ function formatScheduleDateLabel(isoDate) {
 
 var DASH_SPRINT_STORAGE_KEY = 'pmforge_dashboard_selected_sprint_v1';
 var DASH_SPRINT_FOLLOW_CURRENT_KEY = 'pmforge_dashboard_follow_current_sprint_v1';
-var DASHBOARD_BUILD_STAMP = 'e8c2d890|2026-06-16T19:46:12Z';
+var DASHBOARD_BUILD_STAMP = 'e8c2d890|2026-06-16T19:50:48Z';
 var DASHBOARD_BUILD_STAMP_KEY = 'pmforge_dashboard_build_stamp_v1';
 
 function getDashboardBuildHash() {
     var raw = String(DASHBOARD_BUILD_STAMP || '').trim();
-    if (!raw || raw === 'e8c2d890|2026-06-16T19:46:12Z') return 'local';
+    if (!raw || raw === 'e8c2d890|2026-06-16T19:50:48Z') return 'local';
     var parts = raw.split('|');
     return String(parts[0] || raw).trim() || 'local';
 }
@@ -9065,7 +9065,7 @@ function enforceDashboardBuildFreshness() {
     try {
         if (!window.localStorage) return true;
         var current = String(DASHBOARD_BUILD_STAMP || '').trim();
-        if (!current || current === 'e8c2d890|2026-06-16T19:46:12Z') {
+        if (!current || current === 'e8c2d890|2026-06-16T19:50:48Z') {
             localStorage.removeItem(DASHBOARD_BUILD_STAMP_KEY);
             return true;
         }
@@ -10208,10 +10208,8 @@ function getEffectiveSprintSnapshot(sprintNum) {
         archived.openCount = counts.openCount;
         archived.openSub = counts.openSub;
 
-        if (status === 'active') {
-            recomputeBurnupSeriesFromBacklog(archived, liveItems);
-            syncVelocitySeriesFromBacklog(archived, liveItems, n);
-        }
+        recomputeBurnupSeriesFromBacklog(archived, liveItems);
+        syncVelocitySeriesFromBacklog(archived, liveItems, n);
 
         var archivedCounts = getCommittedSprintTicketCounts(liveItems, n);
         if (archivedCounts.totalPoints > 0) {
