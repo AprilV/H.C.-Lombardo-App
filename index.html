@@ -800,8 +800,8 @@
             --header-line-c: rgba(10,22,40,0.14);
             --header-glow: rgba(1,51,105,0.08);
 
-            /* Neutral warm gray — easy on the eyes */
-            background: #c8cdd8;
+            /* Brighter neutral background for stronger contrast across cards/forms */
+            background: linear-gradient(180deg, #f5f8fd 0%, #eef3fb 56%, #e8eef8 100%);
             background-attachment: fixed;
             color: #0a1628;
         }
@@ -942,12 +942,10 @@
         }
 
         body.light .site-title {
-            background: linear-gradient(135deg, #8B6914 0%, #B8860B 25%, #D4AF37 50%, #B8860B 75%, #8B6914 100%);
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: goldShine 4.5s linear infinite;
+            background: none;
+            -webkit-text-fill-color: #0f2f58;
+            color: #0f2f58;
+            animation: none;
         }
 
         body.light .header-meta { color: #4a5568; }
@@ -1049,6 +1047,53 @@
         body.light .area-header span { color: #6b7280; }
         body.light .task-item:hover { background: rgba(1,51,105,0.03); }
         body.light .task-item.done .task-text { color: #aab0bc; }
+
+        /* Overview controls with inline dark defaults need explicit light overrides */
+        body.light #brand-context-line,
+        body.light #brand-project-title,
+        body.light #brand-role-a-name,
+        body.light #brand-role-b-name,
+        body.light #brand-role-c-name,
+        body.light #brand-target-date,
+        body.light #brand-suite-name,
+        body.light #brand-header-signature-input,
+        body.light #brand-live-app-url,
+        body.light #brand-methodology {
+            background: #ffffff !important;
+            color: #0a1628 !important;
+            border-color: rgba(1,51,105,0.24) !important;
+        }
+
+        body.light #brand-role-a-label,
+        body.light #brand-role-b-label,
+        body.light #brand-role-c-label,
+        body.light #brand-target-date-label {
+            background: #edf3fb !important;
+            color: #0f2f58 !important;
+            border-color: rgba(1,51,105,0.24) !important;
+        }
+
+        body.light label[for="brand-lock-toggle"] { color: #334155 !important; }
+        body.light #live-clock,
+        body.light #dash-last-updated { color: #0f172a !important; }
+
+        body.light #recent-updates-card {
+            background: rgba(37,99,235,0.08) !important;
+            border-color: rgba(37,99,235,0.3) !important;
+        }
+        body.light #recent-updates-card > div:first-child { color: #1e3a8a !important; }
+        body.light #recent-update-title { color: #0f2f58 !important; }
+        body.light #recent-update-text { color: #0f172a !important; }
+        body.light #recent-update-index { color: #475569 !important; }
+
+        body.light #dash-sprint-btn,
+        body.light #dash-sprint-list,
+        body.light #dash-sprint-list .dsd-opt {
+            background: #ffffff !important;
+            color: #0f172a !important;
+            border-color: rgba(1,51,105,0.24) !important;
+        }
+        body.light #dash-sprint-list .dsd-opt:hover { background: #edf4ff !important; }
 
         /* Backlog table */
         body.light .filter-btn { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.1); color: #6b7280; }
@@ -4293,7 +4338,7 @@ function getBrandingSnapshot() {
     var org = contextLine.split('·')[0] ? contextLine.split('·')[0].trim() : 'Organization';
     var liveAppUrlRaw = getVal('brand-live-app-url', DEFAULT_LIVE_APP_URL);
     var normalizedLiveAppUrl = normalizeLiveAppUrl(liveAppUrlRaw);
-    if ((window.location && window.location.protocol === 'file:') && normalizedLiveAppUrl !== liveAppUrlRaw) {
+    if (normalizedLiveAppUrl !== liveAppUrlRaw) {
         var liveInput = document.getElementById('brand-live-app-url');
         if (liveInput) liveInput.value = normalizedLiveAppUrl;
         liveAppUrlRaw = normalizedLiveAppUrl;
@@ -4388,7 +4433,14 @@ function persistBrandingEditorValues() {
     BRAND_EDITABLE_IDS.forEach(function(id) {
         var el = document.getElementById(id);
         if (!el) return;
-        payload[id] = String(el.value || '');
+        var rawVal = String(el.value || '');
+        if (id === 'brand-live-app-url') {
+            var normalizedVal = normalizeLiveAppUrl(rawVal);
+            if (normalizedVal !== rawVal) el.value = normalizedVal;
+            payload[id] = normalizedVal;
+            return;
+        }
+        payload[id] = rawVal;
     });
 
     var lockToggle = document.getElementById('brand-lock-toggle');
@@ -4397,28 +4449,22 @@ function persistBrandingEditorValues() {
     writeBrandingStorage(payload);
 }
 
-function migrateLiveAppUrlForLocalDashboard() {
+function migrateBrandingLiveAppUrl() {
     var liveInput = document.getElementById('brand-live-app-url');
     if (!liveInput) return;
 
-    var currentUrl = String(liveInput.value || '').trim();
-    if (!currentUrl) return;
+    var currentUrl = String(liveInput.value || '').trim() || DEFAULT_LIVE_APP_URL;
+    var normalizedUrl = normalizeLiveAppUrl(currentUrl);
+    if (!normalizedUrl) return;
 
-    var pageHost = String(window.location && window.location.hostname || '').toLowerCase();
-    var pagePort = String(window.location && window.location.port || '');
-    var onLocalDashboard = (pageHost === '127.0.0.1' || pageHost === 'localhost') && (pagePort === '5500' || pagePort === '5501');
-    if (!onLocalDashboard) return;
+    if (normalizedUrl !== currentUrl) {
+        liveInput.value = normalizedUrl;
+    }
 
-    try {
-        var parsed = new URL(normalizeLiveAppUrl(currentUrl));
-        var host = parsed.hostname.toLowerCase();
-        var port = parsed.port || (parsed.protocol === 'https:' ? '443' : '80');
-        var isLegacyLocalFrontend = (host === '127.0.0.1' || host === 'localhost') && port === '3000';
-        if (!isLegacyLocalFrontend) return;
-
-        liveInput.value = PROD_LIVE_APP_URL;
-    } catch (e) {
-        // Keep existing value if URL parsing fails.
+    var saved = readBrandingStorage();
+    if (saved && typeof saved === 'object' && saved['brand-live-app-url'] !== normalizedUrl) {
+        saved['brand-live-app-url'] = normalizedUrl;
+        writeBrandingStorage(saved);
     }
 }
 
@@ -4497,7 +4543,7 @@ window.applyBrandingToUI = applyBrandingToUI;
 
 function initBrandingEditor() {
     restoreBrandingEditorValues();
-    migrateLiveAppUrlForLocalDashboard();
+    migrateBrandingLiveAppUrl();
 
     BRAND_EDITABLE_IDS.forEach(function(id) {
         var el = document.getElementById(id);
@@ -9076,12 +9122,12 @@ function formatScheduleDateLabel(isoDate) {
 
 var DASH_SPRINT_STORAGE_KEY = 'pmforge_dashboard_selected_sprint_v1';
 var DASH_SPRINT_FOLLOW_CURRENT_KEY = 'pmforge_dashboard_follow_current_sprint_v1';
-var DASHBOARD_BUILD_STAMP = 'e8c2d890|2026-06-16T21:13:54Z';
+var DASHBOARD_BUILD_STAMP = 'e8c2d890|2026-06-16T21:26:26Z';
 var DASHBOARD_BUILD_STAMP_KEY = 'pmforge_dashboard_build_stamp_v1';
 
 function getDashboardBuildHash() {
     var raw = String(DASHBOARD_BUILD_STAMP || '').trim();
-    if (!raw || raw === 'e8c2d890|2026-06-16T21:13:54Z') return 'local';
+    if (!raw || raw === 'e8c2d890|2026-06-16T21:26:26Z') return 'local';
     var parts = raw.split('|');
     return String(parts[0] || raw).trim() || 'local';
 }
@@ -9090,7 +9136,7 @@ function enforceDashboardBuildFreshness() {
     try {
         if (!window.localStorage) return true;
         var current = String(DASHBOARD_BUILD_STAMP || '').trim();
-        if (!current || current === 'e8c2d890|2026-06-16T21:13:54Z') {
+        if (!current || current === 'e8c2d890|2026-06-16T21:26:26Z') {
             localStorage.removeItem(DASHBOARD_BUILD_STAMP_KEY);
             return true;
         }
