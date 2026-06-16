@@ -736,8 +736,9 @@ function TeamComparison({ initialViewMode = 'comparison' }) {
                         <span className="game-date">{formatGameDate(game.game_date)}</span>
                       </div>
                       <div className="game-matchup-info">
+                        <span className="opponent-direction">{game.is_home ? 'vs' : '@'}</span>
                         <img src={getTeamLogo(game.opponent)} alt={game.opponent} className="opponent-logo-sm" />
-                        <span className="opponent-name">{game.is_home ? 'vs' : '@'} {game.opponent}</span>
+                        <span className="opponent-name">{game.opponent}</span>
                       </div>
                       <div className="game-result-badge">
                         {game.result ? `${game.result} ${game.team_points}-${game.is_home ? game.away_score : game.home_score}` : 'TBD'}
@@ -774,8 +775,9 @@ function TeamComparison({ initialViewMode = 'comparison' }) {
                         <span className="game-date">{formatGameDate(game.game_date)}</span>
                       </div>
                       <div className="game-matchup-info">
+                        <span className="opponent-direction">{game.is_home ? 'vs' : '@'}</span>
                         <img src={getTeamLogo(game.opponent)} alt={game.opponent} className="opponent-logo-sm" />
-                        <span className="opponent-name">{game.is_home ? 'vs' : '@'} {game.opponent}</span>
+                        <span className="opponent-name">{game.opponent}</span>
                       </div>
                       <div className="game-result-badge">
                         {game.result ? `${game.result} ${game.team_points}-${game.is_home ? game.away_score : game.home_score}` : 'TBD'}

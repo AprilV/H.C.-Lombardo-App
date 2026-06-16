@@ -194,8 +194,22 @@
 .team-detail .game-matchup-info {
   display: flex;
   align-items: center;
-  gap: 0.42rem;
+  gap: 0.4rem;
   min-width: 0;
+  flex-wrap: nowrap;
+}
+
+.team-detail .opponent-direction {
+  font-weight: 700;
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+  line-height: 1;
+}
+
+.team-detail .opponent-logo-sm {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
 }
 
 .team-detail .opponent-name {
