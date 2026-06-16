@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './Admin.css';
 import ModelPerformance from './ModelPerformance';
+import Settings from './Settings';
 
 const API_URL = (typeof window !== 'undefined' && (window.location.hostname === 'hclombardo.com' || window.location.hostname === 'www.hclombardo.com' || window.location.hostname.endsWith('.netlify.app'))) ? '' : (process.env.REACT_APP_API_URL ?? '');
 
@@ -117,6 +118,12 @@ function Admin() {
         >
           🗄️ Data Storage
         </button>
+        <button
+          className={`admin-tab ${activeTab === 'settings' ? 'active' : ''}`}
+          onClick={() => setActiveTab('settings')}
+        >
+          ⚙️ Settings
+        </button>
       </div>
 
       <div className="admin-content">
@@ -196,9 +203,9 @@ function Admin() {
         {activeTab === 'topology' && (
           <div className="admin-section">
             <h2>🏗️ App Architecture - 3D Interactive</h2>
-            <div style={{marginBottom: '20px', textAlign: 'center', color: '#7ab8ff'}}>
+            <div className="admin-iframe-intro">
               <p>Interactive 3D visualization of how the app works internally</p>
-              <p style={{fontSize: '0.9rem', opacity: 0.8}}>Drag to rotate • Scroll to zoom • Explore app layers</p>
+              <p className="admin-iframe-subtext">Drag to rotate • Scroll to zoom • Explore app layers</p>
             </div>
             <div className="visualization-container">
               <iframe 
@@ -220,9 +227,9 @@ function Admin() {
         {activeTab === 'neural-net' && (
           <div className="admin-section">
             <h2>🧠 Prediction Models - 3D Neural Networks</h2>
-            <div style={{marginBottom: '20px', textAlign: 'center', color: '#7ab8ff'}}>
+            <div className="admin-iframe-intro">
               <p>Interactive 3D visualization of our AI prediction models</p>
-              <p style={{fontSize: '0.9rem', opacity: 0.8}}>🟢 Win/Loss Classifier • 🔴 Score Regressor</p>
+              <p className="admin-iframe-subtext">🟢 Win/Loss Classifier • 🔴 Score Regressor</p>
             </div>
             <div className="visualization-container">
               <iframe 
@@ -283,7 +290,7 @@ function Admin() {
                 <li><strong>betting_odds</strong> - Vegas lines and spreads</li>
               </ul>
               
-              <h4 style={{marginTop: '20px'}}>Views (Denormalized for Performance):</h4>
+              <h4 className="admin-subheading">Views (Denormalized for Performance):</h4>
               <ul className="admin-list">
                 <li><strong>full_schedule_view</strong> - Games with team names joined</li>
                 <li><strong>team_stats_view</strong> - Aggregated team statistics</li>
@@ -358,7 +365,7 @@ function Admin() {
                 <li><strong>End-of-Season:</strong> Retrain with 2025 data for next season</li>
                 <li><strong>Monitor Trigger:</strong> Retrain if accuracy drops significantly mid-season</li>
               </ul>
-              <p style={{marginTop: '10px', fontSize: '0.9rem', color: '#7ab8ff', fontStyle: 'italic'}}>
+              <p className="admin-note">
                 💡 Models are pre-trained on patterns, not specific teams. Weekly stats feed into dynamic features for predictions.
               </p>
             </div>
@@ -438,21 +445,21 @@ function Admin() {
                 <div className="info-card">
                   <div className="info-icon">📊</div>
                   <h3>Data Structure</h3>
-                  <p style={{color: '#e2e8f0'}}>Teams, games, and statistics</p>
+                  <p className="admin-muted">Teams, games, and statistics</p>
                   <p className="detail">Optimized for fast loading</p>
                 </div>
 
                 <div className="info-card">
                   <div className="info-icon">🔢</div>
                   <h3>Tracked Stats</h3>
-                  <p style={{color: '#e2e8f0'}}>47 metrics per game</p>
+                  <p className="admin-muted">47 metrics per game</p>
                   <p className="detail">Yards, scores, turnovers, etc.</p>
                 </div>
 
                 <div className="info-card">
                   <div className="info-icon">🔄</div>
                   <h3>Data Updates</h3>
-                  <p style={{color: '#e2e8f0'}}>Live game scores & stats</p>
+                  <p className="admin-muted">Live game scores & stats</p>
                   <p className="detail">Syncs every 15 minutes</p>
                 </div>
               </div>
@@ -462,21 +469,27 @@ function Admin() {
               </div>
             )}
 
-            <div style={{marginTop: '40px'}}>
-              <h3 style={{marginBottom: '20px', color: '#7ab8ff'}}>Data Organization</h3>
+            <div className="admin-data-section">
+              <h3 className="admin-data-heading">Data Organization</h3>
               <div className="info-card">
-                <h4 style={{color: '#7ab8ff'}}>🏗️ How Data is Stored</h4>
-                <ul style={{textAlign: 'left', margin: '15px 0', lineHeight: '1.8', color: '#e2e8f0'}}>
+                <h4 className="admin-subheading">🏗️ How Data is Stored</h4>
+                <ul className="admin-bullet-list">
                   <li><strong>Team Profiles</strong> - 32 NFL teams with logos and stats</li>
                   <li><strong>Game Schedule</strong> - Full 18-week season (Week 1-18)</li>
                   <li><strong>Performance Metrics</strong> - Detailed stats for each game</li>
                   <li><strong>Predictions</strong> - AI model predictions & accuracy tracking</li>
                 </ul>
-                <p className="detail" style={{marginTop: '15px'}}>
+                <p className="detail admin-detail-note">
                   Data is organized efficiently for fast app performance and real-time updates
                 </p>
               </div>
             </div>
+          </div>
+        )}
+
+        {activeTab === 'settings' && (
+          <div className="admin-section admin-settings-section">
+            <Settings />
           </div>
         )}
       </div>

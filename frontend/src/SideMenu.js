@@ -82,11 +82,6 @@ function SideMenu() {
             <span className="menu-icon">🔧</span>
             <span className="menu-text">Admin</span>
           </Link>
-
-          <Link to="/settings" className={`menu-item ${isActive('/settings')}`} onClick={closeMenu}>
-            <span className="menu-icon">⚙️</span>
-            <span className="menu-text">Settings</span>
-          </Link>
         </div>
 
         <div className="menu-footer">
