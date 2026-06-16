@@ -9051,12 +9051,12 @@ function formatScheduleDateLabel(isoDate) {
 
 var DASH_SPRINT_STORAGE_KEY = 'pmforge_dashboard_selected_sprint_v1';
 var DASH_SPRINT_FOLLOW_CURRENT_KEY = 'pmforge_dashboard_follow_current_sprint_v1';
-var DASHBOARD_BUILD_STAMP = 'e8c2d890|2026-06-16T19:38:56Z';
+var DASHBOARD_BUILD_STAMP = 'e8c2d890|2026-06-16T19:44:45Z';
 var DASHBOARD_BUILD_STAMP_KEY = 'pmforge_dashboard_build_stamp_v1';
 
 function getDashboardBuildHash() {
     var raw = String(DASHBOARD_BUILD_STAMP || '').trim();
-    if (!raw || raw === 'e8c2d890|2026-06-16T19:38:56Z') return 'local';
+    if (!raw || raw === 'e8c2d890|2026-06-16T19:44:45Z') return 'local';
     var parts = raw.split('|');
     return String(parts[0] || raw).trim() || 'local';
 }
@@ -9065,7 +9065,7 @@ function enforceDashboardBuildFreshness() {
     try {
         if (!window.localStorage) return true;
         var current = String(DASHBOARD_BUILD_STAMP || '').trim();
-        if (!current || current === 'e8c2d890|2026-06-16T19:38:56Z') {
+        if (!current || current === 'e8c2d890|2026-06-16T19:44:45Z') {
             localStorage.removeItem(DASHBOARD_BUILD_STAMP_KEY);
             return true;
         }
@@ -9628,9 +9628,61 @@ function getCommittedSprintTicketCounts(items, sprintNum) {
     };
 }
 
+function parseDashboardEvidenceDate(value) {
+    var raw = String(value || '').trim();
+    if (!raw) return null;
+    var parsed = new Date(raw);
+    if (!isNaN(parsed.getTime())) return parsed;
+    parsed = new Date(raw + 'T00:00:00');
+    return isNaN(parsed.getTime()) ? null : parsed;
+}
+
+function getTaskDetailCompletionDate(taskId) {
+    if (typeof TASK_DETAILS === 'undefined' || !TASK_DETAILS) return null;
+    var detail = TASK_DETAILS[String(taskId || '').trim()];
+    if (!detail) return null;
+    return parseDashboardEvidenceDate(detail.timestamp)
+        || parseDashboardEvidenceDate(detail.updatedAt)
+        || parseDashboardEvidenceDate(detail.at)
+        || parseDashboardEvidenceDate(detail.date);
+}
+
+function getTicketManualCompletionDate(ticket) {
+    if (!ticket) return null;
+    var completedSet = typeof COMPLETED_TASKS !== 'undefined' && Array.isArray(COMPLETED_TASKS)
+        ? new Set(COMPLETED_TASKS)
+        : new Set();
+
+    var fallbackSubtasks = [];
+    if (!Array.isArray(ticket.manualSubtasks) || !ticket.manualSubtasks.length) {
+        var ticketToken = String(ticket.id || 'ta').toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+        fallbackSubtasks = [
+            { id: 'm_' + ticketToken + '_1' },
+            { id: 'm_' + ticketToken + '_2' },
+            { id: 'm_' + ticketToken + '_3' },
+            { id: 'm_' + ticketToken + '_4' }
+        ];
+    }
+
+    var subtasks = (Array.isArray(ticket.manualSubtasks) && ticket.manualSubtasks.length)
+        ? ticket.manualSubtasks
+        : fallbackSubtasks;
+
+    var latest = null;
+    subtasks.forEach(function(subtask, idx) {
+        var sid = String(subtask && subtask.id || ('m_ta_' + idx)).trim();
+        if (!sid || !completedSet.has(sid)) return;
+        var detailDate = getTaskDetailCompletionDate(sid);
+        if (detailDate && (!latest || detailDate > latest)) latest = detailDate;
+    });
+
+    return latest;
+}
+
 function getTicketDoneDate(ticket) {
     if (!ticket || normalizeBacklogStatus(ticket.status) !== 'done') return null;
 
+    var latest = null;
     var history = Array.isArray(ticket.history) ? ticket.history : [];
     for (var i = 0; i < history.length; i++) {
         var entry = history[i] || {};
@@ -9638,14 +9690,17 @@ function getTicketDoneDate(ticket) {
         if (note.indexOf('closed') === -1 && note.indexOf('complete') === -1) continue;
         var stamp = entry.at || entry.timestamp || entry.date || null;
         if (!stamp) continue;
-        var dt = new Date(stamp);
-        if (!isNaN(dt.getTime())) return dt;
+        var dt = parseDashboardEvidenceDate(stamp);
+        if (dt && (!latest || dt > latest)) latest = dt;
     }
 
-    var fallbackStamp = ticket.closedAt || ticket.updatedAt || ticket.createdAt || null;
-    if (!fallbackStamp) return null;
-    var fallbackDate = new Date(fallbackStamp);
-    return isNaN(fallbackDate.getTime()) ? null : fallbackDate;
+    var manualDate = getTicketManualCompletionDate(ticket);
+    if (manualDate && (!latest || manualDate > latest)) latest = manualDate;
+
+    var closedAtDate = parseDashboardEvidenceDate(ticket.closedAt);
+    if (closedAtDate && (!latest || closedAtDate > latest)) latest = closedAtDate;
+
+    return latest;
 }
 
 function buildClosedSprintBurndownActual(sprintNum, totalPoints, dayCtx, items) {
@@ -9654,6 +9709,8 @@ function buildClosedSprintBurndownActual(sprintNum, totalPoints, dayCtx, items) 
 
     var sprintTag = 'S' + sprintNum;
     var doneEvents = [];
+    var datedPoints = 0;
+    var undatedPoints = 0;
     (items || []).forEach(function(ticket) {
         if (String(ticket && ticket.sprint || '').trim().toUpperCase() !== sprintTag) return;
         if (normalizeBacklogStatus(ticket && ticket.status) !== 'done') return;
@@ -9662,13 +9719,37 @@ function buildClosedSprintBurndownActual(sprintNum, totalPoints, dayCtx, items) 
         if (!(points > 0)) return;
 
         var doneDate = getTicketDoneDate(ticket);
-        if (!doneDate) return;
+        if (!doneDate) {
+            undatedPoints += points;
+            return;
+        }
 
         doneDate.setHours(0, 0, 0, 0);
         doneEvents.push({ date: doneDate, points: points });
+        datedPoints += points;
     });
 
-    if (!doneEvents.length) return null;
+    if (!doneEvents.length && undatedPoints <= 0) return null;
+
+    if (undatedPoints > 0 && dayCtx.workdayDates.length) {
+        var undatedIdeal = buildIdealBurndownSeries(undatedPoints, dayCtx.workdayDates.length);
+        var distributed = 0;
+        for (var u = 1; u < undatedIdeal.length; u++) {
+            var delta = Math.max(0, Math.round((undatedIdeal[u - 1] || 0) - (undatedIdeal[u] || 0)));
+            if (delta <= 0) continue;
+            var eventDay = new Date(dayCtx.workdayDates[u]);
+            eventDay.setHours(0, 0, 0, 0);
+            doneEvents.push({ date: eventDay, points: delta });
+            distributed += delta;
+        }
+
+        var remainingUndated = Math.max(0, Math.round(undatedPoints - distributed));
+        if (remainingUndated > 0) {
+            var lastDay = new Date(dayCtx.workdayDates[dayCtx.workdayDates.length - 1]);
+            lastDay.setHours(0, 0, 0, 0);
+            doneEvents.push({ date: lastDay, points: remainingUndated });
+        }
+    }
 
     doneEvents.sort(function(a, b) { return a.date - b.date; });
 
@@ -9676,7 +9757,12 @@ function buildClosedSprintBurndownActual(sprintNum, totalPoints, dayCtx, items) 
     var idx = 0;
     var series = [];
 
-    dayCtx.workdayDates.forEach(function(workday) {
+    dayCtx.workdayDates.forEach(function(workday, index) {
+        if (index === 0) {
+            series.push(Math.max(0, Math.round(totalPoints)));
+            return;
+        }
+
         var wd = new Date(workday);
         wd.setHours(0, 0, 0, 0);
         while (idx < doneEvents.length && doneEvents[idx].date <= wd) {
@@ -9686,19 +9772,12 @@ function buildClosedSprintBurndownActual(sprintNum, totalPoints, dayCtx, items) 
         series.push(Math.max(0, Math.round(remaining)));
     });
 
-    // If completion timestamps are sparse/late (common after closure backfills),
-    // avoid rendering a misleading last-day cliff that implies false schedule slip.
-    var changeCount = 0;
-    for (var c = 1; c < series.length; c++) {
-        if (series[c] !== series[c - 1]) changeCount++;
-    }
-    var lastPreZero = series.length > 1 ? Number(series[series.length - 2] || 0) : 0;
-    if (series.length >= 8 && changeCount <= 2 && lastPreZero > 0) {
-        return buildIdealBurndownSeries(totalPoints, series.length);
-    }
-
     if (series.length) series[series.length - 1] = 0;
-    return series;
+    return {
+        series: series,
+        undatedPoints: Math.max(0, Number(undatedPoints) || 0),
+        datedPoints: Math.max(0, Number(datedPoints) || 0)
+    };
 }
 
 function recomputeBurnupSeriesFromBacklog(snapshot, items) {
@@ -9993,14 +10072,16 @@ function buildActiveSprintSnapshot(sprintNum, archiveSnapshot) {
     }
 
     var startAnchorActive = false;
+    var closedUndatedPoints = 0;
     if (!preserveArchivedSeries && burndownProgress.total > 0) {
         var closedSeries = null;
         if (isClosedCurrentSprint) {
             closedSeries = buildClosedSprintBurndownActual(sprintNum, burndownProgress.total, dayCtx, items);
         }
 
-        if (closedSeries && closedSeries.length) {
-            actual = closedSeries.slice();
+        if (closedSeries && Array.isArray(closedSeries.series) && closedSeries.series.length) {
+            actual = closedSeries.series.slice();
+            closedUndatedPoints = Number(closedSeries.undatedPoints || 0);
             idealLen = actual.length;
             snapshot.burndown.ideal = buildIdealBurndownSeries(burndownProgress.total, idealLen);
         } else {
@@ -10061,7 +10142,10 @@ function buildActiveSprintSnapshot(sprintNum, archiveSnapshot) {
         ? (' Capacity adjusted by excluding ' + dayCtx.excludedWorkdayCount + ' planned no-work day' + (dayCtx.excludedWorkdayCount === 1 ? '' : 's') + '.')
         : '';
     if (usePointBurndown) {
-        snapshot.burndownInsight = '<strong>S' + sprintNum + ' burndown unit:</strong> Effort points. ' + pointProgress.done + ' of ' + pointProgress.total + ' points complete, ' + pointProgress.remaining + ' remaining.' + capacityDetail + (startAnchorActive ? ' Start-to-current anchor is shown so the burndown trace is visible early in the sprint.' : '');
+        var undatedNote = (isClosedCurrentSprint && closedUndatedPoints > 0)
+            ? (' ' + closedUndatedPoints + ' done effort points had no explicit completion timestamp, so they are distributed across sprint workdays for automated burndown rendering.')
+            : '';
+        snapshot.burndownInsight = '<strong>S' + sprintNum + ' burndown unit:</strong> Effort points. ' + pointProgress.done + ' of ' + pointProgress.total + ' points complete, ' + pointProgress.remaining + ' remaining.' + capacityDetail + undatedNote + (startAnchorActive ? ' Start-to-current anchor is shown so the burndown trace is visible early in the sprint.' : '');
     } else {
         snapshot.burndownInsight = '<strong>S' + sprintNum + ' status:</strong> ' + dayLabel + '. ' + progressBySubtasks.done + ' of ' + progressBySubtasks.total + (useTicketFallback ? ' sprint tickets complete (board subtasks not populated yet).' : ' subtasks complete.') + ' ' + progressBySubtasks.remaining + ' remaining.' + capacityDetail + (startAnchorActive ? ' Start-to-current anchor is shown so the burndown trace is visible early in the sprint.' : '');
     }
