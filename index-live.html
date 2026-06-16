@@ -13355,7 +13355,7 @@ function showSprintView(view, btn) {
             var text = buildSprintSummaryText(sprintKey);
             window._reportPlainText = text;
             var out = document.getElementById('report-output');
-            if (out) out.innerHTML = '<pre style="background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:0.5rem;padding:1.5rem;font-family:monospace;font-size:0.82rem;color:#e2e8f0;white-space:pre-wrap;line-height:1.7;">' + text.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</pre>';
+            if (out) out.innerHTML = '<pre style="background:#fff;border:1px solid #e2e8f0;border-radius:0.5rem;padding:1.5rem;font-family:monospace;font-size:0.82rem;color:#1e293b;white-space:pre-wrap;line-height:1.7;">' + text.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</pre>';
         } else {
             if (_origRenderReport) _origRenderReport();
         }
