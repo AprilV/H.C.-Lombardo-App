@@ -595,7 +595,7 @@ function MLPredictionsRedesign() {
                     </>
                   ) : (
                     <div className="prediction-results-line">
-                      <span className="prediction-result-badge unknown">⏳ Pick Pending</span>
+                      <span className="prediction-result-badge unknown">⏳ Pick Result Pending</span>
                     </div>
                   )}
                 </div>
