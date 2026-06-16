@@ -9051,6 +9051,42 @@ function formatScheduleDateLabel(isoDate) {
 
 var DASH_SPRINT_STORAGE_KEY = 'pmforge_dashboard_selected_sprint_v1';
 var DASH_SPRINT_FOLLOW_CURRENT_KEY = 'pmforge_dashboard_follow_current_sprint_v1';
+var DASHBOARD_BUILD_STAMP = 'e8c2d890|2026-06-16T19:38:39Z';
+var DASHBOARD_BUILD_STAMP_KEY = 'pmforge_dashboard_build_stamp_v1';
+
+function getDashboardBuildHash() {
+    var raw = String(DASHBOARD_BUILD_STAMP || '').trim();
+    if (!raw || raw === 'e8c2d890|2026-06-16T19:38:39Z') return 'local';
+    var parts = raw.split('|');
+    return String(parts[0] || raw).trim() || 'local';
+}
+
+function enforceDashboardBuildFreshness() {
+    try {
+        if (!window.localStorage) return true;
+        var current = String(DASHBOARD_BUILD_STAMP || '').trim();
+        if (!current || current === 'e8c2d890|2026-06-16T19:38:39Z') {
+            localStorage.removeItem(DASHBOARD_BUILD_STAMP_KEY);
+            return true;
+        }
+
+        var prev = String(localStorage.getItem(DASHBOARD_BUILD_STAMP_KEY) || '').trim();
+        localStorage.setItem(DASHBOARD_BUILD_STAMP_KEY, current);
+        if (!prev || prev === current) return true;
+
+        var url = new URL(window.location.href);
+        if (!url.searchParams.get('cacheBust')) {
+            url.searchParams.set('cacheBust', String(Date.now()));
+            window.location.replace(url.toString());
+            return false;
+        }
+    } catch (e) {
+        return true;
+    }
+    return true;
+}
+
+enforceDashboardBuildFreshness();
 
 function getCurrentSprint() {
     if (!Array.isArray(SPRINT_SCHEDULE) || !SPRINT_SCHEDULE.length) {
@@ -10470,7 +10506,7 @@ function loadSprintDashboard(num, options) {
         var activeSprint = (window.SPRINT_SCHEDULE || []).find(function(sp) {
             return sp && sp.num === activeSprintNum;
         });
-        lu.textContent = updDate + (activeSprint ? ' — S' + activeSprint.num + ': ' + activeSprint.theme : '');
+        lu.textContent = updDate + (activeSprint ? ' — S' + activeSprint.num + ': ' + activeSprint.theme : '') + ' · build ' + getDashboardBuildHash();
     }
 
     // Rebuild charts with this sprint's data
