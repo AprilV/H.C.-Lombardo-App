@@ -159,10 +159,20 @@
   transform: translateY(-2px);
 }
 
+[data-theme="nfl"] .team-dropdown:hover {
+  border-color: var(--accent-primary);
+  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+}
+
 .team-dropdown:focus {
   outline: none;
   border-color: #D50A0A;
   box-shadow: 0 0 0 4px rgba(213, 10, 10, 0.15);
+}
+
+[data-theme="nfl"] .team-dropdown:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 4px rgba(255, 215, 0, 0.2);
 }
 
 /* ===================================

@@ -45,10 +45,9 @@ try {
 
     git push origin gh-pages
     $hash = (git rev-parse --short HEAD).Trim()
-    $cacheBust = [DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds()
 
     Write-Output "PUSHED_COMMIT=$hash"
-    Write-Output "LIVE_URL=https://aprilv.github.io/H.C.-Lombardo-App/?cacheBust=$cacheBust"
+    Write-Output "LIVE_URL=https://aprilv.github.io/H.C.-Lombardo-App/"
 }
 finally {
     if ($PWD.Path -eq $worktreePath) {
