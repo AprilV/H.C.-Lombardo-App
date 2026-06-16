@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prediction Models - Classifier & Regressor</title>
+    <title>AI Prediction Engine - 3D Experience</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
@@ -220,31 +220,29 @@
     <div id="models-canvas"></div>
     
     <div class="model-info">
-        <h2>🎯 AI Prediction Models</h2>
+        <h2>🎯 AI Prediction Engine</h2>
         
         <div class="model-tabs">
             <button class="tab-btn classifier active" onclick="switchModel('classifier')">
-                🟢 Win/Loss Classifier
+                🟢 Winner Prediction
             </button>
             <button class="tab-btn regressor" onclick="switchModel('regressor')">
-                🔴 Score Regressor
+                🔴 Spread Prediction
             </button>
         </div>
         
         <div class="model-details classifier active">
-            <h3>🟢 Win/Loss Classifier</h3>
-            <p><span class="metric">Purpose:</span> Predicts which team will win the game</p>
-            <p><span class="metric">Architecture:</span> 41 inputs → 128 → 64 → 32 → 1 output</p>
-            <p><span class="metric">Training Data:</span> Historical NFL games</p>
-            <p><span class="metric">Output:</span> Win probability (0-1)</p>
+            <h3>🟢 Winner Prediction</h3>
+            <p><span class="metric">Value:</span> Identifies which side has the stronger edge before kickoff.</p>
+            <p><span class="metric">Confidence:</span> Learns from 25+ years of NFL outcomes and market context.</p>
+            <p><span class="metric">Benefit:</span> Helps you make winner bets with more conviction and less guesswork.</p>
         </div>
         
         <div class="model-details regressor">
-            <h3>🔴 Score Regressor</h3>
-            <p><span class="metric">Purpose:</span> Predicts the final score difference</p>
-            <p><span class="metric">Architecture:</span> 41 inputs → 128 → 64 → 32 → 1 output</p>
-            <p><span class="metric">Training Data:</span> Historical NFL games</p>
-            <p><span class="metric">Output:</span> Point spread prediction</p>
+            <h3>🔴 Spread Prediction</h3>
+            <p><span class="metric">Value:</span> Projects likely game margin so you can target stronger spread spots.</p>
+            <p><span class="metric">Confidence:</span> Built on decades of NFL game results and line behavior.</p>
+            <p><span class="metric">Benefit:</span> Helps you find where market pricing may leave room for value.</p>
         </div>
     </div>
     
@@ -256,13 +254,13 @@
     </div>
     
     <div class="architecture-explanation classifier-explanation">
-        <strong>Win/Loss Classifier</strong><br>
-        This model predicts <strong>who will win</strong> the game. It outputs a <strong>binary result</strong> (0 or 1) representing the probability of a team winning. Think of it as a yes/no question: "Will this team win?" The layers compress 41 game statistics into a single win probability.
+        <strong>Winner Prediction</strong><br>
+        Built to answer one key betting question fast: <strong>who has the stronger path to win.</strong>
     </div>
     
     <div class="architecture-explanation regressor-explanation" style="display: none;">
-        <strong>Score Regressor</strong><br>
-        This model predicts <strong>by how much</strong> a team will win or lose. It outputs a <strong>continuous number</strong> (the point spread) rather than just yes/no. Think of it as answering: "What will the final score difference be?" The layers compress 41 game statistics into a predicted point spread.
+        <strong>Spread Prediction</strong><br>
+        Focused on margin confidence so you can decide <strong>where the spread value is strongest.</strong>
     </div>
     
     <script>
@@ -321,7 +319,7 @@
             createClassifier();
             createRegressor();
             
-            // Add labels explaining layers and architecture
+            // Add labels for visual context
             addModelLabels();
             
             // Start animation
@@ -503,22 +501,22 @@
             // Store reference for animation
             window.labelRenderer = labelRenderer;
             
-            // Classifier layer colors (rainbow gradient)
+            // Winner view labels
             const classifierLayers = [
-                { z: 40, title: 'Input Layer (41)', desc: 'Game stats & team metrics', color: '#8b5cf6' },
-                { z: 20, title: 'Hidden Layer 1 (128)', desc: 'Pattern detection - identifies winning trends', color: '#3b82f6' },
-                { z: 0, title: 'Hidden Layer 2 (64)', desc: 'Feature refinement - focuses on key patterns', color: '#10b981' },
-                { z: -20, title: 'Hidden Layer 3 (32)', desc: 'Decision making - consolidates predictions', color: '#fbbf24' },
-                { z: -40, title: 'Output Layer (1)', desc: 'Win Probability (0-1)', color: '#ef4444' }
+                { z: 40, title: 'Game Signals', desc: 'Current matchup context', color: '#8b5cf6' },
+                { z: 20, title: 'Trend Engine', desc: 'Finds meaningful patterns', color: '#3b82f6' },
+                { z: 0, title: 'Edge Filter', desc: 'Ranks confidence factors', color: '#10b981' },
+                { z: -20, title: 'Decision Core', desc: 'Builds pick confidence', color: '#fbbf24' },
+                { z: -40, title: 'Winner Call', desc: 'Best side to back', color: '#ef4444' }
             ];
             
-            // Regressor layer colors (sunset gradient)
+            // Spread view labels
             const regressorLayers = [
-                { z: 40, title: 'Input Layer (41)', desc: 'Game stats & team metrics', color: '#06b6d4' },
-                { z: 20, title: 'Hidden Layer 1 (128)', desc: 'Pattern detection - identifies scoring trends', color: '#8b5cf6' },
-                { z: 0, title: 'Hidden Layer 2 (64)', desc: 'Feature refinement - focuses on key patterns', color: '#ec4899' },
-                { z: -20, title: 'Hidden Layer 3 (32)', desc: 'Decision making - consolidates predictions', color: '#f97316' },
-                { z: -40, title: 'Output Layer (1)', desc: 'Point Spread Prediction', color: '#fbbf24' }
+                { z: 40, title: 'Game Signals', desc: 'Live matchup context', color: '#06b6d4' },
+                { z: 20, title: 'Trend Engine', desc: 'Reads scoring momentum', color: '#8b5cf6' },
+                { z: 0, title: 'Value Filter', desc: 'Finds spread opportunities', color: '#ec4899' },
+                { z: -20, title: 'Decision Core', desc: 'Builds margin confidence', color: '#f97316' },
+                { z: -40, title: 'Spread Call', desc: 'Projected game margin', color: '#fbbf24' }
             ];
             
             // Add labels for Classifier

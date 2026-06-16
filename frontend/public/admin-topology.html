@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>System Topology - 3D Visualization</title>
+    <title>AI Experience - 3D View</title>
     
     <!-- Three.js for 3D Graphics -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -82,90 +82,16 @@
             transform: scale(1.05);
         }
         
-        .legend {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(15, 23, 42, 0.9);
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(16, 185, 129, 0.3);
-            border-radius: 12px;
-            padding: 15px;
-            max-width: 250px;
-            z-index: 100;
-        }
-        
-        .legend h3 {
-            color: #10b981;
-            margin-bottom: 10px;
-            font-size: 1.2rem;
-        }
-        
-        .legend-item {
-            display: flex;
-            align-items: center;
-            margin: 8px 0;
-        }
-        
-        .legend-color {
-            width: 20px;
-            height: 20px;
-            border-radius: 4px;
-            margin-right: 10px;
-        }
-        
-        .legend-text {
-            color: #cbd5e1;
-            font-size: 0.9rem;
-        }
     </style>
 </head>
 <body>
     <div id="topology-canvas"></div>
     
     <div class="info-panel">
-        <h2>🏗️ System Architecture</h2>
+        <h2>🏈 Built For Winning Picks</h2>
         <p><strong>H.C. Lombardo App</strong></p>
-        <p>Full-stack NFL analytics platform with machine learning predictions and real-time data updates.</p>
+        <p>Advanced intelligence working around the clock to help you spot stronger opportunities before kickoff.</p>
         <p><strong>Drag</strong> to rotate | <strong>Scroll</strong> to zoom | <strong>Click</strong> components for details</p>
-    </div>
-    
-    <div class="legend">
-        <h3>📱 App Architecture</h3>
-        <div class="legend-item">
-            <div class="legend-color" style="background: #4a90e2;"></div>
-            <div class="legend-text">User Interface</div>
-        </div>
-        <div class="legend-item">
-            <div class="legend-color" style="background: #10b981;"></div>
-            <div class="legend-text">Classifier (Win/Loss)</div>
-        </div>
-        <div class="legend-item">
-            <div class="legend-color" style="background: #ec4899;"></div>
-            <div class="legend-text">Regressor (Score)</div>
-        </div>
-        <div class="legend-item">
-            <div class="legend-color" style="background: #5a6c7d;"></div>
-            <div class="legend-text">Application Server</div>
-        </div>
-        <div class="legend-item">
-            <div class="legend-color" style="background: #2a9d8f;"></div>
-            <div class="legend-text">Data Storage</div>
-        </div>
-        <div class="legend-item">
-            <div class="legend-color" style="background: #f59e0b;"></div>
-            <div class="legend-text">Data Schema</div>
-        </div>
-        <div class="legend-item">
-            <div class="legend-color" style="background: #8b5cf6;"></div>
-            <div class="legend-text">External Data</div>
-        </div>
-            <div class="legend-text">nflverse Data</div>
-        </div>
-        <div class="legend-item">
-            <div class="legend-color" style="background: #ef4444;"></div>
-            <div class="legend-text">ML Models</div>
-        </div>
     </div>
     
     <div class="controls">
@@ -290,7 +216,7 @@
             mobileGroup.position.set(-40, 8, 0);
             scene.add(mobileGroup);
             
-            addLabel('User Interface<br><small>React Web App</small>', mobileGroup, 'label-ui');
+            addLabel('Your Experience<br><small>Pick Dashboard</small>', mobileGroup, 'label-ui');
 
             // ========================================
             // LAYER 2: PREDICTION ENGINE (2 ML Models)
@@ -333,7 +259,7 @@
             classifierGroup.position.set(-20, 8, 20);
             scene.add(classifierGroup);
             
-            addLabel('Classifier<br><small>Win/Loss</small>', classifierGroup, 'label-ml');
+            addLabel('Winner Forecasts<br><small>Confidence Signals</small>', classifierGroup, 'label-ml');
 
             // Regressor Model (Right) - Score Prediction
             const regressorGroup = new THREE.Group();
@@ -372,7 +298,7 @@
             regressorGroup.position.set(-20, 8, -20);
             scene.add(regressorGroup);
             
-            addLabel('Regressor<br><small>Score Prediction</small>', regressorGroup, 'label-ml');
+            addLabel('Spread Outlook<br><small>Margin Confidence</small>', regressorGroup, 'label-ml');
 
             // ========================================
             // LAYER 3: APPLICATION SERVER (Business Logic)
@@ -426,7 +352,7 @@
             appServerGroup.position.set(0, 0, 0);
             scene.add(appServerGroup);
             
-            addLabel('Application Server<br><small>Flask Backend</small>', appServerGroup, 'label-backend');
+            addLabel('Always-On Reliability<br><small>Live Platform</small>', appServerGroup, 'label-backend');
 
             // ========================================
             // LAYER 4: DATA STORAGE (Database + Schema)
@@ -466,7 +392,7 @@
             dbGroup.position.set(25, -8, 15);
             scene.add(dbGroup);
             
-            addLabel('Data Storage<br><small>PostgreSQL</small>', dbGroup, 'label-db');
+            addLabel('Historical Depth<br><small>Decades of Games</small>', dbGroup, 'label-db');
 
             // HCL Schema (stacked data cubes)
             const hclGroup = new THREE.Group();
@@ -495,7 +421,7 @@
             hclGroup.position.set(25, -8, -15);
             scene.add(hclGroup);
             
-            addLabel('Data Schema<br><small>HCL Tables</small>', hclGroup, 'label-schema');
+            addLabel('Smart Context<br><small>Matchup Trends</small>', hclGroup, 'label-schema');
 
             // ========================================
             // LAYER 5: EXTERNAL DATA (nflverse)
@@ -543,7 +469,7 @@
             nflverseGroup.position.set(50, -8, 0);
             scene.add(nflverseGroup);
             
-            addLabel('External Data<br><small>nflverse API</small>', nflverseGroup, 'label-external');
+            addLabel('Live Market Pulse<br><small>Current Signals</small>', nflverseGroup, 'label-external');
 
             // ========================================
             // DATA FLOW CONNECTIONS
@@ -583,7 +509,7 @@
             // PostgreSQL → nflverse (data ingestion)
             createConnection(new THREE.Vector3(25, -8, 15), new THREE.Vector3(50, -8, 0), 0xa78bfa);
             
-            console.log('📱 Mobile App Architecture built successfully!');
+            console.log('3D experience loaded successfully.');
         }
         
         function animate() {

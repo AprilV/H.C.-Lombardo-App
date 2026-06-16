@@ -11,8 +11,6 @@ function Admin() {
   const [dbStats, setDbStats] = useState(null);
   const [serverCheckedAt, setServerCheckedAt] = useState(null);
   const [dbCheckedAt, setDbCheckedAt] = useState(null);
-  const [isUpdating, setIsUpdating] = useState(false);
-  const [updateMessage, setUpdateMessage] = useState(null);
 
   useEffect(() => {
     checkServerStatus();
@@ -85,42 +83,11 @@ function Admin() {
     });
   };
 
-  const handleUpdatePredictions = async () => {
-    setIsUpdating(true);
-    setUpdateMessage(null);
-
-    try {
-      const response = await fetch(`${API_URL}/api/ml/update-results`, {
-        method: 'POST'
-      });
-      const data = await response.json();
-
-      if (data.success) {
-        setUpdateMessage({
-          type: 'success',
-          text: '✅ Performance view refreshed successfully.'
-        });
-      } else {
-        setUpdateMessage({
-          type: 'error',
-          text: '❌ Refresh was not completed. Please try again.'
-        });
-      }
-    } catch (err) {
-      setUpdateMessage({
-        type: 'error',
-        text: '❌ Refresh was not completed. Please try again.'
-      });
-    } finally {
-      setIsUpdating(false);
-    }
-  };
-
   return (
     <div className="admin-container">
       <div className="admin-header">
-        <h1>🔧 Admin Panel</h1>
-        <p className="admin-subtitle">Live system confidence, prediction performance, and data coverage</p>
+        <h1>About H.C. Lombardo</h1>
+        <p className="admin-subtitle">Smarter NFL predictions that help you find the edge with confidence.</p>
       </div>
 
       <div className="admin-tabs">
@@ -146,7 +113,7 @@ function Admin() {
           className={`admin-tab ${activeTab === 'database' ? 'active' : ''}`}
           onClick={() => setActiveTab('database')}
         >
-          🗄️ Data Storage
+          📊 The Data Behind the Picks
         </button>
         <button
           className={`admin-tab ${activeTab === 'settings' ? 'active' : ''}`}
@@ -203,8 +170,8 @@ function Admin() {
             </div>
 
             <div className="admin-iframe-intro">
-              <p>Interactive 3D system view</p>
-              <p className="admin-iframe-subtext">Status strip reflects current live checks</p>
+              <p>Always-on reliability so your picks are ready when you are.</p>
+              <p className="admin-iframe-subtext">Live status keeps your confidence high before every wager.</p>
             </div>
 
             <div className="visualization-container">
@@ -228,26 +195,14 @@ function Admin() {
           <div className="admin-section">
             <div className="performance-header">
               <h2>🏈 Prediction Performance</h2>
-              <button
-                className={`update-btn ${isUpdating ? 'updating' : ''}`}
-                onClick={handleUpdatePredictions}
-                disabled={isUpdating}
-              >
-                {isUpdating ? '⏳ Refreshing...' : '🔄 Refresh'}
-              </button>
             </div>
 
             <div className="ai-performance-summary">
-              <p>Built on modern, high-end prediction intelligence focused on game outcomes and spread confidence.</p>
-              <p>Continuously informed by the latest results so projections stay relevant throughout the season.</p>
-              <p>Validated against historical performance and Vegas market outcomes for trustworthy guidance.</p>
+              <p>Get AI-powered picks designed to uncover value the market can miss.</p>
+              <p>Every forecast is tuned for real betting decisions, from likely winners to spread confidence.</p>
+              <p>Validated against real outcomes and Vegas lines to keep your trust earned, not assumed.</p>
+              <p>Use it as your confidence layer before you place a wager.</p>
             </div>
-
-            {updateMessage && (
-              <div className={`update-message ${updateMessage.type}`}>
-                {updateMessage.text}
-              </div>
-            )}
 
             <ModelPerformance />
           </div>
@@ -257,8 +212,8 @@ function Admin() {
           <div className="admin-section">
             <h2>🧠 AI Prediction Engine</h2>
             <div className="admin-iframe-intro">
-              <p>Interactive 3D experience of our prediction engine.</p>
-              <p className="admin-iframe-subtext">Explore how our intelligence powers game forecasts.</p>
+              <p>Experience the intelligence behind every pick in an immersive 3D view.</p>
+              <p className="admin-iframe-subtext">Built to help you decide faster and bet with more conviction.</p>
             </div>
             <div className="visualization-container">
               <iframe
@@ -279,40 +234,40 @@ function Admin() {
 
         {activeTab === 'database' && (
           <div className="admin-section">
-            <h2>🗄️ Data Summary</h2>
+            <h2>📊 The Data Behind the Picks</h2>
             <p className="admin-data-intro">
-              High-level coverage and model outcomes powering this experience.
+              Deep historical coverage gives every forecast stronger context before game day.
             </p>
 
             <div className="data-summary-grid">
               <div className="data-summary-card data-summary-card-accent">
                 <h3>📚 Data Coverage</h3>
                 <div className="data-summary-metric">{gamesLoadedDisplay}</div>
-                <p>Historical NFL games spanning 1999-2025 seasons.</p>
-                <p className="detail">{teamsTrackedDisplay} teams tracked across game history.</p>
+                <p>Decades of NFL history from 1999-2025 power our forecasting confidence.</p>
+                <p className="detail">{teamsTrackedDisplay} teams tracked across long-term performance trends.</p>
               </div>
 
               <div className="data-summary-card">
-                <h3>📊 Game Data</h3>
-                <p>Per-game team statistics and betting lines for matchup analysis.</p>
-                <p>Live updates continue throughout active game windows.</p>
+                <h3>🎯 Betting Insight</h3>
+                <p>Game-by-game performance and line context help surface sharper value spots.</p>
+                <p>Fresh game information keeps your edge current as the slate evolves.</p>
                 <div className={`data-status-chip ${databaseOperational ? 'online' : 'offline'}`}>
                   {databaseOperational ? 'Operational' : 'Unavailable'}
                 </div>
-                <p className="detail">Last checked {formatCheckedAt(dbCheckedAt)}</p>
+                <p className="detail">Data health checked at {formatCheckedAt(dbCheckedAt)}</p>
               </div>
 
               <div className="data-summary-card">
                 <h3>🧠 Model Results</h3>
-                <p>Win/Loss prediction model currently tracks at 65.55% accuracy.</p>
-                <p>Point spread model is currently at 10.35 MAE.</p>
-                <p className="detail">Performance is monitored throughout the season.</p>
+                <p>Winner forecasting currently tracks at 65.55% accuracy.</p>
+                <p>Spread forecasting currently tracks at 10.35 MAE.</p>
+                <p className="detail">Results are measured against real outcomes to keep your confidence grounded.</p>
               </div>
 
               <div className="data-summary-card">
                 <h3>🌐 Powered By</h3>
-                <p>Machine learning models trained on historical NFL data.</p>
-                <p>Public data feeds from NFLverse and ESPN API.</p>
+                <p>Advanced prediction intelligence built from long-term NFL history.</p>
+                <p>Trusted public data coverage from NFLverse and ESPN API.</p>
               </div>
             </div>
           </div>
