@@ -7186,6 +7186,11 @@ function logDashboardApiError(err) {
     if (message.indexOf('Dashboard API disabled for local static preview.') === 0) {
         return;
     }
+    // GitHub Pages/static hosted mode also intentionally runs without API sync
+    // unless explicitly enabled via query param.
+    if (message.indexOf('Dashboard API sync is disabled for this dashboard mode.') === 0) {
+        return;
+    }
 
     var now = Date.now();
     if (now - DASHBOARD_API_LAST_ERROR_TS < 15000) return;
