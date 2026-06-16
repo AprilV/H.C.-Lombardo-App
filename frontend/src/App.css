@@ -29,15 +29,15 @@
 }
 
 [data-theme="classic-light"] {
-  --bg-primary: linear-gradient(135deg, #E3E8EF 0%, #D6DEE8 100%);
-  --bg-secondary: #E2E8F0;
-  --bg-card: #EDF1F5;
-  --text-primary: #1A2332;
-  --text-secondary: #5A6B7F;
+  --bg-primary: linear-gradient(135deg, #CFD8E3 0%, #BCC9D8 100%);
+  --bg-secondary: #C7D1DE;
+  --bg-card: #D3DCE7;
+  --text-primary: #162234;
+  --text-secondary: #44566B;
   --accent-primary: #1976D2;
   --accent-secondary: #1565C0;
-  --border-color: #C4CFDB;
-  --shadow: rgba(30, 50, 80, 0.10);
+  --border-color: #AEBCCD;
+  --shadow: rgba(20, 35, 55, 0.16);
 }
 
 /* ============================================
