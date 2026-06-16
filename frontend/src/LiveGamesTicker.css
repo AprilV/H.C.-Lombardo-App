@@ -148,8 +148,15 @@
   position: relative;
   flex-shrink: 0;
   box-shadow: var(--dashboard-card-shadow, 0 4px 12px var(--shadow));
-  pointer-events: none;
+  pointer-events: auto;
   overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.game-ticker-card:hover {
+  border-color: var(--accent-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px var(--shadow);
 }
 
 .game-ticker-card.in_progress {
@@ -159,6 +166,12 @@
 
 .game-ticker-card.final {
   border-color: var(--border-color);
+}
+
+[data-theme="executive-dark"] .game-ticker-card:hover,
+[data-theme="classic-light"] .game-ticker-card:hover {
+  border-color: var(--accent-primary);
+  box-shadow: 0 6px 14px var(--shadow);
 }
 
 .status-live,

@@ -147,6 +147,13 @@
   background: color-mix(in srgb, var(--bg-card) 92%, transparent);
   padding: 0.3rem 0.4rem;
   min-height: 2.4rem;
+  transition: all 0.2s ease;
+}
+
+.dashboard-legend-item:hover {
+  border-color: var(--accent-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px var(--shadow);
 }
 
 .dashboard-legend-copy {
@@ -245,12 +252,13 @@
   min-height: 165px;
   position: relative;
   overflow: hidden;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .best-bet-card:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 16px var(--shadow);
+  border-color: var(--accent-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px var(--shadow);
 }
 
 .best-bet-top-row {
@@ -1189,6 +1197,14 @@
 
 [data-theme="executive-dark"] .division-card:hover,
 [data-theme="classic-light"] .division-card:hover {
+  border-color: var(--accent-primary);
+  box-shadow: 0 6px 14px var(--shadow);
+}
+
+[data-theme="executive-dark"] .best-bet-card:hover,
+[data-theme="classic-light"] .best-bet-card:hover,
+[data-theme="executive-dark"] .dashboard-legend-item:hover,
+[data-theme="classic-light"] .dashboard-legend-item:hover {
   border-color: var(--accent-primary);
   box-shadow: 0 6px 14px var(--shadow);
 }
