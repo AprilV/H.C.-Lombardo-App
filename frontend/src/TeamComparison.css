@@ -273,7 +273,7 @@
   margin-bottom: 0.5rem;
 }
 
-.team-record {
+.team-comparison .team-record {
   font-size: 1.5rem;
   font-weight: 700;
   color: var(--accent-primary);

@@ -823,7 +823,7 @@
 }
 
 .conference-logo-letter {
-  font-size: 3rem;
+  font-size: 1.4rem;
   font-weight: 900;
   line-height: 1;
 }
@@ -850,14 +850,14 @@
 }
 
 .conference-logo-text {
-  font-size: 1.2rem;
+  font-size: 0.9rem;
   font-weight: 900;
   color: #013369;
   letter-spacing: 1px;
 }
 
-.conference-title {
-  font-size: 1.18rem;
+.conference-section .conference-title {
+  font-size: 0.9rem;
   color: var(--text-primary);
   margin: 0;
   text-shadow: none;
@@ -888,7 +888,7 @@
   border-color: var(--accent-primary);
 }
 
-.division-title {
+.conference-section .division-title {
   font-size: 0.84rem;
   color: var(--text-primary);
   margin-bottom: 0.4rem;
@@ -944,8 +944,8 @@
   box-shadow: 0 3px 10px rgba(1, 51, 105, 0.25);
 }
 
-.team-row:hover .team-name-short,
-.team-row:hover .team-record {
+.conference-section .team-row:hover .team-name-short,
+.conference-section .team-row:hover .team-record {
   color: white;
 }
 
@@ -957,7 +957,7 @@
   flex-shrink: 0;
 }
 
-.team-name-short {
+.conference-section .team-name-short {
   flex: 1;
   font-size: 0.76rem;
   color: var(--text-primary);
@@ -965,7 +965,7 @@
   transition: color 0.3s ease;
 }
 
-.team-record {
+.conference-section .team-record {
   font-size: 0.76rem;
   font-weight: 700;
   color: var(--accent-primary);
@@ -1028,8 +1028,8 @@
     gap: 0.45rem;
   }
   
-  .conference-title {
-    font-size: 1rem;
+  .conference-section .conference-title {
+    font-size: 0.9rem;
   }
   
   .division-card {
@@ -1046,8 +1046,9 @@
     font-size: 0.72rem;
   }
   
-  .team-name-short {
-    font-size: 0.72rem;
+  .conference-section .team-name-short,
+  .conference-section .team-record {
+    font-size: 0.76rem;
   }
   
   .team-logo-small {
@@ -1156,8 +1157,8 @@
   display: none;
 }
 
-[data-theme="executive-dark"] .conference-title,
-[data-theme="classic-light"] .conference-title {
+[data-theme="executive-dark"] .conference-section .conference-title,
+[data-theme="classic-light"] .conference-section .conference-title {
   color: var(--text-primary);
   text-shadow: none;
 }
@@ -1212,8 +1213,8 @@
   box-shadow: 0 6px 14px var(--shadow);
 }
 
-[data-theme="executive-dark"] .division-title,
-[data-theme="classic-light"] .division-title {
+[data-theme="executive-dark"] .conference-section .division-title,
+[data-theme="classic-light"] .conference-section .division-title {
   color: var(--text-primary);
   border-bottom-color: var(--border-color);
 }
@@ -1232,20 +1233,20 @@
   box-shadow: 0 3px 10px var(--shadow);
 }
 
-[data-theme="executive-dark"] .team-row:hover .team-name-short,
-[data-theme="executive-dark"] .team-row:hover .team-record,
-[data-theme="classic-light"] .team-row:hover .team-name-short,
-[data-theme="classic-light"] .team-row:hover .team-record {
+[data-theme="executive-dark"] .conference-section .team-row:hover .team-name-short,
+[data-theme="executive-dark"] .conference-section .team-row:hover .team-record,
+[data-theme="classic-light"] .conference-section .team-row:hover .team-name-short,
+[data-theme="classic-light"] .conference-section .team-row:hover .team-record {
   color: var(--text-primary);
 }
 
-[data-theme="executive-dark"] .team-name-short,
-[data-theme="classic-light"] .team-name-short {
+[data-theme="executive-dark"] .conference-section .team-name-short,
+[data-theme="classic-light"] .conference-section .team-name-short {
   color: var(--text-primary);
 }
 
-[data-theme="executive-dark"] .team-record,
-[data-theme="classic-light"] .team-record {
+[data-theme="executive-dark"] .conference-section .team-record,
+[data-theme="classic-light"] .conference-section .team-record {
   color: var(--accent-primary);
 }
 
