@@ -1,72 +1,64 @@
-# Deploy And Architecture
+# DEPLOY & ARCHITECTURE - current truth
 
-Status: ACTIVE source of truth
-Last updated: 2026-06-16
+This is the single source of truth for how things are built and deployed. If any other doc disagrees, it is stale - fix or delete it.
+Last updated: 2026-06-16.
 
-This document is the single current reference for runtime architecture and deploy flow.
+---
 
-## Live Topology
+## Two products, two SEPARATE deploy paths. Never cross them.
 
-- Frontend: React app on Netlify
-- Backend: Flask API on EC2 (systemd service)
-- Database: PostgreSQL on the same EC2 host
-- Dashboard: PM Forge static artifact published to gh-pages
+### 1. H.C. Lombardo APP (the React product)
 
-## Branch And Publish Rules
+- Source: `frontend/src/**` on branch `master`.
+- Deploy: push to `master` -> Netlify auto-builds and publishes. No manual upload. No Amplify.
+- Live at: the production domain (Netlify-hosted, custom domain).
+- Build guard: `CI=true` - unused vars/imports fail the build.
+- Backend it talks to: Flask API on AWS EC2 (see below). This part did not change.
 
-- App and backend source branch: master
-- Dashboard source file: pmforge_dashboard/index.html on master
-- Dashboard publish branch: gh-pages
+### 2. PM Forge / Agile Forge DASHBOARD (the sprint dashboard you present from)
 
-Do not edit gh-pages directly as source-of-truth content.
+- Source: `pmforge_dashboard/index.html` on branch `master` (a single file).
 
-## Frontend Deploy (Netlify)
+The dashboard is authored in the PM Forge Suite (`C:\PMForgeSuite`) and imported via `scripts/suite/import_pmforge_suite.ps1`, then committed to `master`.
 
-1. Update frontend/src files on master.
-2. Push commit to origin/master.
-3. Netlify auto-builds and publishes.
-4. Verify live URL response and runtime behavior.
+- Deploy: push to `master` -> GitHub Action `.github/workflows/dashboard-pages-deploy.yml` publishes to the `gh-pages` branch.
+- Live at: `https://aprilv.github.io/H.C.-Lombardo-App/`.
+- NEVER edit the `gh-pages` branch directly. It is automation-output only.
 
-## Backend Deploy (EC2)
+A task touches ONE of these. `frontend/src` = app. `pmforge_dashboard/index.html` = dashboard. They are not related.
 
-1. Update backend files on master.
-2. Push commit to origin/master.
-3. Deploy/restart backend service on EC2 using approved operational path.
-4. Verify health endpoint and key API endpoints.
+---
 
-Use placeholders in docs only:
+## Cached vs live (this is the trap that wasted hours)
 
-- <EC2_HOST_PLACEHOLDER>
-- <FLASK_SERVICE_NAME_PLACEHOLDER>
-- <DB_HOST_PLACEHOLDER>
-- <DB_NAME_PLACEHOLDER>
+After you push, the live site can lag behind `master` for three reasons: the Action has not run yet, GitHub Pages/CDN cache, or browser cache. "It looks wrong" is often "an old copy."
 
-## Dashboard Deploy (gh-pages)
+To confirm the live dashboard equals `master`:
 
-1. Edit pmforge_dashboard/index.html on master.
-2. Push commit to origin/master.
-3. Confirm gh-pages updated from master.
-4. If auto-publish lags, use scripts/maintenance/publish_pmforge_live.ps1 fallback.
+1. Confirm the deploy Action ran green (repo -> Actions tab).
+2. Compare the deployed file to master:
+   `curl -s https://raw.githubusercontent.com/AprilV/H.C.-Lombardo-App/gh-pages/index.html | wc -l` - line count should match `pmforge_dashboard/index.html` on master.
+3. Hard-reload the page with the tab closed and reopened (kills browser cache).
 
-## Verification Contract
+For the app (Netlify): confirm the Netlify deploy finished, then hard-reload. Same principle.
 
-Before claiming a deploy is live, confirm all relevant checks:
+If gh-pages did not update after a push, deploy directly: copy `pmforge_dashboard/index.html` into a `gh-pages` worktree and push it.
 
-1. origin/master artifact contains expected change
-2. origin/gh-pages artifact contains expected change (dashboard only)
-3. Real URL response contains expected change (no cache query)
-4. Browser runtime at real URL renders expected change
+---
 
-## Secret And Identifier Handling
+## Backend (unchanged - AWS)
 
-Do not store real infrastructure identifiers in current docs.
+- API: Flask + Gunicorn on AWS EC2 (us-east-2), systemd service on port 5000, reached via AWS SSM Session Manager (no public SSH).
+- Database: PostgreSQL on the same EC2 instance.
+- Backend deploy: SSM in -> `git pull origin master` -> restart the service. (Frontend changes do NOT require this.)
 
-Replace with placeholders:
+## No longer used (delete on sight in docs)
 
-- <EC2_IP_PLACEHOLDER>
-- <AWS_ACCOUNT_ID_PLACEHOLDER>
-- <S3_BUCKET_PLACEHOLDER>
-- <API_GATEWAY_ID_PLACEHOLDER>
-- <LEGACY_HOST_PLACEHOLDER>
+- AWS Amplify - the frontend moved to Netlify. Any doc presenting Amplify as the current frontend host is stale.
+- Old per-date PRODUCTION_DEPLOYMENT_ runbooks are historical only.
 
-Historical records may remain in archive paths for traceability.
+## Secrets - placeholders only
+
+Never put the EC2 IP, AWS account ID, S3 bucket name, DB password, or Amplify subdomains in committed docs. Use placeholders like `<EC2_HOST_PLACEHOLDER>`, `<AWS_ACCOUNT_ID_PLACEHOLDER>`, `<S3_BUCKET_PLACEHOLDER>`, `<DB_PASSWORD_PLACEHOLDER>`, `<LEGACY_HOST_PLACEHOLDER>`.
+
+Note: some of these still exist in git history; a history scrub is a separate post-graduation task.
