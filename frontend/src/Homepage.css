@@ -137,11 +137,28 @@
   gap: 0.26rem;
 }
 
+.dashboard-icon-key {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(195px, 1fr));
+  gap: 0.26rem;
+  margin-bottom: 0.3rem;
+}
+
 .dashboard-legend-item {
   border: 1px solid var(--border-color);
   border-radius: 7px;
-  background: color-mix(in srgb, var(--bg-secondary) 85%, transparent);
+  background: color-mix(in srgb, var(--bg-card) 92%, transparent);
   padding: 0.24rem 0.32rem;
+}
+
+.dashboard-legend-item-icon {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.26rem;
+}
+
+.dashboard-legend-item-icon h3 {
+  margin-bottom: 0.02rem;
 }
 
 .dashboard-legend-item h3 {
@@ -166,11 +183,18 @@
 .symbol-chip {
   border-radius: 999px;
   border: 1px solid var(--border-color);
-  background: color-mix(in srgb, var(--bg-secondary) 90%, transparent);
+  background: color-mix(in srgb, var(--bg-card) 92%, transparent);
   color: var(--text-secondary);
   font-size: 0.62rem;
   font-weight: 700;
   padding: 0.14rem 0.4rem;
+}
+
+.legend-icon-chip {
+  color: var(--text-primary);
+  min-width: 1.8rem;
+  text-align: center;
+  padding: 0.12rem 0.32rem;
 }
 
 .symbol-chip.success {

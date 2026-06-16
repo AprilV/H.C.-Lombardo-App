@@ -407,6 +407,58 @@ function Homepage() {
           <p>Quick reference for ticker rows and Best Bets terms.</p>
         </div>
 
+        <div className="dashboard-icon-key" aria-label="Card icon legend">
+          <div className="dashboard-legend-item dashboard-legend-item-icon">
+            <span className="symbol-chip legend-icon-chip">📊</span>
+            <div>
+              <h3>Power Rating Spread</h3>
+              <p>Our team-strength system&apos;s predicted point margin.</p>
+            </div>
+          </div>
+          <div className="dashboard-legend-item dashboard-legend-item-icon">
+            <span className="symbol-chip legend-icon-chip">🏆</span>
+            <div>
+              <h3>Moneyline Pick</h3>
+              <p>Straight-up winner pick used by both systems.</p>
+            </div>
+          </div>
+          <div className="dashboard-legend-item dashboard-legend-item-icon">
+            <span className="symbol-chip legend-icon-chip">🤖</span>
+            <div>
+              <h3>AI Model Spread</h3>
+              <p>Our AI&apos;s predicted point margin.</p>
+            </div>
+          </div>
+          <div className="dashboard-legend-item dashboard-legend-item-icon">
+            <span className="symbol-chip legend-icon-chip">🎰</span>
+            <div>
+              <h3>Vegas Spread</h3>
+              <p>The official sportsbook betting line.</p>
+            </div>
+          </div>
+          <div className="dashboard-legend-item dashboard-legend-item-icon">
+            <span className="symbol-chip success">✅ / ✓</span>
+            <div>
+              <h3>Covered</h3>
+              <p>The pick beat the spread.</p>
+            </div>
+          </div>
+          <div className="dashboard-legend-item dashboard-legend-item-icon">
+            <span className="symbol-chip danger">❌ / ✗</span>
+            <div>
+              <h3>Missed</h3>
+              <p>The pick did not cover the spread.</p>
+            </div>
+          </div>
+          <div className="dashboard-legend-item dashboard-legend-item-icon">
+            <span className="symbol-chip pending">⏳</span>
+            <div>
+              <h3>Result Pending</h3>
+              <p>Game not played yet, so no grade yet.</p>
+            </div>
+          </div>
+        </div>
+
         <div className="dashboard-legend-grid">
           <div className="dashboard-legend-item">
             <h3>Top Pick</h3>
@@ -440,16 +492,6 @@ function Homepage() {
             <h3>O/U</h3>
             <p>Total points line for over or under bets.</p>
           </div>
-        </div>
-
-        <div className="dashboard-symbol-key" aria-label="Symbol key">
-          <span className="symbol-chip success">✅ / ✓ Covered</span>
-          <span className="symbol-chip danger">❌ / ✗ Missed</span>
-          <span className="symbol-chip pending">⏳ Result pending</span>
-          <span className="symbol-chip">📊 Power Rating Spread</span>
-          <span className="symbol-chip">🏆 Moneyline Picks (Power Rating + AI)</span>
-          <span className="symbol-chip">🤖 AI Model Spread</span>
-          <span className="symbol-chip">🎰 Vegas Spread</span>
         </div>
       </section>
 
