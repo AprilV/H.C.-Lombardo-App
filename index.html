@@ -2468,7 +2468,7 @@
                 <span id="brand-methodology-status" style="font-size:0.72rem; color:#93c5fd; border:1px solid rgba(147,197,253,0.4); background:rgba(147,197,253,0.12); border-radius:999px; padding:0.22rem 0.58rem; white-space:nowrap;">Active</span>
             </div>
             <div style="font-size:0.72rem; color:var(--muted); line-height:1.35;">Hybrid Forge and Predictive Forge are listed as future workspaces (coming soon / work in progress).</div>
-            <input id="brand-live-app-url" type="url" value="https://hclombardo.com/" placeholder="Live app URL" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.15); border-radius:0.45rem; color:#e2e8f0; font-size:0.8rem; padding:0.38rem 0.55rem; outline:none;" aria-label="Live app URL">
+            <input id="brand-live-app-url" type="url" value="https://staging.d2fwv8daemi5y2.amplifyapp.com/" placeholder="Live app URL" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.15); border-radius:0.45rem; color:#e2e8f0; font-size:0.8rem; padding:0.38rem 0.55rem; outline:none;" aria-label="Live app URL">
             <div style="display:flex; gap:0.75rem; flex-wrap:wrap; align-items:center;">
             <a href="#" class="dash-live-btn" id="live-app-btn" target="_blank" rel="noopener noreferrer">🔗 Live App</a>
             <button class="btn btn-secondary" style="padding:0.5rem 1.1rem; font-size:0.82rem;" onclick="showTab('architecture', document.querySelectorAll('.nav-tab')[1])">🏗️ Architecture</button>
@@ -2684,7 +2684,7 @@
                     <h4>React Frontend</h4>
                 </div>
                 <ul>
-                    <li>Netlify deploy target: https://hclombardo.com/ · Port 3000 (dev)</li>
+                    <li>AWS Amplify (prod) / Port 3000 (dev)</li>
                     <li>15+ pages and components</li>
                     <li>Analytics, ML Predictions, Live Scores, Team tools</li>
                     <li>Auto-deploys from GitHub on push</li>
@@ -3948,12 +3948,10 @@
             <div class="about-card">
                 <h3>Infrastructure</h3>
                 <ul>
-                    <li>Frontend: Netlify (auto-deploy from GitHub)</li>
-                    <li>Netlify deploy target (custom domain): https://hclombardo.com/</li>
+                    <li>Frontend: AWS Amplify (auto-deploy)</li>
                     <li>Backend: AWS EC2 (systemd service)</li>
                     <li>Database: PostgreSQL 18 on EC2</li>
-                    <li>CI/CD: GitHub → Netlify + EC2</li>
-                    <li>Storage path: No active AWS S3 dependency in current production flow</li>
+                    <li>CI/CD: GitHub → Amplify + EC2</li>
                     <li>Data: NFLverse (play-by-play) + ESPN API</li>
                 </ul>
             </div>
@@ -3979,7 +3977,7 @@
         <!-- Term Objectives (moved from old Overview) -->
         <div class="section-title" style="margin-bottom:1rem;">Term Objectives</div>
         <div class="objectives-list">
-            <div class="objective-item"><span class="check">✓</span><div class="objective-text">Full-stack NFL analytics app deployed to Netlify + AWS EC2 (React + Flask + PostgreSQL)</div></div>
+            <div class="objective-item"><span class="check">✓</span><div class="objective-text">Full-stack NFL analytics app deployed to AWS (React + Flask + PostgreSQL)</div></div>
             <div class="objective-item"><span class="check">✓</span><div class="objective-text">7,263 historical games with 64 stats per game including EPA metrics</div></div>
             <div class="objective-item"><span class="check">✓</span><div class="objective-text">XGBoost ML models trained on rolling features (no data leakage)</div></div>
             <div class="objective-item"><span class="check">✓</span><div class="objective-text">Elo rating system with live prediction capability</div></div>
@@ -4208,11 +4206,10 @@ document.getElementById('live-app-btn').addEventListener('click', function(e) {
 /* ── BRANDING + METHODOLOGY EDITOR ── */
 var LEGACY_LIVE_APP_HOSTS = {
     'master.d2tamnlcbzo0d5.amplifyapp.com': true,
-    'nfl.aprilsykes.dev': true,
-    'staging.d2fwv8daemi5y2.amplifyapp.com': true
+    'nfl.aprilsykes.dev': true
 };
 var LOCAL_DEV_LIVE_APP_URL = 'http://127.0.0.1:3000/';
-var PROD_LIVE_APP_URL = 'https://hclombardo.com/';
+var PROD_LIVE_APP_URL = 'https://staging.d2fwv8daemi5y2.amplifyapp.com/';
 var DEFAULT_LIVE_APP_URL = (window.location && window.location.protocol === 'file:')
     ? LOCAL_DEV_LIVE_APP_URL
     : PROD_LIVE_APP_URL;
@@ -4252,9 +4249,9 @@ function normalizeLiveAppUrl(rawUrl) {
     }
 
     var host = getNormalizedLiveAppHost(url);
-    // Legacy hosts automatically map to the current production URL.
+    // Known legacy hosts are currently unavailable; use local app runtime as safe default.
     if (host && LEGACY_LIVE_APP_HOSTS[host]) {
-        return PROD_LIVE_APP_URL;
+        return LOCAL_DEV_LIVE_APP_URL;
     }
     return url;
 }
@@ -4273,7 +4270,7 @@ function getBrandingSnapshot() {
     var org = contextLine.split('·')[0] ? contextLine.split('·')[0].trim() : 'Organization';
     var liveAppUrlRaw = getVal('brand-live-app-url', DEFAULT_LIVE_APP_URL);
     var normalizedLiveAppUrl = normalizeLiveAppUrl(liveAppUrlRaw);
-    if (normalizedLiveAppUrl !== liveAppUrlRaw) {
+    if ((window.location && window.location.protocol === 'file:') && normalizedLiveAppUrl !== liveAppUrlRaw) {
         var liveInput = document.getElementById('brand-live-app-url');
         if (liveInput) liveInput.value = normalizedLiveAppUrl;
         liveAppUrlRaw = normalizedLiveAppUrl;
@@ -4368,14 +4365,7 @@ function persistBrandingEditorValues() {
     BRAND_EDITABLE_IDS.forEach(function(id) {
         var el = document.getElementById(id);
         if (!el) return;
-        var rawVal = String(el.value || '');
-        if (id === 'brand-live-app-url') {
-            var normalizedVal = normalizeLiveAppUrl(rawVal);
-            if (normalizedVal !== rawVal) el.value = normalizedVal;
-            payload[id] = normalizedVal;
-            return;
-        }
-        payload[id] = rawVal;
+        payload[id] = String(el.value || '');
     });
 
     var lockToggle = document.getElementById('brand-lock-toggle');
@@ -4388,18 +4378,24 @@ function migrateLiveAppUrlForLocalDashboard() {
     var liveInput = document.getElementById('brand-live-app-url');
     if (!liveInput) return;
 
-    var currentUrl = String(liveInput.value || '').trim() || DEFAULT_LIVE_APP_URL;
-    var normalizedUrl = normalizeLiveAppUrl(currentUrl);
-    if (!normalizedUrl) return;
+    var currentUrl = String(liveInput.value || '').trim();
+    if (!currentUrl) return;
 
-    if (normalizedUrl !== currentUrl) {
-        liveInput.value = normalizedUrl;
-    }
+    var pageHost = String(window.location && window.location.hostname || '').toLowerCase();
+    var pagePort = String(window.location && window.location.port || '');
+    var onLocalDashboard = (pageHost === '127.0.0.1' || pageHost === 'localhost') && (pagePort === '5500' || pagePort === '5501');
+    if (!onLocalDashboard) return;
 
-    var saved = readBrandingStorage();
-    if (saved && typeof saved === 'object' && saved['brand-live-app-url'] !== normalizedUrl) {
-        saved['brand-live-app-url'] = normalizedUrl;
-        writeBrandingStorage(saved);
+    try {
+        var parsed = new URL(normalizeLiveAppUrl(currentUrl));
+        var host = parsed.hostname.toLowerCase();
+        var port = parsed.port || (parsed.protocol === 'https:' ? '443' : '80');
+        var isLegacyLocalFrontend = (host === '127.0.0.1' || host === 'localhost') && port === '3000';
+        if (!isLegacyLocalFrontend) return;
+
+        liveInput.value = PROD_LIVE_APP_URL;
+    } catch (e) {
+        // Keep existing value if URL parsing fails.
     }
 }
 
@@ -6069,9 +6065,9 @@ function createArchitecture() {
         pulsePhase: 0, material: frontendMat,
         name: 'React Frontend',
         tier: 'Tier 1: Presentation Layer',
-        port: '3000 (dev) / Netlify deploy target: hclombardo.com (prod)',
+        port: '3000 (dev) / AWS Amplify (prod)',
         technology: 'React 18 · Functional Components · Chart.js',
-        features: ['15+ pages and components', 'Analytics, ML Predictions, Live Scores', 'Team Comparison, Matchup Analyzer', 'Netlify deploy target: https://hclombardo.com/', 'Auto-deploys from GitHub on push', 'Responsive design'],
+        features: ['15+ pages and components', 'Analytics, ML Predictions, Live Scores', 'Team Comparison, Matchup Analyzer', 'Auto-deploys from GitHub on push', 'Responsive design'],
         communication: 'HTTP fetch() to Flask API (Port 5000)',
         files: 'frontend/src/App.js, Analytics.js, MLPredictionsRedesign.js...'
     };
