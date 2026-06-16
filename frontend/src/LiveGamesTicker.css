@@ -169,11 +169,14 @@
   transition: all 0.2s ease;
 }
 
-.game-ticker-card:hover {
-  background: color-mix(in srgb, var(--accent-primary) 10%, var(--bg-card));
-  border-color: var(--accent-primary);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 14px var(--shadow);
+.ticker-content .game-ticker-card:hover {
+  background: color-mix(in srgb, var(--accent-primary) 16%, var(--bg-card)) !important;
+  border-color: var(--accent-primary) !important;
+  outline: 1px solid color-mix(in srgb, var(--accent-primary) 55%, transparent);
+  outline-offset: -1px;
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent-primary) 35%, transparent), 0 8px 16px var(--shadow);
+  z-index: 2;
 }
 
 .game-ticker-card.in_progress {
@@ -185,28 +188,34 @@
   border-color: var(--border-color);
 }
 
-.game-ticker-card.in_progress:hover,
-.game-ticker-card.final:hover {
-  background: color-mix(in srgb, var(--accent-primary) 10%, var(--bg-card));
-  border-color: var(--accent-primary);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 14px var(--shadow);
+.ticker-content .game-ticker-card.in_progress:hover,
+.ticker-content .game-ticker-card.final:hover,
+.ticker-content .game-ticker-card.scheduled:hover {
+  background: color-mix(in srgb, var(--accent-primary) 16%, var(--bg-card)) !important;
+  border-color: var(--accent-primary) !important;
+  outline: 1px solid color-mix(in srgb, var(--accent-primary) 55%, transparent);
+  outline-offset: -1px;
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent-primary) 35%, transparent), 0 8px 16px var(--shadow);
+  z-index: 2;
 }
 
-[data-theme="executive-dark"] .game-ticker-card:hover,
-[data-theme="classic-light"] .game-ticker-card:hover {
-  background: color-mix(in srgb, var(--accent-primary) 10%, var(--bg-card));
-  border-color: var(--accent-primary);
-  box-shadow: 0 6px 14px var(--shadow);
+[data-theme="executive-dark"] .ticker-content .game-ticker-card:hover,
+[data-theme="classic-light"] .ticker-content .game-ticker-card:hover {
+  background: color-mix(in srgb, var(--accent-primary) 16%, var(--bg-card)) !important;
+  border-color: var(--accent-primary) !important;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent-primary) 35%, transparent), 0 8px 16px var(--shadow);
 }
 
-[data-theme="executive-dark"] .game-ticker-card.in_progress:hover,
-[data-theme="classic-light"] .game-ticker-card.in_progress:hover,
-[data-theme="executive-dark"] .game-ticker-card.final:hover,
-[data-theme="classic-light"] .game-ticker-card.final:hover {
-  background: color-mix(in srgb, var(--accent-primary) 10%, var(--bg-card));
-  border-color: var(--accent-primary);
-  box-shadow: 0 6px 14px var(--shadow);
+[data-theme="executive-dark"] .ticker-content .game-ticker-card.in_progress:hover,
+[data-theme="classic-light"] .ticker-content .game-ticker-card.in_progress:hover,
+[data-theme="executive-dark"] .ticker-content .game-ticker-card.final:hover,
+[data-theme="classic-light"] .ticker-content .game-ticker-card.final:hover,
+[data-theme="executive-dark"] .ticker-content .game-ticker-card.scheduled:hover,
+[data-theme="classic-light"] .ticker-content .game-ticker-card.scheduled:hover {
+  background: color-mix(in srgb, var(--accent-primary) 16%, var(--bg-card)) !important;
+  border-color: var(--accent-primary) !important;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent-primary) 35%, transparent), 0 8px 16px var(--shadow);
 }
 
 .status-live,
