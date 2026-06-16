@@ -1,8 +1,8 @@
 .live-games-ticker {
   background: transparent;
   border-radius: 12px;
-  padding: 15px;
-  margin-bottom: 25px;
+  padding: 8px;
+  margin-bottom: 10px;
   overflow: hidden;
   --result-correct-fg: #86efac;
   --result-correct-bg: rgba(34, 197, 94, 0.2);
@@ -31,16 +31,16 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
-  gap: 10px;
+  margin-bottom: 6px;
+  gap: 6px;
 }
 
 .ticker-info {
-  font-size: 18px;
+  font-size: 14px;
   cursor: help;
   opacity: 0.8;
   transition: opacity 0.3s ease;
-  padding: 0 8px;
+  padding: 0 4px;
   flex: 1;
 }
 
@@ -51,28 +51,28 @@
 .ticker-label {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 16px;
+  gap: 6px;
+  font-size: 12px;
   font-weight: 700;
   color: #fff;
   text-transform: uppercase;
-  letter-spacing: 1.5px;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  letter-spacing: 0.9px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.45);
 }
 
 .ticker-controls {
   display: flex;
-  gap: 8px;
+  gap: 5px;
 }
 
 .scroll-btn {
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.3);
   color: #fff;
-  padding: 8px 16px;
-  border-radius: 6px;
+  padding: 4px 10px;
+  border-radius: 5px;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 12px;
   font-weight: 700;
   transition: all 0.3s ease;
 }
@@ -84,8 +84,8 @@
 }
 
 .live-dot {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
   background: #ff4444;
   border-radius: 50%;
   animation: pulse 1.5s ease-in-out infinite;
@@ -116,8 +116,8 @@
 
 .ticker-content {
   display: inline-flex;
-  gap: 15px;
-  padding-bottom: 10px;
+  gap: 8px;
+  padding-bottom: 4px;
   min-width: max-content;
 }
 
@@ -131,16 +131,16 @@
 }
 
 .game-ticker-card {
-  min-width: 340px;
-  max-width: 340px;
-  width: 340px;
+  min-width: 280px;
+  max-width: 280px;
+  width: 280px;
   background: rgba(30, 30, 50, 0.85);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
-  padding: 14px;
+  border-radius: 7px;
+  padding: 8px;
   position: relative;
   flex-shrink: 0;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 3px 9px rgba(0, 0, 0, 0.35);
   pointer-events: none;
   overflow: hidden;
 }
@@ -157,13 +157,13 @@
 .status-live,
 .status-final {
   position: absolute;
-  top: 8px;
-  right: 8px;
-  font-size: 9px;
+  top: 5px;
+  right: 5px;
+  font-size: 8px;
   font-weight: 700;
-  padding: 3px 6px;
-  border-radius: 4px;
-  letter-spacing: 0.5px;
+  padding: 2px 5px;
+  border-radius: 3px;
+  letter-spacing: 0.4px;
 }
 
 .status-live {
@@ -186,8 +186,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 8px;
-  gap: 8px;
+  margin-bottom: 5px;
+  gap: 6px;
 }
 
 .ticker-team {
@@ -195,7 +195,7 @@
   flex-direction: column;
   align-items: center;
   flex: 1;
-  gap: 4px;
+  gap: 2px;
 }
 
 .ticker-team.winner .team-logo {
@@ -203,8 +203,8 @@
 }
 
 .team-logo {
-  width: 40px;
-  height: 40px;
+  width: 28px;
+  height: 28px;
   object-fit: contain;
   transition: all 0.3s ease;
 }
@@ -218,45 +218,45 @@
 }
 
 .team-score {
-  font-size: 18px;
+  font-size: 14px;
   font-weight: 700;
   color: #00d4ff;
-  margin-top: 2px;
+  margin-top: 1px;
 }
 
 .ticker-vs {
-  font-size: 11px;
+  font-size: 9px;
   color: rgba(255, 255, 255, 0.4);
   font-weight: 600;
 }
 
 .ticker-details {
   text-align: center;
-  padding: 6px 0;
+  padding: 4px 0;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  margin-bottom: 8px;
+  margin-bottom: 5px;
 }
 
 .game-date {
-  font-size: 12px;
+  font-size: 10px;
   color: #00d4ff;
   font-weight: 700;
   display: block;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.4px;
 }
 
 .time-info {
-  font-size: 12px;
+  font-size: 10px;
   color: #fff;
   font-weight: 600;
 }
 
 .ticker-predictions {
-  margin-top: 8px;
-  padding-top: 8px;
+  margin-top: 5px;
+  padding-top: 5px;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -264,27 +264,28 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 10px;
-  margin-bottom: 6px;
+  padding: 5px 7px;
+  margin-bottom: 4px;
   background: rgba(0, 0, 0, 0.2);
-  border-radius: 6px;
+  border-radius: 5px;
 }
 
 .pred-left {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 5px;
   flex: 1;
 }
 
 .pred-icon {
-  font-size: 16px;
+  font-size: 12px;
 }
 
 .pred-text {
-  font-size: 13px;
+  font-size: 10px;
   font-weight: 600;
   color: #fff;
+  line-height: 1.2;
 }
 
 .pred-line.blended-row {
@@ -306,23 +307,23 @@
 }
 
 .blended-agreement {
-  font-size: 11px;
+  font-size: 9px;
   font-weight: 700;
-  padding: 3px 8px;
+  padding: 2px 6px;
   border-radius: 999px;
   color: #a7f3d0;
   background: rgba(16, 185, 129, 0.22);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.4px;
 }
 
 .ticker-result-badge {
-  font-size: 0.75rem;
+  font-size: 0.61rem;
   font-weight: 700;
-  padding: 3px 8px;
+  padding: 2px 6px;
   border-radius: 999px;
   border: 1px solid transparent;
-  margin-left: 10px;
+  margin-left: 6px;
   white-space: nowrap;
 }
 
@@ -345,9 +346,9 @@
 }
 
 .pred-check {
-  font-size: 18px;
+  font-size: 12px;
   font-weight: 700;
-  margin-left: 10px;
+  margin-left: 6px;
 }
 
 .pred-check.correct {
@@ -360,13 +361,13 @@
 
 .pred-check.push {
   color: #ffa500;
-  font-size: 11px;
+  font-size: 8px;
 }
 
 .ou-badge {
-  font-size: 11px;
+  font-size: 9px;
   font-weight: 700;
-  padding: 4px 10px;
+  padding: 2px 6px;
   background: rgba(139, 92, 246, 0.3);
   color: #a78bfa;
   border-radius: 4px;
@@ -398,12 +399,12 @@
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .game-ticker-card {
-    min-width: 240px;
-    max-width: 240px;
+    min-width: 220px;
+    max-width: 220px;
   }
   
   .team-score {
-    font-size: 16px;
+    font-size: 13px;
   }
   
   .team-abbr {

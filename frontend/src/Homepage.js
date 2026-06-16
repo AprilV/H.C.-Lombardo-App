@@ -61,9 +61,9 @@ const buildCoverOutcome = ({ gameStatus, actual, homeTeam, awayTeam, pickTeam, v
   if (gameStatus !== 'final') {
     return {
       isFinal: false,
-      finalScoreLine: 'Scheduled - final result pending',
-      resultLine: 'Result pending',
-      resultMeta: getModelResultMeta(null, 'Pick')
+      finalScoreLine: '',
+      resultLine: '',
+      resultMeta: { className: 'unknown', text: 'Result Pending', icon: '⏳' }
     };
   }
 
@@ -119,23 +119,6 @@ const formatTeamLine = (team, line) => {
   }
 
   return `${team} ${value > 0 ? '+' : ''}${value.toFixed(1)}`;
-};
-
-const formatMarketLine = (homeTeam, awayTeam, homeSpread) => {
-  if (!homeTeam || !awayTeam || homeSpread === null || homeSpread === undefined || Number.isNaN(Number(homeSpread))) {
-    return 'N/A';
-  }
-
-  const spread = Number(homeSpread);
-  if (spread === 0) {
-    return 'PK';
-  }
-
-  if (spread < 0) {
-    return `${homeTeam} ${spread.toFixed(1)}`;
-  }
-
-  return `${awayTeam} -${Math.abs(spread).toFixed(1)}`;
 };
 
 // NFL Divisions
@@ -288,7 +271,7 @@ function Homepage() {
       const confidenceDetail = confidenceStrong ? 'Both systems agree' : 'Close call';
       const pickSpreadText = formatSpreadValue(vegasLineForPick);
       const actionText = `${pickTeam} to cover (${pickSpreadText})`;
-      const whyLine = `Our model's line is ${formatTeamLine(pickTeam, aiLineForPick)} while Vegas is ${formatTeamLine(pickTeam, vegasLineForPick)} — a ${edgePoints.toFixed(1)}-point edge.`;
+      const whyLine = `Edge: ${formatTeamLine(pickTeam, aiLineForPick)} vs Vegas ${formatTeamLine(pickTeam, vegasLineForPick)} (${edgePoints.toFixed(1)} pts).`;
 
       return {
         ...prediction,
@@ -531,18 +514,24 @@ function Homepage() {
                 <p className="bet-pick">Pick: {bet.actionText}</p>
                 <p className="bet-edge-note">{bet.whyLine}</p>
                 <p className="bet-confidence-detail">{bet.confidenceDetail}</p>
-                <p className="bet-line-compare">
-                  Our model: {formatTeamLine(bet.pickTeam, bet.aiLineForPick)} • Vegas: {formatMarketLine(bet.home_team, bet.away_team, bet.vegas_spread)}
-                </p>
 
                 <div className={`best-bet-result-strip ${bet.outcome?.isFinal ? 'final' : 'scheduled'}`}>
-                  <div className="best-bet-final-line">{bet.outcome?.finalScoreLine || 'Scheduled - final result pending'}</div>
-                  <div className="best-bet-result-line">{bet.outcome?.resultLine || 'Result pending'}</div>
-                  <div className="bet-results-line">
-                    <span className={`bet-result-badge ${bet.outcome?.resultMeta?.className || 'unknown'}`}>
-                      {bet.outcome?.resultMeta?.icon || '⏳'} {bet.outcome?.resultMeta?.text || 'Pick Pending'}
-                    </span>
-                  </div>
+                  {bet.outcome?.isFinal ? (
+                    <>
+                      <div className="best-bet-final-line">
+                        {bet.outcome?.finalScoreLine || 'Final score unavailable'}
+                      </div>
+                      <div className="bet-results-line">
+                        <span className={`bet-result-badge ${bet.outcome?.resultMeta?.className || 'unknown'}`}>
+                          {bet.outcome?.resultMeta?.icon || '⏳'} {bet.outcome?.resultMeta?.text || 'Result Pending'}
+                        </span>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="bet-results-line">
+                      <span className="bet-result-badge unknown">⏳ Result Pending</span>
+                    </div>
+                  )}
                 </div>
               </article>
             ))}

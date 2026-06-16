@@ -301,8 +301,8 @@ function LiveGamesTicker() {
   if (loading || games.length === 0) return null;
 
   // Ticker scroll only makes sense with enough games to fill the viewport.
-  // Each card is ~355px wide (340px + 15px gap). Viewport ~1400px = ~4 unique games needed.
-  const cardWidth = 355;
+  // Each compact card is ~288px wide (280px + 8px gap). Viewport ~1400px = ~5 unique games needed.
+  const cardWidth = 288;
   const useScroller = games.length >= 4;
 
   // For the infinite scroll build enough copies to fill 2× the container width.
