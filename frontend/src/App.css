@@ -1483,24 +1483,9 @@ body,
 }
 
 /* --- Model Performance --- */
-[data-theme="executive-dark"] .page-title {
-  color: #F59E0B !important;
+[data-theme="executive-dark"] .model-performance-page .mp-header h1 {
+  color: var(--text-primary) !important;
   text-shadow: none !important;
-}
-[data-theme="executive-dark"] .season-btn {
-  background: rgba(245,158,11,0.06) !important;
-  border-color: #334155 !important;
-  color: #94A3B8 !important;
-}
-[data-theme="executive-dark"] .season-btn:hover {
-  border-color: #F59E0B !important;
-  color: #F1F5F9 !important;
-}
-[data-theme="executive-dark"] .season-btn.active {
-  background: linear-gradient(135deg, #D97706, #F59E0B) !important;
-  border-color: #F59E0B !important;
-  color: #0F172A !important;
-  box-shadow: 0 6px 20px rgba(245,158,11,0.3) !important;
 }
 [data-theme="executive-dark"] .vegas-hero {
   background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%) !important;
