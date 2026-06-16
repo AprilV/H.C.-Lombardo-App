@@ -32,6 +32,7 @@ Priority values:
 | DSH-010 | P1 | IN PROGRESS | Architecture | Define suite-scale auto-computed metrics and extensible chart/layout architecture | Architecture draft defines target users, canonical data model, event-driven auto-update flow, chart registry, user-selectable layouts, methodology packs (Agile/Hybrid/Predictive), and rollout phases |
 | DSH-011 | P2 | DONE | Docs | Align PM4 source-of-truth docs after dashboard transition | Dashboard docs reference `pmforge_dashboard/index.html` as active source, legacy path references point to `backups/legacy_dashboard/index.html`, and release notes capture transition evidence (`c2056abd`) |
 | DSH-012 | P1 | DONE | Execution | Start dashboard automation implementation with phase-gated delivery and evidence checkpoints | Phase 0 through Phase 5 gates are PASS with evidence artifacts recorded; persisted backend/frontend wiring, metric autosync, and cross-surface drift/mismatch checks are complete and release/index traceability is updated |
+| DSH-013 | P2 | DONE | UX | Add end-of-term project closure lifecycle state in Agile Forge dashboard | Overview shows project-complete lifecycle banner after final sprint end date, rag detail text reflects final sprint closure instead of in-progress wording, and closure messaging appears in recent updates/live notice without changing backlog source-of-truth statuses |
 
 ## Notes
 

@@ -6,6 +6,30 @@ Format: `YYYY.MM.DD` (example: `2026.04.23`)
 
 ---
 
+## 2026.06.16 (Draft / In Progress)
+
+### Completed
+
+1. Added schedule-aware project closure lifecycle mode to dashboard overview so post-term runtime displays an explicit "Project Complete" banner.
+2. Updated rag-detail and recent-updates fallback messaging to show capstone closure context when no next sprint exists.
+3. Updated Sprint 16 live notice behavior to show closure-state governance messaging after term close.
+
+### Ticket Updates
+
+1. `DSH-013` moved to `DONE`.
+
+### Notes
+
+1. This update changes dashboard status presentation only; backlog source-of-truth ticket states remain unchanged for audit traceability.
+
+### Evidence
+
+1. `pmforge_dashboard/index.html`.
+2. `docs/dashboard_product/DASHBOARD_BACKLOG.md`.
+3. `docs/dashboard_product/DASHBOARD_RELEASE_NOTES.md`.
+
+---
+
 ## 2026.05.28 (Draft / In Progress)
 
 ### Completed
