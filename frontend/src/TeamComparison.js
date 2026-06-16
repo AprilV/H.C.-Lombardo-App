@@ -86,6 +86,7 @@ function TeamComparison({ initialViewMode = 'comparison' }) {
   const [teamAList, setTeamAList] = useState([]);
   const [selectedTeamA, setSelectedTeamA] = useState('');
   const [teamAData, setTeamAData] = useState(null);
+  const [teamAResolvedSeason, setTeamAResolvedSeason] = useState(null);
   const [teamASchedule, setTeamASchedule] = useState([]);
   const [teamASos, setTeamASos] = useState(null);
   
@@ -94,6 +95,7 @@ function TeamComparison({ initialViewMode = 'comparison' }) {
   const [teamBList, setTeamBList] = useState([]);
   const [selectedTeamB, setSelectedTeamB] = useState('');
   const [teamBData, setTeamBData] = useState(null);
+  const [teamBResolvedSeason, setTeamBResolvedSeason] = useState(null);
   const [teamBSchedule, setTeamBSchedule] = useState([]);
   const [teamBSos, setTeamBSos] = useState(null);
   
@@ -135,6 +137,8 @@ function TeamComparison({ initialViewMode = 'comparison' }) {
         loadTeamData('A', selectedTeamA, seasonA);
       }
     } else {
+      setTeamAData(null);
+      setTeamAResolvedSeason(null);
       setTeamASos(null);
     }
   }, [selectedTeamA, seasonA, viewMode]);
@@ -148,6 +152,8 @@ function TeamComparison({ initialViewMode = 'comparison' }) {
         loadTeamData('B', selectedTeamB, seasonB);
       }
     } else {
+      setTeamBData(null);
+      setTeamBResolvedSeason(null);
       setTeamBSos(null);
     }
   }, [selectedTeamB, seasonB, viewMode]);
@@ -191,20 +197,67 @@ function TeamComparison({ initialViewMode = 'comparison' }) {
   };
 
   const loadTeamData = async (team, abbr, season) => {
+    const setTeamDataState = (payload, resolvedSeason) => {
+      if (team === 'A') {
+        setTeamAData(payload);
+        setTeamAResolvedSeason(resolvedSeason);
+      } else {
+        setTeamBData(payload);
+        setTeamBResolvedSeason(resolvedSeason);
+      }
+    };
+
     try {
       setLoading(true);
-      const response = await fetch(`${API_URL}/api/hcl/teams/${abbr}?season=${season}`);
+
+      const requestedSeason = Number(season);
+      let resolvedSeason = null;
+
+      for (let checkSeason = requestedSeason; checkSeason >= MIN_NFL_SEASON; checkSeason -= 1) {
+        const summaryResponse = await fetch(`${API_URL}/api/hcl/teams?season=${checkSeason}`);
+        let summaryData = {};
+
+        try {
+          summaryData = await summaryResponse.json();
+        } catch {
+          summaryData = {};
+        }
+
+        if (!summaryResponse.ok || !summaryData.success || !Array.isArray(summaryData.teams)) {
+          continue;
+        }
+
+        const teamSummary = summaryData.teams.find((candidate) => (
+          candidate.team === abbr || candidate.abbreviation === abbr || candidate.abbr === abbr
+        ));
+
+        if (!teamSummary) {
+          continue;
+        }
+
+        if (Number(teamSummary.games_played || 0) > 0) {
+          resolvedSeason = checkSeason;
+          break;
+        }
+      }
+
+      if (resolvedSeason === null) {
+        setTeamDataState(null, null);
+        setError(null);
+        return;
+      }
+
+      const response = await fetch(`${API_URL}/api/hcl/teams/${abbr}?season=${resolvedSeason}`);
       const data = await response.json();
       if (data.success) {
-        if (team === 'A') {
-          setTeamAData(data.team);
-        } else {
-          setTeamBData(data.team);
-        }
+        setTeamDataState(data.team, resolvedSeason);
         setError(null);
+      } else {
+        setTeamDataState(null, null);
       }
     } catch (err) {
-      setError(err.message);
+      setTeamDataState(null, null);
+      setError(null);
     } finally {
       setLoading(false);
     }
@@ -374,6 +427,19 @@ function TeamComparison({ initialViewMode = 'comparison' }) {
     return difference > 0
       ? `${selectedTeamA} faced the tougher schedule.`
       : `${selectedTeamB} faced the tougher schedule.`;
+  };
+
+  const getSeasonDisplayLabel = (requestedSeason, resolvedSeason) => {
+    if (!resolvedSeason) {
+      return `${requestedSeason} Season`;
+    }
+
+    const requestedNumeric = Number(requestedSeason);
+    if (requestedNumeric === Number(resolvedSeason)) {
+      return `${requestedSeason} Season`;
+    }
+
+    return `${resolvedSeason} Season (latest completed)`;
   };
 
   const calculateDifferential = (teamAVal, teamBVal, format) => {
@@ -546,7 +612,7 @@ function TeamComparison({ initialViewMode = 'comparison' }) {
                   <img src={getTeamLogo(selectedTeamA)} alt={selectedTeamA} className="team-logo-large" />
                   <h2>{selectedTeamA}</h2>
                   <div className="team-record">{teamAData.wins}-{teamAData.losses}</div>
-                  <div className="team-season">{seasonA} Season</div>
+                  <div className="team-season">{getSeasonDisplayLabel(seasonA, teamAResolvedSeason)}</div>
                 </div>
                 <div className="stats-list">
                   {getSelectedStatsArray().map(stat => (
@@ -584,7 +650,7 @@ function TeamComparison({ initialViewMode = 'comparison' }) {
                   <img src={getTeamLogo(selectedTeamB)} alt={selectedTeamB} className="team-logo-large" />
                   <h2>{selectedTeamB}</h2>
                   <div className="team-record">{teamBData.wins}-{teamBData.losses}</div>
-                  <div className="team-season">{seasonB} Season</div>
+                  <div className="team-season">{getSeasonDisplayLabel(seasonB, teamBResolvedSeason)}</div>
                 </div>
                 <div className="stats-list">
                   {getSelectedStatsArray().map(stat => (
