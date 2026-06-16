@@ -1,16 +1,138 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import './MLPredictionsRedesign.css';
 import { getDefaultSeason, getRecentSeasons } from './utils/season';
 
 const API_URL = (typeof window !== 'undefined' && (window.location.hostname === 'hclombardo.com' || window.location.hostname === 'www.hclombardo.com' || window.location.hostname.endsWith('.netlify.app'))) ? '' : (process.env.REACT_APP_API_URL ?? '');
+const FALLBACK_WEEKS = Array.from({ length: 18 }, (_, idx) => idx + 1);
+
+const toNumber = (value) => {
+  const num = Number(value);
+  return Number.isFinite(num) ? num : null;
+};
+
+const roundToTenth = (value) => Math.round(value * 10) / 10;
+
+const edgeToStars = (edgePoints) => {
+  if (edgePoints >= 8) return 5;
+  if (edgePoints >= 6) return 4;
+  if (edgePoints >= 4) return 3;
+  if (edgePoints >= 2) return 2;
+  return 1;
+};
+
+const formatSpreadValue = (line) => {
+  const numeric = toNumber(line);
+  if (numeric === null) {
+    return 'N/A';
+  }
+
+  if (numeric === 0) {
+    return 'PK';
+  }
+
+  return `${numeric > 0 ? '+' : ''}${numeric.toFixed(1)}`;
+};
+
+const formatSpreadForHome = (homeTeam, spread) => {
+  const value = toNumber(spread);
+  if (!homeTeam || value === null) {
+    return 'N/A';
+  }
+
+  if (value === 0) {
+    return `${homeTeam} PK`;
+  }
+
+  return `${homeTeam} ${value > 0 ? '+' : ''}${value.toFixed(1)}`;
+};
+
+const formatTeamLine = (team, line) => {
+  const value = toNumber(line);
+  if (!team || value === null) {
+    return 'N/A';
+  }
+
+  if (value === 0) {
+    return `${team} PK`;
+  }
+
+  return `${team} ${value > 0 ? '+' : ''}${value.toFixed(1)}`;
+};
+
+const getModelResultMeta = (correct, label) => {
+  if (correct === true) {
+    return { className: 'correct', text: `${label} Covered`, icon: '✅' };
+  }
+
+  if (correct === false) {
+    return { className: 'wrong', text: `${label} Missed`, icon: '❌' };
+  }
+
+  if (correct === 'push') {
+    return { className: 'unknown', text: `${label} Push`, icon: '➖' };
+  }
+
+  return { className: 'unknown', text: `${label} Pending`, icon: '⏳' };
+};
+
+const buildCoverOutcome = ({ gameStatus, actual, homeTeam, awayTeam, pickTeam, vegasSpread }) => {
+  if (gameStatus !== 'final') {
+    return {
+      isFinal: false,
+      finalScoreLine: '',
+      resultLine: 'Result pending',
+      resultMeta: getModelResultMeta(null, 'Pick')
+    };
+  }
+
+  const homeScore = toNumber(actual?.home_score);
+  const awayScore = toNumber(actual?.away_score);
+  const marketSpread = toNumber(vegasSpread);
+
+  const finalScoreLine = (homeScore !== null && awayScore !== null)
+    ? `Final: ${awayTeam} ${awayScore} - ${homeTeam} ${homeScore}`
+    : 'Final score unavailable';
+
+  if (
+    homeScore === null
+    || awayScore === null
+    || marketSpread === null
+    || (pickTeam !== homeTeam && pickTeam !== awayTeam)
+  ) {
+    return {
+      isFinal: true,
+      finalScoreLine,
+      resultLine: 'Result pending',
+      resultMeta: getModelResultMeta(null, 'Pick')
+    };
+  }
+
+  const homeAdjustedMargin = homeScore + marketSpread - awayScore;
+  if (homeAdjustedMargin === 0) {
+    return {
+      isFinal: true,
+      finalScoreLine,
+      resultLine: `${pickTeam} pushed`,
+      resultMeta: getModelResultMeta('push', 'Pick')
+    };
+  }
+
+  const pickCovered = pickTeam === homeTeam ? homeAdjustedMargin > 0 : homeAdjustedMargin < 0;
+  return {
+    isFinal: true,
+    finalScoreLine,
+    resultLine: `${pickTeam} ${pickCovered ? 'covered ✓' : 'missed ✗'}`,
+    resultMeta: getModelResultMeta(pickCovered, 'Pick')
+  };
+};
 
 function MLPredictionsRedesign() {
   const defaultSeason = getDefaultSeason();
-  const seasonOptions = getRecentSeasons(6, 2020, defaultSeason);
+  const seasonOptions = getRecentSeasons(7, 2020, defaultSeason);
 
   const [season, setSeason] = useState(defaultSeason);
   const [week, setWeek] = useState(null);
-  const [, setAvailableWeeks] = useState([]);
+  const [availableWeeks, setAvailableWeeks] = useState([]);
   const [loading, setLoading] = useState(false);
   const [combinedData, setCombinedData] = useState([]);
   const [seasonStats, setSeasonStats] = useState(null);
@@ -18,11 +140,21 @@ function MLPredictionsRedesign() {
   const [refreshing, setRefreshing] = useState(false);
   const [lastUpdated, setLastUpdated] = useState(null);
   const [error, setError] = useState(null);
-  const [view, setView] = useState('winner-picks'); // 'winner-picks', 'spreads'
+
+  const weekOptions = useMemo(() => {
+    const fromApi = Array.from(new Set(
+      availableWeeks
+        .filter((item) => Number(item.season) === Number(season))
+        .map((item) => Number(item.week))
+        .filter((value) => Number.isFinite(value))
+    )).sort((a, b) => a - b);
+
+    return fromApi.length > 0 ? fromApi : FALLBACK_WEEKS;
+  }, [availableWeeks, season]);
 
   useEffect(() => {
-    fetchAvailableWeeks();
-    fetchUpcomingPredictions();
+    initializePage();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -38,6 +170,16 @@ function MLPredictionsRedesign() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [season]);
+
+  useEffect(() => {
+    if (weekOptions.length === 0) {
+      return;
+    }
+
+    if (!week || !weekOptions.includes(Number(week))) {
+      setWeek(weekOptions[weekOptions.length - 1]);
+    }
+  }, [weekOptions, week]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -69,6 +211,11 @@ function MLPredictionsRedesign() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [season, week]);
 
+  const initializePage = async () => {
+    await fetchAvailableWeeks();
+    await fetchUpcomingPredictions();
+  };
+
   const fetchAvailableWeeks = async () => {
     try {
       const response = await fetch(`${API_URL}/api/ml/available-weeks`);
@@ -76,7 +223,7 @@ function MLPredictionsRedesign() {
       if (data.success) {
         setAvailableWeeks(data.weeks || []);
       }
-    } catch (err) {
+    } catch {
       setAvailableWeeks([]);
     }
   };
@@ -91,7 +238,7 @@ function MLPredictionsRedesign() {
         setSeason(data.season);
         setWeek(data.week);
       }
-    } catch (err) {
+    } catch {
       setError('Failed to load upcoming predictions');
     }
     setLoading(false);
@@ -111,10 +258,12 @@ function MLPredictionsRedesign() {
         setCombinedData(data.predictions || []);
         setLastUpdated(new Date());
       } else {
+        setCombinedData([]);
         setError(data.message || 'No predictions available');
       }
-    } catch (err) {
+    } catch {
       if (!silent) {
+        setCombinedData([]);
         setError('Failed to load predictions');
       }
     }
@@ -138,7 +287,7 @@ function MLPredictionsRedesign() {
       } else {
         setSeasonStats(null);
       }
-    } catch (err) {
+    } catch {
       if (!silent) {
         setSeasonStats(null);
       }
@@ -174,286 +323,98 @@ function MLPredictionsRedesign() {
     return `https://a.espncdn.com/i/teamlogos/nfl/500/${team}.png`;
   };
 
-  const formatSpreadForHome = (team, spread) => {
-    if (!team || spread === null || spread === undefined || Number.isNaN(Number(spread))) {
-      return 'N/A';
+  const weeklyCards = useMemo(() => {
+    if (!combinedData || combinedData.length === 0) {
+      return [];
     }
 
-    const value = Number(spread);
-    return `${team} ${value > 0 ? '+' : ''}${value.toFixed(1)}`;
-  };
+    return combinedData
+      .map((game) => {
+        const homeTeam = game.home_team;
+        const awayTeam = game.away_team;
 
-  const getModelResultMeta = (correct, label) => {
-    if (correct === true) {
-      return { className: 'correct', text: `${label} Correct`, icon: '✅' };
-    }
+        const eloSpread = toNumber(game.elo?.spread);
+        const aiSpread = toNumber(game.xgb?.spread);
+        const vegasSpread = toNumber(game.vegas_spread);
 
-    if (correct === false) {
-      return { className: 'wrong', text: `${label} Missed`, icon: '❌' };
-    }
+        let modelSpread = null;
+        if (eloSpread !== null && aiSpread !== null) {
+          modelSpread = roundToTenth((eloSpread + aiSpread) / 2);
+        } else if (aiSpread !== null) {
+          modelSpread = aiSpread;
+        } else if (eloSpread !== null) {
+          modelSpread = eloSpread;
+        }
 
-    return { className: 'unknown', text: `${label} Pending`, icon: '⏳' };
-  };
+        const fallbackWinner = game.xgb?.predicted_winner || game.elo?.predicted_winner || null;
+        let pickTeam = null;
+        if (modelSpread !== null) {
+          if (modelSpread < 0) {
+            pickTeam = homeTeam;
+          } else if (modelSpread > 0) {
+            pickTeam = awayTeam;
+          }
+        }
 
-  const renderWinnerPicks = () => {
-    if (!combinedData || combinedData.length === 0) return null;
+        if (!pickTeam && (fallbackWinner === homeTeam || fallbackWinner === awayTeam)) {
+          pickTeam = fallbackWinner;
+        }
 
-    return (
-      <div className="winner-picks-view">
-        <div className="section-header">
-          <h2>🏆 Winner Predictions</h2>
-          <p>Who will win each game? Combined AI + Elo analysis</p>
-        </div>
+        const pickModelLine = (pickTeam && modelSpread !== null)
+          ? (pickTeam === homeTeam ? modelSpread : -modelSpread)
+          : null;
 
-        <div className="picks-grid">
-          {combinedData.map((game, idx) => {
-            const hasElo = !!game.elo;
-            const hasXgb = !!game.xgb;
-            const eloWinner = game.elo?.predicted_winner;
-            const xgbWinner = game.xgb?.predicted_winner;
-            const agreement = hasElo && hasXgb ? game.agreement : null;
+        const pickVegasLine = (pickTeam && vegasSpread !== null)
+          ? (pickTeam === homeTeam ? vegasSpread : -vegasSpread)
+          : null;
 
-            const isFinal = game.game_status === 'final';
-            const actual = game.actual || {};
-            const modelResults = game.model_results || {};
-            const xgbResultMeta = hasXgb ? getModelResultMeta(modelResults.xgb_correct, 'AI') : null;
-            const eloResultMeta = hasElo ? getModelResultMeta(modelResults.elo_correct, 'Elo') : null;
+        const edgePoints = (pickModelLine !== null && pickVegasLine !== null)
+          ? Math.abs(pickVegasLine - pickModelLine)
+          : 0;
 
-            const eloConf = hasElo ? (game.elo?.confidence || 0) : null;
-            const xgbConf = hasXgb ? (game.xgb?.confidence || 0) : null;
-            const avgConf = (eloConf + xgbConf) / 2;
+        const confidenceStrong = game.agreement === true;
+        const confidenceLabel = confidenceStrong ? 'Strong play' : 'Lean';
+        const confidenceDetail = confidenceStrong ? 'Both systems agree' : 'Close call';
 
-            return (
-              <div key={idx} className={`pick-card ${agreement ? 'agreement' : 'disagreement'}`}>
-                <div className="pick-header">
-                  <div className="matchup-teams">
-                    <img src={getTeamLogo(game.away_team)} alt={game.away_team} className="team-logo-small" />
-                    <span className="team-name">{game.away_team}</span>
-                    <span className="vs">@</span>
-                    <span className="team-name">{game.home_team}</span>
-                    <img src={getTeamLogo(game.home_team)} alt={game.home_team} className="team-logo-small" />
-                  </div>
-                </div>
+        const actionText = pickTeam
+          ? `${pickTeam} to cover (${formatSpreadValue(pickVegasLine)})`
+          : 'No clear side to cover';
 
-                <div className="pick-body">
-                  {hasElo && hasXgb && agreement ? (
-                    <>
-                      <div className="consensus-pick">
-                        <div className="consensus-badge">✓ CONSENSUS</div>
-                        <div className="winner-display">
-                          <img src={getTeamLogo(eloWinner)} alt={eloWinner} className="winner-logo" />
-                          <span className="winner-team">{eloWinner}</span>
-                        </div>
-                        <div className="confidence-bar">
-                          <div className="confidence-fill" style={{width: `${avgConf * 100}%`}}></div>
-                          <span className="confidence-text">{(avgConf * 100).toFixed(0)}% Confidence</span>
-                        </div>
-                      </div>
+        let verdictLine = 'Spread edge unavailable for this matchup right now.';
+        if (pickTeam && pickModelLine !== null && pickVegasLine !== null) {
+          verdictLine = `Our model: ${formatTeamLine(pickTeam, pickModelLine)} vs Vegas ${formatTeamLine(pickTeam, pickVegasLine)} - ${edgePoints.toFixed(1)} pt edge.`;
+        } else if (pickTeam && pickModelLine !== null) {
+          verdictLine = `Our model: ${formatTeamLine(pickTeam, pickModelLine)} - Vegas line unavailable.`;
+        }
 
-                      <div className="model-breakdown">
-                        <div className="model-conf">
-                          <span className="model-label">📈 Elo:</span>
-                          <span className="conf-value">{(eloConf * 100).toFixed(0)}%</span>
-                        </div>
-                        <div className="model-conf">
-                          <span className="model-label">🤖 AI:</span>
-                          <span className="conf-value">{(xgbConf * 100).toFixed(0)}%</span>
-                        </div>
-                        <div className="model-conf vegas">
-                          <span className="model-label">🎰 Vegas:</span>
-                          <span className="conf-value">
-                            {formatSpreadForHome(game.home_team, game.vegas_spread)}
-                          </span>
-                        </div>
-                      </div>
-                    </>
-                  ) : hasElo && hasXgb ? (
-                    <>
-                      <div className="split-badge">⚠️ SPLIT PREDICTION</div>
-                      <div className="split-picks">
-                        <div className="split-pick">
-                          <div className="split-model">📈 Elo</div>
-                          <div className="split-winner">
-                            <img src={getTeamLogo(eloWinner)} alt={eloWinner} className="split-logo" />
-                            <span>{eloWinner}</span>
-                          </div>
-                          <div className="split-conf">{(eloConf * 100).toFixed(0)}%</div>
-                        </div>
-                        <div className="vs-divider">vs</div>
-                        <div className="split-pick">
-                          <div className="split-model">🤖 AI</div>
-                          <div className="split-winner">
-                            <img src={getTeamLogo(xgbWinner)} alt={xgbWinner} className="split-logo" />
-                            <span>{xgbWinner}</span>
-                          </div>
-                          <div className="split-conf">{(xgbConf * 100).toFixed(0)}%</div>
-                        </div>
-                      </div>
+        const outcome = buildCoverOutcome({
+          gameStatus: game.game_status,
+          actual: game.actual,
+          homeTeam,
+          awayTeam,
+          pickTeam,
+          vegasSpread
+        });
 
-                      <div className="model-breakdown split-info">
-                        <div className="split-note">Models disagree - toss-up game</div>
-                        <div className="model-conf vegas">
-                          <span className="model-label">🎰 Vegas Line:</span>
-                          <span className="conf-value">
-                            {formatSpreadForHome(game.home_team, game.vegas_spread)}
-                          </span>
-                        </div>
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      <div className="split-badge">ℹ️ SINGLE MODEL AVAILABLE</div>
-                      <div className="split-picks">
-                        <div className="split-pick">
-                          <div className="split-model">{hasElo ? '📈 Elo' : '🤖 AI'}</div>
-                          <div className="split-winner">
-                            <img
-                              src={getTeamLogo(hasElo ? eloWinner : xgbWinner)}
-                              alt={hasElo ? eloWinner : xgbWinner}
-                              className="split-logo"
-                            />
-                            <span>{hasElo ? eloWinner : xgbWinner}</span>
-                          </div>
-                          <div className="split-conf">
-                            {hasElo ? `${(eloConf * 100).toFixed(0)}%` : `${(xgbConf * 100).toFixed(0)}%`}
-                          </div>
-                        </div>
-                        <div className="vs-divider">vs</div>
-                        <div className="split-pick">
-                          <div className="split-model">{hasElo ? '🤖 AI' : '📈 Elo'}</div>
-                          <div className="split-winner">
-                            <span>{hasElo ? 'Pending' : 'Pending'}</span>
-                          </div>
-                          <div className="split-conf">N/A</div>
-                        </div>
-                      </div>
-
-                      <div className="model-breakdown split-info">
-                        <div className="split-note">One model is available for this matchup right now</div>
-                        <div className="model-conf vegas">
-                          <span className="model-label">🎰 Vegas Line:</span>
-                          <span className="conf-value">{formatSpreadForHome(game.home_team, game.vegas_spread)}</span>
-                        </div>
-                      </div>
-                    </>
-                  )}
-
-                  <div className={`pick-outcome-strip ${isFinal ? 'final' : 'scheduled'}`}>
-                    {isFinal ? (
-                      <>
-                        <div className="final-result-line">
-                          Final: {game.away_team} {actual.away_score} - {game.home_team} {actual.home_score}
-                          {' '}| Winner: {actual.winner}
-                        </div>
-                        <div className="model-results-line">
-                          {xgbResultMeta && (
-                            <span className={`model-result-badge ${xgbResultMeta.className}`}>
-                              {xgbResultMeta.icon} {xgbResultMeta.text}
-                            </span>
-                          )}
-                          {eloResultMeta && (
-                            <span className={`model-result-badge ${eloResultMeta.className}`}>
-                              {eloResultMeta.icon} {eloResultMeta.text}
-                            </span>
-                          )}
-                        </div>
-                      </>
-                    ) : (
-                      <div className="final-result-line">Scheduled - final result pending</div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    );
-  };
-
-  const renderSpreads = () => {
-    if (!combinedData || combinedData.length === 0) return null;
-
-    return (
-      <div className="spreads-view">
-        <div className="section-header">
-          <h2>📊 Point Spread Analysis</h2>
-          <p>By how much? Spread predictions vs Vegas lines</p>
-        </div>
-
-        <div className="spreads-table">
-          <div className="table-header">
-            <div className="col-matchup">Matchup</div>
-            <div className="col-spread">Elo Spread</div>
-            <div className="col-spread">AI Spread</div>
-            <div className="col-spread">Vegas Line</div>
-            <div className="col-edge">Edge</div>
-          </div>
-
-          {combinedData.map((game, idx) => {
-            const eloSpread = game.elo?.spread;
-            const xgbSpread = game.xgb?.spread;
-            const vegasSpread = game.vegas_spread;
-
-            const hasVegas = vegasSpread !== null && vegasSpread !== undefined;
-            const hasEloSpread = eloSpread !== null && eloSpread !== undefined;
-            const hasXgbSpread = xgbSpread !== null && xgbSpread !== undefined;
-
-            const eloEdge = hasVegas && hasEloSpread ? Math.abs(eloSpread - vegasSpread) : 0;
-            const xgbEdge = hasVegas && hasXgbSpread ? Math.abs(xgbSpread - vegasSpread) : 0;
-            const maxEdge = Math.max(eloEdge, xgbEdge);
-
-            const hasValue = hasVegas && maxEdge >= 3.0;
-
-            return (
-              <div key={idx} className={`table-row ${hasValue ? 'value-play' : ''}`}>
-                <div className="col-matchup">
-                  <img src={getTeamLogo(game.away_team)} alt={game.away_team} className="tiny-logo" />
-                  <span className="team-abbr">{game.away_team}</span>
-                  <span className="at-symbol">@</span>
-                  <span className="team-abbr">{game.home_team}</span>
-                  <img src={getTeamLogo(game.home_team)} alt={game.home_team} className="tiny-logo" />
-                </div>
-
-                <div className="col-spread">
-                  <span className={`spread-value ${hasEloSpread && eloEdge >= 3 ? 'edge-highlight' : ''}`}>
-                    {formatSpreadForHome(game.home_team, eloSpread)}
-                  </span>
-                </div>
-
-                <div className="col-spread">
-                  <span className={`spread-value ${hasXgbSpread && xgbEdge >= 3 ? 'edge-highlight' : ''}`}>
-                    {formatSpreadForHome(game.home_team, xgbSpread)}
-                  </span>
-                </div>
-
-                <div className="col-spread vegas-col">
-                  <span className="spread-value">
-                    {formatSpreadForHome(game.home_team, vegasSpread)}
-                  </span>
-                </div>
-
-                <div className="col-edge">
-                  {hasValue ? (
-                    <span className="edge-badge">💎 {maxEdge.toFixed(1)} pts</span>
-                  ) : (
-                    <span className="no-edge">-</span>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        <div className="spreads-legend">
-          <div className="legend-item">
-            <span className="legend-badge value">💎</span>
-            <span className="legend-text">Value Play (3+ point difference from Vegas)</span>
-          </div>
-        </div>
-      </div>
-    );
-  };
+        return {
+          ...game,
+          edgePoints,
+          stars: edgeToStars(edgePoints),
+          confidenceLabel,
+          confidenceDetail,
+          confidenceTone: confidenceStrong ? 'strong' : 'lean',
+          actionText,
+          verdictLine,
+          pickTeam,
+          pickLogo: getTeamLogo(pickTeam),
+          powerSpreadDisplay: formatSpreadForHome(homeTeam, eloSpread),
+          aiSpreadDisplay: formatSpreadForHome(homeTeam, aiSpread),
+          vegasSpreadDisplay: formatSpreadForHome(homeTeam, vegasSpread),
+          outcome
+        };
+      })
+      .sort((a, b) => b.edgePoints - a.edgePoints);
+  }, [combinedData]);
 
   if (loading) {
     return (
@@ -469,51 +430,8 @@ function MLPredictionsRedesign() {
   return (
     <div className="ml-predictions-redesign">
       <div className="page-header">
-        <h1>🧠 AI NFL Predictions</h1>
-        <p className="subtitle">Combined AI Analysis: Elo + XGBoost + Vegas</p>
-      </div>
-
-      <div className="simple-legend">
-        <div className="legend-row">
-          <div className="legend-item">
-            <span className="legend-icon">📈</span>
-            <div className="legend-text">
-              <strong>Elo:</strong> Team strength rankings (like chess ratings)
-            </div>
-          </div>
-          <div className="legend-item">
-            <span className="legend-icon">🤖</span>
-            <div className="legend-text">
-              <strong>AI:</strong> Computer learns from 20 years of games
-            </div>
-          </div>
-          <div className="legend-item">
-            <span className="legend-icon">🎰</span>
-            <div className="legend-text">
-              <strong>Vegas:</strong> Las Vegas betting line
-            </div>
-          </div>
-        </div>
-        <div className="legend-row">
-          <div className="legend-item">
-            <span className="legend-icon">✅</span>
-            <div className="legend-text">
-              <strong>Consensus:</strong> Both Elo and AI agree (more confident)
-            </div>
-          </div>
-          <div className="legend-item">
-            <span className="legend-icon">⚠️</span>
-            <div className="legend-text">
-              <strong>Split:</strong> Models pick different winners (toss-up)
-            </div>
-          </div>
-          <div className="legend-item">
-            <span className="legend-icon">💎</span>
-            <div className="legend-text">
-              <strong>Value:</strong> 3+ point edge over Vegas
-            </div>
-          </div>
-        </div>
+        <h1>AI Predictions</h1>
+        <p className="subtitle">Any week. Any season. Full bettor card board with pick, edge, and result grading.</p>
       </div>
 
       <div className="controls-bar">
@@ -529,9 +447,8 @@ function MLPredictionsRedesign() {
         <div className="week-selector-redesign">
           <label>Week:</label>
           <select value={week || ''} onChange={(e) => setWeek(Number(e.target.value))}>
-            <option value="">Select Week</option>
-            {[...Array(18)].map((_, i) => (
-              <option key={i + 1} value={i + 1}>Week {i + 1}</option>
+            {weekOptions.map((optionWeek) => (
+              <option key={optionWeek} value={optionWeek}>Week {optionWeek}</option>
             ))}
           </select>
         </div>
@@ -612,21 +529,6 @@ function MLPredictionsRedesign() {
         )}
       </div>
 
-      <div className="view-tabs">
-        <button 
-          className={`view-tab ${view === 'winner-picks' ? 'active' : ''}`}
-          onClick={() => setView('winner-picks')}
-        >
-          🏆 Winner Picks
-        </button>
-        <button 
-          className={`view-tab ${view === 'spreads' ? 'active' : ''}`}
-          onClick={() => setView('spreads')}
-        >
-          📊 Point Spreads
-        </button>
-      </div>
-
       {error && (
         <div className="error-message">
           <p>{error}</p>
@@ -634,8 +536,82 @@ function MLPredictionsRedesign() {
       )}
 
       <div className="content-area">
-        {view === 'winner-picks' && renderWinnerPicks()}
-        {view === 'spreads' && renderSpreads()}
+        <div className="section-header">
+          <h2>Week {week} Bettor Cards</h2>
+          <p>All games for the selected week, ordered by model-vs-market edge.</p>
+        </div>
+
+        {weeklyCards.length === 0 ? (
+          <div className="empty-state">No prediction cards available for this week yet.</div>
+        ) : (
+          <div className="prediction-cards-grid">
+            {weeklyCards.map((game, idx) => (
+              <article key={game.game_id || `${game.home_team}-${game.away_team}-${idx}`} className="prediction-card">
+                <div className="prediction-top-row">
+                  <div className="prediction-stars" aria-label={`${game.stars} of 5 stars`}>
+                    <span className="stars-filled">{'★'.repeat(game.stars)}</span>
+                    <span className="stars-empty">{'☆'.repeat(5 - game.stars)}</span>
+                  </div>
+                  <span className={`prediction-confidence-badge ${game.confidenceTone}`}>{game.confidenceLabel}</span>
+                </div>
+
+                <div className="prediction-matchup-row">
+                  <img src={getTeamLogo(game.away_team)} alt={game.away_team} className="prediction-team-logo" />
+                  <h3>{game.away_team} @ {game.home_team}</h3>
+                  <img src={getTeamLogo(game.home_team)} alt={game.home_team} className="prediction-team-logo" />
+                </div>
+
+                <div className="prediction-pick-row">
+                  {game.pickTeam && (
+                    <img src={game.pickLogo} alt={game.pickTeam} className="prediction-pick-logo" />
+                  )}
+                  <div className="prediction-pick-copy">
+                    <p className="prediction-pick-title">Pick: {game.actionText}</p>
+                    <p className={`prediction-confidence-detail ${game.confidenceTone}`}>{game.confidenceDetail}</p>
+                  </div>
+                </div>
+
+                <p className="prediction-edge-line">{game.verdictLine}</p>
+
+                <div className={`prediction-result-strip ${game.outcome.isFinal ? 'final' : 'scheduled'}`}>
+                  {game.outcome.isFinal ? (
+                    <>
+                      <div className="prediction-final-line">{game.outcome.finalScoreLine}</div>
+                      <div className="prediction-results-line">
+                        <span className={`prediction-result-badge ${game.outcome.resultMeta.className}`}>
+                          {game.outcome.resultMeta.icon} {game.outcome.resultMeta.text}
+                        </span>
+                        <span className="prediction-result-text">{game.outcome.resultLine}</span>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="prediction-results-line">
+                      <span className="prediction-result-badge unknown">⏳ Pick Pending</span>
+                    </div>
+                  )}
+                </div>
+
+                <details className="prediction-lines-panel">
+                  <summary>Show model lines</summary>
+                  <div className="prediction-lines-grid">
+                    <div className="prediction-line-item">
+                      <span>Power Rating Spread</span>
+                      <strong>{game.powerSpreadDisplay}</strong>
+                    </div>
+                    <div className="prediction-line-item">
+                      <span>AI Model Spread</span>
+                      <strong>{game.aiSpreadDisplay}</strong>
+                    </div>
+                    <div className="prediction-line-item">
+                      <span>Vegas Spread</span>
+                      <strong>{game.vegasSpreadDisplay}</strong>
+                    </div>
+                  </div>
+                </details>
+              </article>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
