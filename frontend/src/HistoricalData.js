@@ -189,7 +189,7 @@ function HistoricalData() {
   if (loading && !allTeams.length) {
     return (
       <div className="historical-data">
-        <div className="loading">Loading teams...</div>
+        <div className="historical-loading">Loading teams...</div>
       </div>
     );
   }
@@ -197,20 +197,20 @@ function HistoricalData() {
   if (error) {
     return (
       <div className="historical-data">
-        <div className="error">Error: {error}</div>
+        <div className="historical-error">Error: {error}</div>
       </div>
     );
   }
 
   return (
     <div className="historical-data">
-      <div className="header">
+      <div className="historical-header">
         <h1>📊 Historical Team Statistics Spreadsheet</h1>
-        <p className="subtitle">Custom stat viewer - select team, season, and choose your stats</p>
+        <p className="historical-subtitle">Custom stat viewer - select team, season, and choose your stats</p>
       </div>
 
       {/* Instructions */}
-      <div className="instructions-box">
+      <div className="historical-instructions">
         <h3>📋 How to Use:</h3>
         <ol>
           <li><strong>Step 1:</strong> Select a <strong>Season</strong> ({MIN_NFL_SEASON}-{currentSeason})</li>
@@ -223,8 +223,8 @@ function HistoricalData() {
       </div>
 
       {/* Control Panel */}
-      <div className="control-panel">
-        <div className="control-group">
+      <div className="historical-controls">
+        <div className="historical-control-group">
           <label htmlFor="season-select">📅 Season</label>
           <select 
             id="season-select"
@@ -234,7 +234,7 @@ function HistoricalData() {
               setSelectedTeam('');
               setTeamStats(null);
             }}
-            className="dropdown"
+            className="historical-dropdown"
           >
             {seasons.map(year => (
               <option key={year} value={year}>{year}</option>
@@ -242,13 +242,13 @@ function HistoricalData() {
           </select>
         </div>
 
-        <div className="control-group">
+        <div className="historical-control-group">
           <label htmlFor="team-select">🏈 Team</label>
           <select 
             id="team-select"
             value={selectedTeam} 
             onChange={(e) => setSelectedTeam(e.target.value)}
-            className="dropdown"
+            className="historical-dropdown"
           >
             <option value="">-- Select Team --</option>
             {allTeams.map(team => (
@@ -260,7 +260,7 @@ function HistoricalData() {
         </div>
 
         <button 
-          className="add-column-btn"
+          className="historical-add-column-btn"
           onClick={addStatColumn}
           disabled={selectedStats.length >= 8}
         >
@@ -270,15 +270,15 @@ function HistoricalData() {
 
       {/* Spreadsheet-style Stat Selector */}
       {selectedTeam && (
-        <div className="spreadsheet-container">
+        <div className="historical-spreadsheet">
           <h3>Select Statistics to Display:</h3>
-          <div className="stat-dropdowns-row">
+          <div className="historical-stat-dropdowns-row">
             {selectedStats.map((statKey, index) => (
-              <div key={index} className="stat-column">
-                <div className="stat-column-header">
+              <div key={index} className="historical-stat-column">
+                <div className="historical-stat-column-header">
                   <label>Stat #{index + 1}</label>
                   <button 
-                    className="remove-column-btn"
+                    className="historical-remove-column-btn"
                     onClick={() => removeStatColumn(index)}
                     title="Remove this stat"
                   >
@@ -288,7 +288,7 @@ function HistoricalData() {
                 <select
                   value={statKey}
                   onChange={(e) => updateStatColumn(index, e.target.value)}
-                  className="stat-dropdown"
+                  className="historical-stat-dropdown"
                 >
                   <option value="">-- Select Stat --</option>
                   {/* Group stats by category */}
@@ -312,12 +312,12 @@ function HistoricalData() {
 
           {/* Display Selected Stats */}
           {teamStats && (
-            <div className="stats-display-table">
+            <div className="historical-stats-display-table">
               <h3>📈 {selectedTeam} - {selectedSeason} Season Statistics</h3>
-              <table className="stats-table">
+              <table className="historical-stats-table">
                 <thead>
                   <tr>
-                    <th className="stat-number">#</th>
+                    <th className="historical-stat-number">#</th>
                     {selectedStats.map((statKey, index) => (
                       <th key={index}>
                         {statKey ? getStatLabel(statKey) : '---'}
@@ -327,9 +327,9 @@ function HistoricalData() {
                 </thead>
                 <tbody>
                   <tr>
-                    <td className="stat-number">Value</td>
+                    <td className="historical-stat-number">Value</td>
                     {selectedStats.map((statKey, index) => (
-                      <td key={index} className="stat-value">
+                      <td key={index} className="historical-stat-value">
                         {statKey && teamStats[statKey] !== undefined 
                           ? formatStatValue(statKey, teamStats[statKey])
                           : '---'
@@ -343,7 +343,7 @@ function HistoricalData() {
           )}
 
           {!teamStats && (
-            <div className="no-data-message">
+            <div className="historical-no-data-message">
               <p>Select a team to view statistics</p>
             </div>
           )}
@@ -351,7 +351,7 @@ function HistoricalData() {
       )}
 
       {!selectedTeam && (
-        <div className="welcome-message">
+        <div className="historical-welcome-message">
           <p>👆 Select a season and team above to get started</p>
         </div>
       )}

@@ -1741,46 +1741,13 @@ body,
   border-color: #334155 !important;
 }
 
-/* --- HistoricalData: green button → gold --- */
-[data-theme="executive-dark"] .add-column-btn {
-  background: linear-gradient(135deg, #D97706, #F59E0B) !important;
-  color: #0F172A !important;
-  border-color: #F59E0B !important;
-  box-shadow: 0 4px 12px rgba(245,158,11,0.3) !important;
-}
-[data-theme="executive-dark"] .add-column-btn:hover:not(:disabled) {
-  background: linear-gradient(135deg, #F59E0B, #FCD34D) !important;
-  box-shadow: 0 6px 16px rgba(245,158,11,0.5) !important;
-}
-
-/* --- HistoricalData page: replace blue/purple title + teal instructions box --- */
+/* --- HistoricalData page: keep component-scoped styling authoritative --- */
 [data-theme="executive-dark"] .historical-data {
-  background: linear-gradient(135deg, #0A0F1E 0%, #0F172A 100%) !important;
+  background: transparent !important;
 }
-[data-theme="executive-dark"] .historical-data .header {
-  background: linear-gradient(135deg, rgba(245,158,11,0.06) 0%, rgba(217,119,6,0.06) 100%) !important;
-  border-color: rgba(245,158,11,0.25) !important;
-}
-[data-theme="executive-dark"] .historical-data .header h1 {
-  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%) !important;
-  -webkit-background-clip: text !important;
-  -webkit-text-fill-color: transparent !important;
-  background-clip: text !important;
-}
-[data-theme="executive-dark"] .instructions-box {
-  background: linear-gradient(135deg, rgba(245,158,11,0.08) 0%, rgba(217,119,6,0.08) 100%) !important;
-  border-color: rgba(245,158,11,0.3) !important;
-}
-[data-theme="executive-dark"] .instructions-box h3,
-[data-theme="executive-dark"] .instructions-box ol li strong {
-  color: #F59E0B !important;
-}
-[data-theme="executive-dark"] .instructions-box ol {
-  color: #94A3B8 !important;
-}
-[data-theme="executive-dark"] .historical-data .control-panel {
-  background: #1E293B !important;
-  border-color: #334155 !important;
+[data-theme="executive-dark"] .historical-data .historical-header h1 {
+  background: none !important;
+  -webkit-text-fill-color: currentColor !important;
 }
 
 /* --- App header "NFL Analytics" subtitle → gold --- */
