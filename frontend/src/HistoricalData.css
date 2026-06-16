@@ -18,6 +18,7 @@
 .historical-data .historical-welcome-message,
 .historical-data .historical-no-data-message,
 .historical-data .historical-loading,
+.historical-data .historical-info,
 .historical-data .historical-error {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
@@ -309,6 +310,7 @@
 .historical-data .historical-no-data-message,
 .historical-data .historical-welcome-message,
 .historical-data .historical-loading,
+.historical-data .historical-info,
 .historical-data .historical-error {
   margin-top: 0.8rem;
   padding: 0.95rem 0.8rem;
@@ -321,6 +323,14 @@
   margin: 0;
   color: var(--text-secondary);
   font-size: 0.76rem;
+}
+
+.historical-data .historical-info {
+  border-color: var(--border-color);
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  font-size: 0.76rem;
+  font-weight: 600;
 }
 
 .historical-data .historical-error {

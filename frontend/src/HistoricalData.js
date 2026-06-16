@@ -82,6 +82,9 @@ function HistoricalData() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const isSeasonUnavailableError = (message) =>
+    /data isn't available yet\. Try an earlier season\./i.test(message || '');
+
   // Generate season years from oldest supported season through current default season.
   const seasons = [];
   for (let year = currentSeason; year >= MIN_NFL_SEASON; year--) {
@@ -113,7 +116,12 @@ function HistoricalData() {
       setAllTeams(data.teams);
       setError(null);
     } catch (err) {
-      setError(err.message);
+      const noData = /not found|no data|season/i.test(err.message || '');
+      setError(
+        noData
+          ? `${selectedSeason} data isn't available yet. Try an earlier season.`
+          : 'Could not load this data right now. Please try again.'
+      );
     } finally {
       setLoading(false);
     }
@@ -125,20 +133,20 @@ function HistoricalData() {
       const response = await fetch(`${API_URL}/api/hcl/teams/${selectedTeam}?season=${selectedSeason}`);
       const data = await response.json();
       
-      console.log('API Response:', data); // DEBUG
-      console.log('Team data:', data.team); // DEBUG
-      
       if (!data.success) {
         throw new Error(data.error || 'Failed to load team data');
       }
       
       // API returns data.team not data.stats
       setTeamStats(data.team);
-      console.log('teamStats set to:', data.team); // DEBUG
       setError(null);
     } catch (err) {
-      console.error('Error loading team data:', err); // DEBUG
-      setError(err.message);
+      const noData = /not found|no data|season/i.test(err.message || '');
+      setError(
+        noData
+          ? `${selectedSeason} data isn't available yet. Try an earlier season.`
+          : 'Could not load this data right now. Please try again.'
+      );
     } finally {
       setLoading(false);
     }
@@ -195,9 +203,12 @@ function HistoricalData() {
   }
 
   if (error) {
+    const unavailableSeason = isSeasonUnavailableError(error);
     return (
       <div className="historical-data">
-        <div className="historical-error">Error: {error}</div>
+        <div className={unavailableSeason ? 'historical-info' : 'historical-error'}>
+          {unavailableSeason ? error : `Error: ${error}`}
+        </div>
       </div>
     );
   }
