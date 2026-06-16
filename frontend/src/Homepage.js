@@ -418,6 +418,74 @@ function Homepage() {
       {/* Live Games Ticker */}
       <LiveGamesTicker />
 
+      <section className="dashboard-legend-panel" aria-labelledby="dashboard-legend-title">
+        <div className="dashboard-legend-header">
+          <h2 id="dashboard-legend-title">What Do These Mean? Dashboard Legend</h2>
+          <p>Quick plain-English key for every term and symbol shown in the ticker and Best Bets cards.</p>
+        </div>
+
+        <div className="dashboard-legend-grid">
+          <div className="dashboard-legend-item">
+            <h3>Top Pick / Blended Pick</h3>
+            <p>Our overall recommended side, combining both systems.</p>
+          </div>
+          <div className="dashboard-legend-item">
+            <h3>Power Rating Spread</h3>
+            <p>Our team-strength system&apos;s predicted point margin.</p>
+          </div>
+          <div className="dashboard-legend-item">
+            <h3>Power Rating Moneyline</h3>
+            <p>Who our team-strength system thinks wins outright.</p>
+          </div>
+          <div className="dashboard-legend-item">
+            <h3>AI Model Spread</h3>
+            <p>Our AI&apos;s predicted point margin.</p>
+          </div>
+          <div className="dashboard-legend-item">
+            <h3>AI Model Moneyline</h3>
+            <p>Who our AI thinks wins outright.</p>
+          </div>
+          <div className="dashboard-legend-item">
+            <h3>Vegas Spread</h3>
+            <p>The official betting line from the sportsbooks.</p>
+          </div>
+          <div className="dashboard-legend-item">
+            <h3>O/U (Over/Under)</h3>
+            <p>The total points line. You bet over or under this number.</p>
+          </div>
+          <div className="dashboard-legend-item">
+            <h3>Spread</h3>
+            <p>The favorite must win by more than this number. The underdog can lose by fewer points and still cover.</p>
+          </div>
+          <div className="dashboard-legend-item">
+            <h3>Cover</h3>
+            <p>A team beats the spread.</p>
+          </div>
+          <div className="dashboard-legend-item">
+            <h3>Favorite / Underdog</h3>
+            <p>Favorite is a negative spread number. Underdog is a positive spread number.</p>
+          </div>
+          <div className="dashboard-legend-item">
+            <h3>Push</h3>
+            <p>The final margin lands exactly on the line, so it is no win and no loss.</p>
+          </div>
+          <div className="dashboard-legend-item">
+            <h3>Moneyline</h3>
+            <p>A bet on who wins the game straight up, with no spread.</p>
+          </div>
+        </div>
+
+        <div className="dashboard-symbol-key" aria-label="Symbol key">
+          <span className="symbol-chip success">✅ / ✓ Covered</span>
+          <span className="symbol-chip danger">❌ / ✗ Missed</span>
+          <span className="symbol-chip pending">⏳ Result pending</span>
+          <span className="symbol-chip">📊 Power rating row</span>
+          <span className="symbol-chip">🏆 Moneyline winner row</span>
+          <span className="symbol-chip">🤖 AI model row</span>
+          <span className="symbol-chip">🎰 Vegas sportsbook line row</span>
+        </div>
+      </section>
+
       <section className="best-bets-section">
         <div className="section-heading-row">
           <h2>This Week&apos;s Best Bets</h2>
