@@ -54,7 +54,7 @@
   gap: 6px;
   font-size: 12px;
   font-weight: 700;
-  color: #fff;
+  color: var(--text-primary);
   text-transform: uppercase;
   letter-spacing: 0.9px;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.45);
@@ -66,9 +66,9 @@
 }
 
 .scroll-btn {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: #fff;
+  background: color-mix(in srgb, var(--bg-secondary) 75%, transparent);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
   padding: 4px 10px;
   border-radius: 5px;
   cursor: pointer;
@@ -78,8 +78,8 @@
 }
 
 .scroll-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
-  border-color: rgba(255, 255, 255, 0.5);
+  background: color-mix(in srgb, var(--bg-secondary) 90%, transparent);
+  border-color: var(--accent-primary);
   transform: scale(1.05);
 }
 
@@ -134,24 +134,24 @@
   min-width: 280px;
   max-width: 280px;
   width: 280px;
-  background: rgba(30, 30, 50, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 7px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--dashboard-card-radius, 10px);
   padding: 8px;
   position: relative;
   flex-shrink: 0;
-  box-shadow: 0 3px 9px rgba(0, 0, 0, 0.35);
+  box-shadow: var(--dashboard-card-shadow, 0 4px 12px var(--shadow));
   pointer-events: none;
   overflow: hidden;
 }
 
 .game-ticker-card.in_progress {
-  border-color: #ff4444;
-  background: rgba(255, 68, 68, 0.05);
+  border-color: color-mix(in srgb, var(--accent-primary) 55%, var(--border-color));
+  background: color-mix(in srgb, var(--accent-primary) 10%, var(--bg-card));
 }
 
 .game-ticker-card.final {
-  border-color: rgba(255, 255, 255, 0.15);
+  border-color: var(--border-color);
 }
 
 .status-live,
@@ -173,8 +173,8 @@
 }
 
 .status-final {
-  background: rgba(255, 255, 255, 0.2);
-  color: #ccc;
+  background: color-mix(in srgb, var(--bg-secondary) 80%, transparent);
+  color: var(--text-secondary);
 }
 
 @keyframes pulseBg {
@@ -213,34 +213,34 @@
   display: none; /* Hidden by default, shown via inline style if logo fails */
   font-size: 13px;
   font-weight: 600;
-  color: #fff;
+  color: var(--text-primary);
   text-transform: uppercase;
 }
 
 .team-score {
   font-size: 14px;
   font-weight: 700;
-  color: #00d4ff;
+  color: var(--accent-primary);
   margin-top: 1px;
 }
 
 .ticker-vs {
   font-size: 9px;
-  color: rgba(255, 255, 255, 0.4);
+  color: color-mix(in srgb, var(--text-secondary) 70%, transparent);
   font-weight: 600;
 }
 
 .ticker-details {
   text-align: center;
   padding: 4px 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
   margin-bottom: 5px;
 }
 
 .game-date {
   font-size: 10px;
-  color: #00d4ff;
+  color: var(--accent-primary);
   font-weight: 700;
   display: block;
   margin-bottom: 2px;
@@ -250,14 +250,14 @@
 
 .time-info {
   font-size: 10px;
-  color: #fff;
+  color: var(--text-primary);
   font-weight: 600;
 }
 
 .ticker-predictions {
   margin-top: 5px;
   padding-top: 5px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid var(--border-color);
 }
 
 .pred-line {
@@ -266,7 +266,7 @@
   align-items: center;
   padding: 5px 7px;
   margin-bottom: 4px;
-  background: rgba(0, 0, 0, 0.2);
+  background: color-mix(in srgb, var(--bg-secondary) 84%, transparent);
   border-radius: 5px;
 }
 
@@ -284,26 +284,26 @@
 .pred-text {
   font-size: 10px;
   font-weight: 600;
-  color: #fff;
+  color: var(--text-primary);
   line-height: 1.2;
 }
 
 .pred-line.blended-row {
-  background: rgba(74, 222, 128, 0.18);
-  border: 1px solid rgba(74, 222, 128, 0.4);
+  background: color-mix(in srgb, var(--accent-primary) 15%, var(--bg-secondary));
+  border: 1px solid color-mix(in srgb, var(--accent-primary) 45%, var(--border-color));
 }
 
 .pred-line.blended-outcome-row {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: color-mix(in srgb, var(--bg-card) 75%, var(--bg-secondary));
+  border: 1px solid var(--border-color);
 }
 
 .pred-line.blended-outcome-row.scheduled .pred-text {
-  color: #cbd5e1;
+  color: var(--result-pending-fg);
 }
 
 .pred-line.blended-outcome-row.final .pred-text {
-  color: #ffffff;
+  color: var(--text-primary);
 }
 
 .blended-agreement {
@@ -311,8 +311,8 @@
   font-weight: 700;
   padding: 2px 6px;
   border-radius: 999px;
-  color: #a7f3d0;
-  background: rgba(16, 185, 129, 0.22);
+  color: var(--text-primary);
+  background: color-mix(in srgb, var(--accent-primary) 18%, transparent);
   text-transform: uppercase;
   letter-spacing: 0.4px;
 }
@@ -352,11 +352,11 @@
 }
 
 .pred-check.correct {
-  color: #4ade80;
+  color: var(--result-correct-fg);
 }
 
 .pred-check.wrong {
-  color: #ff4444;
+  color: var(--result-wrong-fg);
 }
 
 .pred-check.push {
@@ -368,8 +368,8 @@
   font-size: 9px;
   font-weight: 700;
   padding: 2px 6px;
-  background: rgba(139, 92, 246, 0.3);
-  color: #a78bfa;
+  background: color-mix(in srgb, var(--accent-secondary) 20%, transparent);
+  color: var(--text-primary);
   border-radius: 4px;
   text-transform: uppercase;
 }
@@ -377,14 +377,14 @@
 .ticker-final-result {
   margin: 8px 0;
   padding: 8px;
-  background: rgba(74, 222, 128, 0.15);
+  background: color-mix(in srgb, var(--accent-primary) 14%, var(--bg-card));
   border-radius: 6px;
   text-align: center;
 }
 
 .final-label {
   font-size: 11px;
-  color: #4ade80;
+  color: var(--accent-primary);
   text-transform: uppercase;
   margin-right: 6px;
   font-weight: 700;
@@ -392,7 +392,7 @@
 
 .final-result {
   font-size: 13px;
-  color: #fff;
+  color: var(--text-primary);
   font-weight: 600;
 }
 
