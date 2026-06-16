@@ -4,8 +4,10 @@ export function getDefaultSeason(now = new Date()) {
   const year = now.getFullYear();
   const month = now.getMonth();
 
-  // NFL regular season starts in late summer; before then default to prior season.
-  return month >= 7 ? year : year - 1;
+  // Offseason schedule + opening lines are typically available by spring.
+  // Default to the current season from May onward so upcoming-game views
+  // surface the live season instead of stale prior-season data.
+  return month >= 4 ? year : year - 1;
 }
 
 export function getRecentSeasons(
