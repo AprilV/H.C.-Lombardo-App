@@ -8,7 +8,6 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 import os
 from datetime import datetime
-from collections import defaultdict
 from dotenv import load_dotenv
 from team_abbreviations import to_canonical_abbr, to_hcl_abbr, sql_to_canonical_case
 
@@ -413,9 +412,9 @@ def get_team_strength_of_schedule(team_abbr):
     Get weighted strength of schedule for a team in a season.
 
     SOS definition:
-      - Opponent set is derived from completed games played by the team.
-      - Each opponent win% excludes games vs the requested team.
-      - Final SOS is weighted by times played (division opponents played twice count twice).
+      - Played SOS: opponents' current-season win% excluding games vs the requested team.
+      - Projected SOS: opponents' prior-season win% when current season has no completed team games.
+      - Final SOS is weighted by times played/scheduled (division opponents count twice).
     """
     try:
         requested_team_abbr = to_canonical_abbr(team_abbr)
@@ -425,52 +424,63 @@ def get_team_strength_of_schedule(team_abbr):
         cur = conn.cursor(cursor_factory=RealDictCursor)
         season = resolve_request_season(cur)
 
-        # Completed games only contribute to SOS.
-        cur.execute(
-            """
-            SELECT
-                CASE
-                    WHEN g.home_team = %s THEN g.away_team
-                    ELSE g.home_team
-                END AS opponent
-            FROM hcl.games g
-            WHERE g.season = %s
-              AND (g.home_team = %s OR g.away_team = %s)
-              AND g.home_score IS NOT NULL
-              AND g.away_score IS NOT NULL
-            ORDER BY g.week ASC
-            """,
-            (db_team_abbr, season, db_team_abbr, db_team_abbr)
-        )
-        completed_games = cur.fetchall()
-
-        if not completed_games:
-            cur.close()
-            conn.close()
-            return jsonify({
-                'success': True,
-                'season': season,
-                'team': requested_team_abbr,
-                'sos': None,
-                'opponents_record': '0-0',
-                'games_counted': 0,
-                'opponent_breakdown': [],
-                'note': f'{season} has no completed games for {requested_team_abbr} yet. SOS is available after games are played.'
-            })
-
-        opponent_counts = defaultdict(int)
-        for game in completed_games:
-            opponent_counts[game['opponent']] += 1
-
-        breakdown = []
-        weighted_win_pct_total = 0.0
-        games_counted = 0
-        weighted_wins = 0
-        weighted_losses = 0
-
-        for opponent, played in opponent_counts.items():
-            cur.execute(
+        def get_opponent_counts(target_season, completed_only):
+            completed_clause = ""
+            if completed_only:
+                completed_clause = """
+                  AND g.home_score IS NOT NULL
+                  AND g.away_score IS NOT NULL
                 """
+
+            cur.execute(
+                f"""
+                SELECT
+                    CASE
+                        WHEN g.home_team = %s THEN g.away_team
+                        ELSE g.home_team
+                    END AS opponent,
+                    COUNT(*) AS played
+                FROM hcl.games g
+                WHERE g.season = %s
+                  AND (g.home_team = %s OR g.away_team = %s)
+                  {completed_clause}
+                GROUP BY opponent
+                """,
+                (db_team_abbr, target_season, db_team_abbr, db_team_abbr),
+            )
+            return cur.fetchall() or []
+
+        def get_opponent_record(target_season, opponent_abbr, exclude_team_abbr=None):
+            exclusion_clause = ""
+            params = [
+                opponent_abbr,
+                opponent_abbr,
+                opponent_abbr,
+                opponent_abbr,
+                opponent_abbr,
+                opponent_abbr,
+                target_season,
+                opponent_abbr,
+                opponent_abbr,
+            ]
+
+            if exclude_team_abbr is not None:
+                exclusion_clause = """
+                  AND NOT (
+                      (g.home_team = %s AND g.away_team = %s)
+                      OR
+                      (g.away_team = %s AND g.home_team = %s)
+                  )
+                """
+                params.extend([
+                    exclude_team_abbr,
+                    opponent_abbr,
+                    exclude_team_abbr,
+                    opponent_abbr,
+                ])
+
+            cur.execute(
+                f"""
                 SELECT
                     SUM(
                         CASE
@@ -498,67 +508,133 @@ def get_team_strength_of_schedule(team_abbr):
                   AND g.home_score IS NOT NULL
                   AND g.away_score IS NOT NULL
                   AND (g.home_team = %s OR g.away_team = %s)
-                  AND NOT (
-                      (g.home_team = %s AND g.away_team = %s)
-                      OR
-                      (g.away_team = %s AND g.home_team = %s)
-                  )
+                  {exclusion_clause}
                 """,
-                (
-                    opponent,
-                    opponent,
-                    opponent,
-                    opponent,
-                    opponent,
-                    opponent,
-                    season,
-                    opponent,
-                    opponent,
-                    db_team_abbr,
-                    opponent,
-                    db_team_abbr,
-                    opponent,
-                )
+                tuple(params),
             )
-            record = cur.fetchone() or {}
-            wins = int((record.get('wins') or 0))
-            losses = int((record.get('losses') or 0))
-            ties = int((record.get('ties') or 0))
-            games_for_pct = wins + losses + ties
 
-            win_pct = None
-            if games_for_pct > 0:
-                win_pct = (wins + (0.5 * ties)) / games_for_pct
+            row = cur.fetchone() or {}
+            wins = int((row.get('wins') or 0))
+            losses = int((row.get('losses') or 0))
+            ties = int((row.get('ties') or 0))
+            games_for_pct = wins + losses + ties
+            win_pct = (wins + (0.5 * ties)) / games_for_pct if games_for_pct > 0 else None
+            return wins, losses, ties, win_pct
+
+        def build_weighted_sos(opponent_rows, record_season, exclude_self):
+            weighted_win_pct_total = 0.0
+            games_counted = 0
+            weighted_wins = 0
+            weighted_losses = 0
+            skipped_opponents = []
+            breakdown = []
+
+            for row in opponent_rows:
+                opponent = row.get('opponent')
+                played = int(row.get('played') or 0)
+
+                if not opponent or played <= 0:
+                    continue
+
+                wins, losses, ties, win_pct = get_opponent_record(
+                    record_season,
+                    opponent,
+                    db_team_abbr if exclude_self else None,
+                )
+
+                canonical_opp = to_canonical_abbr(opponent)
+                if win_pct is None:
+                    skipped_opponents.append(canonical_opp)
+                    breakdown.append({
+                        'opponent': canonical_opp,
+                        'win_pct': None,
+                        'played': played,
+                    })
+                    continue
+
                 weighted_win_pct_total += win_pct * played
                 games_counted += played
                 weighted_wins += wins * played
                 weighted_losses += losses * played
+                breakdown.append({
+                    'opponent': canonical_opp,
+                    'win_pct': round(win_pct, 3),
+                    'played': played,
+                })
 
-            breakdown.append({
-                'opponent': to_canonical_abbr(opponent),
-                'win_pct': round(win_pct, 3) if win_pct is not None else None,
-                'played': played,
+            breakdown.sort(key=lambda item: (-item['played'], item['opponent']))
+            sos_value = round(weighted_win_pct_total / games_counted, 3) if games_counted > 0 else None
+
+            return {
+                'sos': sos_value,
+                'opponents_record': f'{weighted_wins}-{weighted_losses}',
+                'games_counted': games_counted,
+                'opponent_breakdown': breakdown,
+                'skipped': sorted(set(skipped_opponents)),
+            }
+
+        completed_opponents = get_opponent_counts(season, completed_only=True)
+        has_completed_games = len(completed_opponents) > 0
+
+        sos_type = 'played' if has_completed_games else 'projected'
+        based_on_season = season if has_completed_games else season - 1
+        opponents = completed_opponents if has_completed_games else get_opponent_counts(season, completed_only=False)
+
+        if not opponents:
+            cur.close()
+            conn.close()
+            return jsonify({
+                'success': True,
+                'season': season,
+                'team': requested_team_abbr,
+                'sos_type': sos_type,
+                'based_on_season': based_on_season,
+                'sos': None,
+                'opponents_record': '0-0',
+                'games_counted': 0,
+                'opponent_breakdown': [],
+                'note': f'No opponents found for {requested_team_abbr} in {season}.'
             })
 
-        breakdown.sort(key=lambda item: (-item['played'], item['opponent']))
-        sos_value = round(weighted_win_pct_total / games_counted, 3) if games_counted > 0 else None
+        sos_data = build_weighted_sos(
+            opponents,
+            based_on_season,
+            exclude_self=has_completed_games,
+        )
 
-        response_payload = {
+        payload = {
             'success': True,
             'season': season,
             'team': requested_team_abbr,
-            'sos': sos_value,
-            'opponents_record': f'{weighted_wins}-{weighted_losses}',
-            'games_counted': games_counted,
-            'opponent_breakdown': breakdown,
+            'sos_type': sos_type,
+            'based_on_season': based_on_season,
+            'sos': sos_data['sos'],
+            'opponents_record': sos_data['opponents_record'],
+            'games_counted': sos_data['games_counted'],
+            'opponent_breakdown': sos_data['opponent_breakdown'],
         }
 
-        if sos_value is None:
-            response_payload['note'] = 'SOS is not yet available because opponents have no non-head-to-head completed games.'
+        notes = []
+        if sos_type == 'projected':
+            notes.append(f"Based on opponents' {based_on_season} records (season not yet played).")
+
+        if sos_data['skipped']:
+            notes.append(
+                f"Skipped opponents with missing {based_on_season} data: {', '.join(sos_data['skipped'])}."
+            )
+
+        if sos_data['sos'] is None:
+            if sos_type == 'played':
+                notes.append('SOS is not yet available because opponents have no non-head-to-head completed games.')
+            else:
+                notes.append('Projected SOS unavailable because prior-season records were not found for scheduled opponents.')
+
+        if notes:
+            payload['note'] = ' '.join(notes)
 
         cur.close()
         conn.close()
-        return jsonify(response_payload)
+        return jsonify(payload)
 
     except Exception as e:
         return jsonify({

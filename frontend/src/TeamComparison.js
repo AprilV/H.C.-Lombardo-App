@@ -258,6 +258,8 @@ function TeamComparison({ initialViewMode = 'comparison' }) {
           success: true,
           team: abbr,
           season: Number(season),
+          sos_type: data.sos_type || 'projected',
+          based_on_season: data.based_on_season || (Number(season) - 1),
           sos: null,
           opponents_record: '0-0',
           games_counted: 0,
@@ -271,6 +273,8 @@ function TeamComparison({ initialViewMode = 'comparison' }) {
         success: true,
         team: abbr,
         season: Number(season),
+        sos_type: 'projected',
+        based_on_season: Number(season) - 1,
         sos: null,
         opponents_record: '0-0',
         games_counted: 0,
@@ -313,6 +317,29 @@ function TeamComparison({ initialViewMode = 'comparison' }) {
     return numeric.toFixed(3).replace(/^0(?=\.)/, '');
   };
 
+  const isProjectedSos = (sosData) => sosData?.sos_type === 'projected';
+
+  const getSosMetricLabel = (sosData) => {
+    if (isProjectedSos(sosData)) {
+      return "projected opponents' win%";
+    }
+    return "opponents' win%";
+  };
+
+  const getSosTypeLabel = (sosData) => {
+    if (isProjectedSos(sosData)) {
+      return 'Projected SOS';
+    }
+    return 'Strength of Schedule';
+  };
+
+  const getProjectedBasisNote = (sosData) => {
+    if (!isProjectedSos(sosData)) {
+      return null;
+    }
+    return `Based on opponents' ${sosData.based_on_season} records (season not yet played).`;
+  };
+
   const getSosVerdict = () => {
     if (!selectedTeamA || !selectedTeamB) {
       return 'Select both teams to compare schedule strength.';
@@ -325,13 +352,23 @@ function TeamComparison({ initialViewMode = 'comparison' }) {
     const sosA = teamASos.sos;
     const sosB = teamBSos.sos;
 
+    const projectedComparison = isProjectedSos(teamASos) || isProjectedSos(teamBSos);
+
     if (sosA === null || sosB === null) {
-      return 'SOS verdict available after both selected seasons have completed games.';
+      return projectedComparison
+        ? 'Projected SOS verdict available after both teams have valid prior-season opponent records.'
+        : 'SOS verdict available after both selected seasons have completed games.';
     }
 
     const difference = Number(sosA) - Number(sosB);
     if (Math.abs(difference) < 0.003) {
-      return 'Even schedule strength.';
+      return projectedComparison ? 'Even projected schedule strength.' : 'Even schedule strength.';
+    }
+
+    if (projectedComparison) {
+      return difference > 0
+        ? `${selectedTeamA} has the tougher projected schedule.`
+        : `${selectedTeamB} has the tougher projected schedule.`;
     }
 
     return difference > 0
@@ -613,8 +650,9 @@ function TeamComparison({ initialViewMode = 'comparison' }) {
                     {teamASos ? (
                       teamASos.sos !== null && teamASos.sos !== undefined ? (
                         <>
+                          <div className="sos-type-label">{getSosTypeLabel(teamASos)}</div>
                           <div className="sos-value">{formatSosValue(teamASos.sos)}</div>
-                          <div className="sos-caption">opponents&apos; win%</div>
+                          <div className="sos-caption">{getSosMetricLabel(teamASos)}</div>
                           <div className="sos-bar-track">
                             <div
                               className="sos-bar-fill"
@@ -624,6 +662,12 @@ function TeamComparison({ initialViewMode = 'comparison' }) {
                           <div className="sos-meta">
                             {teamASos.opponents_record} opponents&apos; record ({teamASos.games_counted} games weighted)
                           </div>
+                          {getProjectedBasisNote(teamASos) && (
+                            <div className="sos-projection-note">{getProjectedBasisNote(teamASos)}</div>
+                          )}
+                          {teamASos.note && teamASos.note !== getProjectedBasisNote(teamASos) && (
+                            <div className="sos-note">{teamASos.note}</div>
+                          )}
                         </>
                       ) : (
                         <div className="sos-note">
@@ -640,8 +684,9 @@ function TeamComparison({ initialViewMode = 'comparison' }) {
                     {teamBSos ? (
                       teamBSos.sos !== null && teamBSos.sos !== undefined ? (
                         <>
+                          <div className="sos-type-label">{getSosTypeLabel(teamBSos)}</div>
                           <div className="sos-value">{formatSosValue(teamBSos.sos)}</div>
-                          <div className="sos-caption">opponents&apos; win%</div>
+                          <div className="sos-caption">{getSosMetricLabel(teamBSos)}</div>
                           <div className="sos-bar-track">
                             <div
                               className="sos-bar-fill"
@@ -651,6 +696,12 @@ function TeamComparison({ initialViewMode = 'comparison' }) {
                           <div className="sos-meta">
                             {teamBSos.opponents_record} opponents&apos; record ({teamBSos.games_counted} games weighted)
                           </div>
+                          {getProjectedBasisNote(teamBSos) && (
+                            <div className="sos-projection-note">{getProjectedBasisNote(teamBSos)}</div>
+                          )}
+                          {teamBSos.note && teamBSos.note !== getProjectedBasisNote(teamBSos) && (
+                            <div className="sos-note">{teamBSos.note}</div>
+                          )}
                         </>
                       ) : (
                         <div className="sos-note">
