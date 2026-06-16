@@ -194,6 +194,8 @@ function HistoricalData() {
     );
   };
 
+  const unavailableSeason = isSeasonUnavailableError(error);
+
   if (loading && !allTeams.length) {
     return (
       <div className="historical-data">
@@ -202,13 +204,10 @@ function HistoricalData() {
     );
   }
 
-  if (error) {
-    const unavailableSeason = isSeasonUnavailableError(error);
+  if (error && !unavailableSeason) {
     return (
       <div className="historical-data">
-        <div className={unavailableSeason ? 'historical-info' : 'historical-error'}>
-          {unavailableSeason ? error : `Error: ${error}`}
-        </div>
+        <div className="historical-error">Error: {error}</div>
       </div>
     );
   }
@@ -278,6 +277,10 @@ function HistoricalData() {
           + Add Stat Column {selectedStats.length >= 8 && '(Max 8)'}
         </button>
       </div>
+
+      {unavailableSeason && (
+        <div className="historical-info">{error}</div>
+      )}
 
       {/* Spreadsheet-style Stat Selector */}
       {selectedTeam && (
