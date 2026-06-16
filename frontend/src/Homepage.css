@@ -151,6 +151,7 @@
 }
 
 .dashboard-legend-item:hover {
+  background: color-mix(in srgb, var(--accent-primary) 12%, var(--bg-card));
   border-color: var(--accent-primary);
   transform: translateY(-2px);
   box-shadow: 0 6px 14px var(--shadow);
@@ -256,6 +257,7 @@
 }
 
 .best-bet-card:hover {
+  background: color-mix(in srgb, var(--accent-primary) 12%, var(--bg-card));
   border-color: var(--accent-primary);
   transform: translateY(-2px);
   box-shadow: 0 6px 14px var(--shadow);
@@ -1205,6 +1207,7 @@
 [data-theme="classic-light"] .best-bet-card:hover,
 [data-theme="executive-dark"] .dashboard-legend-item:hover,
 [data-theme="classic-light"] .dashboard-legend-item:hover {
+  background: color-mix(in srgb, var(--accent-primary) 12%, var(--bg-card));
   border-color: var(--accent-primary);
   box-shadow: 0 6px 14px var(--shadow);
 }
