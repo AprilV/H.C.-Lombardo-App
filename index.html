@@ -12503,12 +12503,66 @@ function showSprintView(view, btn) {
         });
     }
 
+    function getSprintTailDate(sprintKey) {
+        var target = normalizeSprintCode(sprintKey);
+        if (!target || target === 'TBD') return null;
+
+        var latest = null;
+        var sprintTicketIds = {};
+
+        function bumpLatest(value) {
+            var d = parseDateSafe(value);
+            if (!d) return;
+            if (!latest || d > latest) latest = d;
+        }
+
+        (window.PB_ITEMS || []).forEach(function(item) {
+            if (!item || normalizeSprintCode(item.sprint) !== target) return;
+
+            var id = String(item.id || '').trim().toUpperCase();
+            if (id) sprintTicketIds[id] = true;
+
+            bumpLatest(item.updatedAt);
+
+            (item.history || []).forEach(function(entry) {
+                bumpLatest(entry && entry.at);
+            });
+
+            (item.comments || []).forEach(function(comment) {
+                bumpLatest(comment && comment.at);
+            });
+        });
+
+        if (typeof TASK_DETAILS !== 'undefined' && TASK_DETAILS
+            && typeof TASK_TA_MAP !== 'undefined' && TASK_TA_MAP) {
+            Object.keys(TASK_DETAILS).forEach(function(taskKey) {
+                var mappedTicket = String(TASK_TA_MAP[taskKey] || '').trim().toUpperCase();
+                if (!mappedTicket || !sprintTicketIds[mappedTicket]) return;
+
+                var detail = TASK_DETAILS[taskKey] || {};
+                bumpLatest(detail.timestamp || detail.dateInput || detail.date);
+            });
+        }
+
+        return latest;
+    }
+
     function getWeekBounds(weekNum) {
         var meta = WEEK_META[parseInt(weekNum, 10) - 1];
         if (!meta) return null;
         var start = parseDateSafe(meta.start);
         var end = parseDateSafe(meta.end);
         if (!start || !end) return null;
+
+        var isFinalWeekOverall = meta.num === WEEK_META.length;
+
+        if (isFinalWeekOverall) {
+            var sprintTail = getSprintTailDate(meta.sprintKey);
+            if (sprintTail && sprintTail > end) {
+                end = new Date(sprintTail);
+            }
+        }
+
         start.setHours(0, 0, 0, 0);
         end.setHours(23, 59, 59, 999);
         return { start: start, end: end };
