@@ -59,6 +59,7 @@ function ModelPerformance() {
   const [selectedSeason, setSelectedSeason] = useState(defaultSeason);
   const [selectedWeek, setSelectedWeek] = useState(null);
   const [scoreboard, setScoreboard] = useState(null);
+  const [showAllGames, setShowAllGames] = useState(false);
 
   const fetchScoreboard = async () => {
     setRefreshing(true);
@@ -72,6 +73,7 @@ function ModelPerformance() {
       }
 
       setScoreboard(data);
+      setShowAllGames(false);
       const weeks = data?.weekly || [];
       if (weeks.length > 0) {
         const maxWeek = Math.max(...weeks.map((w) => toNumber(w.week)));
@@ -225,164 +227,140 @@ function ModelPerformance() {
           <h2>Season Verdict ({selectedSeason})</h2>
           <p className="mp-section-subtitle">AI-vs-Vegas scoreboard using ATS results from completed games.</p>
         </div>
-        <p className="mp-verdict-line">
-          <strong>{seasonSummary.verdict_text || seasonWinner}</strong>
-        </p>
-        <p className="mp-proof-line">{seasonSummary.proof_line || 'No data for this season yet.'}</p>
+        <div className={`mp-verdict-hero ${winnerTone(seasonSummary?.season_winner)}`}>
+          <p className="mp-verdict-line">
+            <strong>{seasonSummary.verdict_text || seasonWinner}</strong>
+          </p>
+          <p className="mp-scoreline-line">{seasonSummary.scoreline || 'No scoreline yet'}</p>
+          <p className="mp-proof-line">{seasonSummary.proof_line || 'No data for this season yet.'}</p>
+        </div>
 
-        <div className="mp-summary-grid">
-          <div className="mp-insight-card highlight">
-            <h3>Season Winner</h3>
-            <div className="mp-insight-content">
-              <div className="mp-stat-large">{seasonWinner}</div>
-              <div className="mp-stat-label">AI-vs-Vegas verdict</div>
-              <div className="mp-stat-detail">{seasonSummary.scoreline || 'No scoreline yet'}</div>
-            </div>
+        <div className="mp-scoreboard-row">
+          <div className="mp-score-item">
+            <span className="mp-score-label">AI Record</span>
+            <strong className="mp-score-value">{toNumber(seasonSummary.ai_wins)}</strong>
+            <span className="mp-score-meta">{formatPct(seasonSummary.ai_pct)}</span>
           </div>
-          <div className="mp-insight-card">
-            <h3>AI ATS Covers</h3>
-            <div className="mp-insight-content">
-              <div className="mp-stat-large">{toNumber(seasonSummary.ai_wins)}</div>
-              <div className="mp-stat-label">Against the spread wins</div>
-              <div className="mp-stat-detail">{formatPct(seasonSummary.ai_pct)}</div>
-            </div>
+          <div className="mp-score-item">
+            <span className="mp-score-label">Vegas Record</span>
+            <strong className="mp-score-value">{toNumber(seasonSummary.vegas_wins)}</strong>
+            <span className="mp-score-meta">{formatPct(seasonSummary.vegas_pct)}</span>
           </div>
-          <div className="mp-insight-card">
-            <h3>Vegas ATS Covers</h3>
-            <div className="mp-insight-content">
-              <div className="mp-stat-large">{toNumber(seasonSummary.vegas_wins)}</div>
-              <div className="mp-stat-label">Against the spread wins</div>
-              <div className="mp-stat-detail">{formatPct(seasonSummary.vegas_pct)}</div>
-            </div>
+          <div className="mp-score-item highlight">
+            <span className="mp-score-label">Who Is Ahead</span>
+            <strong className="mp-score-value">{seasonWinner}</strong>
+            <span className="mp-score-meta">Season verdict</span>
           </div>
-          <div className="mp-insight-card">
-            <h3>True ATS Pushes</h3>
-            <div className="mp-insight-content">
-              <div className="mp-stat-large">{toNumber(seasonSummary.pushes)}</div>
-              <div className="mp-stat-label">Line landed exactly</div>
-              <div className="mp-stat-detail">No winner for those games</div>
-            </div>
+          <div className="mp-score-item">
+            <span className="mp-score-label">Sample Size</span>
+            <strong className="mp-score-value">{toNumber(seasonSummary.games)}</strong>
+            <span className="mp-score-meta">Completed games</span>
           </div>
-          <div className="mp-insight-card">
-            <h3>Total Games</h3>
-            <div className="mp-insight-content">
-              <div className="mp-stat-large">{toNumber(seasonSummary.games)}</div>
-              <div className="mp-stat-label">Full played sample</div>
-              <div className="mp-stat-detail">Completed regular-season/postseason games</div>
-            </div>
+          <div className="mp-score-item">
+            <span className="mp-score-label">Pushes</span>
+            <strong className="mp-score-value">{toNumber(seasonSummary.pushes)}</strong>
+            <span className="mp-score-meta">True ATS pushes</span>
           </div>
         </div>
       </section>
 
       <section className="mp-weekly-section">
         <div className="mp-section-heading">
-          <h2>Week-By-Week Winner</h2>
-          <p className="mp-section-subtitle">Scannable weekly cards show who won each week: HC Lombardo AI, Vegas AI, or Push.</p>
+          <h2>Week-By-Week Trend</h2>
+          <p className="mp-section-subtitle">One-glance trend strip showing who won each week.</p>
         </div>
 
-        {selectedWeekRow ? (
-          <div className="mp-summary-grid compact">
-            <div className={`mp-insight-card ${winnerTone(selectedWeekRow.week_winner)}`}>
-              <h3>Week {selectedWeekRow.week} Winner</h3>
-              <div className="mp-insight-content">
-                <div className="mp-stat-large">{winnerLabel(selectedWeekRow.week_winner)}</div>
-                <div className="mp-stat-label">Weekly AI-vs-Vegas verdict</div>
-                <div className="mp-stat-detail">{selectedWeekRow.scoreline || 'No scoreline yet'}</div>
-              </div>
+        {weeklyCards.length > 0 ? (
+          <>
+            <div className="mp-trend-legend">
+              <span className="mp-trend-legend-item"><span className="mp-trend-dot ai"></span>AI</span>
+              <span className="mp-trend-legend-item"><span className="mp-trend-dot vegas"></span>Vegas</span>
+              <span className="mp-trend-legend-item"><span className="mp-trend-dot push"></span>Push</span>
             </div>
-            <div className="mp-insight-card">
-              <h3>AI ATS Covers</h3>
-              <div className="mp-insight-content">
-                <div className="mp-stat-large">{toNumber(selectedWeekRow.ai_wins)}</div>
-                <div className="mp-stat-label">Against the spread wins</div>
-                <div className="mp-stat-detail">{formatPct(selectedWeekRow.ai_pct)}</div>
-              </div>
+
+            <div className="mp-trend-strip">
+              {weeklyCards.map((row) => {
+                const week = toNumber(row.week);
+                const isActive = toNumber(selectedWeek) === week;
+                return (
+                  <button
+                    key={week}
+                    className={`mp-trend-marker ${winnerTone(row.week_winner)} ${isActive ? 'active' : ''}`}
+                    onClick={() => setSelectedWeek(week)}
+                    type="button"
+                    title={`Week ${week}: ${winnerLabel(row.week_winner)}${row.scoreline ? ` (${row.scoreline})` : ''}`}
+                  >
+                    <span className="mp-trend-week">W{week}</span>
+                  </button>
+                );
+              })}
             </div>
-            <div className="mp-insight-card">
-              <h3>Vegas ATS Covers</h3>
-              <div className="mp-insight-content">
-                <div className="mp-stat-large">{toNumber(selectedWeekRow.vegas_wins)}</div>
-                <div className="mp-stat-label">Against the spread wins</div>
-                <div className="mp-stat-detail">{formatPct(selectedWeekRow.vegas_pct)}</div>
-              </div>
-            </div>
-            <div className="mp-insight-card">
-              <h3>True ATS Pushes</h3>
-              <div className="mp-insight-content">
-                <div className="mp-stat-large">{toNumber(selectedWeekRow.pushes)}</div>
-                <div className="mp-stat-label">Line landed exactly</div>
-                <div className="mp-stat-detail">Push outcomes this week</div>
-              </div>
-            </div>
-          </div>
+
+            {selectedWeekRow && (
+              <p className="mp-trend-selected-copy">
+                Week {toNumber(selectedWeekRow.week)}: <strong>{winnerLabel(selectedWeekRow.week_winner)}</strong>
+                {selectedWeekRow.scoreline ? ` - ${selectedWeekRow.scoreline}` : ''}
+              </p>
+            )}
+          </>
         ) : (
           <p className="mp-empty-copy">No weekly rows available for this season yet.</p>
         )}
-
-        <div className="mp-week-grid">
-          {weeklyCards.map((row) => {
-            const week = toNumber(row.week);
-            const isActive = toNumber(selectedWeek) === week;
-            return (
-              <button
-                key={week}
-                className={`mp-week-card ${winnerTone(row.week_winner)} ${isActive ? 'active' : ''}`}
-                onClick={() => setSelectedWeek(week)}
-                type="button"
-              >
-                <div className="mp-week-card-top">
-                  <span className="mp-week-chip">Week {week}</span>
-                  <span className="mp-week-scoreline">{row.scoreline || 'No scoreline yet'}</span>
-                </div>
-                <div className="mp-week-winner">{winnerLabel(row.week_winner)}</div>
-                <div className="mp-week-meta">
-                  AI {toNumber(row.ai_wins)} ({formatPct(row.ai_pct)}) vs Vegas {toNumber(row.vegas_wins)} ({formatPct(row.vegas_pct)})
-                </div>
-              </button>
-            );
-          })}
-        </div>
       </section>
 
       <section className="mp-games-section">
-        <h3>Season Game-By-Game Results</h3>
-        <p className="mp-games-subtitle">
-          ATS outcomes use independent AI and Vegas cover results. Push means the game landed exactly on the line.
-        </p>
+        <h3>Game-Level Verification</h3>
 
         {gameRows.length > 0 ? (
-          <div className="mp-games-table-wrapper">
-            <table className="mp-games-table">
-              <thead>
-                <tr>
-                  <th>Week</th>
-                  <th>Game</th>
-                  <th>Final Score</th>
-                  <th>Vegas Closing Spread</th>
-                  <th>AI ATS Pick</th>
-                  <th>AI Result</th>
-                  <th>Vegas ATS Pick</th>
-                  <th>Vegas Result</th>
-                  <th>Winner</th>
-                </tr>
-              </thead>
-              <tbody>
-                {gameRows.map((g) => (
-                  <tr key={g.game_id}>
-                    <td>{toNumber(g.week)}</td>
-                    <td>{g.matchup}</td>
-                    <td>{g.final_score}</td>
-                    <td>{formatSpread(g.vegas_closing_spread ?? g.vegas_spread)}</td>
-                    <td>{g.ai_pick_team || 'No edge'}</td>
-                    <td><span className={resultPillClass(g.ai_result)}>{String(g.ai_result || 'push').toUpperCase()}</span></td>
-                    <td>{g.vegas_pick_team || 'No edge'}</td>
-                    <td><span className={resultPillClass(g.vegas_result)}>{String(g.vegas_result || 'push').toUpperCase()}</span></td>
-                    <td><span className={resultPillClass(g.winner === 'hc_lombardo_ai' ? 'win' : (g.winner === 'vegas_ai' ? 'loss' : 'push'))}>{winnerLabel(g.winner)}</span></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <>
+            <button
+              type="button"
+              className="mp-expander-button"
+              onClick={() => setShowAllGames((current) => !current)}
+            >
+              {showAllGames ? 'Hide all games v' : 'See all games >'}
+            </button>
+
+            {showAllGames && (
+              <>
+                <p className="mp-games-subtitle">
+                  ATS outcomes use independent AI and Vegas cover results. Push means the game landed exactly on the line.
+                </p>
+                <div className="mp-games-table-wrapper">
+                  <table className="mp-games-table">
+                    <thead>
+                      <tr>
+                        <th>Week</th>
+                        <th>Game</th>
+                        <th>Final Score</th>
+                        <th>Vegas Closing Spread</th>
+                        <th>AI ATS Pick</th>
+                        <th>AI Result</th>
+                        <th>Vegas ATS Pick</th>
+                        <th>Vegas Result</th>
+                        <th>Winner</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {gameRows.map((g) => (
+                        <tr key={g.game_id}>
+                          <td>{toNumber(g.week)}</td>
+                          <td>{g.matchup}</td>
+                          <td>{g.final_score}</td>
+                          <td>{formatSpread(g.vegas_closing_spread ?? g.vegas_spread)}</td>
+                          <td>{g.ai_pick_team || 'No edge'}</td>
+                          <td><span className={resultPillClass(g.ai_result)}>{String(g.ai_result || 'push').toUpperCase()}</span></td>
+                          <td>{g.vegas_pick_team || 'No edge'}</td>
+                          <td><span className={resultPillClass(g.vegas_result)}>{String(g.vegas_result || 'push').toUpperCase()}</span></td>
+                          <td><span className={resultPillClass(g.winner === 'hc_lombardo_ai' ? 'win' : (g.winner === 'vegas_ai' ? 'loss' : 'push'))}>{winnerLabel(g.winner)}</span></td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </>
+            )}
+          </>
         ) : (
           <p className="mp-empty-copy">No game rows available for this season.</p>
         )}
