@@ -24,6 +24,27 @@ const toNumber = (value) => {
   return Number.isFinite(n) ? n : null;
 };
 
+const formatSpreadValue = (line) => {
+  const numeric = toNumber(line);
+  if (numeric === null) {
+    return 'N/A';
+  }
+
+  if (numeric === 0) {
+    return 'PK';
+  }
+
+  return `${numeric > 0 ? '+' : ''}${numeric.toFixed(1)}`;
+};
+
+const edgeToStars = (edgePoints) => {
+  if (edgePoints >= 8) return 5;
+  if (edgePoints >= 6) return 4;
+  if (edgePoints >= 4) return 3;
+  if (edgePoints >= 2) return 2;
+  return 1;
+};
+
 const formatTeamLine = (team, line) => {
   if (!team || line === null || line === undefined || Number.isNaN(Number(line))) {
     return 'N/A';
@@ -82,6 +103,7 @@ function Homepage() {
   const [trackRecordLoading, setTrackRecordLoading] = useState(true);
   const [trackRecord, setTrackRecord] = useState(null);
   const [showHowItWorks, setShowHowItWorks] = useState(false);
+  const [showGlossary, setShowGlossary] = useState(false);
   const navigate = useNavigate();
   const { theme, changeTheme } = useTheme();
 
@@ -122,7 +144,39 @@ function Homepage() {
     }
   };
 
-  const rankBestBets = (predictions) => {
+  const fetchAgreementMap = async (season, week) => {
+    if (!season || !week) {
+      return new Map();
+    }
+
+    try {
+      const response = await fetch(`${API_URL}/api/predictions/combined/${season}/${week}`);
+      const data = await response.json();
+      if (!data.success || !Array.isArray(data.predictions)) {
+        return new Map();
+      }
+
+      const agreementMap = new Map();
+      data.predictions.forEach((prediction) => {
+        const gameId = prediction.game_id;
+        const homeTeam = prediction.home_team;
+        const awayTeam = prediction.away_team;
+
+        if (gameId) {
+          agreementMap.set(String(gameId), prediction.agreement);
+        }
+        if (homeTeam && awayTeam) {
+          agreementMap.set(`${awayTeam}@${homeTeam}`, prediction.agreement);
+        }
+      });
+
+      return agreementMap;
+    } catch (_err) {
+      return new Map();
+    }
+  };
+
+  const rankBestBets = (predictions, agreementMap = new Map()) => {
     const ranked = (predictions || []).map((prediction) => {
       const aiSpread = toNumber(prediction.ai_spread);
       const vegasSpread = toNumber(prediction.vegas_spread);
@@ -143,12 +197,19 @@ function Homepage() {
       const lineGap = Number((vegasLineForPick - aiLineForPick).toFixed(1));
       const edgePoints = Math.abs(lineGap);
 
-      let edgeStatement = `Biggest disagreement this week: ${pickTeam} by ${edgePoints.toFixed(1)} points.`;
-      if (lineGap > 0) {
-        edgeStatement = `AI sees ${pickTeam} as ${edgePoints.toFixed(1)} points better than the market line.`;
-      } else if (lineGap < 0) {
-        edgeStatement = `The market line is ${edgePoints.toFixed(1)} points stronger on ${pickTeam} than the AI line.`;
-      }
+      const gameId = prediction.game_id ? String(prediction.game_id) : null;
+      const matchupKey = `${awayTeam}@${homeTeam}`;
+      const agreementFlag = gameId && agreementMap.has(gameId)
+        ? agreementMap.get(gameId)
+        : agreementMap.get(matchupKey);
+
+      const stars = edgeToStars(edgePoints);
+      const confidenceStrong = agreementFlag === true;
+      const confidenceLabel = confidenceStrong ? 'Strong play' : 'Lean';
+      const confidenceDetail = confidenceStrong ? 'Both systems agree' : 'Close call';
+      const pickSpreadText = formatSpreadValue(vegasLineForPick);
+      const actionText = `${pickTeam} to cover (${pickSpreadText})`;
+      const whyLine = `Our model's line is ${formatTeamLine(pickTeam, aiLineForPick)} while Vegas is ${formatTeamLine(pickTeam, vegasLineForPick)} — a ${edgePoints.toFixed(1)}-point edge.`;
 
       return {
         ...prediction,
@@ -156,7 +217,12 @@ function Homepage() {
         aiLineForPick,
         vegasLineForPick,
         edgePoints,
-        edgeStatement,
+        stars,
+        confidenceLabel,
+        confidenceDetail,
+        confidenceTone: confidenceStrong ? 'strong' : 'lean',
+        actionText,
+        whyLine,
       };
     })
       .filter(Boolean)
@@ -177,11 +243,12 @@ function Homepage() {
       const season = toNumber(data?.season) || defaultSeason;
       const week = toNumber(data?.week);
       const predictions = Array.isArray(data?.predictions) ? data.predictions : [];
+      const agreementMap = await fetchAgreementMap(season, week);
 
       seasonForTrackRecord = season;
       setBestBetsSeason(season);
       setBestBetsWeek(week);
-      setBestBets(rankBestBets(predictions));
+      setBestBets(rankBestBets(predictions, agreementMap));
     } catch (err) {
       setBestBets([]);
       setBestBetsError('Could not load this week\'s picks right now.');
@@ -289,12 +356,36 @@ function Homepage() {
           <div className="best-bets-grid">
             {bestBets.map((bet, idx) => (
               <article key={bet.game_id || `${bet.home_team}-${bet.away_team}-${idx}`} className="best-bet-card">
-                <div className="best-bet-rank">#{idx + 1} Edge</div>
-                <h3>{bet.away_team} @ {bet.home_team}</h3>
-                <p className="bet-pick">Pick: {bet.pickTeam} to cover</p>
-                <p>AI line: {formatTeamLine(bet.pickTeam, bet.aiLineForPick)}</p>
-                <p>Vegas line: {formatMarketLine(bet.home_team, bet.away_team, bet.vegas_spread)}</p>
-                <p className="bet-edge-note">{bet.edgeStatement}</p>
+                <div className="best-bet-top-row">
+                  <div className="best-bet-stars" aria-label={`${bet.stars} of 5 stars`}>
+                    <span className="stars-filled">{'★'.repeat(bet.stars)}</span>
+                    <span className="stars-empty">{'☆'.repeat(5 - bet.stars)}</span>
+                  </div>
+                  <span className={`bet-confidence-badge ${bet.confidenceTone}`}>{bet.confidenceLabel}</span>
+                </div>
+
+                <div className="best-bet-matchup-row">
+                  <img
+                    src={`/images/teams/${getTeamLogoName(bet.away_team)}.png`}
+                    alt={bet.away_team}
+                    className="best-bet-logo"
+                    onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                  />
+                  <h3>{bet.away_team} @ {bet.home_team}</h3>
+                  <img
+                    src={`/images/teams/${getTeamLogoName(bet.home_team)}.png`}
+                    alt={bet.home_team}
+                    className="best-bet-logo"
+                    onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                  />
+                </div>
+
+                <p className="bet-pick">Pick: {bet.actionText}</p>
+                <p className="bet-edge-note">{bet.whyLine}</p>
+                <p className="bet-confidence-detail">{bet.confidenceDetail}</p>
+                <p className="bet-line-compare">
+                  Our model: {formatTeamLine(bet.pickTeam, bet.aiLineForPick)} • Vegas: {formatMarketLine(bet.home_team, bet.away_team, bet.vegas_spread)}
+                </p>
               </article>
             ))}
           </div>
@@ -390,6 +481,13 @@ function Homepage() {
         >
           {showHowItWorks ? 'Hide how picks are made' : 'How picks are made'}
         </button>
+        <button
+          type="button"
+          className="how-it-works-toggle"
+          onClick={() => setShowGlossary((prev) => !prev)}
+        >
+          {showGlossary ? 'Hide betting glossary' : 'New to betting? How to read this'}
+        </button>
       </div>
 
       {showHowItWorks && (
@@ -401,6 +499,23 @@ function Homepage() {
             <li><strong>Line Check:</strong> We compare our line to Vegas and flag the biggest gaps.</li>
           </ul>
           <p>Use this dashboard for spread edges first, then check line movement before placing a bet.</p>
+        </section>
+      )}
+
+      {showGlossary && (
+        <section className="how-it-works-panel glossary-panel">
+          <h3>Betting Glossary</h3>
+          <ul>
+            <li><strong>Spread:</strong> The points handicap used to balance both teams.</li>
+            <li><strong>The line:</strong> The posted spread from sportsbooks.</li>
+            <li><strong>Cover:</strong> Your team beats the spread, not just the game result.</li>
+            <li><strong>Favorite:</strong> The team expected to win, usually shown with a negative spread.</li>
+            <li><strong>Underdog:</strong> The team getting points, usually shown with a positive spread.</li>
+            <li><strong>Push:</strong> Final margin lands exactly on the spread, so bets are refunded.</li>
+            <li><strong>Over/Under (O/U):</strong> Bet on combined total points over or under the posted total.</li>
+            <li><strong>Moneyline:</strong> A straight pick on who wins the game.</li>
+            <li><strong>Our model + stars:</strong> Stars rate edge size from 1 to 5, with more stars meaning a bigger gap from Vegas.</li>
+          </ul>
         </section>
       )}
 

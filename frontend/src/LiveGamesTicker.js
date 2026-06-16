@@ -18,6 +18,31 @@ const getTeamLogoName = (abbr) => {
   return (teamLogoMap[abbr] || abbr).toLowerCase();
 };
 
+const hasValue = (value) => value !== null && value !== undefined && value !== '';
+
+const formatTeamSpread = (homeTeam, awayTeam, spread) => {
+  const numericSpread = Number(spread);
+  if (!Number.isFinite(numericSpread)) return null;
+
+  const rounded = Math.round(numericSpread * 2) / 2;
+  return rounded < 0 ? `${homeTeam} ${rounded}` : `${awayTeam} +${rounded}`;
+};
+
+const buildBlendedPick = (homeTeam, awayTeam, eloSpread, aiSpread) => {
+  const elo = Number(eloSpread);
+  const ai = Number(aiSpread);
+  if (!Number.isFinite(elo) || !Number.isFinite(ai)) {
+    return null;
+  }
+
+  const blended = Math.round(((elo + ai) / 2) * 2) / 2;
+  if (blended === 0) {
+    return "Pick'em";
+  }
+
+  return blended < 0 ? `${homeTeam} ${blended}` : `${awayTeam} +${blended}`;
+};
+
 function LiveGamesTicker() {
   const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -221,9 +246,9 @@ function LiveGamesTicker() {
       <div className="ticker-header-bar">
         <div className="ticker-label">
           <span className="live-dot"></span>
-          LIVE SCORES • ELO • AI (XGBoost) • VEGAS LINES
+          LIVE SCORES • BETTING EDGE • VEGAS LINES
         </div>
-        <div className="ticker-info" title="Two independent prediction systems: ELO ratings and XGBoost machine learning, compared against Vegas spreads">
+        <div className="ticker-info" title="Top pick combines our power rating and AI model, then compares it with the Vegas line.">
           ℹ️
         </div>
         <div className="ticker-controls">
@@ -249,7 +274,13 @@ function LiveGamesTicker() {
         style={{ cursor: useScroller ? (isDragging ? 'grabbing' : 'grab') : 'default' }}
       >
         <div className={`ticker-content ${!useScroller ? 'ticker-static' : ''}`}>
-          {displayGames.map((game, index) => (
+          {displayGames.map((game, index) => {
+            const blendedPick = buildBlendedPick(game.home_team, game.away_team, game.elo_spread, game.ai_spread);
+            const agreementSignal = game.elo_prediction && game.ai_prediction
+              ? (game.elo_prediction === game.ai_prediction ? 'Strong play' : 'Lean')
+              : null;
+
+            return (
             <div key={index} className={`game-ticker-card ${game.status}`}>
               {/* Status indicator */}
               {game.status === 'in_progress' && (
@@ -313,17 +344,25 @@ function LiveGamesTicker() {
               )}
 
               {/* Predictions (if available) */}
-              {(game.elo_spread || game.ai_spread || game.vegas_spread) && (
+              {(hasValue(game.elo_spread) || hasValue(game.ai_spread) || hasValue(game.vegas_spread)) && (
                 <div className="ticker-predictions">
-                  {game.elo_spread && (
+                  {blendedPick && (
+                    <div className="pred-line blended-row">
+                      <div className="pred-left">
+                        <span className="pred-icon">⭐</span>
+                        <span className="pred-text" title="Main spread pick built from both internal systems">
+                          Top Pick: {blendedPick}
+                        </span>
+                      </div>
+                      {agreementSignal && <span className="blended-agreement">{agreementSignal}</span>}
+                    </div>
+                  )}
+                  {hasValue(game.elo_spread) && (
                     <div className="pred-line">
                       <div className="pred-left">
                         <span className="pred-icon">📊</span>
-                        <span className="pred-text" title="ELO Spread Prediction - For betting against the spread">
-                          ELO Spread: {(() => {
-                            const rounded = Math.round(game.elo_spread * 2) / 2;
-                            return rounded < 0 ? `${game.home_team} ${rounded}` : `${game.away_team} +${rounded}`;
-                          })()}
+                        <span className="pred-text" title="Power rating spread estimate">
+                          Power Rating Spread: {formatTeamSpread(game.home_team, game.away_team, game.elo_spread)}
                         </span>
                       </div>
                       {game.status === 'final' && (
@@ -340,8 +379,8 @@ function LiveGamesTicker() {
                     <div className="pred-line pred-winner">
                       <div className="pred-left">
                         <span className="pred-icon">🏆</span>
-                        <span className="pred-text" title="ELO Moneyline Prediction - For moneyline betting">
-                          ELO Moneyline: {game.elo_prediction}
+                        <span className="pred-text" title="Power rating winner pick">
+                          Power Rating Moneyline: {game.elo_prediction}
                         </span>
                       </div>
                       {game.status === 'final' && game.elo_correct !== null && (
@@ -351,15 +390,12 @@ function LiveGamesTicker() {
                       )}
                     </div>
                   )}
-                  {game.ai_spread && (
+                  {hasValue(game.ai_spread) && (
                     <div className="pred-line">
                       <div className="pred-left">
                         <span className="pred-icon">🤖</span>
-                        <span className="pred-text" title="XGBoost Spread Prediction - For betting against the spread">
-                          AI Spread: {(() => {
-                            const rounded = Math.round(game.ai_spread * 2) / 2;
-                            return rounded < 0 ? `${game.home_team} ${rounded}` : `${game.away_team} +${rounded}`;
-                          })()}
+                        <span className="pred-text" title="AI model spread estimate">
+                          AI Model Spread: {formatTeamSpread(game.home_team, game.away_team, game.ai_spread)}
                         </span>
                       </div>
                       {game.status === 'final' && (
@@ -376,8 +412,8 @@ function LiveGamesTicker() {
                     <div className="pred-line pred-winner">
                       <div className="pred-left">
                         <span className="pred-icon">🏆</span>
-                        <span className="pred-text" title="XGBoost Moneyline Prediction - For moneyline betting">
-                          AI Moneyline: {game.ai_prediction}
+                        <span className="pred-text" title="AI model winner pick">
+                          AI Model Moneyline: {game.ai_prediction}
                         </span>
                       </div>
                       {game.status === 'final' && game.ai_correct !== null && (
@@ -387,15 +423,12 @@ function LiveGamesTicker() {
                       )}
                     </div>
                   )}
-                  {game.vegas_spread && (
+                  {hasValue(game.vegas_spread) && (
                     <div className="pred-line">
                       <div className="pred-left">
                         <span className="pred-icon">🎰</span>
                         <span className="pred-text" title="Vegas Spread - Official betting line">
-                          Vegas Spread: {(() => {
-                            const rounded = Math.round(game.vegas_spread * 2) / 2;
-                            return rounded < 0 ? `${game.home_team} ${rounded}` : `${game.away_team} +${rounded}`;
-                          })()}
+                          Vegas Spread: {formatTeamSpread(game.home_team, game.away_team, game.vegas_spread)}
                         </span>
                       </div>
                       {game.status === 'final' && (
@@ -421,7 +454,8 @@ function LiveGamesTicker() {
                 </div>
               )}
             </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>
