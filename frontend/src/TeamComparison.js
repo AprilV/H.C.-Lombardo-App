@@ -141,6 +141,7 @@ function TeamComparison({ initialViewMode = 'comparison' }) {
       setTeamAResolvedSeason(null);
       setTeamASos(null);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedTeamA, seasonA, viewMode]);
 
   useEffect(() => {
@@ -156,6 +157,7 @@ function TeamComparison({ initialViewMode = 'comparison' }) {
       setTeamBResolvedSeason(null);
       setTeamBSos(null);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedTeamB, seasonB, viewMode]);
 
   useEffect(() => {
@@ -207,54 +209,74 @@ function TeamComparison({ initialViewMode = 'comparison' }) {
       }
     };
 
+    const tryLoadSeason = async (seasonToLoad) => {
+      const response = await fetch(`${API_URL}/api/hcl/teams/${abbr}?season=${seasonToLoad}`);
+      let data = {};
+
+      try {
+        data = await response.json();
+      } catch {
+        data = {};
+      }
+
+      if (!response.ok || !data.success || !data.team) {
+        return null;
+      }
+
+      return data.team;
+    };
+
+    const getGamesPlayedForSeason = async (seasonToCheck) => {
+      const listResponse = await fetch(`${API_URL}/api/hcl/teams?season=${seasonToCheck}`);
+      let listData = {};
+
+      try {
+        listData = await listResponse.json();
+      } catch {
+        listData = {};
+      }
+
+      if (!listResponse.ok || !listData.success || !Array.isArray(listData.teams)) {
+        return null;
+      }
+
+      const matchedTeam = listData.teams.find((candidate) => candidate.team === abbr);
+      if (!matchedTeam) {
+        return null;
+      }
+
+      return Number(matchedTeam.games_played || 0);
+    };
+
     try {
       setLoading(true);
 
       const requestedSeason = Number(season);
-      let resolvedSeason = null;
+      const gamesPlayed = await getGamesPlayedForSeason(requestedSeason);
+      const shouldSkipRequestedSeason = requestedSeason >= currentSeason && gamesPlayed === 0;
 
-      for (let checkSeason = requestedSeason; checkSeason >= MIN_NFL_SEASON; checkSeason -= 1) {
-        const summaryResponse = await fetch(`${API_URL}/api/hcl/teams?season=${checkSeason}`);
-        let summaryData = {};
-
-        try {
-          summaryData = await summaryResponse.json();
-        } catch {
-          summaryData = {};
-        }
-
-        if (!summaryResponse.ok || !summaryData.success || !Array.isArray(summaryData.teams)) {
-          continue;
-        }
-
-        const teamSummary = summaryData.teams.find((candidate) => (
-          candidate.team === abbr || candidate.abbreviation === abbr || candidate.abbr === abbr
-        ));
-
-        if (!teamSummary) {
-          continue;
-        }
-
-        if (Number(teamSummary.games_played || 0) > 0) {
-          resolvedSeason = checkSeason;
-          break;
+      // Normal path: completed seasons resolve immediately via direct detail fetch.
+      if (!shouldSkipRequestedSeason) {
+        const requestedSeasonTeam = await tryLoadSeason(requestedSeason);
+        if (requestedSeasonTeam) {
+          setTeamDataState(requestedSeasonTeam, requestedSeason);
+          setError(null);
+          return;
         }
       }
 
-      if (resolvedSeason === null) {
-        setTeamDataState(null, null);
-        setError(null);
-        return;
+      // Preseason fallback path (for example, 2026 -> 2025).
+      for (let fallbackSeason = requestedSeason - 1; fallbackSeason >= MIN_NFL_SEASON; fallbackSeason -= 1) {
+        const fallbackTeam = await tryLoadSeason(fallbackSeason);
+        if (fallbackTeam) {
+          setTeamDataState(fallbackTeam, fallbackSeason);
+          setError(null);
+          return;
+        }
       }
 
-      const response = await fetch(`${API_URL}/api/hcl/teams/${abbr}?season=${resolvedSeason}`);
-      const data = await response.json();
-      if (data.success) {
-        setTeamDataState(data.team, resolvedSeason);
-        setError(null);
-      } else {
-        setTeamDataState(null, null);
-      }
+      setTeamDataState(null, null);
+      setError(null);
     } catch (err) {
       setTeamDataState(null, null);
       setError(null);
