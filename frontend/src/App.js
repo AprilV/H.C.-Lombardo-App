@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider } from './contexts/ThemeContext';
 import SideMenu from './SideMenu';
 import Homepage from './Homepage';
-import TeamStats from './TeamStats';
 import TeamComparison from './TeamComparison';
 import TeamDetail from './TeamDetail';
 import Analytics from './Analytics';
@@ -53,7 +52,6 @@ function App() {
 
           <Routes>
             <Route path="/" element={<Homepage />} />
-            <Route path="/team-stats" element={<TeamStats />} />
             <Route path="/team-comparison" element={<TeamComparison />} />
             <Route path="/team/:teamAbbr" element={<TeamDetail />} />
             <Route path="/matchup-analyzer" element={<TeamComparison initialViewMode="edge" />} />

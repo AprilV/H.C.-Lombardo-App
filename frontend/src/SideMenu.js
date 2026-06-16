@@ -52,11 +52,6 @@ function SideMenu() {
 
           <div className="menu-divider"></div>
 
-          <Link to="/team-stats" className={`menu-item ${isActive('/team-stats')}`} onClick={closeMenu}>
-            <span className="menu-icon">📊</span>
-            <span className="menu-text">Team Stats</span>
-          </Link>
-
           <Link to="/team-comparison" className={`menu-item ${isActive('/team-comparison')}`} onClick={closeMenu}>
             <span className="menu-icon">⚖️</span>
             <span className="menu-text">Compare Teams</span>

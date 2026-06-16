@@ -69,6 +69,7 @@ function TeamDetail() {
   const { teamAbbr } = useParams();
   const navigate = useNavigate();
   const [season, setSeason] = useState(getDefaultSeason());
+  const [activeTab, setActiveTab] = useState('overview');
   const [teamData, setTeamData] = useState(null);
   const [teamName, setTeamName] = useState('');
   const [games, setGames] = useState([]);
@@ -78,6 +79,7 @@ function TeamDetail() {
   useEffect(() => {
     const currentSeason = getDefaultSeason();
     setSeason(currentSeason);
+    setActiveTab('overview');
     loadTeamData(currentSeason);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [teamAbbr]);
@@ -334,75 +336,102 @@ function TeamDetail() {
         </div>
       </div>
 
-      <div className="stats-overview">
-        <h2>Season Overview</h2>
-        <div className="stats-grid">
-          {stats.map((stat, index) => (
-            <div key={index} className="stat-box">
-              <div className="stat-label">{stat.label}</div>
-              <div className="stat-value">{stat.value}</div>
-            </div>
-          ))}
-        </div>
+      <div className="team-detail-tabs" role="tablist" aria-label="Team detail sections">
+        <button
+          type="button"
+          role="tab"
+          aria-selected={activeTab === 'overview'}
+          className={`team-detail-tab ${activeTab === 'overview' ? 'active' : ''}`}
+          onClick={() => setActiveTab('overview')}
+        >
+          Overview
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={activeTab === 'schedule'}
+          className={`team-detail-tab ${activeTab === 'schedule' ? 'active' : ''}`}
+          onClick={() => setActiveTab('schedule')}
+        >
+          Schedule
+        </button>
       </div>
 
-      {chartData && (
-        <div className="chart-container">
-          <h2>Performance Trends</h2>
-          <Line data={chartData} options={chartOptions} />
-        </div>
+      {activeTab === 'overview' && (
+        <>
+          <div className="stats-overview">
+            <h2>Season Overview</h2>
+            <div className="stats-grid">
+              {stats.map((stat, index) => (
+                <div key={index} className="stat-box">
+                  <div className="stat-label">{stat.label}</div>
+                  <div className="stat-value">{stat.value}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {chartData && (
+            <div className="chart-container">
+              <h2>Performance Trends</h2>
+              <Line data={chartData} options={chartOptions} />
+            </div>
+          )}
+        </>
       )}
 
-      <div className="team-schedule-section">
-        <h2>Season Schedule</h2>
-        {sortedGames.length > 0 ? (
-          <div className="team-schedule-list">
-            {sortedGames.map((game, index) => {
-              const location = game.is_home ? 'vs' : '@';
-              const cardClass = getScheduleClass(game);
+      {activeTab === 'schedule' && (
+        <div className="team-schedule-section">
+          <h2>Season Schedule</h2>
+          {sortedGames.length > 0 ? (
+            <div className="team-schedule-list">
+              {sortedGames.map((game, index) => {
+                const location = game.is_home ? 'vs' : '@';
+                const cardClass = getScheduleClass(game);
 
-              return (
-                <div key={`${game.game_id || 'game'}-${index}`} className={`team-schedule-card ${cardClass}`}>
-                  <div className="team-schedule-header-row">
-                    <div className="game-week-date">
-                      <span className="game-week">Week {game.week ?? '-'}</span>
-                      <span className="game-date">{formatGameDate(game.game_date)}</span>
+                return (
+                  <div key={`${game.game_id || 'game'}-${index}`} className={`team-schedule-card ${cardClass}`}>
+                    <div className="team-schedule-header-row">
+                      <div className="game-week-date">
+                        <span className="game-week">Week {game.week ?? '-'}</span>
+                        <span className="game-date">{formatGameDate(game.game_date)}</span>
+                      </div>
+                      <div className="game-matchup-info">
+                        <span className="opponent-direction">{location}</span>
+                        <img
+                          src={getTeamLogo(game.opponent)}
+                          alt={game.opponent}
+                          className="opponent-logo-sm"
+                        />
+                        <span className="opponent-name">{game.opponent}</span>
+                        {game.is_divisional_game && <span className="division-badge">DIV</span>}
+                      </div>
+                      <div className="game-result-badge">{getScheduleResult(game)}</div>
                     </div>
-                    <div className="game-matchup-info">
-                      <span className="opponent-direction">{location}</span>
-                      <img
-                        src={getTeamLogo(game.opponent)}
-                        alt={game.opponent}
-                        className="opponent-logo-sm"
-                      />
-                      <span className="opponent-name">{game.opponent}</span>
-                      {game.is_divisional_game && <span className="division-badge">DIV</span>}
-                    </div>
-                    <div className="game-result-badge">{getScheduleResult(game)}</div>
-                  </div>
 
-                  <div className="team-schedule-stats-row">
-                    <div className="team-schedule-stat">
-                      <label>Total Yards</label>
-                      <span>{game.total_yards != null ? game.total_yards : 'TBD'}</span>
-                    </div>
-                    <div className="team-schedule-stat">
-                      <label>Pass Yards</label>
-                      <span>{game.passing_yards != null ? game.passing_yards : 'TBD'}</span>
-                    </div>
-                    <div className="team-schedule-stat">
-                      <label>Rush Yards</label>
-                      <span>{game.rushing_yards != null ? game.rushing_yards : 'TBD'}</span>
+                    <div className="team-schedule-stats-row">
+                      <div className="team-schedule-stat">
+                        <label>Total Yards</label>
+                        <span>{game.total_yards != null ? game.total_yards : 'TBD'}</span>
+                      </div>
+                      <div className="team-schedule-stat">
+                        <label>Pass Yards</label>
+                        <span>{game.passing_yards != null ? game.passing_yards : 'TBD'}</span>
+                      </div>
+                      <div className="team-schedule-stat">
+                        <label>Rush Yards</label>
+                        <span>{game.rushing_yards != null ? game.rushing_yards : 'TBD'}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
-        ) : (
-          <div className="empty-state-small">No schedule available for {season}</div>
-        )}
-      </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="empty-state-small">No schedule available for {season}</div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
