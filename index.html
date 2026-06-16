@@ -3949,6 +3949,7 @@
                 <h3>Infrastructure</h3>
                 <ul>
                     <li>Frontend: Netlify (auto-deploy from GitHub)</li>
+                    <li>Custom domain: https://hclombardo.com/</li>
                     <li>Backend: AWS EC2 (systemd service)</li>
                     <li>Database: PostgreSQL 18 on EC2</li>
                     <li>CI/CD: GitHub → Netlify + EC2</li>
@@ -3960,7 +3961,7 @@
                 <h3>Disclaimer</h3>
                 <p>This application is for educational and research purposes only. NFL predictions, betting analysis, and statistical models are academic exercises and should not be used for financial decisions.</p>
                 <br>
-                <p>Data sourced from NFLverse (open source) and ESPN public API.</p>
+                    <li>https://hclombardo.com/ (prod via Netlify) / Port 3000 (dev)</li>
             </div>
         </div>
 
@@ -6068,9 +6069,9 @@ function createArchitecture() {
         pulsePhase: 0, material: frontendMat,
         name: 'React Frontend',
         tier: 'Tier 1: Presentation Layer',
-        port: '3000 (dev) / AWS Amplify (prod)',
+        port: '3000 (dev) / Netlify + hclombardo.com (prod)',
         technology: 'React 18 · Functional Components · Chart.js',
-        features: ['15+ pages and components', 'Analytics, ML Predictions, Live Scores', 'Team Comparison, Matchup Analyzer', 'Auto-deploys from GitHub on push', 'Responsive design'],
+        features: ['15+ pages and components', 'Analytics, ML Predictions, Live Scores', 'Team Comparison, Matchup Analyzer', 'Production domain: https://hclombardo.com/', 'Auto-deploys from GitHub on push', 'Responsive design'],
         communication: 'HTTP fetch() to Flask API (Port 5000)',
         files: 'frontend/src/App.js, Analytics.js, MLPredictionsRedesign.js...'
     };
