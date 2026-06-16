@@ -463,6 +463,21 @@
   gap: 0.55rem;
 }
 
+.ai-performance-summary {
+  margin-bottom: 0.64rem;
+  padding: 0.62rem 0.7rem;
+  background: color-mix(in srgb, var(--admin-hover-accent) 9%, var(--bg-card));
+  border: 1px solid var(--border-color);
+  border-radius: 9px;
+}
+
+.ai-performance-summary p {
+  margin: 0.24rem 0;
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+  line-height: 1.45;
+}
+
 .update-btn {
   padding: 0.42rem 0.8rem;
   background: color-mix(in srgb, var(--admin-hover-accent) 16%, var(--bg-card));

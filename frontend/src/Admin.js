@@ -98,18 +98,18 @@ function Admin() {
       if (data.success) {
         setUpdateMessage({
           type: 'success',
-          text: `✅ Updated ${data.updated} predictions with actual results!`
+          text: '✅ Performance view refreshed successfully.'
         });
       } else {
         setUpdateMessage({
           type: 'error',
-          text: `❌ Error: ${data.error}`
+          text: '❌ Refresh was not completed. Please try again.'
         });
       }
     } catch (err) {
       setUpdateMessage({
         type: 'error',
-        text: `❌ Failed to update predictions: ${err.message}`
+        text: '❌ Refresh was not completed. Please try again.'
       });
     } finally {
       setIsUpdating(false);
@@ -120,7 +120,7 @@ function Admin() {
     <div className="admin-container">
       <div className="admin-header">
         <h1>🔧 Admin Panel</h1>
-        <p className="admin-subtitle">System Administration & Internal Tools</p>
+        <p className="admin-subtitle">Live system confidence, prediction performance, and data coverage</p>
       </div>
 
       <div className="admin-tabs">
@@ -227,14 +227,20 @@ function Admin() {
         {activeTab === 'performance' && (
           <div className="admin-section">
             <div className="performance-header">
-              <h2>🏈 AI Model Performance Tracking</h2>
+              <h2>🏈 Prediction Performance</h2>
               <button
                 className={`update-btn ${isUpdating ? 'updating' : ''}`}
                 onClick={handleUpdatePredictions}
                 disabled={isUpdating}
               >
-                {isUpdating ? '⏳ Updating...' : '🔄 Update Results'}
+                {isUpdating ? '⏳ Refreshing...' : '🔄 Refresh'}
               </button>
+            </div>
+
+            <div className="ai-performance-summary">
+              <p>Built on modern, high-end prediction intelligence focused on game outcomes and spread confidence.</p>
+              <p>Continuously informed by the latest results so projections stay relevant throughout the season.</p>
+              <p>Validated against historical performance and Vegas market outcomes for trustworthy guidance.</p>
             </div>
 
             {updateMessage && (
@@ -249,10 +255,10 @@ function Admin() {
 
         {activeTab === 'neural-net' && (
           <div className="admin-section">
-            <h2>🧠 Prediction Models - 3D Neural Networks</h2>
+            <h2>🧠 AI Prediction Engine</h2>
             <div className="admin-iframe-intro">
-              <p>Interactive 3D visualization of our AI prediction models</p>
-              <p className="admin-iframe-subtext">🟢 Win/Loss Classifier • 🔴 Score Regressor</p>
+              <p>Interactive 3D experience of our prediction engine.</p>
+              <p className="admin-iframe-subtext">Explore how our intelligence powers game forecasts.</p>
             </div>
             <div className="visualization-container">
               <iframe
