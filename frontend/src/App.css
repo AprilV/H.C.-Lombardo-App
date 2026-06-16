@@ -903,6 +903,19 @@ body,
   position: relative;
 }
 
+.header-title-link {
+  color: inherit;
+  text-decoration: none;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.header-title-link:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 4px;
+  border-radius: 6px;
+}
+
 .fire-animation {
   display: none;
   position: absolute;

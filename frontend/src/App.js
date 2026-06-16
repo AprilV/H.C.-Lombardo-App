@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { ThemeProvider } from './contexts/ThemeContext';
 import SideMenu from './SideMenu';
 import Homepage from './Homepage';
@@ -40,10 +40,12 @@ function App() {
             alt="NFL Logo"
             className="nfl-logo"
           />
-          <div className="fire-title">
-            <h1>H.C. LOMBARDO</h1>
-            <p className="fire-quote">" FOTTUTAMENTE INCREDIBILE!"</p>
-          </div>
+          <Link to="/" className="header-title-link" aria-label="Go to dashboard">
+            <div className="fire-title">
+              <h1>H.C. LOMBARDO</h1>
+              <p className="fire-quote">" FOTTUTAMENTE INCREDIBILE!"</p>
+            </div>
+          </Link>
           <p className="subtitle">NFL Analytics</p>
         </header>
 
