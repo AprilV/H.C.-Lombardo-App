@@ -1,10 +1,23 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import './SideMenu.css';
 
 function SideMenu() {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+
+  const navItems = [
+    { path: '/', icon: '🏈', label: 'Dashboard' },
+    { path: '/team-comparison', icon: '⚖️', label: 'Compare Teams' },
+    { path: '/analytics', icon: '📈', label: 'Advanced Analytics' },
+    { path: '/historical-data', icon: '📚', label: 'Historical Data' },
+    { path: '/ml-predictions', icon: '🧠', label: 'AI Predictions' },
+    { path: '/admin', icon: 'ℹ️', label: 'About' }
+  ];
+
+  useEffect(() => {
+    setIsOpen(false);
+  }, [location.pathname]);
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -15,81 +28,56 @@ function SideMenu() {
   };
 
   const isActive = (path) => {
-    return location.pathname === path ? 'active' : '';
+    return location.pathname === path;
   };
 
   return (
-    <>
-      {/* Hamburger Button */}
-      <button className="hamburger-btn" onClick={toggleMenu} aria-label="Menu">
+    <nav className="site-nav" aria-label="Primary">
+      <div className="top-nav" role="menubar">
+        {navItems.map((item) => (
+          <Link
+            key={item.path}
+            to={item.path}
+            className={`top-nav-item ${isActive(item.path) ? 'active' : ''}`}
+            role="menuitem"
+          >
+            <span className="menu-icon" aria-hidden="true">{item.icon}</span>
+            <span className="menu-text">{item.label}</span>
+          </Link>
+        ))}
+      </div>
+
+      <button className="hamburger-btn" onClick={toggleMenu} aria-label="Open navigation menu" aria-expanded={isOpen}>
         <span className="hamburger-line"></span>
         <span className="hamburger-line"></span>
         <span className="hamburger-line"></span>
       </button>
 
-      {/* Overlay */}
       {isOpen && <div className="menu-overlay" onClick={closeMenu}></div>}
 
-      {/* Side Menu */}
-      <nav className={`side-menu ${isOpen ? 'open' : ''}`}>
+      <div className={`mobile-drawer ${isOpen ? 'open' : ''}`}>
         <div className="menu-header">
-          <img 
-            src="https://a.espncdn.com/i/teamlogos/leagues/500/nfl.png"
-            alt="NFL"
-            className="menu-logo"
-          />
-          <h2>H.C. Lombardo</h2>
-          <button className="close-btn" onClick={closeMenu} aria-label="Close Menu">
-            ✕
+          <h2>Navigate</h2>
+          <button className="close-btn" onClick={closeMenu} aria-label="Close navigation menu">
+            x
           </button>
         </div>
 
         <div className="menu-content">
-          <Link to="/" className={`menu-item ${isActive('/')}`} onClick={closeMenu}>
-            <span className="menu-icon">🏈</span>
-            <span className="menu-text">Dashboard</span>
-          </Link>
-
-          <div className="menu-divider"></div>
-
-          <Link to="/team-comparison" className={`menu-item ${isActive('/team-comparison')}`} onClick={closeMenu}>
-            <span className="menu-icon">⚖️</span>
-            <span className="menu-text">Compare Teams</span>
-          </Link>
-
-          <div className="menu-divider"></div>
-
-          <Link to="/analytics" className={`menu-item ${isActive('/analytics')}`} onClick={closeMenu}>
-            <span className="menu-icon">📈</span>
-            <span className="menu-text">Advanced Analytics</span>
-          </Link>
-
-          <Link to="/historical-data" className={`menu-item ${isActive('/historical-data')}`} onClick={closeMenu}>
-            <span className="menu-icon">📚</span>
-            <span className="menu-text">Historical Data</span>
-          </Link>
-
-          <div className="menu-divider"></div>
-
-          <Link to="/ml-predictions" className={`menu-item ${isActive('/ml-predictions')}`} onClick={closeMenu}>
-            <span className="menu-icon">🧠</span>
-            <span className="menu-text">AI Predictions</span>
-          </Link>
-
-          <div className="menu-divider"></div>
-
-          <Link to="/admin" className={`menu-item ${isActive('/admin')}`} onClick={closeMenu}>
-            <span className="menu-icon">ℹ️</span>
-            <span className="menu-text">About</span>
-          </Link>
+          {navItems.map((item) => (
+            <Link
+              key={item.path}
+              to={item.path}
+              className={`menu-item ${isActive(item.path) ? 'active' : ''}`}
+              onClick={closeMenu}
+            >
+              <span className="menu-icon" aria-hidden="true">{item.icon}</span>
+              <span className="menu-text">{item.label}</span>
+            </Link>
+          ))}
         </div>
-
-        <div className="menu-footer">
-          <p>© 2025 H.C. Lombardo</p>
-          <p className="version">v1.0.0</p>
-        </div>
-      </nav>
-    </>
+      </div>
+    </nav>
   );
 }
 
