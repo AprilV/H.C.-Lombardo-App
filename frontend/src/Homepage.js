@@ -407,90 +407,111 @@ function Homepage() {
           <p>Quick reference for ticker rows and Best Bets terms.</p>
         </div>
 
-        <div className="dashboard-icon-key" aria-label="Card icon legend">
-          <div className="dashboard-legend-item dashboard-legend-item-icon">
+        <div className="dashboard-legend-grid">
+          <div className="dashboard-legend-item">
             <span className="symbol-chip legend-icon-chip">📊</span>
-            <div>
+            <div className="dashboard-legend-copy">
               <h3>Power Rating Spread</h3>
               <p>Our team-strength system&apos;s predicted point margin.</p>
             </div>
           </div>
-          <div className="dashboard-legend-item dashboard-legend-item-icon">
+          <div className="dashboard-legend-item">
             <span className="symbol-chip legend-icon-chip">🏆</span>
-            <div>
+            <div className="dashboard-legend-copy">
               <h3>Moneyline Pick</h3>
               <p>Straight-up winner pick used by both systems.</p>
             </div>
           </div>
-          <div className="dashboard-legend-item dashboard-legend-item-icon">
+          <div className="dashboard-legend-item">
             <span className="symbol-chip legend-icon-chip">🤖</span>
-            <div>
+            <div className="dashboard-legend-copy">
               <h3>AI Model Spread</h3>
               <p>Our AI&apos;s predicted point margin.</p>
             </div>
           </div>
-          <div className="dashboard-legend-item dashboard-legend-item-icon">
+          <div className="dashboard-legend-item">
             <span className="symbol-chip legend-icon-chip">🎰</span>
-            <div>
+            <div className="dashboard-legend-copy">
               <h3>Vegas Spread</h3>
               <p>The official sportsbook betting line.</p>
             </div>
           </div>
-          <div className="dashboard-legend-item dashboard-legend-item-icon">
+          <div className="dashboard-legend-item">
             <span className="symbol-chip success">✅ / ✓</span>
-            <div>
+            <div className="dashboard-legend-copy">
               <h3>Covered</h3>
               <p>The pick beat the spread.</p>
             </div>
           </div>
-          <div className="dashboard-legend-item dashboard-legend-item-icon">
+          <div className="dashboard-legend-item">
             <span className="symbol-chip danger">❌ / ✗</span>
-            <div>
+            <div className="dashboard-legend-copy">
               <h3>Missed</h3>
               <p>The pick did not cover the spread.</p>
             </div>
           </div>
-          <div className="dashboard-legend-item dashboard-legend-item-icon">
+          <div className="dashboard-legend-item">
             <span className="symbol-chip pending">⏳</span>
-            <div>
+            <div className="dashboard-legend-copy">
               <h3>Result Pending</h3>
               <p>Game not played yet, so no grade yet.</p>
             </div>
           </div>
-        </div>
-
-        <div className="dashboard-legend-grid">
           <div className="dashboard-legend-item">
-            <h3>Top Pick</h3>
-            <p>Overall side recommendation from both systems.</p>
+            <span className="legend-icon-spacer" aria-hidden="true"></span>
+            <div className="dashboard-legend-copy">
+              <h3>Top Pick</h3>
+              <p>Overall side recommendation from both systems.</p>
+            </div>
           </div>
           <div className="dashboard-legend-item">
-            <h3>Spread</h3>
-            <p>Points handicap used to balance both teams.</p>
+            <span className="legend-icon-spacer" aria-hidden="true"></span>
+            <div className="dashboard-legend-copy">
+              <h3>Spread</h3>
+              <p>Points handicap used to balance both teams.</p>
+            </div>
           </div>
           <div className="dashboard-legend-item">
-            <h3>Moneyline</h3>
-            <p>Straight pick on who wins the game.</p>
+            <span className="legend-icon-spacer" aria-hidden="true"></span>
+            <div className="dashboard-legend-copy">
+              <h3>Moneyline</h3>
+              <p>Straight pick on who wins the game.</p>
+            </div>
           </div>
           <div className="dashboard-legend-item">
-            <h3>Cover</h3>
-            <p>Your side beats the posted spread.</p>
+            <span className="legend-icon-spacer" aria-hidden="true"></span>
+            <div className="dashboard-legend-copy">
+              <h3>Cover</h3>
+              <p>Your side beats the posted spread.</p>
+            </div>
           </div>
           <div className="dashboard-legend-item">
-            <h3>Push</h3>
-            <p>Final margin lands exactly on the line.</p>
+            <span className="legend-icon-spacer" aria-hidden="true"></span>
+            <div className="dashboard-legend-copy">
+              <h3>Push</h3>
+              <p>Final margin lands exactly on the line.</p>
+            </div>
           </div>
           <div className="dashboard-legend-item">
-            <h3>Favorite / Underdog</h3>
-            <p>Favorite is negative, underdog is positive.</p>
+            <span className="legend-icon-spacer" aria-hidden="true"></span>
+            <div className="dashboard-legend-copy">
+              <h3>Favorite / Underdog</h3>
+              <p>Favorite is negative, underdog is positive.</p>
+            </div>
           </div>
           <div className="dashboard-legend-item">
-            <h3>Edge</h3>
-            <p>Gap between model spread and Vegas spread.</p>
+            <span className="legend-icon-spacer" aria-hidden="true"></span>
+            <div className="dashboard-legend-copy">
+              <h3>Edge</h3>
+              <p>Gap between model spread and Vegas spread.</p>
+            </div>
           </div>
           <div className="dashboard-legend-item">
-            <h3>O/U</h3>
-            <p>Total points line for over or under bets.</p>
+            <span className="legend-icon-spacer" aria-hidden="true"></span>
+            <div className="dashboard-legend-copy">
+              <h3>O/U</h3>
+              <p>Total points line for over or under bets.</p>
+            </div>
           </div>
         </div>
       </section>

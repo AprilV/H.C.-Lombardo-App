@@ -1,6 +1,7 @@
 .live-games-ticker {
-  background: transparent;
+  background: color-mix(in srgb, var(--bg-card) 88%, transparent);
   border-radius: 12px;
+  border: 1px solid var(--border-color);
   padding: 8px;
   margin-bottom: 10px;
   overflow: hidden;
@@ -33,6 +34,10 @@
   align-items: center;
   margin-bottom: 6px;
   gap: 6px;
+  background: color-mix(in srgb, var(--bg-card) 94%, transparent);
+  border: 1px solid var(--border-color);
+  border-radius: 7px;
+  padding: 4px 6px;
 }
 
 .ticker-info {
@@ -66,7 +71,7 @@
 }
 
 .scroll-btn {
-  background: color-mix(in srgb, var(--bg-secondary) 75%, transparent);
+  background: color-mix(in srgb, var(--bg-card) 92%, transparent);
   border: 1px solid var(--border-color);
   color: var(--text-primary);
   padding: 4px 10px;
@@ -78,7 +83,7 @@
 }
 
 .scroll-btn:hover {
-  background: color-mix(in srgb, var(--bg-secondary) 90%, transparent);
+  background: color-mix(in srgb, var(--bg-card) 98%, transparent);
   border-color: var(--accent-primary);
   transform: scale(1.05);
 }
@@ -100,6 +105,8 @@
   overflow-x: auto;
   overflow-y: hidden;
   position: relative;
+  background: color-mix(in srgb, var(--bg-card) 92%, transparent);
+  border-radius: 7px;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none; /* Hide scrollbar for Firefox */
   -ms-overflow-style: none; /* Hide scrollbar for IE and Edge */
@@ -173,7 +180,7 @@
 }
 
 .status-final {
-  background: color-mix(in srgb, var(--bg-secondary) 80%, transparent);
+  background: color-mix(in srgb, var(--bg-card) 95%, transparent);
   color: var(--text-secondary);
 }
 
@@ -266,7 +273,7 @@
   align-items: center;
   padding: 5px 7px;
   margin-bottom: 4px;
-  background: color-mix(in srgb, var(--bg-secondary) 84%, transparent);
+  background: color-mix(in srgb, var(--bg-card) 94%, transparent);
   border-radius: 5px;
 }
 
@@ -289,12 +296,12 @@
 }
 
 .pred-line.blended-row {
-  background: color-mix(in srgb, var(--accent-primary) 15%, var(--bg-secondary));
+  background: color-mix(in srgb, var(--accent-primary) 15%, var(--bg-card));
   border: 1px solid color-mix(in srgb, var(--accent-primary) 45%, var(--border-color));
 }
 
 .pred-line.blended-outcome-row {
-  background: color-mix(in srgb, var(--bg-card) 75%, var(--bg-secondary));
+  background: color-mix(in srgb, var(--bg-card) 96%, transparent);
   border: 1px solid var(--border-color);
 }
 
