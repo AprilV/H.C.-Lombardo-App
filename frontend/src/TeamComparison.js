@@ -199,7 +199,7 @@ function TeamComparison({ initialViewMode = 'comparison' }) {
   };
 
   const loadTeamData = async (team, abbr, season) => {
-    const setTeamDataState = (payload, resolvedSeason) => {
+    const setData = (payload, resolvedSeason) => {
       if (team === 'A') {
         setTeamAData(payload);
         setTeamAResolvedSeason(resolvedSeason);
@@ -209,76 +209,45 @@ function TeamComparison({ initialViewMode = 'comparison' }) {
       }
     };
 
-    const tryLoadSeason = async (seasonToLoad) => {
-      const response = await fetch(`${API_URL}/api/hcl/teams/${abbr}?season=${seasonToLoad}`);
-      let data = {};
-
+    const fetchDetail = async (yr) => {
       try {
-        data = await response.json();
+        const res = await fetch(`${API_URL}/api/hcl/teams/${abbr}?season=${yr}`);
+        const data = await res.json().catch(() => ({}));
+        if (res.ok && data.success && data.team) return data.team;
       } catch {
-        data = {};
+        // ignore, fall through
       }
-
-      if (!response.ok || !data.success || !data.team) {
-        return null;
-      }
-
-      return data.team;
-    };
-
-    const getGamesPlayedForSeason = async (seasonToCheck) => {
-      const listResponse = await fetch(`${API_URL}/api/hcl/teams?season=${seasonToCheck}`);
-      let listData = {};
-
-      try {
-        listData = await listResponse.json();
-      } catch {
-        listData = {};
-      }
-
-      if (!listResponse.ok || !listData.success || !Array.isArray(listData.teams)) {
-        return null;
-      }
-
-      const matchedTeam = listData.teams.find((candidate) => candidate.team === abbr);
-      if (!matchedTeam) {
-        return null;
-      }
-
-      return Number(matchedTeam.games_played || 0);
+      return null;
     };
 
     try {
       setLoading(true);
 
       const requestedSeason = Number(season);
-      const gamesPlayed = await getGamesPlayedForSeason(requestedSeason);
-      const shouldSkipRequestedSeason = requestedSeason >= currentSeason && gamesPlayed === 0;
 
-      // Normal path: completed seasons resolve immediately via direct detail fetch.
-      if (!shouldSkipRequestedSeason) {
-        const requestedSeasonTeam = await tryLoadSeason(requestedSeason);
-        if (requestedSeasonTeam) {
-          setTeamDataState(requestedSeasonTeam, requestedSeason);
+      // 1) Try the requested season directly (works for all completed seasons).
+      let teamObj = await fetchDetail(requestedSeason);
+      if (teamObj) {
+        setData(teamObj, requestedSeason);
+        setError(null);
+        return;
+      }
+
+      // 2) Requested season has no data (e.g. preseason) -> fall back.
+      for (let yr = requestedSeason - 1; yr >= MIN_NFL_SEASON; yr -= 1) {
+        teamObj = await fetchDetail(yr);
+        if (teamObj) {
+          setData(teamObj, yr);
           setError(null);
           return;
         }
       }
 
-      // Preseason fallback path (for example, 2026 -> 2025).
-      for (let fallbackSeason = requestedSeason - 1; fallbackSeason >= MIN_NFL_SEASON; fallbackSeason -= 1) {
-        const fallbackTeam = await tryLoadSeason(fallbackSeason);
-        if (fallbackTeam) {
-          setTeamDataState(fallbackTeam, fallbackSeason);
-          setError(null);
-          return;
-        }
-      }
-
-      setTeamDataState(null, null);
+      // 3) Nothing found.
+      setData(null, null);
       setError(null);
     } catch (err) {
-      setTeamDataState(null, null);
+      setData(null, null);
       setError(null);
     } finally {
       setLoading(false);
