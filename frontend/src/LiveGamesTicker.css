@@ -375,10 +375,35 @@
   font-weight: 700;
   padding: 2px 6px;
   border-radius: 999px;
+  border: 1px solid transparent;
   color: var(--text-primary);
-  background: color-mix(in srgb, var(--accent-primary) 18%, transparent);
+  background: color-mix(in srgb, var(--text-secondary) 12%, transparent);
   text-transform: uppercase;
   letter-spacing: 0.4px;
+}
+
+.blended-agreement.strong {
+  color: #fbbf24;
+  background: rgba(251, 191, 36, 0.2);
+  border-color: rgba(251, 191, 36, 0.5);
+}
+
+.blended-agreement.lean {
+  color: #cbd5e1;
+  background: rgba(148, 163, 184, 0.2);
+  border-color: rgba(148, 163, 184, 0.5);
+}
+
+[data-theme="classic-light"] .blended-agreement.strong {
+  color: #b45309;
+  background: rgba(245, 158, 11, 0.18);
+  border-color: rgba(180, 83, 9, 0.38);
+}
+
+[data-theme="classic-light"] .blended-agreement.lean {
+  color: #475569;
+  background: rgba(148, 163, 184, 0.16);
+  border-color: rgba(71, 85, 105, 0.3);
 }
 
 .ticker-result-badge {

@@ -458,70 +458,70 @@ function Homepage() {
             </div>
           </div>
           <div className="dashboard-legend-item">
-            <span className="legend-icon-spacer" aria-hidden="true"></span>
+            <span className="symbol-chip legend-icon-chip">⭐</span>
             <div className="dashboard-legend-copy">
               <h3>Top Pick</h3>
               <p>Overall side recommendation from both systems.</p>
             </div>
           </div>
           <div className="dashboard-legend-item">
-            <span className="legend-icon-spacer" aria-hidden="true"></span>
+            <span className="symbol-chip legend-icon-chip strong-play">🥇</span>
             <div className="dashboard-legend-copy">
               <h3>Strong Play</h3>
               <p>Both our systems agree on this pick (higher-confidence play).</p>
             </div>
           </div>
           <div className="dashboard-legend-item">
-            <span className="legend-icon-spacer" aria-hidden="true"></span>
+            <span className="symbol-chip legend-icon-chip lean-play">🥈</span>
             <div className="dashboard-legend-copy">
               <h3>Lean</h3>
               <p>Our systems point the same way but do not fully agree (lower-confidence, close call).</p>
             </div>
           </div>
           <div className="dashboard-legend-item">
-            <span className="legend-icon-spacer" aria-hidden="true"></span>
+            <span className="symbol-chip legend-icon-chip">±</span>
             <div className="dashboard-legend-copy">
               <h3>Spread</h3>
               <p>Points handicap used to balance both teams.</p>
             </div>
           </div>
           <div className="dashboard-legend-item">
-            <span className="legend-icon-spacer" aria-hidden="true"></span>
+            <span className="symbol-chip legend-icon-chip">💵</span>
             <div className="dashboard-legend-copy">
               <h3>Moneyline</h3>
               <p>Straight pick on who wins the game.</p>
             </div>
           </div>
           <div className="dashboard-legend-item">
-            <span className="legend-icon-spacer" aria-hidden="true"></span>
+            <span className="symbol-chip legend-icon-chip">🛡️</span>
             <div className="dashboard-legend-copy">
               <h3>Cover</h3>
               <p>Your side beats the posted spread.</p>
             </div>
           </div>
           <div className="dashboard-legend-item">
-            <span className="legend-icon-spacer" aria-hidden="true"></span>
+            <span className="symbol-chip legend-icon-chip">🤝</span>
             <div className="dashboard-legend-copy">
               <h3>Push</h3>
               <p>Final margin lands exactly on the line.</p>
             </div>
           </div>
           <div className="dashboard-legend-item">
-            <span className="legend-icon-spacer" aria-hidden="true"></span>
+            <span className="symbol-chip legend-icon-chip">⚖️</span>
             <div className="dashboard-legend-copy">
               <h3>Favorite / Underdog</h3>
               <p>Favorite is negative, underdog is positive.</p>
             </div>
           </div>
           <div className="dashboard-legend-item">
-            <span className="legend-icon-spacer" aria-hidden="true"></span>
+            <span className="symbol-chip legend-icon-chip">Δ</span>
             <div className="dashboard-legend-copy">
               <h3>Edge</h3>
               <p>Gap between model spread and Vegas spread.</p>
             </div>
           </div>
           <div className="dashboard-legend-item">
-            <span className="legend-icon-spacer" aria-hidden="true"></span>
+            <span className="symbol-chip legend-icon-chip">↕️</span>
             <div className="dashboard-legend-copy">
               <h3>O/U</h3>
               <p>Total points line for over or under bets.</p>
@@ -574,7 +574,7 @@ function Homepage() {
 
                 <p className="bet-pick">Pick: {bet.actionText}</p>
                 <p className="bet-edge-note">{bet.whyLine}</p>
-                <p className="bet-confidence-detail">{bet.confidenceDetail}</p>
+                <p className={`bet-confidence-detail ${bet.confidenceTone}`}>{bet.confidenceDetail}</p>
 
                 <div className={`best-bet-result-strip ${bet.outcome?.isFinal ? 'final' : 'scheduled'}`}>
                   {bet.outcome?.isFinal ? (

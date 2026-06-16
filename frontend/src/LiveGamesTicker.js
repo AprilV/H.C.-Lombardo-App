@@ -346,7 +346,9 @@ function LiveGamesTicker() {
           {displayGames.map((game, index) => {
             const blendedPick = buildBlendedPick(game.home_team, game.away_team, game.elo_spread, game.ai_spread);
             const agreementSignal = game.elo_prediction && game.ai_prediction
-              ? (game.elo_prediction === game.ai_prediction ? 'Strong play' : 'Lean')
+              ? (game.elo_prediction === game.ai_prediction
+                ? { label: 'Strong play', tone: 'strong' }
+                : { label: 'Lean', tone: 'lean' })
               : null;
             const coverOutcome = buildCoverOutcome({
               gameStatus: game.status,
@@ -421,7 +423,7 @@ function LiveGamesTicker() {
                           Top Pick: {blendedPick.display}
                         </span>
                       </div>
-                      {agreementSignal && <span className="blended-agreement">{agreementSignal}</span>}
+                      {agreementSignal && <span className={`blended-agreement ${agreementSignal.tone}`}>{agreementSignal.label}</span>}
                     </div>
                   )}
                   {blendedPick && (

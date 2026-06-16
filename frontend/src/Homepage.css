@@ -18,6 +18,12 @@
   --result-pending-fg: #cbd5e1;
   --result-pending-bg: rgba(148, 163, 184, 0.2);
   --result-pending-border: rgba(148, 163, 184, 0.55);
+  --confidence-strong-fg: #fbbf24;
+  --confidence-strong-bg: rgba(251, 191, 36, 0.2);
+  --confidence-strong-border: rgba(251, 191, 36, 0.5);
+  --confidence-lean-fg: #cbd5e1;
+  --confidence-lean-bg: rgba(148, 163, 184, 0.2);
+  --confidence-lean-border: rgba(148, 163, 184, 0.5);
 }
 
 [data-theme="classic-light"] .homepage {
@@ -32,6 +38,12 @@
   --result-pending-fg: #334155;
   --result-pending-bg: rgba(148, 163, 184, 0.16);
   --result-pending-border: rgba(51, 65, 85, 0.25);
+  --confidence-strong-fg: #b45309;
+  --confidence-strong-bg: rgba(245, 158, 11, 0.18);
+  --confidence-strong-border: rgba(180, 83, 9, 0.38);
+  --confidence-lean-fg: #475569;
+  --confidence-lean-bg: rgba(148, 163, 184, 0.16);
+  --confidence-lean-border: rgba(71, 85, 105, 0.3);
 }
 
 [data-theme="nfl"] .homepage {
@@ -215,6 +227,18 @@
   border-color: var(--result-pending-border);
 }
 
+.symbol-chip.strong-play {
+  color: var(--confidence-strong-fg);
+  background: var(--confidence-strong-bg);
+  border-color: var(--confidence-strong-border);
+}
+
+.symbol-chip.lean-play {
+  color: var(--confidence-lean-fg);
+  background: var(--confidence-lean-bg);
+  border-color: var(--confidence-lean-border);
+}
+
 .best-bets-section {
   margin: 0.6rem 0;
   padding: 0.65rem;
@@ -296,14 +320,15 @@
 }
 
 .bet-confidence-badge.strong {
-  color: var(--accent-primary);
-  background: color-mix(in srgb, var(--accent-primary) 16%, transparent);
-  border-color: color-mix(in srgb, var(--accent-primary) 45%, var(--border-color));
+  color: var(--confidence-strong-fg);
+  background: var(--confidence-strong-bg);
+  border-color: var(--confidence-strong-border);
 }
 
 .bet-confidence-badge.lean {
-  color: var(--text-secondary);
-  background: color-mix(in srgb, var(--text-secondary) 12%, transparent);
+  color: var(--confidence-lean-fg);
+  background: var(--confidence-lean-bg);
+  border-color: var(--confidence-lean-border);
 }
 
 .best-bet-matchup-row {
@@ -347,10 +372,18 @@
 }
 
 .bet-confidence-detail {
-  color: var(--accent-primary) !important;
+  color: var(--text-secondary) !important;
   font-size: 0.7rem !important;
   font-weight: 700;
   margin-top: 0.12rem;
+}
+
+.bet-confidence-detail.strong {
+  color: var(--confidence-strong-fg) !important;
+}
+
+.bet-confidence-detail.lean {
+  color: var(--confidence-lean-fg) !important;
 }
 
 .best-bet-result-strip {
