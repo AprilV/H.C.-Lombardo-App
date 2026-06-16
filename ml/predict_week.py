@@ -159,59 +159,115 @@ class WeeklyPredictor:
         return df
     
     def fetch_team_cumulative_stats(self, season, week, team):
-        """Fetch cumulative stats for a team BEFORE the target week (matches training query)"""
+        """Fetch pre-game team stats with prior-season carryover for early-season weeks."""
+        stats_keys = [
+            'avg_ppg', 'avg_yards', 'avg_pass_yards', 'avg_rush_yards', 'avg_ypp',
+            'avg_turnovers', 'avg_3rd_pct', 'avg_rz_pct', 'avg_epa', 'avg_success',
+            'avg_pass_epa', 'avg_rush_epa', 'avg_cpoe', 'avg_pass_success',
+            'avg_rush_success', 'avg_comp_pct', 'avg_qb_rating', 'avg_ints',
+            'avg_sacks', 'avg_ypc', 'avg_explosive', 'avg_top'
+        ]
+
+        def _fetch_stat_row(conn, target_season, target_team, week_limit=None):
+            week_clause = ''
+            params = [target_season, target_team]
+            if week_limit is not None:
+                week_clause = 'AND g.week < %s'
+                params.append(week_limit)
+
+            query = f"""
+                WITH game_stats AS (
+                    SELECT
+                        tgs.points, tgs.total_yards, tgs.passing_yards, tgs.rushing_yards,
+                        tgs.yards_per_play, tgs.turnovers, tgs.third_down_pct, tgs.red_zone_pct,
+                        tgs.epa_per_play, tgs.success_rate, tgs.pass_epa, tgs.rush_epa,
+                        tgs.cpoe, tgs.pass_success_rate, tgs.rush_success_rate,
+                        tgs.completion_pct, tgs.qb_rating, tgs.interceptions, tgs.sacks_taken,
+                        tgs.yards_per_carry, tgs.explosive_play_pct, tgs.time_of_possession_pct
+                    FROM hcl.team_game_stats tgs
+                    JOIN hcl.games g ON tgs.game_id = g.game_id
+                    WHERE g.season = %s
+                      AND tgs.team = %s
+                      AND COALESCE(g.is_postseason, FALSE) = FALSE
+                      {week_clause}
+                )
+                SELECT
+                    COUNT(*) AS games_played,
+                    AVG(points) as avg_ppg,
+                    AVG(total_yards) as avg_yards,
+                    AVG(passing_yards) as avg_pass_yards,
+                    AVG(rushing_yards) as avg_rush_yards,
+                    AVG(yards_per_play) as avg_ypp,
+                    AVG(turnovers) as avg_turnovers,
+                    AVG(third_down_pct) as avg_3rd_pct,
+                    AVG(red_zone_pct) as avg_rz_pct,
+                    AVG(epa_per_play) as avg_epa,
+                    AVG(success_rate) as avg_success,
+                    AVG(pass_epa) as avg_pass_epa,
+                    AVG(rush_epa) as avg_rush_epa,
+                    AVG(cpoe) as avg_cpoe,
+                    AVG(pass_success_rate) as avg_pass_success,
+                    AVG(rush_success_rate) as avg_rush_success,
+                    AVG(completion_pct) as avg_comp_pct,
+                    AVG(qb_rating) as avg_qb_rating,
+                    AVG(interceptions) as avg_ints,
+                    AVG(sacks_taken) as avg_sacks,
+                    AVG(yards_per_carry) as avg_ypc,
+                    AVG(explosive_play_pct) as avg_explosive,
+                    AVG(time_of_possession_pct) as avg_top
+                FROM game_stats
+            """
+
+            df = pd.read_sql(query, conn, params=tuple(params))
+            if len(df) == 0:
+                return None, 0
+
+            row = df.iloc[0].to_dict()
+            games_played = int(row.get('games_played') or 0)
+            if games_played == 0 or row.get('avg_ppg') is None:
+                return None, 0
+
+            return row, games_played
+
         conn = psycopg2.connect(**self.db_config)
-        
-        query = """
-            WITH game_stats AS (
-                SELECT 
-                    tgs.game_id, tgs.team, g.season, g.week,
-                    tgs.points, tgs.total_yards, tgs.passing_yards, tgs.rushing_yards,
-                    tgs.yards_per_play, tgs.turnovers, tgs.third_down_pct, tgs.red_zone_pct,
-                    tgs.epa_per_play, tgs.success_rate, tgs.pass_epa, tgs.rush_epa,
-                    tgs.cpoe, tgs.pass_success_rate, tgs.rush_success_rate,
-                    tgs.completion_pct, tgs.qb_rating, tgs.interceptions, tgs.sacks_taken,
-                    tgs.yards_per_carry, tgs.explosive_play_pct, tgs.time_of_possession_pct
-                FROM hcl.team_game_stats tgs
-                JOIN hcl.games g ON tgs.game_id = g.game_id
-                WHERE g.season = %s
-                  AND g.week < %s
-                  AND tgs.team = %s
-                  AND g.is_postseason = FALSE
-            )
-            SELECT 
-                AVG(points) as avg_ppg,
-                AVG(total_yards) as avg_yards,
-                AVG(passing_yards) as avg_pass_yards,
-                AVG(rushing_yards) as avg_rush_yards,
-                AVG(yards_per_play) as avg_ypp,
-                AVG(turnovers) as avg_turnovers,
-                AVG(third_down_pct) as avg_3rd_pct,
-                AVG(red_zone_pct) as avg_rz_pct,
-                AVG(epa_per_play) as avg_epa,
-                AVG(success_rate) as avg_success,
-                AVG(pass_epa) as avg_pass_epa,
-                AVG(rush_epa) as avg_rush_epa,
-                AVG(cpoe) as avg_cpoe,
-                AVG(pass_success_rate) as avg_pass_success,
-                AVG(rush_success_rate) as avg_rush_success,
-                AVG(completion_pct) as avg_comp_pct,
-                AVG(qb_rating) as avg_qb_rating,
-                AVG(interceptions) as avg_ints,
-                AVG(sacks_taken) as avg_sacks,
-                AVG(yards_per_carry) as avg_ypc,
-                AVG(explosive_play_pct) as avg_explosive,
-                AVG(time_of_possession_pct) as avg_top
-            FROM game_stats
-        """
-        
-        df = pd.read_sql(query, conn, params=(season, week, team))
-        conn.close()
-        
-        if len(df) == 0 or df.iloc[0]['avg_ppg'] is None:
+        try:
+            current_stats, current_games = _fetch_stat_row(conn, season, team, week_limit=week)
+            prior_stats, _ = _fetch_stat_row(conn, season - 1, team)
+        finally:
+            conn.close()
+
+        if current_stats is None and prior_stats is None:
             return None
-        
-        return df.iloc[0].to_dict()
+
+        if current_stats is None:
+            return prior_stats
+
+        if prior_stats is None:
+            return current_stats
+
+        # Use prior season heavily at the beginning of a season, then phase out quickly.
+        transition_games = 4.0
+        current_weight = min(max(current_games / transition_games, 0.0), 1.0)
+        prior_weight = 1.0 - current_weight
+
+        blended = {}
+        for key in stats_keys:
+            current_value = current_stats.get(key)
+            prior_value = prior_stats.get(key)
+
+            if current_value is None and prior_value is None:
+                blended[key] = None
+                continue
+            if current_value is None:
+                blended[key] = float(prior_value)
+                continue
+            if prior_value is None:
+                blended[key] = float(current_value)
+                continue
+
+            blended[key] = (float(current_value) * current_weight) + (float(prior_value) * prior_weight)
+
+        return blended
     
     def compute_rolling_features(self, season, week, home_team, away_team):
         """
