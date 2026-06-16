@@ -149,14 +149,30 @@ function Homepage() {
   const [bestBetsWeek, setBestBetsWeek] = useState(null);
   const [trackRecordLoading, setTrackRecordLoading] = useState(true);
   const [trackRecord, setTrackRecord] = useState(null);
+  const [dashboardHealth, setDashboardHealth] = useState('checking');
   const navigate = useNavigate();
   const { theme, changeTheme } = useTheme();
 
   useEffect(() => {
     fetchTeams();
     fetchBettorAnswers();
+    fetchDashboardHealth();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const fetchDashboardHealth = async () => {
+    try {
+      const response = await fetch(`${API_URL}/health`);
+      if (!response.ok) {
+        throw new Error('Health check failed');
+      }
+
+      await response.json();
+      setDashboardHealth('ok');
+    } catch {
+      setDashboardHealth('issue');
+    }
+  };
 
   const fetchTeams = async () => {
     try {
@@ -404,6 +420,10 @@ function Homepage() {
     return `HC Lombardo AI: ${aiPct.toFixed(1)}% against the spread this season — Vegas: ${vegasPct.toFixed(1)}%.`;
   };
 
+  const dashboardHealthText = dashboardHealth === 'ok'
+    ? 'All systems operational'
+    : (dashboardHealth === 'issue' ? 'Some features may be unavailable' : 'Checking status...');
+
   if (loading) {
     return (
       <div className="homepage-loading">
@@ -416,18 +436,25 @@ function Homepage() {
   return (
     <div className="homepage">
 
-      {/* Theme Selector */}
-      <div className="theme-selector-bar">
-        <span className="theme-selector-label">🎨 Theme:</span>
-        <select
-          className="theme-dropdown"
-          value={theme}
-          onChange={(e) => changeTheme(e.target.value)}
-        >
-          <option value="nfl">🏈 NFL</option>
-          <option value="executive-dark">💼 Executive Dark</option>
-          <option value="classic-light">☀️ Classic Light</option>
-        </select>
+      <div className="dashboard-utility-row">
+        <div className={`ambient-status-pill ${dashboardHealth}`} role="status" aria-live="polite">
+          <span className="ambient-status-dot" aria-hidden="true"></span>
+          <span className="ambient-status-text">{dashboardHealthText}</span>
+        </div>
+
+        {/* Theme Selector */}
+        <div className="theme-selector-bar">
+          <span className="theme-selector-label">Theme:</span>
+          <select
+            className="theme-dropdown"
+            value={theme}
+            onChange={(e) => changeTheme(e.target.value)}
+          >
+            <option value="nfl">NFL</option>
+            <option value="executive-dark">Executive Dark</option>
+            <option value="classic-light">Classic Light</option>
+          </select>
+        </div>
       </div>
 
       {/* Live Games Ticker */}

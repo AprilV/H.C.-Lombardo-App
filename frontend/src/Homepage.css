@@ -52,12 +52,70 @@
 }
 
 /* Theme Selector Bar */
+.dashboard-utility-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin-bottom: 0.45rem;
+}
+
 .theme-selector-bar {
   display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: 8px;
-  margin-bottom: 0.45rem;
+}
+
+.ambient-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.34rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-color);
+  background: color-mix(in srgb, var(--bg-card) 94%, transparent);
+  padding: 0.18rem 0.52rem;
+  box-shadow: 0 2px 8px var(--shadow);
+}
+
+.ambient-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: #94a3b8;
+  box-shadow: 0 0 8px rgba(148, 163, 184, 0.5);
+}
+
+.ambient-status-pill.ok {
+  border-color: color-mix(in srgb, #22c55e 40%, var(--border-color));
+  background: color-mix(in srgb, #22c55e 10%, var(--bg-card));
+}
+
+.ambient-status-pill.ok .ambient-status-dot {
+  background: #22c55e;
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.6);
+}
+
+.ambient-status-pill.issue {
+  border-color: color-mix(in srgb, #f59e0b 40%, var(--border-color));
+  background: color-mix(in srgb, #f59e0b 10%, var(--bg-card));
+}
+
+.ambient-status-pill.issue .ambient-status-dot {
+  background: #f59e0b;
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.55);
+}
+
+.ambient-status-text {
+  color: var(--text-secondary);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.15px;
+}
+
+.ambient-status-pill.ok .ambient-status-text,
+.ambient-status-pill.issue .ambient-status-text {
+  color: var(--text-primary);
 }
 
 .theme-selector-label {
@@ -986,6 +1044,16 @@
 }
 
 @media (max-width: 900px) {
+  .dashboard-utility-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.45rem;
+  }
+
+  .theme-selector-bar {
+    justify-content: space-between;
+  }
+
   .track-record-strip {
     flex-direction: column;
     align-items: flex-start;

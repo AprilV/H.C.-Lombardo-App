@@ -6,39 +6,14 @@ import Settings from './Settings';
 const API_URL = (typeof window !== 'undefined' && (window.location.hostname === 'hclombardo.com' || window.location.hostname === 'www.hclombardo.com' || window.location.hostname.endsWith('.netlify.app'))) ? '' : (process.env.REACT_APP_API_URL ?? '');
 
 function Admin() {
-  const [activeTab, setActiveTab] = useState('system');
-  const [serverStatus, setServerStatus] = useState(null);
+  const [activeTab, setActiveTab] = useState('performance');
   const [dbStats, setDbStats] = useState(null);
-  const [serverCheckedAt, setServerCheckedAt] = useState(null);
   const [dbCheckedAt, setDbCheckedAt] = useState(null);
 
   useEffect(() => {
-    checkServerStatus();
     fetchDatabaseStats();
-
-    const interval = setInterval(() => {
-      checkServerStatus();
-      fetchDatabaseStats();
-    }, 5000);
-
-    return () => clearInterval(interval);
+    return undefined;
   }, []);
-
-  const checkServerStatus = async () => {
-    try {
-      const response = await fetch(`${API_URL}/health`);
-      if (!response.ok) {
-        throw new Error('Health check failed');
-      }
-
-      const data = await response.json();
-      setServerStatus(data);
-    } catch (err) {
-      setServerStatus(null);
-    } finally {
-      setServerCheckedAt(Date.now());
-    }
-  };
 
   const fetchDatabaseStats = async () => {
     try {
@@ -65,9 +40,7 @@ function Admin() {
     }
   };
 
-  const apiOperational = Boolean(serverStatus);
   const databaseOperational = Boolean(dbStats);
-  const allSystemsOperational = apiOperational && databaseOperational;
   const gamesLoadedDisplay = dbStats?.games ? dbStats.games.toLocaleString() : '~14,000';
   const teamsTrackedDisplay = dbStats?.teams || 32;
 
@@ -92,16 +65,16 @@ function Admin() {
 
       <div className="admin-tabs">
         <button
-          className={`admin-tab ${activeTab === 'system' ? 'active' : ''}`}
-          onClick={() => setActiveTab('system')}
-        >
-          🟢 System Status
-        </button>
-        <button
           className={`admin-tab ${activeTab === 'performance' ? 'active' : ''}`}
           onClick={() => setActiveTab('performance')}
         >
           📊 AI Performance
+        </button>
+        <button
+          className={`admin-tab ${activeTab === 'technology' ? 'active' : ''}`}
+          onClick={() => setActiveTab('technology')}
+        >
+          ✨ Technology
         </button>
         <button
           className={`admin-tab ${activeTab === 'neural-net' ? 'active' : ''}`}
@@ -124,73 +97,6 @@ function Admin() {
       </div>
 
       <div className="admin-content">
-        {activeTab === 'system' && (
-          <div className="admin-section admin-live-status">
-            <h2>🟢 System Status</h2>
-            <div className={`system-status-summary ${allSystemsOperational ? 'healthy' : 'issue'}`}>
-              <span className="system-status-summary-dot" aria-hidden="true"></span>
-              <span className="system-status-summary-text">
-                {allSystemsOperational ? 'All Systems Operational' : 'Service Issue Detected'}
-              </span>
-            </div>
-
-            <div className="system-status-grid">
-              <div className="system-status-card operational">
-                <div className="system-status-card-top">
-                  <h3>Application</h3>
-                  <span className="system-status-dot operational" aria-label="Application operational"></span>
-                </div>
-                <p className="system-status-label">Operational</p>
-                <p className="system-status-time">Live in browser</p>
-              </div>
-
-              <div className={`system-status-card ${apiOperational ? 'operational' : 'unavailable'}`}>
-                <div className="system-status-card-top">
-                  <h3>API Server</h3>
-                  <span
-                    className={`system-status-dot ${apiOperational ? 'operational' : 'unavailable'}`}
-                    aria-label={apiOperational ? 'API server operational' : 'API server unavailable'}
-                  ></span>
-                </div>
-                <p className="system-status-label">{apiOperational ? 'Operational' : 'Unavailable'}</p>
-                <p className="system-status-time">Last checked {formatCheckedAt(serverCheckedAt)}</p>
-              </div>
-
-              <div className={`system-status-card ${databaseOperational ? 'operational' : 'unavailable'}`}>
-                <div className="system-status-card-top">
-                  <h3>Database</h3>
-                  <span
-                    className={`system-status-dot ${databaseOperational ? 'operational' : 'unavailable'}`}
-                    aria-label={databaseOperational ? 'Database operational' : 'Database unavailable'}
-                  ></span>
-                </div>
-                <p className="system-status-label">{databaseOperational ? 'Operational' : 'Unavailable'}</p>
-                <p className="system-status-time">Last checked {formatCheckedAt(dbCheckedAt)}</p>
-              </div>
-            </div>
-
-            <div className="admin-iframe-intro">
-              <p>Always-on reliability so your picks are ready when you are.</p>
-              <p className="admin-iframe-subtext">Live status keeps your confidence high before every wager.</p>
-            </div>
-
-            <div className="visualization-container">
-              <iframe
-                src="/admin-topology.html"
-                style={{
-                  width: '100%',
-                  height: '800px',
-                  border: 'none',
-                  borderRadius: '12px',
-                  background: 'rgba(10, 14, 39, 0.6)',
-                  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.4)'
-                }}
-                title="System Topology 3D"
-              />
-            </div>
-          </div>
-        )}
-
         {activeTab === 'performance' && (
           <div className="admin-section">
             <div className="performance-header">
@@ -205,6 +111,31 @@ function Admin() {
             </div>
 
             <ModelPerformance />
+          </div>
+        )}
+
+        {activeTab === 'technology' && (
+          <div className="admin-section">
+            <h2>✨ Technology Experience</h2>
+            <div className="admin-iframe-intro">
+              <p>A cinematic look at the intelligence that powers every prediction.</p>
+              <p className="admin-iframe-subtext">Designed to give your decision process a premium edge.</p>
+            </div>
+
+            <div className="visualization-container">
+              <iframe
+                src="/admin-topology.html"
+                style={{
+                  width: '100%',
+                  height: '800px',
+                  border: 'none',
+                  borderRadius: '12px',
+                  background: 'rgba(10, 14, 39, 0.6)',
+                  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.4)'
+                }}
+                title="Technology Experience 3D"
+              />
+            </div>
           </div>
         )}
 
