@@ -6,9 +6,7 @@ import Homepage from './Homepage';
 import TeamStats from './TeamStats';
 import TeamComparison from './TeamComparison';
 import TeamDetail from './TeamDetail';
-import MatchupAnalyzer from './MatchupAnalyzer';
 import Analytics from './Analytics';
-import GameStatistics from './GameStatistics';
 import HistoricalData from './HistoricalData';
 import MLPredictions from './MLPredictions';
 import MLPredictionsRedesign from './MLPredictionsRedesign';
@@ -58,9 +56,9 @@ function App() {
             <Route path="/team-stats" element={<TeamStats />} />
             <Route path="/team-comparison" element={<TeamComparison />} />
             <Route path="/team/:teamAbbr" element={<TeamDetail />} />
-            <Route path="/matchup-analyzer" element={<MatchupAnalyzer />} />
+            <Route path="/matchup-analyzer" element={<TeamComparison initialViewMode="edge" />} />
             <Route path="/analytics" element={<Analytics />} />
-            <Route path="/game-statistics" element={<GameStatistics />} />
+            <Route path="/game-statistics" element={<TeamComparison />} />
             <Route path="/historical-data" element={<HistoricalData />} />
             <Route path="/ml-predictions" element={<MLPredictionsRedesign />} />
             <Route path="/ml-predictions-redesign" element={<MLPredictionsRedesign />} />

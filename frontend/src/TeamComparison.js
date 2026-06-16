@@ -72,11 +72,14 @@ const STAT_CATEGORIES = {
   ],
 };
 
-function TeamComparison() {
+const VALID_VIEW_MODES = new Set(['comparison', 'head-to-head', 'schedule', 'edge']);
+
+function TeamComparison({ initialViewMode = 'comparison' }) {
   const currentSeason = getDefaultSeason();
+  const normalizedInitialView = VALID_VIEW_MODES.has(initialViewMode) ? initialViewMode : 'comparison';
 
   // View Mode
-  const [viewMode, setViewMode] = useState('comparison'); // 'comparison', 'schedule', 'head-to-head'
+  const [viewMode, setViewMode] = useState(normalizedInitialView);
   
   // Team A state
   const [seasonA, setSeasonA] = useState(String(currentSeason));
@@ -138,6 +141,12 @@ function TeamComparison() {
       }
     }
   }, [selectedTeamB, seasonB, viewMode]);
+
+  useEffect(() => {
+    if (VALID_VIEW_MODES.has(initialViewMode)) {
+      setViewMode(initialViewMode);
+    }
+  }, [initialViewMode]);
 
   const loadTeamsA = async () => {
     try {
@@ -271,8 +280,8 @@ function TeamComparison() {
     <div className="team-comparison">
       {/* Header */}
       <div className="comparison-header">
-        <h1>📊 Team Comparison & Analysis</h1>
-        <p className="subtitle">Compare teams across any season ({MIN_NFL_SEASON}-{currentSeason}) • Historical stats • Head-to-head matchups • Weekly schedules</p>
+        <h1>Compare Teams Hub</h1>
+        <p className="subtitle">One hub for season averages, head-to-head, weekly schedules, and edge analysis ({MIN_NFL_SEASON}-{currentSeason}).</p>
       </div>
 
       {error && (
@@ -298,6 +307,12 @@ function TeamComparison() {
           onClick={() => setViewMode('schedule')}
         >
           📅 Weekly Schedules
+        </button>
+        <button
+          className={`tab-button ${viewMode === 'edge' ? 'active' : ''}`}
+          onClick={() => setViewMode('edge')}
+        >
+          ⚖️ Edge / Advantage
         </button>
       </div>
 
@@ -567,6 +582,51 @@ function TeamComparison() {
               )}
             </div>
           </div>
+        </div>
+      )}
+
+      {viewMode === 'edge' && (
+        <div className="edge-view">
+          {(!selectedTeamA || !selectedTeamB) && (
+            <div className="empty-state">Select both teams to see the matchup edge.</div>
+          )}
+
+          {selectedTeamA && selectedTeamB && teamAData && teamBData && (
+            <div className="edge-grid">
+              {Object.entries(STAT_CATEGORIES).map(([category, stats]) => (
+                <article key={category} className="edge-category-card">
+                  <h3>{category}</h3>
+                  <div className="edge-rows">
+                    {stats.map((stat) => {
+                      const { display, better } = calculateDifferential(
+                        teamAData[stat.key],
+                        teamBData[stat.key],
+                        stat.format
+                      );
+
+                      let summary = 'No edge';
+                      if (display !== '---') {
+                        if (better === 'A') {
+                          summary = `← ${selectedTeamA} +${display}`;
+                        } else if (better === 'B') {
+                          summary = `${selectedTeamB} +${display} →`;
+                        } else {
+                          summary = `Even ${display}`;
+                        }
+                      }
+
+                      return (
+                        <div key={stat.key} className={`edge-row ${better}`}>
+                          <span className="edge-label">{stat.label}</span>
+                          <span className="edge-value">{summary}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>

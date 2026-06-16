@@ -59,12 +59,7 @@ function SideMenu() {
 
           <Link to="/team-comparison" className={`menu-item ${isActive('/team-comparison')}`} onClick={closeMenu}>
             <span className="menu-icon">⚖️</span>
-            <span className="menu-text">Team Comparison</span>
-          </Link>
-
-          <Link to="/matchup-analyzer" className={`menu-item ${isActive('/matchup-analyzer')}`} onClick={closeMenu}>
-            <span className="menu-icon">🎯</span>
-            <span className="menu-text">Matchup Analyzer</span>
+            <span className="menu-text">Compare Teams</span>
           </Link>
 
           <div className="menu-divider"></div>
@@ -72,11 +67,6 @@ function SideMenu() {
           <Link to="/analytics" className={`menu-item ${isActive('/analytics')}`} onClick={closeMenu}>
             <span className="menu-icon">📈</span>
             <span className="menu-text">Advanced Analytics</span>
-          </Link>
-
-          <Link to="/game-statistics" className={`menu-item ${isActive('/game-statistics')}`} onClick={closeMenu}>
-            <span className="menu-icon">🏟️</span>
-            <span className="menu-text">Game Statistics</span>
           </Link>
 
           <Link to="/historical-data" className={`menu-item ${isActive('/historical-data')}`} onClick={closeMenu}>
