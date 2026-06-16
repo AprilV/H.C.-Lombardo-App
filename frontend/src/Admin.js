@@ -6,7 +6,7 @@ import Settings from './Settings';
 const API_URL = (typeof window !== 'undefined' && (window.location.hostname === 'hclombardo.com' || window.location.hostname === 'www.hclombardo.com' || window.location.hostname.endsWith('.netlify.app'))) ? '' : (process.env.REACT_APP_API_URL ?? '');
 
 function Admin() {
-  const [activeTab, setActiveTab] = useState('performance');
+  const [activeTab, setActiveTab] = useState('about');
   const [dbStats, setDbStats] = useState(null);
   const [dbCheckedAt, setDbCheckedAt] = useState(null);
 
@@ -65,6 +65,12 @@ function Admin() {
 
       <div className="admin-tabs">
         <button
+          className={`admin-tab ${activeTab === 'about' ? 'active' : ''}`}
+          onClick={() => setActiveTab('about')}
+        >
+          ℹ️ About
+        </button>
+        <button
           className={`admin-tab ${activeTab === 'performance' ? 'active' : ''}`}
           onClick={() => setActiveTab('performance')}
         >
@@ -91,6 +97,31 @@ function Admin() {
       </div>
 
       <div className="admin-content">
+        {activeTab === 'about' && (
+          <div className="admin-section admin-about-section">
+            <article className="about-story-card" aria-label="About H.C. Lombardo story">
+              <div className="about-story-accent" aria-hidden="true"></div>
+              <h2>About H.C. Lombardo</h2>
+
+              <p>
+                H.C. Lombardo brings the power of artificial intelligence to NFL betting. We built this platform on a simple idea: the smartest bets come from cutting through the noise, and modern AI can spot value that the betting market misses.
+              </p>
+
+              <p>
+                Every week, our prediction models analyze decades of NFL history to forecast who's going to win and by how much, then put those calls head-to-head against the Vegas line. The result is a clear, honest answer to the only question that matters: where's the edge?
+              </p>
+
+              <p>
+                We believe sports analytics shouldn't require a math degree. So we lead with plain-English verdicts, back them with a transparent track record, and let you decide. No hype, no black box — just smarter picks, clearly explained.
+              </p>
+
+              <p>
+                H.C. Lombardo is built for the everyday bettor who wants an edge they can actually understand.
+              </p>
+            </article>
+          </div>
+        )}
+
         {activeTab === 'performance' && (
           <div className="admin-section">
             <div className="performance-header">
