@@ -67,6 +67,8 @@ function Admin() {
   const apiOperational = Boolean(serverStatus);
   const databaseOperational = Boolean(dbStats);
   const allSystemsOperational = apiOperational && databaseOperational;
+  const gamesLoadedDisplay = dbStats?.games ? dbStats.games.toLocaleString() : '~14,000';
+  const teamsTrackedDisplay = dbStats?.teams || 32;
 
   const formatCheckedAt = (value) => {
     if (!value) {
@@ -323,45 +325,6 @@ function Admin() {
           </div>
         )}
 
-        {activeTab === 'database' && (
-          <div className="admin-section">
-            <h2>3NF Database Structure</h2>
-            <div className="info-card">
-              <h3>📊 Database: nfl_analytics</h3>
-              <p><strong>Schema:</strong> hcl (H.C. Lombardo)</p>
-              <p><strong>DBMS:</strong> PostgreSQL 16</p>
-              <p><strong>Normalization:</strong> 3rd Normal Form (3NF)</p>
-            </div>
-
-            <div className="info-card">
-              <h3>📋 Tables & Views</h3>
-              <ul className="admin-list">
-                <li><strong>teams</strong> - 32 NFL teams with metadata</li>
-                <li><strong>games</strong> - Game schedule and results</li>
-                <li><strong>team_game_stats</strong> - Per-game statistics (47 metrics)</li>
-                <li><strong>betting_odds</strong> - Vegas lines and spreads</li>
-              </ul>
-              
-              <h4 className="admin-subheading">Views (Denormalized for Performance):</h4>
-              <ul className="admin-list">
-                <li><strong>full_schedule_view</strong> - Games with team names joined</li>
-                <li><strong>team_stats_view</strong> - Aggregated team statistics</li>
-                <li><strong>advanced_metrics_view</strong> - EPA, success rate, efficiency</li>
-              </ul>
-            </div>
-
-            <div className="info-card">
-              <h3>📈 Data Volume</h3>
-              <ul className="admin-list">
-                <li>Games: ~14,000 (1999-2025)</li>
-                <li>Team Game Stats: ~28,000 records (2 per game)</li>
-                <li>Total Metrics: 47 per team per game</li>
-                <li>Betting Lines: Live integration via ESPN API</li>
-              </ul>
-            </div>
-          </div>
-        )}
-
         {activeTab === 'system' && (
           <div className="admin-section">
             <h2>🏗️ Tech Stack & Infrastructure</h2>
@@ -469,71 +432,40 @@ function Admin() {
 
         {activeTab === 'database' && (
           <div className="admin-section">
-            <h2>🗄️ App Data Storage & Stats</h2>
-            
-            {dbStats ? (
-              <div className="info-grid">
-                <div className="info-card highlight">
-                  <div className="info-icon">🏈</div>
-                  <h3>Total Teams</h3>
-                  <div className="stat-number">{dbStats.teams}</div>
-                  <p className="detail">NFL franchises in app</p>
-                </div>
+            <h2>🗄️ Data Summary</h2>
+            <p className="admin-data-intro">
+              High-level coverage and model outcomes powering this experience.
+            </p>
 
-                <div className="info-card highlight">
-                  <div className="info-icon">🎮</div>
-                  <h3>Games Loaded</h3>
-                  <div className="stat-number">{dbStats.games}</div>
-                  <p className="detail">2024-2025 season data</p>
-                </div>
-
-                <div className="info-card highlight">
-                  <div className="info-icon">📈</div>
-                  <h3>Avg Yards/Team</h3>
-                  <div className="stat-number">{dbStats.avgYards}</div>
-                  <p className="detail">Total offense per team</p>
-                </div>
-
-                <div className="info-card">
-                  <div className="info-icon">📊</div>
-                  <h3>Data Structure</h3>
-                  <p className="admin-muted">Teams, games, and statistics</p>
-                  <p className="detail">Optimized for fast loading</p>
-                </div>
-
-                <div className="info-card">
-                  <div className="info-icon">🔢</div>
-                  <h3>Tracked Stats</h3>
-                  <p className="admin-muted">47 metrics per game</p>
-                  <p className="detail">Yards, scores, turnovers, etc.</p>
-                </div>
-
-                <div className="info-card">
-                  <div className="info-icon">🔄</div>
-                  <h3>Data Updates</h3>
-                  <p className="admin-muted">Live game scores & stats</p>
-                  <p className="detail">Syncs every 15 minutes</p>
-                </div>
+            <div className="data-summary-grid">
+              <div className="data-summary-card data-summary-card-accent">
+                <h3>📚 Data Coverage</h3>
+                <div className="data-summary-metric">{gamesLoadedDisplay}</div>
+                <p>Historical NFL games spanning 1999-2025 seasons.</p>
+                <p className="detail">{teamsTrackedDisplay} teams tracked across game history.</p>
               </div>
-            ) : (
-              <div className="loading-message">
-                <p>Loading app data statistics...</p>
-              </div>
-            )}
 
-            <div className="admin-data-section">
-              <h3 className="admin-data-heading">Data Organization</h3>
-              <div className="info-card">
-                <h4 className="admin-subheading">🏗️ How Data is Stored</h4>
-                <ul className="admin-bullet-list">
-                  <li><strong>Team Profiles</strong> - 32 NFL teams with logos and stats</li>
-                  <li><strong>Game Schedule</strong> - Full 18-week season (Week 1-18)</li>
-                  <li><strong>Performance Metrics</strong> - Detailed stats for each game</li>
-                  <li><strong>Predictions</strong> - AI model predictions & accuracy tracking</li>
-                </ul>
-                <p className="detail admin-detail-note">
-                  Data is organized efficiently for fast app performance and real-time updates
-                </p>
+              <div className="data-summary-card">
+                <h3>📊 Game Data</h3>
+                <p>Per-game team statistics and betting lines for matchup analysis.</p>
+                <p>Live updates continue throughout active game windows.</p>
+                <div className={`data-status-chip ${databaseOperational ? 'online' : 'offline'}`}>
+                  {databaseOperational ? 'Operational' : 'Unavailable'}
+                </div>
+                <p className="detail">Last checked {formatCheckedAt(dbCheckedAt)}</p>
+              </div>
+
+              <div className="data-summary-card">
+                <h3>🧠 Model Results</h3>
+                <p>Win/Loss prediction model currently tracks at 65.55% accuracy.</p>
+                <p>Point spread model is currently at 10.35 MAE.</p>
+                <p className="detail">Performance is monitored throughout the season.</p>
+              </div>
+
+              <div className="data-summary-card">
+                <h3>🌐 Powered By</h3>
+                <p>Machine learning models trained on historical NFL data.</p>
+                <p>Public data feeds from NFLverse and ESPN API.</p>
               </div>
             </div>
           </div>
