@@ -1,0 +1,113 @@
+.entry-gate {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.2rem;
+  color: #f8fafc;
+  background-color: #0b1224;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.entry-gate-overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 35%, rgba(255, 255, 255, 0.1), transparent 56%);
+  pointer-events: none;
+}
+
+.entry-gate-content {
+  position: relative;
+  z-index: 1;
+  width: min(94vw, 820px);
+  border: 1px solid color-mix(in srgb, var(--border-color) 75%, rgba(255, 255, 255, 0.2));
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(13, 21, 40, 0.82), rgba(10, 15, 30, 0.9));
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.48);
+  backdrop-filter: blur(2px);
+  text-align: center;
+  padding: 1.5rem 1.35rem;
+}
+
+.entry-gate-logo {
+  width: min(86vw, 540px);
+  max-height: 170px;
+  object-fit: contain;
+  margin: 0 auto 0.6rem;
+  filter: drop-shadow(0 8px 26px rgba(0, 0, 0, 0.56));
+}
+
+.entry-gate-fallback-title {
+  margin: 0 0 0.68rem;
+  font-size: clamp(1.85rem, 5.5vw, 3.3rem);
+  letter-spacing: 0.05em;
+  color: var(--accent-primary);
+  text-transform: uppercase;
+}
+
+.entry-gate-tagline {
+  margin: 0;
+  color: #f8fafc;
+  font-size: clamp(0.96rem, 2.15vw, 1.28rem);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.entry-gate-age {
+  margin: 0.78rem 0 0;
+  color: #dbeafe;
+  font-size: clamp(0.82rem, 1.8vw, 1rem);
+  font-weight: 600;
+}
+
+.entry-gate-button {
+  margin-top: 1rem;
+  border: 1px solid color-mix(in srgb, var(--accent-primary) 70%, #ffffff 10%);
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--accent-primary), color-mix(in srgb, var(--accent-primary) 70%, #111827));
+  color: #04101f;
+  font-size: clamp(0.84rem, 1.9vw, 0.98rem);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  padding: 0.62rem 1.26rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.entry-gate-button:hover {
+  transform: translateY(-1px) scale(1.01);
+  filter: brightness(1.05);
+}
+
+.entry-gate-disclaimer {
+  position: absolute;
+  left: 50%;
+  bottom: 0.8rem;
+  transform: translateX(-50%);
+  z-index: 1;
+  margin: 0;
+  width: min(94vw, 980px);
+  text-align: center;
+  font-size: clamp(0.66rem, 1.45vw, 0.78rem);
+  line-height: 1.42;
+  color: rgba(226, 232, 240, 0.88);
+}
+
+@media (max-width: 640px) {
+  .entry-gate-content {
+    padding: 1.2rem 0.92rem;
+  }
+
+  .entry-gate-logo {
+    max-height: 132px;
+  }
+
+  .entry-gate-disclaimer {
+    bottom: 0.62rem;
+  }
+}

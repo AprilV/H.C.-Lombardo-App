@@ -1,7 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { ThemeProvider } from './contexts/ThemeContext';
 import SideMenu from './SideMenu';
+import EntryGate from './EntryGate';
 import Homepage from './Homepage';
 import TeamComparison from './TeamComparison';
 import TeamDetail from './TeamDetail';
@@ -15,11 +16,29 @@ import Settings from './Settings';
 import './App.css';
 
 const API_URL = (typeof window !== 'undefined' && (window.location.hostname === 'hclombardo.com' || window.location.hostname === 'www.hclombardo.com' || window.location.hostname.endsWith('.netlify.app'))) ? '' : (process.env.REACT_APP_API_URL ?? '');
+const ENTRY_GATE_KEY = 'hcl-entry-acknowledged';
 
 function App() {
+  const [hasAcknowledgedEntryGate, setHasAcknowledgedEntryGate] = useState(() => {
+    try {
+      return sessionStorage.getItem(ENTRY_GATE_KEY) === 'true';
+    } catch {
+      return false;
+    }
+  });
+
   useEffect(() => {
     testConnection();
   }, []);
+
+  const handleEntryAcknowledged = () => {
+    try {
+      sessionStorage.setItem(ENTRY_GATE_KEY, 'true');
+    } catch {
+      // Ignore storage access errors and still continue into the app.
+    }
+    setHasAcknowledgedEntryGate(true);
+  };
 
   const testConnection = async () => {
     try {
@@ -29,6 +48,14 @@ function App() {
       console.error('Connection test failed:', err);
     }
   };
+
+  if (!hasAcknowledgedEntryGate) {
+    return (
+      <ThemeProvider>
+        <EntryGate onEnter={handleEntryAcknowledged} />
+      </ThemeProvider>
+    );
+  }
 
   return (
     <ThemeProvider>
