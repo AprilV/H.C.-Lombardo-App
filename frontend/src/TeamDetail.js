@@ -369,11 +369,6 @@ function TeamDetail() {
                       <span className="game-date">{formatGameDate(game.game_date)}</span>
                     </div>
                     <div className="game-matchup-info">
-                      <img
-                        src={getTeamLogo(game.opponent)}
-                        alt={game.opponent}
-                        className="opponent-logo-sm"
-                      />
                       <span className="opponent-name">{location} {game.opponent}</span>
                       {game.is_divisional_game && <span className="division-badge">DIV</span>}
                     </div>

@@ -198,12 +198,6 @@
   min-width: 0;
 }
 
-.team-detail .opponent-logo-sm {
-  width: 24px;
-  height: 24px;
-  object-fit: contain;
-}
-
 .team-detail .opponent-name {
   font-weight: 700;
   color: var(--text-primary);
