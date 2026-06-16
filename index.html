@@ -9122,13 +9122,12 @@ function formatScheduleDateLabel(isoDate) {
 
 var DASH_SPRINT_STORAGE_KEY = 'pmforge_dashboard_selected_sprint_v1';
 var DASH_SPRINT_FOLLOW_CURRENT_KEY = 'pmforge_dashboard_follow_current_sprint_v1';
-var DASHBOARD_BUILD_STAMP = 'e8c2d890|2026-06-16T21:28:51Z';
-var DASHBOARD_BUILD_STAMP_PLACEHOLDER = '__PMFORGE_BUILD_' + 'STAMP__';
+var DASHBOARD_BUILD_STAMP = 'e8c2d890|2026-06-16T21:29:36Z';
 var DASHBOARD_BUILD_STAMP_KEY = 'pmforge_dashboard_build_stamp_v1';
 
 function getDashboardBuildHash() {
     var raw = String(DASHBOARD_BUILD_STAMP || '').trim();
-    if (!raw || raw === DASHBOARD_BUILD_STAMP_PLACEHOLDER) return 'local';
+    if (!raw) return 'local';
     var parts = raw.split('|');
     return String(parts[0] || raw).trim() || 'local';
 }
@@ -9137,7 +9136,7 @@ function enforceDashboardBuildFreshness() {
     try {
         if (!window.localStorage) return true;
         var current = String(DASHBOARD_BUILD_STAMP || '').trim();
-        if (!current || current === DASHBOARD_BUILD_STAMP_PLACEHOLDER) {
+        if (!current) {
             localStorage.removeItem(DASHBOARD_BUILD_STAMP_KEY);
             return true;
         }
