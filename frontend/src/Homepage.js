@@ -148,8 +148,6 @@ function Homepage() {
   const [bestBetsWeek, setBestBetsWeek] = useState(null);
   const [trackRecordLoading, setTrackRecordLoading] = useState(true);
   const [trackRecord, setTrackRecord] = useState(null);
-  const [showHowItWorks, setShowHowItWorks] = useState(false);
-  const [showGlossary, setShowGlossary] = useState(false);
   const navigate = useNavigate();
   const { theme, changeTheme } = useTheme();
 
@@ -680,53 +678,6 @@ function Homepage() {
           🔄 Refresh Standings
         </button>
       </div>
-
-      <div className="how-it-works-link-row">
-        <button
-          type="button"
-          className="how-it-works-toggle"
-          onClick={() => setShowHowItWorks((prev) => !prev)}
-        >
-          {showHowItWorks ? 'Hide how picks are made' : 'How picks are made'}
-        </button>
-        <button
-          type="button"
-          className="how-it-works-toggle"
-          onClick={() => setShowGlossary((prev) => !prev)}
-        >
-          {showGlossary ? 'Hide betting glossary' : 'New to betting? How to read this'}
-        </button>
-      </div>
-
-      {showHowItWorks && (
-        <section className="how-it-works-panel">
-          <h3>How Picks Are Built</h3>
-          <ul>
-            <li><strong>Team Power Ratings:</strong> We track team strength as results come in each week.</li>
-            <li><strong>Game Matchup Read:</strong> We forecast each game score and expected spread.</li>
-            <li><strong>Line Check:</strong> We compare our line to Vegas and flag the biggest gaps.</li>
-          </ul>
-          <p>Use this dashboard for spread edges first, then check line movement before placing a bet.</p>
-        </section>
-      )}
-
-      {showGlossary && (
-        <section className="how-it-works-panel glossary-panel">
-          <h3>Betting Glossary</h3>
-          <ul>
-            <li><strong>Spread:</strong> The points handicap used to balance both teams.</li>
-            <li><strong>The line:</strong> The posted spread from sportsbooks.</li>
-            <li><strong>Cover:</strong> Your team beats the spread, not just the game result.</li>
-            <li><strong>Favorite:</strong> The team expected to win, usually shown with a negative spread.</li>
-            <li><strong>Underdog:</strong> The team getting points, usually shown with a positive spread.</li>
-            <li><strong>Push:</strong> Final margin lands exactly on the spread, so bets are refunded.</li>
-            <li><strong>Over/Under (O/U):</strong> Bet on combined total points over or under the posted total.</li>
-            <li><strong>Moneyline:</strong> A straight pick on who wins the game.</li>
-            <li><strong>Our model + stars:</strong> Stars rate edge size from 1 to 5, with more stars meaning a bigger gap from Vegas.</li>
-          </ul>
-        </section>
-      )}
-
 
     </div>
   );
