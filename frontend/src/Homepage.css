@@ -5,6 +5,27 @@
   padding: 1.25rem 1.5rem 2rem;
   max-width: 1600px;
   margin: 0 auto;
+  --result-correct-fg: #86efac;
+  --result-correct-bg: rgba(34, 197, 94, 0.2);
+  --result-correct-border: rgba(34, 197, 94, 0.55);
+  --result-wrong-fg: #fca5a5;
+  --result-wrong-bg: rgba(239, 68, 68, 0.2);
+  --result-wrong-border: rgba(239, 68, 68, 0.55);
+  --result-pending-fg: #cbd5e1;
+  --result-pending-bg: rgba(148, 163, 184, 0.2);
+  --result-pending-border: rgba(148, 163, 184, 0.55);
+}
+
+[data-theme="classic-light"] .homepage {
+  --result-correct-fg: #166534;
+  --result-correct-bg: rgba(34, 197, 94, 0.16);
+  --result-correct-border: rgba(22, 101, 52, 0.35);
+  --result-wrong-fg: #991b1b;
+  --result-wrong-bg: rgba(239, 68, 68, 0.16);
+  --result-wrong-border: rgba(153, 27, 27, 0.35);
+  --result-pending-fg: #334155;
+  --result-pending-bg: rgba(148, 163, 184, 0.16);
+  --result-pending-border: rgba(51, 65, 85, 0.25);
 }
 
 /* Theme Selector Bar */
@@ -230,6 +251,66 @@
 .bet-line-compare {
   font-size: 0.8rem !important;
   margin-top: 0.2rem;
+}
+
+.best-bet-result-strip {
+  margin-top: 0.65rem;
+  padding-top: 0.55rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.best-bet-result-strip.scheduled .best-bet-final-line,
+.best-bet-result-strip.scheduled .best-bet-result-line {
+  color: var(--text-secondary);
+}
+
+.best-bet-result-strip.final .best-bet-final-line,
+.best-bet-result-strip.final .best-bet-result-line {
+  color: var(--text-primary);
+}
+
+.best-bet-final-line,
+.best-bet-result-line {
+  font-size: 0.8rem;
+  line-height: 1.35;
+}
+
+.best-bet-result-line {
+  margin-top: 0.15rem;
+  font-weight: 700;
+}
+
+.bet-results-line {
+  margin-top: 0.35rem;
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+
+.bet-result-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+}
+
+.bet-result-badge.correct {
+  color: var(--result-correct-fg);
+  background: var(--result-correct-bg);
+  border-color: var(--result-correct-border);
+}
+
+.bet-result-badge.wrong {
+  color: var(--result-wrong-fg);
+  background: var(--result-wrong-bg);
+  border-color: var(--result-wrong-border);
+}
+
+.bet-result-badge.unknown {
+  color: var(--result-pending-fg);
+  background: var(--result-pending-bg);
+  border-color: var(--result-pending-border);
 }
 
 .best-bets-state {

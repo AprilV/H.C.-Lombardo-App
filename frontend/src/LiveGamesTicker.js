@@ -36,11 +36,80 @@ const buildBlendedPick = (homeTeam, awayTeam, eloSpread, aiSpread) => {
   }
 
   const blended = Math.round(((elo + ai) / 2) * 2) / 2;
-  if (blended === 0) {
-    return "Pick'em";
+  const pickTeam = blended < 0 ? homeTeam : (blended > 0 ? awayTeam : null);
+  const display = blended === 0
+    ? "Pick'em"
+    : (blended < 0 ? `${homeTeam} ${blended}` : `${awayTeam} +${blended}`);
+
+  return {
+    pickTeam,
+    display,
+  };
+};
+
+const getModelResultMeta = (correct, label) => {
+  if (correct === true) {
+    return { className: 'correct', text: `${label} Covered`, icon: '✅' };
   }
 
-  return blended < 0 ? `${homeTeam} ${blended}` : `${awayTeam} +${blended}`;
+  if (correct === false) {
+    return { className: 'wrong', text: `${label} Missed`, icon: '❌' };
+  }
+
+  if (correct === 'push') {
+    return { className: 'unknown', text: `${label} Push`, icon: '➖' };
+  }
+
+  return { className: 'unknown', text: `${label} Pending`, icon: '⏳' };
+};
+
+const buildCoverOutcome = ({ gameStatus, homeScore, awayScore, homeTeam, awayTeam, pickTeam, vegasSpread }) => {
+  if (gameStatus !== 'final') {
+    return {
+      isFinal: false,
+      finalScoreLine: 'Scheduled - final result pending',
+      resultLine: 'Result pending',
+      resultMeta: getModelResultMeta(null, 'Pick')
+    };
+  }
+
+  const home = Number(homeScore);
+  const away = Number(awayScore);
+  const marketSpread = Number(vegasSpread);
+  const hasScores = Number.isFinite(home) && Number.isFinite(away);
+  const hasSpread = Number.isFinite(marketSpread);
+  const validTeam = pickTeam === homeTeam || pickTeam === awayTeam;
+
+  const finalScoreLine = hasScores
+    ? `Final: ${awayTeam} ${away} - ${homeTeam} ${home}`
+    : 'Final score unavailable';
+
+  if (!hasScores || !hasSpread || !validTeam) {
+    return {
+      isFinal: true,
+      finalScoreLine,
+      resultLine: 'Result pending',
+      resultMeta: getModelResultMeta(null, 'Pick')
+    };
+  }
+
+  const homeAdjustedMargin = home + marketSpread - away;
+  if (homeAdjustedMargin === 0) {
+    return {
+      isFinal: true,
+      finalScoreLine,
+      resultLine: `${pickTeam} pushed`,
+      resultMeta: getModelResultMeta('push', 'Pick')
+    };
+  }
+
+  const pickCovered = pickTeam === homeTeam ? homeAdjustedMargin > 0 : homeAdjustedMargin < 0;
+  return {
+    isFinal: true,
+    finalScoreLine,
+    resultLine: `${pickTeam} ${pickCovered ? 'covered' : 'missed'}`,
+    resultMeta: getModelResultMeta(pickCovered, 'Pick')
+  };
 };
 
 function LiveGamesTicker() {
@@ -279,6 +348,15 @@ function LiveGamesTicker() {
             const agreementSignal = game.elo_prediction && game.ai_prediction
               ? (game.elo_prediction === game.ai_prediction ? 'Strong play' : 'Lean')
               : null;
+            const coverOutcome = buildCoverOutcome({
+              gameStatus: game.status,
+              homeScore: game.home_score,
+              awayScore: game.away_score,
+              homeTeam: game.home_team,
+              awayTeam: game.away_team,
+              pickTeam: blendedPick?.pickTeam,
+              vegasSpread: game.vegas_spread
+            });
 
             return (
             <div key={index} className={`game-ticker-card ${game.status}`}>
@@ -332,17 +410,6 @@ function LiveGamesTicker() {
               </div>
 
               {/* Final Score Result */}
-              {game.status === 'final' && (
-                <div className="ticker-final-result">
-                  <span className="final-label">Final:</span>
-                  <span className="final-result">
-                    {game.home_score > game.away_score 
-                      ? `${game.home_team} won by ${game.home_score - game.away_score}`
-                      : `${game.away_team} won by ${game.away_score - game.home_score}`}
-                  </span>
-                </div>
-              )}
-
               {/* Predictions (if available) */}
               {(hasValue(game.elo_spread) || hasValue(game.ai_spread) || hasValue(game.vegas_spread)) && (
                 <div className="ticker-predictions">
@@ -351,10 +418,26 @@ function LiveGamesTicker() {
                       <div className="pred-left">
                         <span className="pred-icon">⭐</span>
                         <span className="pred-text" title="Main spread pick built from both internal systems">
-                          Top Pick: {blendedPick}
+                          Top Pick: {blendedPick.display}
                         </span>
                       </div>
                       {agreementSignal && <span className="blended-agreement">{agreementSignal}</span>}
+                    </div>
+                  )}
+                  {blendedPick && (
+                    <div className={`pred-line blended-outcome-row ${coverOutcome.isFinal ? 'final' : 'scheduled'}`}>
+                      <div className="pred-left">
+                        <span className="pred-text">
+                          {coverOutcome.isFinal
+                            ? `${coverOutcome.finalScoreLine} - ${coverOutcome.resultLine}`
+                            : coverOutcome.resultLine}
+                        </span>
+                      </div>
+                      {coverOutcome.isFinal && (
+                        <span className={`ticker-result-badge ${coverOutcome.resultMeta.className}`}>
+                          {coverOutcome.resultMeta.icon} {coverOutcome.resultMeta.text}
+                        </span>
+                      )}
                     </div>
                   )}
                   {hasValue(game.elo_spread) && (

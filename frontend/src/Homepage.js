@@ -45,6 +45,69 @@ const edgeToStars = (edgePoints) => {
   return 1;
 };
 
+const getModelResultMeta = (correct, label) => {
+  if (correct === true) {
+    return { className: 'correct', text: `${label} Covered`, icon: '✅' };
+  }
+
+  if (correct === false) {
+    return { className: 'wrong', text: `${label} Missed`, icon: '❌' };
+  }
+
+  return { className: 'unknown', text: `${label} Pending`, icon: '⏳' };
+};
+
+const buildCoverOutcome = ({ gameStatus, actual, homeTeam, awayTeam, pickTeam, vegasSpread }) => {
+  if (gameStatus !== 'final') {
+    return {
+      isFinal: false,
+      finalScoreLine: 'Scheduled - final result pending',
+      resultLine: 'Result pending',
+      resultMeta: getModelResultMeta(null, 'Pick')
+    };
+  }
+
+  const homeScore = toNumber(actual?.home_score);
+  const awayScore = toNumber(actual?.away_score);
+  const marketSpread = toNumber(vegasSpread);
+
+  const finalScoreLine = (homeScore !== null && awayScore !== null)
+    ? `Final: ${awayTeam} ${awayScore} - ${homeTeam} ${homeScore}`
+    : 'Final score unavailable';
+
+  if (
+    homeScore === null
+    || awayScore === null
+    || marketSpread === null
+    || (pickTeam !== homeTeam && pickTeam !== awayTeam)
+  ) {
+    return {
+      isFinal: true,
+      finalScoreLine,
+      resultLine: 'Result pending',
+      resultMeta: getModelResultMeta(null, 'Pick')
+    };
+  }
+
+  const homeAdjustedMargin = homeScore + marketSpread - awayScore;
+  if (homeAdjustedMargin === 0) {
+    return {
+      isFinal: true,
+      finalScoreLine,
+      resultLine: `${pickTeam} pushed`,
+      resultMeta: { className: 'unknown', text: 'Push', icon: '➖' }
+    };
+  }
+
+  const pickCovered = pickTeam === homeTeam ? homeAdjustedMargin > 0 : homeAdjustedMargin < 0;
+  return {
+    isFinal: true,
+    finalScoreLine,
+    resultLine: `${pickTeam} ${pickCovered ? 'covered ✓' : 'missed ✗'}`,
+    resultMeta: getModelResultMeta(pickCovered, 'Pick')
+  };
+};
+
 const formatTeamLine = (team, line) => {
   if (!team || line === null || line === undefined || Number.isNaN(Number(line))) {
     return 'N/A';
@@ -144,7 +207,7 @@ function Homepage() {
     }
   };
 
-  const fetchAgreementMap = async (season, week) => {
+  const fetchCombinedGameMap = async (season, week) => {
     if (!season || !week) {
       return new Map();
     }
@@ -156,27 +219,33 @@ function Homepage() {
         return new Map();
       }
 
-      const agreementMap = new Map();
+      const gameMap = new Map();
       data.predictions.forEach((prediction) => {
         const gameId = prediction.game_id;
         const homeTeam = prediction.home_team;
         const awayTeam = prediction.away_team;
+        const gameDetails = {
+          agreement: prediction.agreement,
+          gameStatus: prediction.game_status,
+          actual: prediction.actual || null,
+          vegasSpread: prediction.vegas_spread
+        };
 
         if (gameId) {
-          agreementMap.set(String(gameId), prediction.agreement);
+          gameMap.set(String(gameId), gameDetails);
         }
         if (homeTeam && awayTeam) {
-          agreementMap.set(`${awayTeam}@${homeTeam}`, prediction.agreement);
+          gameMap.set(`${awayTeam}@${homeTeam}`, gameDetails);
         }
       });
 
-      return agreementMap;
+      return gameMap;
     } catch (_err) {
       return new Map();
     }
   };
 
-  const rankBestBets = (predictions, agreementMap = new Map()) => {
+  const rankBestBets = (predictions, combinedGameMap = new Map()) => {
     const ranked = (predictions || []).map((prediction) => {
       const aiSpread = toNumber(prediction.ai_spread);
       const vegasSpread = toNumber(prediction.vegas_spread);
@@ -199,9 +268,19 @@ function Homepage() {
 
       const gameId = prediction.game_id ? String(prediction.game_id) : null;
       const matchupKey = `${awayTeam}@${homeTeam}`;
-      const agreementFlag = gameId && agreementMap.has(gameId)
-        ? agreementMap.get(gameId)
-        : agreementMap.get(matchupKey);
+      const combinedGame = gameId && combinedGameMap.has(gameId)
+        ? combinedGameMap.get(gameId)
+        : combinedGameMap.get(matchupKey);
+
+      const agreementFlag = combinedGame?.agreement;
+      const outcome = buildCoverOutcome({
+        gameStatus: combinedGame?.gameStatus,
+        actual: combinedGame?.actual,
+        homeTeam,
+        awayTeam,
+        pickTeam,
+        vegasSpread: combinedGame?.vegasSpread ?? vegasSpread
+      });
 
       const stars = edgeToStars(edgePoints);
       const confidenceStrong = agreementFlag === true;
@@ -223,6 +302,7 @@ function Homepage() {
         confidenceTone: confidenceStrong ? 'strong' : 'lean',
         actionText,
         whyLine,
+        outcome,
       };
     })
       .filter(Boolean)
@@ -243,12 +323,12 @@ function Homepage() {
       const season = toNumber(data?.season) || defaultSeason;
       const week = toNumber(data?.week);
       const predictions = Array.isArray(data?.predictions) ? data.predictions : [];
-      const agreementMap = await fetchAgreementMap(season, week);
+      const combinedGameMap = await fetchCombinedGameMap(season, week);
 
       seasonForTrackRecord = season;
       setBestBetsSeason(season);
       setBestBetsWeek(week);
-      setBestBets(rankBestBets(predictions, agreementMap));
+      setBestBets(rankBestBets(predictions, combinedGameMap));
     } catch (err) {
       setBestBets([]);
       setBestBetsError('Could not load this week\'s picks right now.');
@@ -386,6 +466,16 @@ function Homepage() {
                 <p className="bet-line-compare">
                   Our model: {formatTeamLine(bet.pickTeam, bet.aiLineForPick)} • Vegas: {formatMarketLine(bet.home_team, bet.away_team, bet.vegas_spread)}
                 </p>
+
+                <div className={`best-bet-result-strip ${bet.outcome?.isFinal ? 'final' : 'scheduled'}`}>
+                  <div className="best-bet-final-line">{bet.outcome?.finalScoreLine || 'Scheduled - final result pending'}</div>
+                  <div className="best-bet-result-line">{bet.outcome?.resultLine || 'Result pending'}</div>
+                  <div className="bet-results-line">
+                    <span className={`bet-result-badge ${bet.outcome?.resultMeta?.className || 'unknown'}`}>
+                      {bet.outcome?.resultMeta?.icon || '⏳'} {bet.outcome?.resultMeta?.text || 'Pick Pending'}
+                    </span>
+                  </div>
+                </div>
               </article>
             ))}
           </div>

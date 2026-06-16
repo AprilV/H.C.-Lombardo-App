@@ -4,6 +4,27 @@
   padding: 15px;
   margin-bottom: 25px;
   overflow: hidden;
+  --result-correct-fg: #86efac;
+  --result-correct-bg: rgba(34, 197, 94, 0.2);
+  --result-correct-border: rgba(34, 197, 94, 0.55);
+  --result-wrong-fg: #fca5a5;
+  --result-wrong-bg: rgba(239, 68, 68, 0.2);
+  --result-wrong-border: rgba(239, 68, 68, 0.55);
+  --result-pending-fg: #cbd5e1;
+  --result-pending-bg: rgba(148, 163, 184, 0.2);
+  --result-pending-border: rgba(148, 163, 184, 0.55);
+}
+
+[data-theme="classic-light"] .live-games-ticker {
+  --result-correct-fg: #166534;
+  --result-correct-bg: rgba(34, 197, 94, 0.16);
+  --result-correct-border: rgba(22, 101, 52, 0.35);
+  --result-wrong-fg: #991b1b;
+  --result-wrong-bg: rgba(239, 68, 68, 0.16);
+  --result-wrong-border: rgba(153, 27, 27, 0.35);
+  --result-pending-fg: #334155;
+  --result-pending-bg: rgba(148, 163, 184, 0.16);
+  --result-pending-border: rgba(51, 65, 85, 0.25);
 }
 
 .ticker-header-bar {
@@ -271,6 +292,19 @@
   border: 1px solid rgba(74, 222, 128, 0.4);
 }
 
+.pred-line.blended-outcome-row {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.pred-line.blended-outcome-row.scheduled .pred-text {
+  color: #cbd5e1;
+}
+
+.pred-line.blended-outcome-row.final .pred-text {
+  color: #ffffff;
+}
+
 .blended-agreement {
   font-size: 11px;
   font-weight: 700;
@@ -280,6 +314,34 @@
   background: rgba(16, 185, 129, 0.22);
   text-transform: uppercase;
   letter-spacing: 0.5px;
+}
+
+.ticker-result-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  margin-left: 10px;
+  white-space: nowrap;
+}
+
+.ticker-result-badge.correct {
+  color: var(--result-correct-fg);
+  background: var(--result-correct-bg);
+  border-color: var(--result-correct-border);
+}
+
+.ticker-result-badge.wrong {
+  color: var(--result-wrong-fg);
+  background: var(--result-wrong-bg);
+  border-color: var(--result-wrong-border);
+}
+
+.ticker-result-badge.unknown {
+  color: var(--result-pending-fg);
+  background: var(--result-pending-bg);
+  border-color: var(--result-pending-border);
 }
 
 .pred-check {
