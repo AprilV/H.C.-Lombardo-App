@@ -76,11 +76,6 @@ function SideMenu() {
             <span className="menu-text">AI Predictions</span>
           </Link>
 
-          <Link to="/model-performance" className={`menu-item ${isActive('/model-performance')}`} onClick={closeMenu}>
-            <span className="menu-icon">📉</span>
-            <span className="menu-text">Model Performance</span>
-          </Link>
-
           <div className="menu-divider"></div>
 
           <Link to="/admin" className={`menu-item ${isActive('/admin')}`} onClick={closeMenu}>
