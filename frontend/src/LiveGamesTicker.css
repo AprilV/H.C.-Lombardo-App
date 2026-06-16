@@ -185,8 +185,25 @@
   border-color: var(--border-color);
 }
 
+.game-ticker-card.in_progress:hover,
+.game-ticker-card.final:hover {
+  background: color-mix(in srgb, var(--accent-primary) 10%, var(--bg-card));
+  border-color: var(--accent-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px var(--shadow);
+}
+
 [data-theme="executive-dark"] .game-ticker-card:hover,
 [data-theme="classic-light"] .game-ticker-card:hover {
+  background: color-mix(in srgb, var(--accent-primary) 10%, var(--bg-card));
+  border-color: var(--accent-primary);
+  box-shadow: 0 6px 14px var(--shadow);
+}
+
+[data-theme="executive-dark"] .game-ticker-card.in_progress:hover,
+[data-theme="classic-light"] .game-ticker-card.in_progress:hover,
+[data-theme="executive-dark"] .game-ticker-card.final:hover,
+[data-theme="classic-light"] .game-ticker-card.final:hover {
   background: color-mix(in srgb, var(--accent-primary) 10%, var(--bg-card));
   border-color: var(--accent-primary);
   box-shadow: 0 6px 14px var(--shadow);
