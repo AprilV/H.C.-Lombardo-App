@@ -71,12 +71,6 @@ function Admin() {
           📊 AI Performance
         </button>
         <button
-          className={`admin-tab ${activeTab === 'technology' ? 'active' : ''}`}
-          onClick={() => setActiveTab('technology')}
-        >
-          ✨ Technology
-        </button>
-        <button
           className={`admin-tab ${activeTab === 'neural-net' ? 'active' : ''}`}
           onClick={() => setActiveTab('neural-net')}
         >
@@ -111,31 +105,6 @@ function Admin() {
             </div>
 
             <ModelPerformance />
-          </div>
-        )}
-
-        {activeTab === 'technology' && (
-          <div className="admin-section">
-            <h2>✨ Technology Experience</h2>
-            <div className="admin-iframe-intro">
-              <p>A cinematic look at the intelligence that powers every prediction.</p>
-              <p className="admin-iframe-subtext">Designed to give your decision process a premium edge.</p>
-            </div>
-
-            <div className="visualization-container">
-              <iframe
-                src="/admin-topology.html"
-                style={{
-                  width: '100%',
-                  height: '800px',
-                  border: 'none',
-                  borderRadius: '12px',
-                  background: 'rgba(10, 14, 39, 0.6)',
-                  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.4)'
-                }}
-                title="Technology Experience 3D"
-              />
-            </div>
           </div>
         )}
 
