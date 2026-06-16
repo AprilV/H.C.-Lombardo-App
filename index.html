@@ -2684,7 +2684,7 @@
                     <h4>React Frontend</h4>
                 </div>
                 <ul>
-                    <li>https://hclombardo.com/ (prod via Netlify) / Port 3000 (dev)</li>
+                    <li>Netlify production deploy: https://hclombardo.com/ · Port 3000 (dev)</li>
                     <li>15+ pages and components</li>
                     <li>Analytics, ML Predictions, Live Scores, Team tools</li>
                     <li>Auto-deploys from GitHub on push</li>
@@ -3948,8 +3948,8 @@
             <div class="about-card">
                 <h3>Infrastructure</h3>
                 <ul>
-                    <li>Frontend: Netlify (auto-deploy from GitHub)</li>
-                    <li>Custom domain: https://hclombardo.com/</li>
+                    <li>Frontend: Netlify (auto-deploy from GitHub to https://hclombardo.com/)</li>
+                    <li>Custom domain mapped in Netlify deploy: https://hclombardo.com/</li>
                     <li>Backend: AWS EC2 (systemd service)</li>
                     <li>Database: PostgreSQL 18 on EC2</li>
                     <li>CI/CD: GitHub → Netlify + EC2</li>
@@ -6069,9 +6069,9 @@ function createArchitecture() {
         pulsePhase: 0, material: frontendMat,
         name: 'React Frontend',
         tier: 'Tier 1: Presentation Layer',
-        port: '3000 (dev) / Netlify + hclombardo.com (prod)',
+        port: '3000 (dev) / Netlify deploy to hclombardo.com (prod)',
         technology: 'React 18 · Functional Components · Chart.js',
-        features: ['15+ pages and components', 'Analytics, ML Predictions, Live Scores', 'Team Comparison, Matchup Analyzer', 'Production domain: https://hclombardo.com/', 'Auto-deploys from GitHub on push', 'Responsive design'],
+        features: ['15+ pages and components', 'Analytics, ML Predictions, Live Scores', 'Team Comparison, Matchup Analyzer', 'Domain served by Netlify deploy: https://hclombardo.com/', 'Auto-deploys from GitHub on push', 'Responsive design'],
         communication: 'HTTP fetch() to Flask API (Port 5000)',
         files: 'frontend/src/App.js, Analytics.js, MLPredictionsRedesign.js...'
     };
