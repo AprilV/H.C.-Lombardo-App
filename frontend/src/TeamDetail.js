@@ -95,20 +95,49 @@ function TeamDetail() {
     return { response, data };
   };
 
+  const getTeamSummaryForSeason = async (targetSeason) => {
+    const { response, data } = await fetchJson(`${API_URL}/api/hcl/teams?season=${targetSeason}`);
+
+    if (!response.ok || !data.success || !Array.isArray(data.teams)) {
+      return null;
+    }
+
+    return data.teams.find((team) => (
+      team.team === teamAbbr || team.abbreviation === teamAbbr || team.abbr === teamAbbr
+    )) || null;
+  };
+
   const loadTeamData = async (startSeason) => {
     try {
       setLoading(true);
       setError(null);
       const initialSeason = startSeason ?? getDefaultSeason();
-      
-      // Load team name from /api/teams
-      const { data: teamsData } = await fetchJson(`${API_URL}/api/teams`);
-      const teams = Array.isArray(teamsData?.teams) ? teamsData.teams : [];
-      const team = teams.find(t => t.abbreviation === teamAbbr);
-      setTeamName(team?.name || teamAbbr);
 
-      // Try current season first, then walk backward until team stats exist.
-      for (let fallbackSeason = initialSeason; fallbackSeason >= MIN_NFL_SEASON; fallbackSeason -= 1) {
+      let candidateSeason = initialSeason;
+      let resolvedTeamName = teamAbbr;
+
+      // Pre-resolve a season that has completed team stats to avoid expected preseason 404s.
+      for (let checkSeason = initialSeason; checkSeason >= MIN_NFL_SEASON; checkSeason -= 1) {
+        const teamSummary = await getTeamSummaryForSeason(checkSeason);
+
+        if (!teamSummary) {
+          continue;
+        }
+
+        if (teamSummary.team_name) {
+          resolvedTeamName = teamSummary.team_name;
+        }
+
+        if (Number(teamSummary.games_played ?? 0) > 0) {
+          candidateSeason = checkSeason;
+          break;
+        }
+      }
+
+      setTeamName(resolvedTeamName);
+
+      // Try the best candidate season first, then walk backward until team stats exist.
+      for (let fallbackSeason = candidateSeason; fallbackSeason >= MIN_NFL_SEASON; fallbackSeason -= 1) {
         const { response: detailsResponse, data: detailsData } = await fetchJson(
           `${API_URL}/api/hcl/teams/${teamAbbr}?season=${fallbackSeason}`
         );
