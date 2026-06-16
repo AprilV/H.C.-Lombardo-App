@@ -9,6 +9,8 @@ function Admin() {
   const [activeTab, setActiveTab] = useState('system');
   const [serverStatus, setServerStatus] = useState(null);
   const [dbStats, setDbStats] = useState(null);
+  const [serverCheckedAt, setServerCheckedAt] = useState(null);
+  const [dbCheckedAt, setDbCheckedAt] = useState(null);
   const [isUpdating, setIsUpdating] = useState(false);
   const [updateMessage, setUpdateMessage] = useState(null);
 
@@ -25,16 +27,24 @@ function Admin() {
   const checkServerStatus = async () => {
     try {
       const response = await fetch(`${API_URL}/health`);
+      if (!response.ok) {
+        throw new Error('Health check failed');
+      }
       const data = await response.json();
       setServerStatus(data);
     } catch (err) {
       setServerStatus(null);
+    } finally {
+      setServerCheckedAt(Date.now());
     }
   };
 
   const fetchDatabaseStats = async () => {
     try {
       const response = await fetch(`${API_URL}/api/teams`);
+      if (!response.ok) {
+        throw new Error('Database check failed');
+      }
       const data = await response.json();
       if (data.success && data.teams) {
         const totalGames = data.teams.reduce((sum, t) => sum + (t.games_played || 0), 0);
@@ -44,10 +54,29 @@ function Admin() {
           games: totalGames,
           avgYards: (totalYards / data.teams.length).toFixed(1)
         });
+      } else {
+        setDbStats(null);
       }
     } catch (err) {
       setDbStats(null);
+    } finally {
+      setDbCheckedAt(Date.now());
     }
+  };
+
+  const apiOperational = Boolean(serverStatus);
+  const databaseOperational = Boolean(dbStats);
+  const allSystemsOperational = apiOperational && databaseOperational;
+
+  const formatCheckedAt = (value) => {
+    if (!value) {
+      return 'Checking...';
+    }
+    return new Date(value).toLocaleTimeString([], {
+      hour: 'numeric',
+      minute: '2-digit',
+      second: '2-digit'
+    });
   };
 
   const handleUpdatePredictions = async () => {
@@ -98,7 +127,7 @@ function Admin() {
           className={`admin-tab ${activeTab === 'topology' ? 'active' : ''}`}
           onClick={() => setActiveTab('topology')}
         >
-          🏗️ Architecture
+          🟢 System Status
         </button>
         <button 
           className={`admin-tab ${activeTab === 'performance' ? 'active' : ''}`}
@@ -201,25 +230,48 @@ function Admin() {
         )}
 
         {activeTab === 'topology' && (
-          <div className="admin-section">
-            <h2>🏗️ App Architecture - 3D Interactive</h2>
-            <div className="admin-iframe-intro">
-              <p>Interactive 3D visualization of how the app works internally</p>
-              <p className="admin-iframe-subtext">Drag to rotate • Scroll to zoom • Explore app layers</p>
+          <div className="admin-section admin-live-status">
+            <h2>🟢 System Status</h2>
+            <div className={`system-status-summary ${allSystemsOperational ? 'healthy' : 'issue'}`}>
+              <span className="system-status-summary-dot" aria-hidden="true"></span>
+              <span className="system-status-summary-text">
+                {allSystemsOperational ? 'All Systems Operational' : 'Service Issue Detected'}
+              </span>
             </div>
-            <div className="visualization-container">
-              <iframe 
-                src="/admin-topology.html" 
-                style={{
-                  width: '100%',
-                  height: '800px',
-                  border: 'none',
-                  borderRadius: '12px',
-                  background: 'rgba(10, 14, 39, 0.6)',
-                  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.4)'
-                }}
-                title="System Topology 3D"
-              />
+
+            <div className="system-status-grid">
+              <div className="system-status-card operational">
+                <div className="system-status-card-top">
+                  <h3>Application</h3>
+                  <span className="system-status-dot operational" aria-label="Application operational"></span>
+                </div>
+                <p className="system-status-label">Operational</p>
+                <p className="system-status-time">Live in browser</p>
+              </div>
+
+              <div className={`system-status-card ${apiOperational ? 'operational' : 'unavailable'}`}>
+                <div className="system-status-card-top">
+                  <h3>API Server</h3>
+                  <span
+                    className={`system-status-dot ${apiOperational ? 'operational' : 'unavailable'}`}
+                    aria-label={apiOperational ? 'API server operational' : 'API server unavailable'}
+                  ></span>
+                </div>
+                <p className="system-status-label">{apiOperational ? 'Operational' : 'Unavailable'}</p>
+                <p className="system-status-time">Last checked {formatCheckedAt(serverCheckedAt)}</p>
+              </div>
+
+              <div className={`system-status-card ${databaseOperational ? 'operational' : 'unavailable'}`}>
+                <div className="system-status-card-top">
+                  <h3>Database</h3>
+                  <span
+                    className={`system-status-dot ${databaseOperational ? 'operational' : 'unavailable'}`}
+                    aria-label={databaseOperational ? 'Database operational' : 'Database unavailable'}
+                  ></span>
+                </div>
+                <p className="system-status-label">{databaseOperational ? 'Operational' : 'Unavailable'}</p>
+                <p className="system-status-time">Last checked {formatCheckedAt(dbCheckedAt)}</p>
+              </div>
             </div>
           </div>
         )}
