@@ -106,7 +106,9 @@
   overflow-y: hidden;
   position: relative;
   background: color-mix(in srgb, var(--bg-card) 92%, transparent);
+  border: 1px solid var(--border-color);
   border-radius: 7px;
+  transition: all 0.2s ease;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none; /* Hide scrollbar for Firefox */
   -ms-overflow-style: none; /* Hide scrollbar for IE and Edge */
@@ -119,6 +121,18 @@
 /* Hide scrollbar for Chrome, Safari and Opera */
 .ticker-scroll::-webkit-scrollbar {
   display: none;
+}
+
+.ticker-scroll:hover {
+  border-color: var(--accent-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px var(--shadow);
+}
+
+[data-theme="executive-dark"] .ticker-scroll:hover,
+[data-theme="classic-light"] .ticker-scroll:hover {
+  border-color: var(--accent-primary);
+  box-shadow: 0 6px 14px var(--shadow);
 }
 
 .ticker-content {
