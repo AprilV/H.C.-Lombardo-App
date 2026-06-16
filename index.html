@@ -5273,7 +5273,7 @@ function syncDashLiveProgressNotice() {
     if (isProjectClosedBySchedule()) {
         var finalSprint = getFinalSprintMeta();
         var closedLabel = finalSprint && finalSprint.end
-            ? new Date(finalSprint.end).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' })
+            ? formatScheduleDateLabel(finalSprint.end)
             : 'project close';
         textEl.textContent = 'Project closure status: capstone term completed on ' + closedLabel + '. Final-sprint blockers remain archived for governance traceability.';
         host.style.display = 'block';
@@ -9029,6 +9029,12 @@ function isProjectClosedBySchedule(referenceDate) {
     return today > endDate;
 }
 
+function formatScheduleDateLabel(isoDate) {
+    var d = parseIsoDateLocal(isoDate, true);
+    if (!(d instanceof Date) || isNaN(d.getTime())) return '';
+    return d.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+}
+
 var DASH_SPRINT_STORAGE_KEY = 'pmforge_dashboard_selected_sprint_v1';
 var DASH_SPRINT_FOLLOW_CURRENT_KEY = 'pmforge_dashboard_follow_current_sprint_v1';
 
@@ -10088,7 +10094,7 @@ function buildRecentUpdatesForSprint(sprintNum, snapshot) {
     } else if (isProjectClosedBySchedule()) {
         var finalSprint = getFinalSprintMeta();
         var closedText = finalSprint && finalSprint.end
-            ? ('Capstone term closed on ' + new Date(finalSprint.end).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' }) + '. Final sprint board is preserved as archive evidence.')
+            ? ('Capstone term closed on ' + formatScheduleDateLabel(finalSprint.end) + '. Final sprint board is preserved as archive evidence.')
             : 'Capstone term closed. Final sprint board is preserved as archive evidence.';
         updates.push({
             title: 'Program Closure',
@@ -10224,7 +10230,7 @@ function loadSprintDashboard(num, options) {
         if (isProjectClosedBySchedule()) {
             var finalMetaBanner = getFinalSprintMeta();
             var closedOn = finalMetaBanner && finalMetaBanner.end
-                ? new Date(finalMetaBanner.end).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' })
+                ? formatScheduleDateLabel(finalMetaBanner.end)
                 : 'the capstone close date';
             lifecycleBanner.textContent = '🏁 Project Complete: capstone term closed on ' + closedOn + '. Dashboard now runs in archive/evidence mode.';
             lifecycleBanner.style.display = 'block';
@@ -10264,7 +10270,7 @@ function loadSprintDashboard(num, options) {
         var finalMeta = getFinalSprintMeta();
         var isClosed = isProjectClosedBySchedule();
         var closedSummary = finalMeta && finalMeta.end
-            ? ('Capstone term complete · final sprint closed ' + new Date(finalMeta.end).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' }))
+            ? ('Capstone term complete · final sprint closed ' + formatScheduleDateLabel(finalMeta.end))
             : 'Capstone term complete · final sprint closed';
         var nextReviewStr = nextSprint
             ? 'Next sprint: S' + nextSprint.num + ' — ' + nextSprint.theme + ' (' + nextSprint.displayDates + ')'
