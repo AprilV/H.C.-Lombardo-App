@@ -14,16 +14,18 @@ function EntryGate({ onEnter }) {
       <div className="entry-gate-overlay" aria-hidden="true"></div>
 
       <div className="entry-gate-content">
-        {!logoUnavailable ? (
-          <img
-            src={`${process.env.PUBLIC_URL}/pics/gatehat.png`}
-            alt="H.C. Lombardo"
-            className="entry-gate-logo"
-            onError={() => setLogoUnavailable(true)}
-          />
-        ) : (
-          <h1 className="entry-gate-fallback-title">H.C. Lombardo</h1>
-        )}
+        <div className={`entry-gate-logo-frame ${logoUnavailable ? 'fallback' : ''}`}>
+          {!logoUnavailable ? (
+            <img
+              src={`${process.env.PUBLIC_URL}/pics/gatehat.png`}
+              alt="H.C. Lombardo"
+              className="entry-gate-logo"
+              onError={() => setLogoUnavailable(true)}
+            />
+          ) : (
+            <h1 className="entry-gate-fallback-title">H.C. Lombardo</h1>
+          )}
+        </div>
 
         <p className="entry-gate-tagline">AI-Powered NFL Predictions. Find the Edge.</p>
         <p className="entry-gate-age">You must be 21 or older to enter.</p>
