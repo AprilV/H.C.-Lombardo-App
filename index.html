@@ -9650,6 +9650,17 @@ function buildClosedSprintBurndownActual(sprintNum, totalPoints, dayCtx, items) 
         series.push(Math.max(0, Math.round(remaining)));
     });
 
+    // If completion timestamps are sparse/late (common after closure backfills),
+    // avoid rendering a misleading last-day cliff that implies false schedule slip.
+    var changeCount = 0;
+    for (var c = 1; c < series.length; c++) {
+        if (series[c] !== series[c - 1]) changeCount++;
+    }
+    var lastPreZero = series.length > 1 ? Number(series[series.length - 2] || 0) : 0;
+    if (series.length >= 8 && changeCount <= 2 && lastPreZero > 0) {
+        return buildIdealBurndownSeries(totalPoints, series.length);
+    }
+
     if (series.length) series[series.length - 1] = 0;
     return series;
 }
@@ -9985,9 +9996,7 @@ function buildActiveSprintSnapshot(sprintNum, archiveSnapshot) {
         snapshot.burndown.max = Math.max(snapshot.burndown.max || 0, burndownProgress.total || 0, 10);
     }
 
-    if (!isClosedCurrentSprint) {
-        recomputeBurnupSeriesFromBacklog(snapshot, items);
-    }
+    recomputeBurnupSeriesFromBacklog(snapshot, items);
 
     var velocityIndex = typeof snapshot.velocity.activeIndex === 'number'
         ? snapshot.velocity.activeIndex
@@ -9998,9 +10007,7 @@ function buildActiveSprintSnapshot(sprintNum, archiveSnapshot) {
         snapshot.velocity.activeIndex = velocityIndex;
     }
 
-    if (!isClosedCurrentSprint) {
-        syncVelocitySeriesFromBacklog(snapshot, items, sprintNum);
-    }
+    syncVelocitySeriesFromBacklog(snapshot, items, sprintNum);
 
     snapshot.severity = severity;
 
