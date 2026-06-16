@@ -1,121 +1,183 @@
 # H.C. Lombardo NFL Analytics App
 
-**Complete Testing Environment** - Mirrors live production system on AWS Amplify + EC2
+H.C. Lombardo is an NFL analytics and AI prediction platform built for everyday bettors. The product focuses on plain-English verdicts, transparent performance tracking, and AI-vs-Vegas comparisons so users can quickly understand where the edge is.
 
-## Architecture
+Educational and entertainment purpose only. Nothing in this project should be interpreted as financial advice.
 
-- **Frontend**: React → AWS Amplify (auto-deploy from GitHub)
-- **Backend**: Flask API → EC2 (manual, approved deployments)  
-- **Database**: PostgreSQL on EC2 localhost
-- **Data Source**: NFLverse (free NFL play-by-play data)
+## Documentation Map
 
-## Project Structure
+- High-level architecture: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+- AI execution and repo governance: [docs/ai_reference](docs/ai_reference)
+- Sprint artifacts and delivery evidence: [docs/sprints](docs/sprints)
 
+## Overview
+
+This platform combines historical NFL data, live feeds, and ML predictions into a single workflow:
+
+- Evaluate weekly matchups
+- Compare model calls against sportsbook lines
+- Track long-term AI-vs-Vegas performance
+- Present results in a user-friendly, confidence-oriented UI
+
+## System Architecture
+
+- Frontend: React single-page app, deployed on Netlify
+- Backend: Flask REST API on an AWS EC2 instance (us-east-2), running as a systemd service on port 5000
+- Database: PostgreSQL on the same EC2 host (NFL games, team stats, predictions, betting lines)
+- ML stack:
+	- XGBoost winner classifier
+	- XGBoost spread regressor
+	- Elo ratings system
+- Model artifact location on EC2:
+	- `ml/models/xgb_winner.pkl`
+	- `ml/models/xgb_spread.pkl`
+	- `ml/models/elo_ratings_current.json`
+- Data sources:
+	- NFLverse (historical play-by-play; 1999-2025)
+	- ESPN API (live data)
+- PM Forge / Agile dashboard:
+	- Published separately via GitHub Pages from `gh-pages`
+
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for details.
+
+## Local Development
+
+### Prerequisites
+
+- Node.js (for frontend)
+- Python 3.11+ and virtual environment tooling
+- PostgreSQL (local or remote dev database)
+
+### Frontend
+
+```bash
+cd frontend
+npm install
+npm start
 ```
-H.C Lombardo App/
-├── frontend/              # React app
-│   ├── src/              # Source code
-│   ├── public/           # Static assets
-│   └── build/            # Production build
-│
-├── docs/                  # All documentation
-│   ├── ai_reference/     # AI assistant guides (READ THESE FIRST)
-│   ├── deployment/       # Deployment guides
-│   ├── sessions/         # Session references
-│   └── sprints/          # Sprint documentation
-│
-├── scripts/               # Python scripts organized by purpose
-│   ├── data_loading/     # Data ingestion & updates
-│   ├── verification/     # Testing & verification
-│   └── maintenance/      # Database maintenance
-│
-├── .github/workflows/     # GitHub Actions (auto-updates)
-├── templates/             # Flask HTML templates
-├── ml/                    # Machine learning models
-└── [Root Python files]    # Core API files only
+
+### Backend
+
+```bash
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+python api_server.py
 ```
 
-## Quick Start
+You can also use repo control scripts:
 
-### Local Development
-```powershell
-# Primary control commands (recommended)
+```bash
 python startup.py
-
-# Stop all services
 python shutdown.py
-
-# Convenience wrappers (optional)
-START-DEV.bat
-STOP.bat
 ```
 
-### Quick Health Check
-```powershell
-# Verify API + database connectivity
-python health_check.py
+### Environment Variables
+
+Use environment variables (or `.env`) for sensitive values. Never commit real secrets.
+
+Required placeholders:
+
+- `DB_HOST=<DB_HOST_PLACEHOLDER>`
+- `DB_PORT=<DB_PORT_PLACEHOLDER>`
+- `DB_NAME=<DB_NAME_PLACEHOLDER>`
+- `DB_USER=<DB_USER_PLACEHOLDER>`
+- `DB_PASSWORD=<DB_PASSWORD_PLACEHOLDER>`
+- `REACT_APP_API_URL=<API_BASE_URL_PLACEHOLDER>`
+
+Notes:
+
+- In production, frontend is served on Netlify and calls the production API base URL.
+- In local development, set `REACT_APP_API_URL` to your local or dev API endpoint.
+
+## Deployment
+
+### Frontend (Netlify)
+
+- Branch: `master`
+- Flow: push to `master` -> Netlify auto-builds and deploys
+- CI behavior: `CI=true`, so unused vars/imports fail builds
+
+### Backend (EC2)
+
+Typical release flow:
+
+1. Connect to EC2 via AWS Systems Manager Session Manager
+2. Pull latest `master`
+3. Restart Flask service
+
+```bash
+sudo systemctl restart <FLASK_SERVICE_NAME>
+sudo systemctl status <FLASK_SERVICE_NAME>
 ```
 
-Expected output includes successful database connectivity, and API/frontend readiness checks when those services are running.
+Infrastructure placeholders (do not replace in public docs):
 
-### Testing Before Deployment
-1. Make changes in local environment
-2. Test thoroughly with `python startup.py` (or `START-DEV.bat`)
-3. Open a pull request and review changes
-4. Merge to `master`
-5. Dashboard changes in `pmforge_dashboard/index.html` auto-publish to `gh-pages` via GitHub Actions
+- EC2 host: `<EC2_HOST_PLACEHOLDER>`
+- AWS account: `<AWS_ACCOUNT_ID_PLACEHOLDER>`
 
-## Core Files
+### PM Forge / Agile Dashboard
 
-### Backend API (Flask)
-- `api_server.py` - Main Flask application
-- `api_routes_hcl.py` - Historical data endpoints
-- `api_routes_ml.py` - ML prediction endpoints  
-- `api_routes_live_scores.py` - Live scores (ESPN)
-- `db_config.py` - Database configuration
+- Published from branch: `gh-pages`
+- Hosting: GitHub Pages
 
-### Data Loading
-- `scripts/data_loading/ingest_historical_games.py` - Load NFL game data
-- `scripts/data_loading/update_2025_with_epa.py` - Calculate EPA stats
-- `scripts/data_loading/auto_update_service.py` - Continuous updates
+## Backup and Recovery
 
-### Documentation
-- `README.md` - Public project overview and local run guidance
-- `docs/deployment/DEPLOYMENT_GUIDE.md` - Deployment and environment notes
-- `docs/ai_reference/ARCHITECTURE.md` - System architecture details
-- `docs/sprints/` - Sprint evidence and delivery artifacts
+### Backup Strategy
 
-## GitHub Actions
+- Code backup:
+	- `master` branch: application code
+	- `gh-pages` branch: PM Forge dashboard publishing branch
+- Database and model backup target:
+	- S3 bucket: `<S3_BUCKET_PLACEHOLDER>`
+	- Prefix format: `ec2-backups/YYYYMMDD_HHMMSS/`
 
-Manual production data update workflow (approval required):
-1. Run the production workflow using `workflow_dispatch`
-2. Pull latest approved code on EC2
-3. Load selected season data into production schema (`hcl`)
-4. Verify production counts/health before release sign-off
+### Backup Procedure (Generic)
 
-Release cadence guardrail:
-1. Production releases are batched by ticket bundle only
-2. Minimum bundle size is 3 TA tickets (3+ rule)
-3. No per-subtask production pushes
+1. Create database backup (custom PostgreSQL format):
 
-## Database
+```bash
+pg_dump -Fc -h <DB_HOST_PLACEHOLDER> -U <DB_USER_PLACEHOLDER> -d <DB_NAME_PLACEHOLDER> -f nfl_analytics.dump
+```
 
-PostgreSQL on EC2 localhost:
-- Schema: `hcl` (historical data 1999-2025)
-- 7,263 games, 14,398 team-game records
-- 64 statistical metrics per game including EPA
+2. Archive ML models:
 
-## Important Notes
+```bash
+tar -czf ml_models.tar.gz ml/models/
+```
 
-- **No separate production/test environments** - This IS the test environment
-- **Production is live** on AWS Amplify + EC2
-- **Always test locally before pushing to GitHub**
-- **Read AI reference docs before making changes**
+3. Upload both artifacts to S3:
 
-## Support
+```bash
+aws s3 cp nfl_analytics.dump s3://<S3_BUCKET_PLACEHOLDER>/ec2-backups/<TIMESTAMP_PLACEHOLDER>/
+aws s3 cp ml_models.tar.gz s3://<S3_BUCKET_PLACEHOLDER>/ec2-backups/<TIMESTAMP_PLACEHOLDER>/
+```
 
-Program: Senior Capstone Project  
-Student: April V. Sykes  
-Advisor: Richard Becker  
-Institution: Olympic College  
-Term: Spring 2026 (April 6 – June 13)
+### Recovery Procedure (Generic)
+
+1. Download backup artifacts from S3
+2. Restore database:
+
+```bash
+pg_restore -h <DB_HOST_PLACEHOLDER> -U <DB_USER_PLACEHOLDER> -d <DB_NAME_PLACEHOLDER> --clean --if-exists nfl_analytics.dump
+```
+
+3. Restore models:
+
+```bash
+tar -xzf ml_models.tar.gz -C .
+```
+
+## Security Notes
+
+- Credentials are stored in environment variables, not source code.
+- Public documentation and UI intentionally avoid exposing infrastructure identifiers (IPs, account IDs, bucket names, credentials).
+- Secrets must never be committed to Git history, docs, screenshots, or logs.
+
+## Capstone Context
+
+- Program: Senior Capstone Project
+- Student: April V. Sykes
+- Advisor: Richard Becker
+- Institution: Olympic College
+- Term: Spring 2026

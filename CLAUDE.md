@@ -8,7 +8,7 @@ NFL analytics web app — senior capstone project at Olympic College.
 - **Term**: Spring 2026 (April 6 – June 13)
 
 ## Architecture
-- **Frontend**: React (port 3000) → deployed to AWS Amplify (auto-deploy from GitHub)
+- **Frontend**: React (port 3000) → deployed to Netlify (auto-deploy from GitHub)
 - **Backend**: Flask API (port 5000) → deployed to EC2 (auto-pull from GitHub)
 - **Database**: PostgreSQL on EC2 localhost, schema `hcl`, ~7,263 games (1999–2025)
 - **Data Source**: NFLverse (play-by-play), ESPN API (live scores/standings)
@@ -44,7 +44,7 @@ STOP.bat
 ```
 
 ## Deployment
-- Push to GitHub → auto-deploys frontend to AWS Amplify, backend to EC2
+- Push to GitHub → auto-deploys frontend to Netlify, backend to EC2
 - Always test locally with `START-DEV.bat` before pushing
 - No separate staging environment — local IS the test environment
 
