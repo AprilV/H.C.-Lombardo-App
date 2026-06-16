@@ -2401,6 +2401,8 @@
         <span>Dashboard last updated: <strong style="color:#f1f5f9;" id="dash-last-updated"></strong></span>
     </div>
 
+    <div id="project-lifecycle-banner" style="display:none; margin-bottom:1rem; background:linear-gradient(120deg, rgba(16,185,129,0.2), rgba(59,130,246,0.16)); border:1px solid rgba(16,185,129,0.55); border-radius:0.6rem; padding:0.62rem 0.9rem; color:#d1fae5; font-size:0.82rem; line-height:1.45;"></div>
+
     <!-- Project identity row -->
     <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:1rem; margin-bottom:1.25rem;">
         <div style="flex:1 1 680px; min-width:320px;">
@@ -5267,6 +5269,16 @@ function syncDashLiveProgressNotice() {
     var host = document.getElementById('dash-live-progress');
     var textEl = document.getElementById('dash-live-progress-text');
     if (!host || !textEl) return;
+
+    if (isProjectClosedBySchedule()) {
+        var finalSprint = getFinalSprintMeta();
+        var closedLabel = finalSprint && finalSprint.end
+            ? new Date(finalSprint.end).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' })
+            : 'project close';
+        textEl.textContent = 'Project closure status: capstone term completed on ' + closedLabel + '. Final-sprint blockers remain archived for governance traceability.';
+        host.style.display = 'block';
+        return;
+    }
 
     var selectedSprint = parseInt(CURRENT_DASH_SPRINT, 10);
     if (isNaN(selectedSprint) || selectedSprint !== 16) {
@@ -9000,6 +9012,23 @@ function getManualCurrentSprintOverride() {
     return exists ? n : null;
 }
 
+function getFinalSprintMeta() {
+    if (!Array.isArray(SPRINT_SCHEDULE) || !SPRINT_SCHEDULE.length) return null;
+    return SPRINT_SCHEDULE[SPRINT_SCHEDULE.length - 1] || null;
+}
+
+function isProjectClosedBySchedule(referenceDate) {
+    var finalSprint = getFinalSprintMeta();
+    if (!finalSprint || !finalSprint.end) return false;
+
+    var today = referenceDate instanceof Date ? new Date(referenceDate.getTime()) : new Date();
+    today.setHours(0,0,0,0);
+
+    var endDate = parseIsoDateLocal(finalSprint.end, true);
+    if (!(endDate instanceof Date) || isNaN(endDate.getTime())) return false;
+    return today > endDate;
+}
+
 var DASH_SPRINT_STORAGE_KEY = 'pmforge_dashboard_selected_sprint_v1';
 var DASH_SPRINT_FOLLOW_CURRENT_KEY = 'pmforge_dashboard_follow_current_sprint_v1';
 
@@ -9896,7 +9925,9 @@ function getEffectiveSprintSnapshot(sprintNum) {
     var n = parseInt(sprintNum, 10);
     if (isNaN(n)) n = getCurrentSprint();
     var archiveSnapshot = SPRINT_ARCHIVE[n];
-    if (n !== getCurrentSprint()) {
+    var currentSprint = getCurrentSprint();
+    var isClosedCurrent = (n === currentSprint) && isProjectClosedBySchedule() && getSprintStatusByDate(n) === 'completed';
+    if (n !== currentSprint || isClosedCurrent) {
         var archived = cloneSprintSnapshot(archiveSnapshot) || createRuntimeSprintSnapshot(n);
         var liveItems = window.PB_ITEMS || [];
         var status = getSprintStatusByDate(n);
@@ -10054,6 +10085,15 @@ function buildRecentUpdatesForSprint(sprintNum, snapshot) {
             title: 'Next Sprint Preview — S' + nextSprint.num,
             text: nextSprint.theme + ' · Starts ' + nextSprint.displayDates + '.'
         });
+    } else if (isProjectClosedBySchedule()) {
+        var finalSprint = getFinalSprintMeta();
+        var closedText = finalSprint && finalSprint.end
+            ? ('Capstone term closed on ' + new Date(finalSprint.end).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' }) + '. Final sprint board is preserved as archive evidence.')
+            : 'Capstone term closed. Final sprint board is preserved as archive evidence.';
+        updates.push({
+            title: 'Program Closure',
+            text: closedText
+        });
     }
 
     updates.push({
@@ -10179,6 +10219,21 @@ function loadSprintDashboard(num, options) {
     var s = getEffectiveSprintSnapshot(sprintNum);
     if (!s) return;
 
+    var lifecycleBanner = document.getElementById('project-lifecycle-banner');
+    if (lifecycleBanner) {
+        if (isProjectClosedBySchedule()) {
+            var finalMetaBanner = getFinalSprintMeta();
+            var closedOn = finalMetaBanner && finalMetaBanner.end
+                ? new Date(finalMetaBanner.end).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' })
+                : 'the capstone close date';
+            lifecycleBanner.textContent = '🏁 Project Complete: capstone term closed on ' + closedOn + '. Dashboard now runs in archive/evidence mode.';
+            lifecycleBanner.style.display = 'block';
+        } else {
+            lifecycleBanner.textContent = '';
+            lifecycleBanner.style.display = 'none';
+        }
+    }
+
     // Update dropdown label and highlight active option
     var lbl = document.getElementById('dash-sprint-label');
     if (lbl) lbl.textContent = s.label + (s.status === 'completed' ? ' (Completed)' : s.status === 'active' ? ' (Active)' : ' (Upcoming)');
@@ -10206,9 +10261,14 @@ function loadSprintDashboard(num, options) {
         var nextSprint = (window.SPRINT_SCHEDULE || []).find(function(sp) {
             return sp && sp.num > currentNum;
         });
+        var finalMeta = getFinalSprintMeta();
+        var isClosed = isProjectClosedBySchedule();
+        var closedSummary = finalMeta && finalMeta.end
+            ? ('Capstone term complete · final sprint closed ' + new Date(finalMeta.end).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' }))
+            : 'Capstone term complete · final sprint closed';
         var nextReviewStr = nextSprint
             ? 'Next sprint: S' + nextSprint.num + ' — ' + nextSprint.theme + ' (' + nextSprint.displayDates + ')'
-            : 'Final sprint in progress';
+            : (isClosed ? closedSummary : 'Final sprint in progress');
         ragDetail.textContent = 'Updated: ' + updatedStr + '  ·  ' + nextReviewStr;
     }
 
