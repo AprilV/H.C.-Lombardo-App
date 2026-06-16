@@ -19,6 +19,41 @@ const getTeamLogoName = (abbr) => {
   return (teamLogoMap[abbr] || abbr).toLowerCase();
 };
 
+const toNumber = (value) => {
+  const n = Number(value);
+  return Number.isFinite(n) ? n : null;
+};
+
+const formatTeamLine = (team, line) => {
+  if (!team || line === null || line === undefined || Number.isNaN(Number(line))) {
+    return 'N/A';
+  }
+
+  const value = Number(line);
+  if (value === 0) {
+    return `${team} PK`;
+  }
+
+  return `${team} ${value > 0 ? '+' : ''}${value.toFixed(1)}`;
+};
+
+const formatMarketLine = (homeTeam, awayTeam, homeSpread) => {
+  if (!homeTeam || !awayTeam || homeSpread === null || homeSpread === undefined || Number.isNaN(Number(homeSpread))) {
+    return 'N/A';
+  }
+
+  const spread = Number(homeSpread);
+  if (spread === 0) {
+    return 'PK';
+  }
+
+  if (spread < 0) {
+    return `${homeTeam} ${spread.toFixed(1)}`;
+  }
+
+  return `${awayTeam} -${Math.abs(spread).toFixed(1)}`;
+};
+
 // NFL Divisions
 const NFL_STRUCTURE = {
   AFC: {
@@ -39,11 +74,21 @@ function Homepage() {
   const defaultSeason = getDefaultSeason();
   const [teams, setTeams] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [bestBetsLoading, setBestBetsLoading] = useState(true);
+  const [bestBetsError, setBestBetsError] = useState(null);
+  const [bestBets, setBestBets] = useState([]);
+  const [bestBetsSeason, setBestBetsSeason] = useState(defaultSeason);
+  const [bestBetsWeek, setBestBetsWeek] = useState(null);
+  const [trackRecordLoading, setTrackRecordLoading] = useState(true);
+  const [trackRecord, setTrackRecord] = useState(null);
+  const [trackRecordSeason, setTrackRecordSeason] = useState(defaultSeason);
+  const [showHowItWorks, setShowHowItWorks] = useState(false);
   const navigate = useNavigate();
   const { theme, changeTheme } = useTheme();
 
   useEffect(() => {
     fetchTeams();
+    fetchBettorAnswers();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -58,6 +103,95 @@ function Homepage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const fetchTrackRecord = async (seasonToLoad) => {
+    setTrackRecordLoading(true);
+    try {
+      const response = await fetch(`${API_URL}/api/ml/ai-vs-vegas-scoreboard/${seasonToLoad}`);
+      const data = await response.json();
+
+      if (data.success) {
+        setTrackRecord(data.season_summary || null);
+        setTrackRecordSeason(seasonToLoad);
+      } else {
+        setTrackRecord(null);
+      }
+    } catch (err) {
+      setTrackRecord(null);
+    } finally {
+      setTrackRecordLoading(false);
+    }
+  };
+
+  const rankBestBets = (predictions) => {
+    const ranked = (predictions || []).map((prediction) => {
+      const aiSpread = toNumber(prediction.ai_spread);
+      const vegasSpread = toNumber(prediction.vegas_spread);
+      const homeTeam = prediction.home_team;
+      const awayTeam = prediction.away_team;
+
+      if (aiSpread === null || vegasSpread === null || !homeTeam || !awayTeam) {
+        return null;
+      }
+
+      let pickTeam = prediction.predicted_winner;
+      if (pickTeam !== homeTeam && pickTeam !== awayTeam) {
+        pickTeam = aiSpread <= 0 ? homeTeam : awayTeam;
+      }
+
+      const aiLineForPick = pickTeam === homeTeam ? aiSpread : -aiSpread;
+      const vegasLineForPick = pickTeam === homeTeam ? vegasSpread : -vegasSpread;
+      const lineGap = Number((vegasLineForPick - aiLineForPick).toFixed(1));
+      const edgePoints = Math.abs(lineGap);
+
+      let edgeStatement = `Biggest disagreement this week: ${pickTeam} by ${edgePoints.toFixed(1)} points.`;
+      if (lineGap > 0) {
+        edgeStatement = `AI sees ${pickTeam} as ${edgePoints.toFixed(1)} points better than the market line.`;
+      } else if (lineGap < 0) {
+        edgeStatement = `The market line is ${edgePoints.toFixed(1)} points stronger on ${pickTeam} than the AI line.`;
+      }
+
+      return {
+        ...prediction,
+        pickTeam,
+        aiLineForPick,
+        vegasLineForPick,
+        edgePoints,
+        edgeStatement,
+      };
+    })
+      .filter(Boolean)
+      .sort((a, b) => b.edgePoints - a.edgePoints);
+
+    return ranked.slice(0, 5);
+  };
+
+  const fetchBettorAnswers = async () => {
+    setBestBetsLoading(true);
+    setBestBetsError(null);
+
+    let seasonForTrackRecord = defaultSeason;
+    try {
+      const response = await fetch(`${API_URL}/api/ml/predict-upcoming`);
+      const data = await response.json();
+
+      const season = toNumber(data?.season) || defaultSeason;
+      const week = toNumber(data?.week);
+      const predictions = Array.isArray(data?.predictions) ? data.predictions : [];
+
+      seasonForTrackRecord = season;
+      setBestBetsSeason(season);
+      setBestBetsWeek(week);
+      setBestBets(rankBestBets(predictions));
+    } catch (err) {
+      setBestBets([]);
+      setBestBetsError('Could not load this week\'s picks right now.');
+    } finally {
+      setBestBetsLoading(false);
+    }
+
+    fetchTrackRecord(seasonForTrackRecord);
   };
 
   const getTeamByAbbr = (abbr) => {
@@ -94,6 +228,22 @@ function Homepage() {
     navigate(`/team/${abbr}`);
   };
 
+  const buildTrackRecordLine = () => {
+    if (!trackRecord) {
+      return 'Track record updates when final scores are posted.';
+    }
+
+    const aiPct = toNumber(trackRecord.ai_pct);
+    const vegasPct = toNumber(trackRecord.vegas_pct);
+    const totalGames = toNumber(trackRecord.games) || 0;
+
+    if (aiPct === null || vegasPct === null || totalGames === 0) {
+      return 'Track record updates when enough final scores are in.';
+    }
+
+    return `HC Lombardo AI: ${aiPct.toFixed(1)}% against the spread this season — Vegas: ${vegasPct.toFixed(1)}%.`;
+  };
+
   if (loading) {
     return (
       <div className="homepage-loading">
@@ -123,33 +273,62 @@ function Homepage() {
       {/* Live Games Ticker */}
       <LiveGamesTicker />
 
-      {/* AI Prediction Methodology */}
-      <div className="prediction-methodology">
-        <h3>🤖 Our Prediction Systems</h3>
-        <div className="methodology-grid">
-          <div className="method-card">
-            <div className="method-icon">📊</div>
-            <div className="method-title">ELO Rating System</div>
-            <div className="method-desc">Dynamic team strength ratings updated after every game, accounting for margin of victory, home-field advantage, and recent performance trends. Proven methodology used by FiveThirtyEight.</div>
-          </div>
-          <div className="method-card">
-            <div className="method-icon">⚡</div>
-            <div className="method-title">XGBoost ML Model</div>
-            <div className="method-desc">Gradient boosting trained on 2020-{defaultSeason} NFL data analyzing 50+ statistical features including offensive efficiency, defensive metrics, and situational performance.</div>
-          </div>
-          <div className="method-card">
-            <div className="method-icon">🎰</div>
-            <div className="method-title">Vegas Comparison</div>
-            <div className="method-desc">Both prediction systems are displayed alongside Vegas spreads, allowing you to identify value opportunities where our models disagree with the betting market.</div>
-          </div>
+      <section className="best-bets-section">
+        <div className="section-heading-row">
+          <h2>This Week&apos;s Best Bets</h2>
+          <span className="section-meta">
+            {bestBetsWeek ? `Week ${bestBetsWeek} • ${bestBetsSeason}` : `${bestBetsSeason}`}
+          </span>
         </div>
-      </div>
+
+        {bestBetsLoading ? (
+          <p className="best-bets-state">Loading this week&apos;s lines...</p>
+        ) : bestBetsError ? (
+          <p className="best-bets-state">{bestBetsError}</p>
+        ) : bestBets.length === 0 ? (
+          <p className="best-bets-state">No games this week - check back when the season&apos;s live.</p>
+        ) : (
+          <div className="best-bets-grid">
+            {bestBets.map((bet, idx) => (
+              <article key={bet.game_id || `${bet.home_team}-${bet.away_team}-${idx}`} className="best-bet-card">
+                <div className="best-bet-rank">#{idx + 1} Edge</div>
+                <h3>{bet.away_team} @ {bet.home_team}</h3>
+                <p className="bet-pick">Pick: {bet.pickTeam} to cover</p>
+                <p>AI line: {formatTeamLine(bet.pickTeam, bet.aiLineForPick)}</p>
+                <p>Vegas line: {formatMarketLine(bet.home_team, bet.away_team, bet.vegas_spread)}</p>
+                <p className="bet-edge-note">{bet.edgeStatement}</p>
+              </article>
+            ))}
+          </div>
+        )}
+      </section>
+
+      <section className="track-record-strip">
+        <div>
+          <h3>How&apos;s the AI Doing?</h3>
+          <p>
+            {trackRecordLoading ? 'Loading season track record...' : buildTrackRecordLine()}
+          </p>
+          {!trackRecordLoading && trackRecord && (toNumber(trackRecord.games) || 0) > 0 && (
+            <p className="track-record-detail">
+              Season sample: {trackRecord.games} games • AI ATS covers: {trackRecord.ai_wins} • Vegas ATS covers: {trackRecord.vegas_wins} • Pushes: {trackRecord.pushes}
+            </p>
+          )}
+        </div>
+        <button
+          className="track-record-btn"
+          type="button"
+          onClick={() => navigate('/model-performance')}
+        >
+          See full track record
+        </button>
+      </section>
 
       {/* Standings Section Header */}
       <div className="homepage-header">
-        <h1>NFL Season Standings</h1>
+        <h1>NFL Standings</h1>
         <h2>{defaultSeason}</h2>
-        <p className="season-subtitle">Click any team to view detailed statistics and analysis</p>
+        <p className="season-subtitle">Division-by-division reference board</p>
       </div>
 
       {Object.entries(NFL_STRUCTURE).map(([conference, divisions]) => (
@@ -204,6 +383,28 @@ function Homepage() {
           🔄 Refresh Standings
         </button>
       </div>
+
+      <div className="how-it-works-link-row">
+        <button
+          type="button"
+          className="how-it-works-toggle"
+          onClick={() => setShowHowItWorks((prev) => !prev)}
+        >
+          {showHowItWorks ? 'Hide how picks are made' : 'How picks are made'}
+        </button>
+      </div>
+
+      {showHowItWorks && (
+        <section className="how-it-works-panel">
+          <h3>How Picks Are Built</h3>
+          <ul>
+            <li><strong>Team Power Ratings:</strong> We track team strength as results come in each week.</li>
+            <li><strong>Game Matchup Read:</strong> We forecast each game score and expected spread.</li>
+            <li><strong>Line Check:</strong> We compare our line to Vegas and flag the biggest gaps.</li>
+          </ul>
+          <p>Use this dashboard for spread edges first, then check line movement before placing a bet.</p>
+        </section>
+      )}
 
 
     </div>
