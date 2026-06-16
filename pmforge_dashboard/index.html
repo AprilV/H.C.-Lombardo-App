@@ -2757,7 +2757,7 @@
                     <h4>AWS S3 Backup</h4>
                 </div>
                 <ul>
-                    <li>Backup bucket: hcl-lombardo-backups-<AWS_ACCOUNT_ID_PLACEHOLDER>-us-east-2</li>
+                    <li>Backup bucket: hcl-lombardo-backups-AWS_ACCOUNT_PLACEHOLDER-us-east-2</li>
                     <li>Stores app bundle + nfl_analytics SQL snapshots</li>
                     <li>Continuity path validated during Sprint 14 recovery</li>
                     <li>Backup prefix pattern: ec2-backups/YYYYMMDD_HHMMSS</li>
@@ -2878,7 +2878,7 @@
                 <div class="area-body" id="ta001">
                     <div class="area-section-label">SSH Access</div>
                     <label class="task-item" id="wrap-t1_1"><input type="checkbox" id="t1_1" onchange="toggleTask('t1_1')"><span class="task-text">Confirm SSH key is available locally</span></label>
-                    <label class="task-item" id="wrap-t1_2"><input type="checkbox" id="t1_2" onchange="toggleTask('t1_2')"><span class="task-text">SSH into EC2 <span class="task-sub">ssh -i &lt;key&gt;.pem ubuntu@<EC2_IP_PLACEHOLDER></span></span></label>
+                    <label class="task-item" id="wrap-t1_2"><input type="checkbox" id="t1_2" onchange="toggleTask('t1_2')"><span class="task-text">SSH into EC2 <span class="task-sub">ssh -i &lt;key&gt;.pem ubuntu@EC2_IP_PLACEHOLDER</span></span></label>
                     <label class="task-item" id="wrap-t1_3"><input type="checkbox" id="t1_3" onchange="toggleTask('t1_3')"><span class="task-text">Confirm connection without errors — log result</span></label>
                     <div class="area-section-label">Service Status</div>
                     <label class="task-item" id="wrap-t1_4"><input type="checkbox" id="t1_4" onchange="toggleTask('t1_4')"><span class="task-text">Check service status <span class="task-sub">systemctl status hc-lombardo.service</span></span></label>
@@ -2995,7 +2995,7 @@
                 <div class="area-body" id="ta005">
                     <div class="area-section-label">Amplify Config</div>
                     <label class="task-item" id="wrap-t4_1"><input type="checkbox" id="t4_1" onchange="toggleTask('t4_1')"><span class="task-text">Log into AWS Amplify — confirm app deployed, build not failed</span></label>
-                    <label class="task-item" id="wrap-t4_2"><input type="checkbox" id="t4_2" onchange="toggleTask('t4_2')"><span class="task-text">Check REACT_APP_API_URL = http://<EC2_IP_PLACEHOLDER>:5000</span></label>
+                    <label class="task-item" id="wrap-t4_2"><input type="checkbox" id="t4_2" onchange="toggleTask('t4_2')"><span class="task-text">Check REACT_APP_API_URL = http://EC2_IP_PLACEHOLDER:5000</span></label>
                     <label class="task-item" id="wrap-t4_3"><input type="checkbox" id="t4_3" onchange="toggleTask('t4_3')"><span class="task-text">Note production URL + last successful build date</span></label>
                 </div>
             </div>
@@ -3008,7 +3008,7 @@
                 </div>
                 <div class="area-body" id="ta006">
                     <div class="area-section-label">End-to-End Connectivity</div>
-                    <label class="task-item" id="wrap-t6_1"><input type="checkbox" id="t6_1" onchange="toggleTask('t6_1')"><span class="task-text">From local machine: <span class="task-sub">curl http://<EC2_IP_PLACEHOLDER>:5000/health</span></span></label>
+                    <label class="task-item" id="wrap-t6_1"><input type="checkbox" id="t6_1" onchange="toggleTask('t6_1')"><span class="task-text">From local machine: <span class="task-sub">curl http://EC2_IP_PLACEHOLDER:5000/health</span></span></label>
                     <label class="task-item" id="wrap-t6_2"><input type="checkbox" id="t6_2" onchange="toggleTask('t6_2')"><span class="task-text">From production frontend: DevTools → attempt an API call → watch for CORS errors</span></label>
                     <label class="task-item" id="wrap-t6_3"><input type="checkbox" id="t6_3" onchange="toggleTask('t6_3')"><span class="task-text">Check api_server.py CORS config — does it allow the Amplify domain?</span></label>
                     <label class="task-item" id="wrap-t6_4"><input type="checkbox" id="t6_4" onchange="toggleTask('t6_4')"><span class="task-text">Identify all endpoints returning CORS errors vs working — log each</span></label>
@@ -3048,7 +3048,7 @@
                 </div>
                 <div class="area-body" id="ta008">
                     <div class="area-section-label">Completed — Frontend URL restored and validated</div>
-                    <label class="task-item" id="wrap-t8_1"><input type="checkbox" id="t8_1" onchange="toggleTask('t8_1')"><span class="task-text">Add live Amplify URL to Dashboard overview section <span class="task-sub">Completed: provisioned Amplify app app1699 in us-east-2 (account <AWS_ACCOUNT_ID_PLACEHOLDER>), deployed staging branch, and validated public frontend URL https://<LEGACY_HOST_PLACEHOLDER>/.</span></span></label>
+                    <label class="task-item" id="wrap-t8_1"><input type="checkbox" id="t8_1" onchange="toggleTask('t8_1')"><span class="task-text">Add live Amplify URL to Dashboard overview section <span class="task-sub">Completed: provisioned Amplify app app1699 in us-east-2 (account AWS_ACCOUNT_PLACEHOLDER), deployed staging branch, and validated public frontend URL https://LEGACY_FRONTEND_URL_PLACEHOLDER/.</span></span></label>
                 </div>
             </div>
 
@@ -4207,8 +4207,8 @@ document.getElementById('live-app-btn').addEventListener('click', function(e) {
 
 /* ── BRANDING + METHODOLOGY EDITOR ── */
 var LEGACY_LIVE_APP_HOSTS = {
-    '<LEGACY_HOST_PLACEHOLDER>': true,
-    '<LEGACY_HOST_PLACEHOLDER>': true,
+    'LEGACY_FRONTEND_URL_PLACEHOLDER': true,
+    'LEGACY_FRONTEND_URL_PLACEHOLDER': true,
     'nfl.aprilsykes.dev': true
 };
 var LOCAL_DEV_LIVE_APP_URL = 'http://127.0.0.1:3000/';
@@ -5360,7 +5360,7 @@ let architectureNodeState = {};
 let architectureMonitorTimer = null;
 let architectureMonitorRunning = false;
 const ARCH_MONITOR_INTERVAL_MS = 20000;
-const ARCH_S3_BACKUP_URL = 'https://hcl-lombardo-backups-<AWS_ACCOUNT_ID_PLACEHOLDER>-us-east-2.s3.us-east-2.amazonaws.com/';
+const ARCH_S3_BACKUP_URL = 'https://hcl-lombardo-backups-AWS_ACCOUNT_PLACEHOLDER-us-east-2.s3.us-east-2.amazonaws.com/';
 const ARCH_STATUS_COLORS = {
     up: 0x10b981,
     down: 0xef4444,
@@ -6095,7 +6095,7 @@ function createArchitecture() {
         pulsePhase: Math.PI / 3, material: serverMat,
         name: 'Flask API — EC2',
         tier: 'Tier 2: Application Layer',
-        port: '5000 · EC2 <EC2_IP_PLACEHOLDER>',
+        port: '5000 · EC2 EC2_IP_PLACEHOLDER',
         technology: 'Python Flask · CORS · Gunicorn · Systemd',
         features: ['26 REST API endpoints', 'api_routes_hcl.py — historical data', 'api_routes_ml.py — ML predictions', 'api_routes_live_scores.py — ESPN', 'background_updater.py — standings'],
         communication: 'Receives React requests · Queries PostgreSQL · Fetches ESPN',
@@ -6258,7 +6258,7 @@ function createArchitecture() {
         port: 'HTTPS (443)',
         technology: 'Amazon S3 · Versioned Object Storage',
         features: [
-            'Bucket: hcl-lombardo-backups-<AWS_ACCOUNT_ID_PLACEHOLDER>-us-east-2',
+            'Bucket: hcl-lombardo-backups-AWS_ACCOUNT_PLACEHOLDER-us-east-2',
             'Stores app backups and nfl_analytics SQL exports',
             'Supports restore and rollback workflows',
             'Referenced in Sprint 14 recovery process'
@@ -6665,7 +6665,7 @@ const TASK_TA_MAP = {
 const TASK_DETAILS = {
     // TA-001 — SSH Access & EC2
     t1_1:  { resolution:'SSH key confirmed available at /c/Users/april/.ssh/hc-lombardo-key.pem on local machine.', date:'Apr 10, 2026' },
-    t1_2:  { resolution:'SSH connection established to ubuntu@<EC2_IP_PLACEHOLDER> using PEM key. No errors.', date:'Apr 10, 2026' },
+    t1_2:  { resolution:'SSH connection established to ubuntu@EC2_IP_PLACEHOLDER using PEM key. No errors.', date:'Apr 10, 2026' },
     t1_3:  { resolution:'Connection confirmed clean — no timeout, no permission errors, shell access working.', date:'Apr 10, 2026' },
     t1_4:  { resolution:'hc-lombardo.service confirmed active (running) via systemctl. Gunicorn workers started successfully.', date:'Apr 10, 2026' },
     t1_5:  { resolution:'Reviewed last 200 log lines via journalctl. Gunicorn workers active, no fatal errors logged.', date:'Apr 17, 2026' },
@@ -6715,8 +6715,8 @@ const TASK_DETAILS = {
     t3_22: { resolution:'GET /api/live-scores → success. Returns Super Bowl result (SEA 29, NE 13), status final. Offseason — empty game list expected, endpoint returns valid response with no errors.', date:'Apr 17, 2026' },
     // TA-005 — Amplify Config
     t4_1:  { resolution:'AWS Amplify confirmed deployed. Build status: successful. App live at production URL.', date:'Apr 10, 2026' },
-    t4_2:  { resolution:'REACT_APP_API_URL confirmed = http://<EC2_IP_PLACEHOLDER>:5000 in Amplify environment variables.', date:'Apr 10, 2026' },
-    t4_3:  { resolution:'Production URL noted: https://<LEGACY_HOST_PLACEHOLDER>/ Last successful build confirmed.', date:'Apr 10, 2026' },
+    t4_2:  { resolution:'REACT_APP_API_URL confirmed = http://EC2_IP_PLACEHOLDER:5000 in Amplify environment variables.', date:'Apr 10, 2026' },
+    t4_3:  { resolution:'Production URL noted: https://LEGACY_FRONTEND_URL_PLACEHOLDER/ Last successful build confirmed.', date:'Apr 10, 2026' },
     // TA-004 — Frontend Walkthrough
     t4_4:  { resolution:'Homepage / — loads correctly. No console errors.', date:'Apr 10, 2026' },
     t4_5:  { resolution:'/live-scores — loads correctly. Offseason state handled gracefully, no crash.', date:'Apr 10, 2026' },
@@ -6745,7 +6745,7 @@ const TASK_DETAILS = {
     t5_11: { resolution:'SSH confirmed — xgb_winner.pkl, xgb_spread.pkl, elo_ratings_current.json all present in /home/ubuntu/H.C.-Lombardo-App/ml/models/.', date:'Apr 17, 2026' },
     t5_12: { resolution:'ML model sizes confirmed — xgb_winner.pkl 352K, xgb_spread.pkl 543K, elo_ratings_current.json 1.2K. All dated Dec 19, 2025.', date:'Apr 17, 2026' },
     // TA-006 — CORS Configuration Fix
-    t6_1:  { resolution:'curl http://<EC2_IP_PLACEHOLDER>:5000/health → {"cors":"enabled","database":"connected","status":"healthy"}. EC2 reachable from local machine.', date:'Apr 17, 2026' },
+    t6_1:  { resolution:'curl http://EC2_IP_PLACEHOLDER:5000/health → {"cors":"enabled","database":"connected","status":"healthy"}. EC2 reachable from local machine.', date:'Apr 17, 2026' },
     t6_2:  { resolution:'CORS preflight to Amplify origin confirmed 200 OK. Access-Control-Allow-Origin correctly returns Amplify domain. Production frontend connectivity verified.', date:'Apr 17, 2026' },
     t6_3:  { resolution:'api_server.py line 51 — Amplify domain explicitly listed in CORS origins. nfl.aprilsykes.dev also listed but domain not yet configured. Logged as TA-056.', date:'Apr 17, 2026', issues:['TA-056'] },
     t6_4:  { resolution:'Tested 4 endpoints with Amplify origin header — all return correct Access-Control-Allow-Origin header. No CORS errors on any active endpoint.', date:'Apr 17, 2026' },
@@ -6817,16 +6817,16 @@ const TASK_DETAILS = {
     ta_parent_ta_060: { resolution:'Completed TA-060 by implementing upcoming week detection in ml/predict_ensemble.py. Added EnsemblePredictor.predict_upcoming() to find the next season/week with unplayed games and wired CLI --upcoming to run that path instead of exiting with TODO.', date:'May 4, 2026', timestamp:'2026-05-04T13:05', updatedBy:'Copilot (code diff + local verification evidence)' },
     ta_parent_ta_021: { resolution:'Closed as duplicate scope of TA-057. TA-057 evidence confirms winner-training schema mismatch (hcl_test -> hcl) was fixed and verified.', date:'May 4, 2026', updatedBy:'Copilot (parent-ticket consolidation evidence)' },
     ta_parent_ta_022: { resolution:'Closed as duplicate scope of TA-058. TA-058 evidence confirms broken spread-training SQL WINDOW clause was fixed and execution validated.', date:'May 4, 2026', updatedBy:'Copilot (parent-ticket consolidation evidence)' },
-    ta_parent_ta_008: { resolution:'Completed TA-008 by restoring frontend hosting in Amplify: app1699 was provisioned in account <AWS_ACCOUNT_ID_PLACEHOLDER> (us-east-2), staging branch deployed from manual artifact upload, and public reachability validated at https://<LEGACY_HOST_PLACEHOLDER>/.', date:'May 16, 2026', timestamp:'2026-05-16T03:43', updatedBy:'Copilot (Amplify deployment evidence)' },
+    ta_parent_ta_008: { resolution:'Completed TA-008 by restoring frontend hosting in Amplify: app1699 was provisioned in account AWS_ACCOUNT_PLACEHOLDER (us-east-2), staging branch deployed from manual artifact upload, and public reachability validated at https://LEGACY_FRONTEND_URL_PLACEHOLDER/.', date:'May 16, 2026', timestamp:'2026-05-16T03:43', updatedBy:'Copilot (Amplify deployment evidence)' },
     ta_parent_ta_025: { resolution:'Completed TA-025 by restoring end-to-end ModelPerformance data flow: configured API Gateway HTTPS proxy routes (/, /{proxy+}) with backend integration mapping, enabled CORS for staging origin, installed missing xgboost in EC2 venv, applied DB migrations (add_epa_columns.sql and create_predictions_tracking.sql), hardened feature generation against null advanced metrics, and validated /api/ml/model-performance + /api/ml/performance-stats along with staging /model-performance render path.', date:'May 16, 2026', timestamp:'2026-05-16T04:26', updatedBy:'Copilot (runtime recovery evidence)' },
-    ta_parent_ta_072: { resolution:'Completed TA-072 continuity recovery: restored AWS operational access, recovered EC2 runtime execution path, and validated backup continuity in S3 bucket hcl-lombardo-backups-<AWS_ACCOUNT_ID_PLACEHOLDER>-us-east-2 with verified backup prefix ec2-backups/20260516_022248 (app_bundle.tar.gz + nfl_analytics.sql).', date:'May 16, 2026', timestamp:'2026-05-16T03:22', updatedBy:'Copilot (AWS recovery evidence)' },
+    ta_parent_ta_072: { resolution:'Completed TA-072 continuity recovery: restored AWS operational access, recovered EC2 runtime execution path, and validated backup continuity in S3 bucket hcl-lombardo-backups-AWS_ACCOUNT_PLACEHOLDER-us-east-2 with verified backup prefix ec2-backups/20260516_022248 (app_bundle.tar.gz + nfl_analytics.sql).', date:'May 16, 2026', timestamp:'2026-05-16T03:22', updatedBy:'Copilot (AWS recovery evidence)' },
     ta_parent_dsh_011: { resolution:'Completed DSH-011 by moving PM4 dashboard publish source to pmforge_dashboard/index.html, deprecating legacy Dashboard/index.html as active source, and aligning docs/release/backlog references to the new source-of-truth path. Validation included local runtime load checks and source-path consistency verification across dashboard process docs.', date:'May 1, 2026', timestamp:'2026-05-01T13:48', updatedBy:'Copilot (source-path transition evidence)' },
     s69_1: { resolution:'Located and confirmed the premature return in compute_rolling_features before final feature sanitation/computation block.', date:'Apr 22, 2026', timestamp:'2026-04-22T11:08', updatedBy:'Claude + April review' },
     s69_2: { resolution:'Moved return to run after differential computation plus NaN/inf handling so full feature set is produced.', date:'Apr 22, 2026', timestamp:'2026-04-22T11:15', updatedBy:'Claude + April review' },
     s69_3: { resolution:'Fixed variable mismatch path to use valid feature keys (home_ppg / away_ppg) and removed dead mismatch path risk.', date:'Apr 22, 2026', timestamp:'2026-04-22T11:22', updatedBy:'Claude + April review' },
     s69_4: { resolution:'Validated feature output coverage with targeted checks; expected key factors and differentials are now present in prediction payload.', date:'Apr 22, 2026', timestamp:'2026-04-22T11:30', updatedBy:'Claude + April review' },
     // TA-008 — live app URL
-    t8_1:  { resolution:'Completed TA-008 by provisioning Amplify app app1699 in us-east-2 (account <AWS_ACCOUNT_ID_PLACEHOLDER>), deploying staging branch from manual artifact upload, and validating public frontend reachability at https://<LEGACY_HOST_PLACEHOLDER>/ (root and /team-stats route shell load confirmed).', date:'May 16, 2026', timestamp:'2026-05-16T03:43', updatedBy:'Copilot (Amplify deploy + URL validation)' },
+    t8_1:  { resolution:'Completed TA-008 by provisioning Amplify app app1699 in us-east-2 (account AWS_ACCOUNT_PLACEHOLDER), deploying staging branch from manual artifact upload, and validating public frontend reachability at https://LEGACY_FRONTEND_URL_PLACEHOLDER/ (root and /team-stats route shell load confirmed).', date:'May 16, 2026', timestamp:'2026-05-16T03:43', updatedBy:'Copilot (Amplify deploy + URL validation)' },
     // TA-009 — CLAUDE.md
     t9_1:  { resolution:'CLAUDE.md updated with current routes, deployment state, architecture, and Spring 2026 term details.', date:'Apr 17, 2026' },
     s19_2: { resolution:'Executed ml/train_xgb_spread.py against hcl schema and published TA-019 s19_2 execution artifacts (docs/sprints/ta019_spread_retrain/ta019_s19_2_20260505_152953_summary.json, docs/sprints/ta019_spread_retrain/ta019_s19_2_20260505_152953_report.md) plus run log (docs/sprints/ta019_spread_retrain/ta019_s19_2_20260505_152953_train_log.txt). Retrain completed with python_exit_code=0 and saved refreshed artifacts ml/models/xgb_spread.pkl and ml/models/xgb_spread_features.txt; test metrics: MAE 10.89, RMSE 14.12, winner accuracy 59.0%.', date:'May 5, 2026', timestamp:'2026-05-05T15:29', updatedBy:'Copilot (local TA-019 retrain execution evidence)' },
@@ -6856,7 +6856,7 @@ const TASK_DETAILS = {
     s63_12: { resolution:'Documented cleanup command set, outcomes, and rollback guidance in the recovery evidence log, including baseline, cleanup, restart, and post-cleanup artifact references plus backup rollback anchor (ec2-backups/20260516_022248).', date:'May 16, 2026', timestamp:'2026-05-16T03:20', updatedBy:'Copilot (AWS recovery evidence)' },
     s72_1: { resolution:'Established new AWS continuity path with account access restored and operator-ready execution controls verified for Sprint 14 infrastructure tasks.', date:'May 16, 2026', timestamp:'2026-05-16T02:45', updatedBy:'Copilot (AWS recovery evidence)' },
     s72_2: { resolution:'Recovered EC2 runtime access and network path with validated security group ingress and host reachability for maintenance operations.', date:'May 16, 2026', timestamp:'2026-05-16T02:52', updatedBy:'Copilot (AWS recovery evidence)' },
-    s72_3: { resolution:'Validated deployment/restart operations path on recovered infrastructure and confirmed backup workflow continuity to S3 (bucket hcl-lombardo-backups-<AWS_ACCOUNT_ID_PLACEHOLDER>-us-east-2, latest verified prefix ec2-backups/20260516_022248 containing app_bundle.tar.gz and nfl_analytics.sql).', date:'May 16, 2026', timestamp:'2026-05-16T03:00', updatedBy:'Copilot (AWS recovery evidence)' },
+    s72_3: { resolution:'Validated deployment/restart operations path on recovered infrastructure and confirmed backup workflow continuity to S3 (bucket hcl-lombardo-backups-AWS_ACCOUNT_PLACEHOLDER-us-east-2, latest verified prefix ec2-backups/20260516_022248 containing app_bundle.tar.gz and nfl_analytics.sql).', date:'May 16, 2026', timestamp:'2026-05-16T03:00', updatedBy:'Copilot (AWS recovery evidence)' },
     s72_4: { resolution:'Captured post-cutover health evidence: runtime services active and API validation endpoints healthy after recovery execution.', date:'May 16, 2026', timestamp:'2026-05-16T03:14', updatedBy:'Copilot (AWS recovery evidence)' },
     s61_1: { resolution:'Closed via TA-061 closure audit without redundant retrain run. Verified TA-018 winner retrain readiness + execution evidence still satisfies corrected hcl pipeline requirement (docs/sprints/ta061_winner_retrain/ta061_s61_1_4_20260512_113900_summary.json and report.md).', date:'May 12, 2026', timestamp:'2026-05-12T11:39', updatedBy:'Copilot (closure-audit execution)' },
     s61_2: { resolution:'Computed and recorded winner-model baseline delta from source-of-truth metadata: prior baseline 65.55% vs retrain test accuracy 62.89% (delta -2.66 pts), captured in TA-061 closure audit artifacts (docs/sprints/ta061_winner_retrain/ta061_s61_1_4_20260512_113900_summary.json and report.md).', date:'May 12, 2026', timestamp:'2026-05-12T11:39', updatedBy:'Copilot (closure-audit execution)' },
@@ -10986,7 +10986,7 @@ initTasks();
                 { at:'2026-06-01T21:53:00Z', by:'GitHub Copilot (Developer)', note:'Added automated TA-016 probe evaluator (ta016_probe_status.py) and generated latest status artifacts confirming both production endpoints timed out and blocker remains active.' },
                 { at:'2026-06-01T21:40:00Z', by:'GitHub Copilot (Developer)', note:'Re-ran non-invasive production probes to both documented health endpoints; both still timed out from current environment, so blocker status remains unchanged.' },
                 { at:'2026-06-01T15:26:00', by:'GitHub Copilot (Developer)', note:'Added browser-level production probe attempts for documented health endpoints; both returned ERR_CONNECTION_TIMED_OUT, confirming unresolved network/access gate from current environment.' },
-                { at:'2026-06-01T15:08:00', by:'GitHub Copilot (Developer)', note:'Attempted non-invasive production health probes (<EC2_IP_PLACEHOLDER> and api.aprilsykes.dev); both timed out from current environment, leaving TA-016 blocked pending EC2/log access or reachable production endpoint path.' },
+                { at:'2026-06-01T15:08:00', by:'GitHub Copilot (Developer)', note:'Attempted non-invasive production health probes (EC2_IP_PLACEHOLDER and api.aprilsykes.dev); both timed out from current environment, leaving TA-016 blocked pending EC2/log access or reachable production endpoint path.' },
                 { at:'2026-05-27T23:05:00', by:'GitHub Copilot (Developer)', note:'Blocked due to production access gate. Verification runbook prepared pending AWS/EC2 authorization.' }
             ]
         },
