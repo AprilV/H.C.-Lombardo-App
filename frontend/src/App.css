@@ -1640,92 +1640,6 @@ body,
   color: #F59E0B !important;
 }
 
-/* --- Analytics page: replace all cyan (#00d4ff) with gold --- */
-[data-theme="executive-dark"] .analytics-container,
-[data-theme="executive-dark"] .analytics-dashboard {
-  color: #F1F5F9 !important;
-}
-/* Title gradient: cyan → gold */
-[data-theme="executive-dark"] .analytics-header h1 {
-  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%) !important;
-  -webkit-background-clip: text !important;
-  -webkit-text-fill-color: transparent !important;
-  background-clip: text !important;
-}
-[data-theme="executive-dark"] .analytics-header {
-  background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%) !important;
-  border-bottom: 3px solid #F59E0B !important;
-}
-[data-theme="executive-dark"] .season-selector label {
-  color: #F59E0B !important;
-}
-[data-theme="executive-dark"] .analytics-container .season-selector select,
-[data-theme="executive-dark"] .analytics-dashboard .season-selector select {
-  background: #0F172A !important;
-  border-color: #F59E0B !important;
-  color: #F1F5F9 !important;
-}
-[data-theme="executive-dark"] .tab {
-  background: rgba(245,158,11,0.05) !important;
-  border-color: rgba(245,158,11,0.3) !important;
-  color: #94A3B8 !important;
-}
-[data-theme="executive-dark"] .tab:hover {
-  background: rgba(245,158,11,0.1) !important;
-  border-color: #F59E0B !important;
-  color: #F1F5F9 !important;
-}
-[data-theme="executive-dark"] .tab.active {
-  background: linear-gradient(135deg, #D97706, #F59E0B) !important;
-  border-color: #F59E0B !important;
-  color: #0F172A !important;
-  box-shadow: 0 4px 15px rgba(245,158,11,0.3) !important;
-}
-[data-theme="executive-dark"] .insight-card {
-  background: linear-gradient(135deg, #1E293B 0%, #162032 100%) !important;
-  border-color: rgba(245,158,11,0.25) !important;
-}
-[data-theme="executive-dark"] .insight-card:hover {
-  border-color: #F59E0B !important;
-  box-shadow: 0 8px 25px rgba(245,158,11,0.2) !important;
-}
-[data-theme="executive-dark"] .insight-card h3,
-[data-theme="executive-dark"] .insight-card .card-title,
-[data-theme="executive-dark"] .analytics-container h3,
-[data-theme="executive-dark"] .analytics-container h4 {
-  color: #F59E0B !important;
-}
-/* Catch-all: any element inside analytics-container that still shows cyan becomes gold */
-[data-theme="executive-dark"] .analytics-container *[class] {
-  border-color: inherit;
-}
-[data-theme="executive-dark"] .analytics-container .referee-name,
-[data-theme="executive-dark"] .analytics-container .weather-label,
-[data-theme="executive-dark"] .analytics-container .rest-label,
-[data-theme="executive-dark"] .analytics-container .betting-label,
-[data-theme="executive-dark"] .analytics-container .custom-builder h2,
-[data-theme="executive-dark"] .analytics-container .custom-stat-card .stat-name,
-[data-theme="executive-dark"] .analytics-container .ala-carte-title,
-[data-theme="executive-dark"] .analytics-container .category-label {
-  color: #F59E0B !important;
-}
-[data-theme="executive-dark"] .summary-overview,
-[data-theme="executive-dark"] .section-overview {
-  background: linear-gradient(135deg, #1E293B 0%, #162032 100%) !important;
-  border-color: rgba(245,158,11,0.3) !important;
-}
-[data-theme="executive-dark"] .analytics-container .stat-value,
-[data-theme="executive-dark"] .analytics-container .big-number,
-[data-theme="executive-dark"] .analytics-container .highlight-value {
-  color: #F59E0B !important;
-}
-[data-theme="executive-dark"] .analytics-container .section-card,
-[data-theme="executive-dark"] .analytics-container .chart-section,
-[data-theme="executive-dark"] .analytics-container .data-section {
-  background: #1E293B !important;
-  border-color: #334155 !important;
-}
-
 /* --- HistoricalData page: keep component-scoped styling authoritative --- */
 [data-theme="executive-dark"] .historical-data {
   background: transparent !important;
@@ -1902,7 +1816,6 @@ body,
    =================================== */
 
 .ml-predictions-header,
-.analytics-header,
 .stats-header,
 .matchup-header,
 .header {
@@ -1917,9 +1830,8 @@ body,
   min-height: 160px !important;
 }
 
-/* ML Predictions and Analytics use dark blue to match their page themes */
-.ml-predictions-header,
-.analytics-header {
+/* ML Predictions uses dark blue to match its legacy page theme */
+.ml-predictions-header {
   background: linear-gradient(135deg, rgba(26,26,46,0.98) 0%, rgba(22,33,62,0.98) 100%) !important;
 }
 
@@ -1931,7 +1843,6 @@ body,
 }
 
 .ml-predictions-header h1,
-.analytics-header h1,
 .stats-header h1,
 .matchup-header h1,
 .header h1 {
@@ -1944,7 +1855,6 @@ body,
 }
 
 .ml-predictions-header .subtitle,
-.analytics-header .subtitle,
 .stats-header .subtitle,
 .matchup-header .subtitle,
 .header .subtitle {

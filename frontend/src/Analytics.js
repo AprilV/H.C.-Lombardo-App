@@ -700,7 +700,7 @@ function Analytics() {
     <div className="analytics-container">
       <div className="analytics-header">
         <h1>🎯 Advanced Analytics Dashboard</h1>
-        <div className="season-selector">
+        <div className="analytics-season-selector">
           <label>Season:</label>
           <select value={season} onChange={(e) => setSeason(Number(e.target.value))}>
             {seasonOptions.map((optionSeason) => (
@@ -712,37 +712,37 @@ function Analytics() {
 
       <div className="analytics-tabs">
         <button 
-          className={activeTab === 'summary' ? 'tab active' : 'tab'}
+          className={activeTab === 'summary' ? 'analytics-tab active' : 'analytics-tab'}
           onClick={() => setActiveTab('summary')}
         >
           📈 Summary
         </button>
         <button 
-          className={activeTab === 'betting' ? 'tab active' : 'tab'}
+          className={activeTab === 'betting' ? 'analytics-tab active' : 'analytics-tab'}
           onClick={() => setActiveTab('betting')}
         >
           🎯 Betting
         </button>
         <button 
-          className={activeTab === 'weather' ? 'tab active' : 'tab'}
+          className={activeTab === 'weather' ? 'analytics-tab active' : 'analytics-tab'}
           onClick={() => setActiveTab('weather')}
         >
           🌤️ Weather
         </button>
         <button 
-          className={activeTab === 'rest' ? 'tab active' : 'tab'}
+          className={activeTab === 'rest' ? 'analytics-tab active' : 'analytics-tab'}
           onClick={() => setActiveTab('rest')}
         >
           😴 Rest
         </button>
         <button 
-          className={activeTab === 'referees' ? 'tab active' : 'tab'}
+          className={activeTab === 'referees' ? 'analytics-tab active' : 'analytics-tab'}
           onClick={() => setActiveTab('referees')}
         >
           👔 Referees
         </button>
         <button 
-          className={activeTab === 'custom' ? 'tab active' : 'tab'}
+          className={activeTab === 'custom' ? 'analytics-tab active' : 'analytics-tab'}
           onClick={() => setActiveTab('custom')}
         >
           🎯 Custom Builder
