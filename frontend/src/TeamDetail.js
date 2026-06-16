@@ -27,6 +27,7 @@ ChartJS.register(
 );
 
 const API_URL = (typeof window !== 'undefined' && (window.location.hostname === 'hclombardo.com' || window.location.hostname === 'www.hclombardo.com' || window.location.hostname.endsWith('.netlify.app'))) ? '' : (process.env.REACT_APP_API_URL ?? '');
+const MIN_NFL_SEASON = 1999;
 
 // NFL Team Colors
 const TEAM_COLORS = {
@@ -67,7 +68,7 @@ const TEAM_COLORS = {
 function TeamDetail() {
   const { teamAbbr } = useParams();
   const navigate = useNavigate();
-  const season = getDefaultSeason();
+  const [season, setSeason] = useState(getDefaultSeason());
   const [teamData, setTeamData] = useState(null);
   const [teamName, setTeamName] = useState('');
   const [games, setGames] = useState([]);
@@ -75,41 +76,68 @@ function TeamDetail() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    loadTeamData();
+    const currentSeason = getDefaultSeason();
+    setSeason(currentSeason);
+    loadTeamData(currentSeason);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [teamAbbr]);
 
-  const loadTeamData = async () => {
+  const fetchJson = async (url) => {
+    const response = await fetch(url);
+    let data = {};
+
+    try {
+      data = await response.json();
+    } catch {
+      data = {};
+    }
+
+    return { response, data };
+  };
+
+  const loadTeamData = async (startSeason) => {
     try {
       setLoading(true);
+      setError(null);
+      const initialSeason = startSeason ?? getDefaultSeason();
       
       // Load team name from /api/teams
-      const teamsResponse = await fetch(`${API_URL}/api/teams`);
-      const teamsData = await teamsResponse.json();
-      const team = teamsData.teams.find(t => t.abbreviation === teamAbbr);
+      const { data: teamsData } = await fetchJson(`${API_URL}/api/teams`);
+      const teams = Array.isArray(teamsData?.teams) ? teamsData.teams : [];
+      const team = teams.find(t => t.abbreviation === teamAbbr);
       setTeamName(team?.name || teamAbbr);
-      
-      // Load team details
-      const detailsResponse = await fetch(`${API_URL}/api/hcl/teams/${teamAbbr}?season=${season}`);
-      const detailsData = await detailsResponse.json();
-      
-      if (!detailsData.success) {
-        throw new Error(detailsData.error || 'Failed to load team details');
+
+      // Try current season first, then walk backward until team stats exist.
+      for (let fallbackSeason = initialSeason; fallbackSeason >= MIN_NFL_SEASON; fallbackSeason -= 1) {
+        const { response: detailsResponse, data: detailsData } = await fetchJson(
+          `${API_URL}/api/hcl/teams/${teamAbbr}?season=${fallbackSeason}`
+        );
+
+        if (!detailsResponse.ok || !detailsData.success || !detailsData.team) {
+          continue;
+        }
+
+        const { response: gamesResponse, data: gamesData } = await fetchJson(
+          `${API_URL}/api/hcl/teams/${teamAbbr}/games?season=${fallbackSeason}`
+        );
+
+        if (!gamesResponse.ok || !gamesData.success || !Array.isArray(gamesData.games)) {
+          continue;
+        }
+
+        setTeamData(detailsData.team);
+        setGames(gamesData.games);
+        setSeason(fallbackSeason);
+        return;
       }
-      
-      // Load games
-      const gamesResponse = await fetch(`${API_URL}/api/hcl/teams/${teamAbbr}/games?season=${season}`);
-      const gamesData = await gamesResponse.json();
-      
-      if (!gamesData.success) {
-        throw new Error(gamesData.error || 'Failed to load games');
-      }
-      
-      setTeamData(detailsData.team);
-      setGames(gamesData.games);
-      setError(null);
+
+      throw new Error(
+        `Team ${teamAbbr} not found from ${initialSeason} back to ${MIN_NFL_SEASON}`
+      );
     } catch (err) {
-      setError(err.message);
+      setTeamData(null);
+      setGames([]);
+      setError(err?.message || 'Failed to load team data');
     } finally {
       setLoading(false);
     }
@@ -121,6 +149,44 @@ function TeamDetail() {
 
   const getTeamColors = () => {
     return TEAM_COLORS[teamAbbr] || { primary: '#013369', secondary: '#D50A0A' };
+  };
+
+  const formatGameDate = (gameDate) => {
+    if (!gameDate) return 'Date TBD';
+
+    const parsed = new Date(gameDate);
+    if (Number.isNaN(parsed.getTime())) {
+      return gameDate;
+    }
+
+    return parsed.toLocaleDateString(undefined, {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    });
+  };
+
+  const getOpponentScore = (game) => {
+    return game.is_home ? game.away_score : game.home_score;
+  };
+
+  const getScheduleResult = (game) => {
+    const opponentScore = getOpponentScore(game);
+
+    if (game.result === 'W' || game.result === 'L' || game.result === 'T') {
+      if (game.team_points != null && opponentScore != null) {
+        return `${game.result} ${game.team_points}-${opponentScore}`;
+      }
+      return game.result;
+    }
+
+    return 'TBD';
+  };
+
+  const getScheduleClass = (game) => {
+    if (game.result === 'W') return 'win';
+    if (game.result === 'L') return 'loss';
+    return 'upcoming';
   };
 
   const getChartData = () => {
@@ -212,6 +278,7 @@ function TeamDetail() {
   ];
 
   const chartData = getChartData();
+  const sortedGames = [...games].sort((a, b) => (a.week ?? 999) - (b.week ?? 999));
   
   // Get team colors for header
   const colors = getTeamColors();
@@ -257,57 +324,54 @@ function TeamDetail() {
         </div>
       )}
 
-      <div className="games-table">
-        <h2>Game History</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Week</th>
-              <th>Opponent</th>
-              <th>Result</th>
-              <th>Score</th>
-              <th>Total Yards</th>
-              <th>Pass Yds</th>
-              <th>Rush Yds</th>
-            </tr>
-          </thead>
-          <tbody>
-            {games.map((game, index) => {
-              const won = game.result === 'W';
-              const resultClass = won ? 'win' : 'loss';
+      <div className="team-schedule-section">
+        <h2>Season Schedule</h2>
+        {sortedGames.length > 0 ? (
+          <div className="team-schedule-list">
+            {sortedGames.map((game, index) => {
               const location = game.is_home ? 'vs' : '@';
-              
+              const cardClass = getScheduleClass(game);
+
               return (
-                <tr key={index}>
-                  <td>{game.week}</td>
-                  <td>
-                    <div className="opponent-cell">
-                      <img 
-                        src={getTeamLogo(game.opponent)} 
+                <div key={`${game.game_id || 'game'}-${index}`} className={`team-schedule-card ${cardClass}`}>
+                  <div className="team-schedule-header-row">
+                    <div className="game-week-date">
+                      <span className="game-week">Week {game.week ?? '-'}</span>
+                      <span className="game-date">{formatGameDate(game.game_date)}</span>
+                    </div>
+                    <div className="game-matchup-info">
+                      <img
+                        src={getTeamLogo(game.opponent)}
                         alt={game.opponent}
-                        className="opponent-logo"
+                        className="opponent-logo-sm"
                       />
-                      {location} {game.opponent}
+                      <span className="opponent-name">{location} {game.opponent}</span>
                       {game.is_divisional_game && <span className="division-badge">DIV</span>}
                     </div>
-                  </td>
-                  <td className={resultClass}>{game.result}</td>
-                  <td>
-                    {game.team_points != null ? game.team_points : '-'}-
-                    {(() => {
-                      // Opponent score is home_score if team is away, away_score if team is home
-                      const oppScore = game.is_home ? game.away_score : game.home_score;
-                      return oppScore != null ? oppScore : '-';
-                    })()}
-                  </td>
-                  <td>{game.total_yards != null ? game.total_yards : '-'}</td>
-                  <td>{game.passing_yards != null ? game.passing_yards : '-'}</td>
-                  <td>{game.rushing_yards != null ? game.rushing_yards : '-'}</td>
-                </tr>
+                    <div className="game-result-badge">{getScheduleResult(game)}</div>
+                  </div>
+
+                  <div className="team-schedule-stats-row">
+                    <div className="team-schedule-stat">
+                      <label>Total Yards</label>
+                      <span>{game.total_yards != null ? game.total_yards : 'TBD'}</span>
+                    </div>
+                    <div className="team-schedule-stat">
+                      <label>Pass Yards</label>
+                      <span>{game.passing_yards != null ? game.passing_yards : 'TBD'}</span>
+                    </div>
+                    <div className="team-schedule-stat">
+                      <label>Rush Yards</label>
+                      <span>{game.rushing_yards != null ? game.rushing_yards : 'TBD'}</span>
+                    </div>
+                  </div>
+                </div>
               );
             })}
-          </tbody>
-        </table>
+          </div>
+        ) : (
+          <div className="empty-state-small">No schedule available for {season}</div>
+        )}
       </div>
     </div>
   );
