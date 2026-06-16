@@ -9076,12 +9076,12 @@ function formatScheduleDateLabel(isoDate) {
 
 var DASH_SPRINT_STORAGE_KEY = 'pmforge_dashboard_selected_sprint_v1';
 var DASH_SPRINT_FOLLOW_CURRENT_KEY = 'pmforge_dashboard_follow_current_sprint_v1';
-var DASHBOARD_BUILD_STAMP = 'e8c2d890|2026-06-16T20:36:32Z';
+var DASHBOARD_BUILD_STAMP = '__PMFORGE_BUILD_STAMP__';
 var DASHBOARD_BUILD_STAMP_KEY = 'pmforge_dashboard_build_stamp_v1';
 
 function getDashboardBuildHash() {
     var raw = String(DASHBOARD_BUILD_STAMP || '').trim();
-    if (!raw || raw === 'e8c2d890|2026-06-16T20:36:32Z') return 'local';
+    if (!raw || raw === '__PMFORGE_BUILD_STAMP__') return 'local';
     var parts = raw.split('|');
     return String(parts[0] || raw).trim() || 'local';
 }
@@ -9090,7 +9090,7 @@ function enforceDashboardBuildFreshness() {
     try {
         if (!window.localStorage) return true;
         var current = String(DASHBOARD_BUILD_STAMP || '').trim();
-        if (!current || current === 'e8c2d890|2026-06-16T20:36:32Z') {
+        if (!current || current === '__PMFORGE_BUILD_STAMP__') {
             localStorage.removeItem(DASHBOARD_BUILD_STAMP_KEY);
             return true;
         }
@@ -12530,9 +12530,22 @@ function showSprintView(view, btn) {
     function normalizeSprintCode(value) {
         var raw = String(value || '').trim().toUpperCase();
         if (!raw) return 'TBD';
-        if (/^S\d+$/.test(raw)) return raw;
-        if (/^\d+$/.test(raw)) return 'S' + raw;
+        var sprintCodeMatch = raw.match(/^S[-_\s]?(\d{1,2})$/);
+        if (sprintCodeMatch) return 'S' + parseInt(sprintCodeMatch[1], 10);
+        if (/^\d+$/.test(raw)) return 'S' + parseInt(raw, 10);
+        var sprintTextMatch = raw.match(/SPRINT\s*[-:]?\s*(\d{1,2})/);
+        if (sprintTextMatch) return 'S' + parseInt(sprintTextMatch[1], 10);
         return raw;
+    }
+
+    function normalizeStatusValue(value) {
+        var raw = String(value || '').trim().toLowerCase();
+        if (!raw) return '';
+        if (raw === 'done' || raw === 'complete' || raw === 'completed') return 'Done';
+        if (raw === 'blocked') return 'Blocked';
+        if (raw === 'in sprint' || raw === 'in progress' || raw === 'in-progress') return 'In Progress';
+        if (raw === 'to do' || raw === 'todo' || raw === 'backlog') return 'To Do';
+        return String(value || '').trim();
     }
 
     function getSprintDodSummary(sprintKey) {
@@ -12619,7 +12632,7 @@ function showSprintView(view, btn) {
             if (!item) return;
             var id = String(item.id || '').trim();
             if (!id) return;
-            var status = String(item.status || '').trim();
+            var status = normalizeStatusValue(item.status);
 
             if (status === 'Blocked') blockedSet[id] = true;
 
@@ -12668,8 +12681,9 @@ function showSprintView(view, btn) {
                 if (!isTimestampInBounds(stamp, bounds)) return;
 
                 updatedSet[mappedTicket] = true;
-                if (String(item.status || '').trim() === 'Done') doneSet[mappedTicket] = true;
-                if (String(item.status || '').trim() === 'Blocked') blockedSet[mappedTicket] = true;
+                var mappedStatus = normalizeStatusValue(item.status);
+                if (mappedStatus === 'Done') doneSet[mappedTicket] = true;
+                if (mappedStatus === 'Blocked') blockedSet[mappedTicket] = true;
 
                 evidenceCount += 1;
                 var resolution = compactReportText(detail.resolution || '', 120);
@@ -12715,7 +12729,7 @@ function showSprintView(view, btn) {
     // Build report-safe sprint ticket summary from Product Backlog data
     function getSprintTicketSummary(sprintKey) {
         var items = (window.PB_ITEMS || []).filter(function(item) {
-            return item && item.sprint === sprintKey;
+            return normalizeSprintCode(item && item.sprint) === normalizeSprintCode(sprintKey);
         });
         if (!items.length) {
             return { issues: '', prevention: '' };
@@ -12723,7 +12737,7 @@ function showSprintView(view, btn) {
 
         function summarizeByStatuses(statuses, maxCount) {
             var filtered = items.filter(function(item) {
-                return statuses.indexOf(item.status) !== -1;
+                return statuses.indexOf(normalizeStatusValue(item.status)) !== -1;
             });
             if (!filtered.length) {
                 return { count: 0, label: '', ids: '' };
@@ -12751,7 +12765,7 @@ function showSprintView(view, btn) {
         }
 
         var done = summarizeByStatuses(['Done'], 4);
-        var inProgress = summarizeByStatuses(['In Sprint', 'In Progress'], 3);
+        var inProgress = summarizeByStatuses(['In Progress'], 3);
         var blocked = summarizeByStatuses(['Blocked'], 3);
 
         var issueParts = [];
@@ -13080,6 +13094,7 @@ function showSprintView(view, btn) {
         window._reportPlainText = plain;
     }
 
+    window.renderReport = renderReport;
     window.generateReport = renderReport;
 
     window.copyReport = function() {
@@ -13244,7 +13259,7 @@ function showSprintView(view, btn) {
         if (sprintFilter && sprintFilter !== 'all') {
             sel.value = 'summary-' + sprintFilter;
         }
-        renderReport();
+        if (typeof window.renderReport === 'function') window.renderReport();
     }
 
     // Build sprint filter buttons
@@ -13297,8 +13312,12 @@ function showSprintView(view, btn) {
         buildSprintFilterButtons();
         buildReportDropdown('all');
         var sel = document.getElementById('report-week-select');
-        if (sel) sel.addEventListener('change', renderReport);
-        renderReport();
+        if (sel) {
+            sel.addEventListener('change', function() {
+                if (typeof window.renderReport === 'function') window.renderReport();
+            });
+        }
+        if (typeof window.renderReport === 'function') window.renderReport();
     })();
 })();
 
