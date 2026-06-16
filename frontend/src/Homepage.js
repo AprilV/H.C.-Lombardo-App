@@ -4,6 +4,7 @@ import { useTheme } from './contexts/ThemeContext';
 import './Homepage.css';
 import LiveGamesTicker from './LiveGamesTicker';
 import { getDefaultSeason } from './utils/season';
+import { getSpreadConfidence } from './utils/predictionConfidence';
 
 const API_URL = (typeof window !== 'undefined' && (window.location.hostname === 'hclombardo.com' || window.location.hostname === 'www.hclombardo.com' || window.location.hostname.endsWith('.netlify.app'))) ? '' : (process.env.REACT_APP_API_URL ?? '');
 
@@ -209,7 +210,11 @@ function Homepage() {
           agreement: prediction.agreement,
           gameStatus: prediction.game_status,
           actual: prediction.actual || null,
-          vegasSpread: prediction.vegas_spread
+          vegasSpread: prediction.vegas_spread,
+          xgbSpread: toNumber(prediction?.xgb?.spread),
+          eloSpread: toNumber(prediction?.elo?.spread),
+          xgbWinner: prediction?.xgb?.predicted_winner || null,
+          eloWinner: prediction?.elo?.predicted_winner || null
         };
 
         if (gameId) {
@@ -228,24 +233,9 @@ function Homepage() {
 
   const rankBestBets = (predictions, combinedGameMap = new Map()) => {
     const ranked = (predictions || []).map((prediction) => {
-      const aiSpread = toNumber(prediction.ai_spread);
       const vegasSpread = toNumber(prediction.vegas_spread);
       const homeTeam = prediction.home_team;
       const awayTeam = prediction.away_team;
-
-      if (aiSpread === null || vegasSpread === null || !homeTeam || !awayTeam) {
-        return null;
-      }
-
-      let pickTeam = prediction.predicted_winner;
-      if (pickTeam !== homeTeam && pickTeam !== awayTeam) {
-        pickTeam = aiSpread <= 0 ? homeTeam : awayTeam;
-      }
-
-      const aiLineForPick = pickTeam === homeTeam ? aiSpread : -aiSpread;
-      const vegasLineForPick = pickTeam === homeTeam ? vegasSpread : -vegasSpread;
-      const lineGap = Number((vegasLineForPick - aiLineForPick).toFixed(1));
-      const edgePoints = Math.abs(lineGap);
 
       const gameId = prediction.game_id ? String(prediction.game_id) : null;
       const matchupKey = `${awayTeam}@${homeTeam}`;
@@ -253,7 +243,43 @@ function Homepage() {
         ? combinedGameMap.get(gameId)
         : combinedGameMap.get(matchupKey);
 
-      const agreementFlag = combinedGame?.agreement;
+      const modelAiSpread = combinedGame?.xgbSpread ?? toNumber(prediction.ai_spread);
+      const modelEloSpread = combinedGame?.eloSpread ?? null;
+
+      let modelSpread = null;
+      if (modelAiSpread !== null && modelEloSpread !== null) {
+        modelSpread = Number(((modelAiSpread + modelEloSpread) / 2).toFixed(1));
+      } else if (modelAiSpread !== null) {
+        modelSpread = modelAiSpread;
+      } else if (modelEloSpread !== null) {
+        modelSpread = modelEloSpread;
+      }
+
+      if (modelSpread === null || vegasSpread === null || !homeTeam || !awayTeam) {
+        return null;
+      }
+
+      let pickTeam = null;
+      if (modelSpread < 0) {
+        pickTeam = homeTeam;
+      } else if (modelSpread > 0) {
+        pickTeam = awayTeam;
+      }
+
+      const fallbackWinner = combinedGame?.xgbWinner || combinedGame?.eloWinner || prediction.predicted_winner;
+      if (!pickTeam && (fallbackWinner === homeTeam || fallbackWinner === awayTeam)) {
+        pickTeam = fallbackWinner;
+      }
+
+      if (!pickTeam) {
+        return null;
+      }
+
+      const pickModelLine = pickTeam === homeTeam ? modelSpread : -modelSpread;
+      const vegasLineForPick = pickTeam === homeTeam ? vegasSpread : -vegasSpread;
+      const lineGap = Number((vegasLineForPick - pickModelLine).toFixed(1));
+      const edgePoints = Math.abs(lineGap);
+
       const outcome = buildCoverOutcome({
         gameStatus: combinedGame?.gameStatus,
         actual: combinedGame?.actual,
@@ -264,23 +290,31 @@ function Homepage() {
       });
 
       const stars = edgeToStars(edgePoints);
-      const confidenceStrong = agreementFlag === true;
-      const confidenceLabel = confidenceStrong ? 'Strong play' : 'Lean';
-      const confidenceDetail = confidenceStrong ? 'Both systems agree' : 'Close call';
+      const {
+        confidenceLabel,
+        confidenceDetail,
+        confidenceTone
+      } = getSpreadConfidence({
+        homeTeam,
+        pickTeam,
+        eloSpread: modelEloSpread,
+        aiSpread: modelAiSpread,
+        edgePoints
+      });
       const pickSpreadText = formatSpreadValue(vegasLineForPick);
       const actionText = `${pickTeam} to cover (${pickSpreadText})`;
-      const whyLine = `Edge: ${formatTeamLine(pickTeam, aiLineForPick)} vs Vegas ${formatTeamLine(pickTeam, vegasLineForPick)} (${edgePoints.toFixed(1)} pts).`;
+      const whyLine = `Edge: ${formatTeamLine(pickTeam, pickModelLine)} vs Vegas ${formatTeamLine(pickTeam, vegasLineForPick)} (${edgePoints.toFixed(1)} pts).`;
 
       return {
         ...prediction,
         pickTeam,
-        aiLineForPick,
+        aiLineForPick: pickModelLine,
         vegasLineForPick,
         edgePoints,
         stars,
         confidenceLabel,
         confidenceDetail,
-        confidenceTone: confidenceStrong ? 'strong' : 'lean',
+        confidenceTone,
         actionText,
         whyLine,
         outcome,

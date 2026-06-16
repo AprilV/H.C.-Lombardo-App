@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import './MLPredictionsRedesign.css';
 import { getDefaultSeason, getRecentSeasons } from './utils/season';
+import { getSpreadConfidence } from './utils/predictionConfidence';
 
 const API_URL = (typeof window !== 'undefined' && (window.location.hostname === 'hclombardo.com' || window.location.hostname === 'www.hclombardo.com' || window.location.hostname.endsWith('.netlify.app'))) ? '' : (process.env.REACT_APP_API_URL ?? '');
 const FALLBACK_WEEKS = Array.from({ length: 18 }, (_, idx) => idx + 1);
@@ -372,9 +373,17 @@ function MLPredictionsRedesign() {
           ? Math.abs(pickVegasLine - pickModelLine)
           : 0;
 
-        const confidenceStrong = game.agreement === true;
-        const confidenceLabel = confidenceStrong ? 'Strong play' : 'Lean';
-        const confidenceDetail = confidenceStrong ? 'Both systems agree' : 'Close call';
+        const {
+          confidenceLabel,
+          confidenceDetail,
+          confidenceTone
+        } = getSpreadConfidence({
+          homeTeam,
+          pickTeam,
+          eloSpread,
+          aiSpread,
+          edgePoints
+        });
 
         const actionText = pickTeam
           ? `${pickTeam} to cover (${formatSpreadValue(pickVegasLine)})`
@@ -402,7 +411,7 @@ function MLPredictionsRedesign() {
           stars: edgeToStars(edgePoints),
           confidenceLabel,
           confidenceDetail,
-          confidenceTone: confidenceStrong ? 'strong' : 'lean',
+          confidenceTone,
           actionText,
           verdictLine,
           pickTeam,
