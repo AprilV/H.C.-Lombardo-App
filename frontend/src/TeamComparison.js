@@ -87,6 +87,7 @@ function TeamComparison({ initialViewMode = 'comparison' }) {
   const [selectedTeamA, setSelectedTeamA] = useState('');
   const [teamAData, setTeamAData] = useState(null);
   const [teamASchedule, setTeamASchedule] = useState([]);
+  const [teamASos, setTeamASos] = useState(null);
   
   // Team B state
   const [seasonB, setSeasonB] = useState(String(currentSeason));
@@ -94,6 +95,7 @@ function TeamComparison({ initialViewMode = 'comparison' }) {
   const [selectedTeamB, setSelectedTeamB] = useState('');
   const [teamBData, setTeamBData] = useState(null);
   const [teamBSchedule, setTeamBSchedule] = useState([]);
+  const [teamBSos, setTeamBSos] = useState(null);
   
   // UI state
   const [selectedStats, setSelectedStats] = useState(new Set([
@@ -126,19 +128,27 @@ function TeamComparison({ initialViewMode = 'comparison' }) {
   // Load team data when selection changes
   useEffect(() => {
     if (selectedTeamA && seasonA) {
-      loadTeamData('A', selectedTeamA, seasonA);
       if (viewMode === 'schedule') {
         loadTeamSchedule('A', selectedTeamA, seasonA);
+        loadTeamSos('A', selectedTeamA, seasonA);
+      } else {
+        loadTeamData('A', selectedTeamA, seasonA);
       }
+    } else {
+      setTeamASos(null);
     }
   }, [selectedTeamA, seasonA, viewMode]);
 
   useEffect(() => {
     if (selectedTeamB && seasonB) {
-      loadTeamData('B', selectedTeamB, seasonB);
       if (viewMode === 'schedule') {
         loadTeamSchedule('B', selectedTeamB, seasonB);
+        loadTeamSos('B', selectedTeamB, seasonB);
+      } else {
+        loadTeamData('B', selectedTeamB, seasonB);
       }
+    } else {
+      setTeamBSos(null);
     }
   }, [selectedTeamB, seasonB, viewMode]);
 
@@ -221,6 +231,58 @@ function TeamComparison({ initialViewMode = 'comparison' }) {
     }
   };
 
+  const loadTeamSos = async (team, abbr, season) => {
+    const setSosState = (payload) => {
+      if (team === 'A') {
+        setTeamASos(payload);
+      } else {
+        setTeamBSos(payload);
+      }
+    };
+
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_URL}/api/hcl/teams/${abbr}/sos?season=${season}`);
+      let data = {};
+
+      try {
+        data = await response.json();
+      } catch {
+        data = {};
+      }
+
+      if (response.ok && data.success) {
+        setSosState(data);
+      } else {
+        setSosState({
+          success: true,
+          team: abbr,
+          season: Number(season),
+          sos: null,
+          opponents_record: '0-0',
+          games_counted: 0,
+          opponent_breakdown: [],
+          note: data.note || data.error || 'SOS unavailable right now. Try again after backend refresh.'
+        });
+      }
+      setError(null);
+    } catch (err) {
+      setSosState({
+        success: true,
+        team: abbr,
+        season: Number(season),
+        sos: null,
+        opponents_record: '0-0',
+        games_counted: 0,
+        opponent_breakdown: [],
+        note: `${season} not yet played — SOS available after games are played.`
+      });
+      setError(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const getTeamLogo = (teamAbbr) => {
     return `https://a.espncdn.com/i/teamlogos/nfl/500/${teamAbbr}.png`;
   };
@@ -238,6 +300,43 @@ function TeamComparison({ initialViewMode = 'comparison' }) {
   const formatGameDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  };
+
+  const formatSosValue = (sosValue) => {
+    if (sosValue === null || sosValue === undefined) {
+      return 'N/A';
+    }
+    const numeric = Number(sosValue);
+    if (Number.isNaN(numeric)) {
+      return 'N/A';
+    }
+    return numeric.toFixed(3).replace(/^0(?=\.)/, '');
+  };
+
+  const getSosVerdict = () => {
+    if (!selectedTeamA || !selectedTeamB) {
+      return 'Select both teams to compare schedule strength.';
+    }
+
+    if (!teamASos || !teamBSos) {
+      return 'Loading SOS comparison...';
+    }
+
+    const sosA = teamASos.sos;
+    const sosB = teamBSos.sos;
+
+    if (sosA === null || sosB === null) {
+      return 'SOS verdict available after both selected seasons have completed games.';
+    }
+
+    const difference = Number(sosA) - Number(sosB);
+    if (Math.abs(difference) < 0.003) {
+      return 'Even schedule strength.';
+    }
+
+    return difference > 0
+      ? `${selectedTeamA} faced the tougher schedule.`
+      : `${selectedTeamB} faced the tougher schedule.`;
   };
 
   const calculateDifferential = (teamAVal, teamBVal, format) => {
@@ -281,7 +380,7 @@ function TeamComparison({ initialViewMode = 'comparison' }) {
       {/* Header */}
       <div className="comparison-header">
         <h1>Compare Teams Hub</h1>
-        <p className="subtitle">One hub for season averages, head-to-head, weekly schedules, and edge analysis ({MIN_NFL_SEASON}-{currentSeason}).</p>
+        <p className="subtitle">One hub for season averages, head-to-head, strength of schedule, and edge analysis ({MIN_NFL_SEASON}-{currentSeason}).</p>
       </div>
 
       {error && (
@@ -306,7 +405,7 @@ function TeamComparison({ initialViewMode = 'comparison' }) {
           className={`tab-button ${viewMode === 'schedule' ? 'active' : ''}`}
           onClick={() => setViewMode('schedule')}
         >
-          📅 Weekly Schedules
+          📅 Strength of Schedule
         </button>
         <button
           className={`tab-button ${viewMode === 'edge' ? 'active' : ''}`}
@@ -505,6 +604,72 @@ function TeamComparison({ initialViewMode = 'comparison' }) {
 
       {viewMode === 'schedule' && (
         <div className="schedule-view">
+          <div className="sos-summary-panel">
+            {selectedTeamA && selectedTeamB ? (
+              <>
+                <div className="sos-summary-grid">
+                  <article className="sos-team-card">
+                    <h3>{selectedTeamA} ({seasonA})</h3>
+                    {teamASos ? (
+                      teamASos.sos !== null && teamASos.sos !== undefined ? (
+                        <>
+                          <div className="sos-value">{formatSosValue(teamASos.sos)}</div>
+                          <div className="sos-caption">opponents&apos; win%</div>
+                          <div className="sos-bar-track">
+                            <div
+                              className="sos-bar-fill"
+                              style={{ width: `${Math.min(100, Math.max(6, Number(teamASos.sos) * 100))}%` }}
+                            />
+                          </div>
+                          <div className="sos-meta">
+                            {teamASos.opponents_record} opponents&apos; record ({teamASos.games_counted} games weighted)
+                          </div>
+                        </>
+                      ) : (
+                        <div className="sos-note">
+                          {teamASos.note || `${seasonA} not yet played — SOS available after games are played.`}
+                        </div>
+                      )
+                    ) : (
+                      <div className="sos-note">Loading SOS...</div>
+                    )}
+                  </article>
+
+                  <article className="sos-team-card">
+                    <h3>{selectedTeamB} ({seasonB})</h3>
+                    {teamBSos ? (
+                      teamBSos.sos !== null && teamBSos.sos !== undefined ? (
+                        <>
+                          <div className="sos-value">{formatSosValue(teamBSos.sos)}</div>
+                          <div className="sos-caption">opponents&apos; win%</div>
+                          <div className="sos-bar-track">
+                            <div
+                              className="sos-bar-fill"
+                              style={{ width: `${Math.min(100, Math.max(6, Number(teamBSos.sos) * 100))}%` }}
+                            />
+                          </div>
+                          <div className="sos-meta">
+                            {teamBSos.opponents_record} opponents&apos; record ({teamBSos.games_counted} games weighted)
+                          </div>
+                        </>
+                      ) : (
+                        <div className="sos-note">
+                          {teamBSos.note || `${seasonB} not yet played — SOS available after games are played.`}
+                        </div>
+                      )
+                    ) : (
+                      <div className="sos-note">Loading SOS...</div>
+                    )}
+                  </article>
+                </div>
+
+                <div className="sos-verdict">{getSosVerdict()}</div>
+              </>
+            ) : (
+              <div className="empty-state">Select both teams to compare strength of schedule.</div>
+            )}
+          </div>
+
           <div className="schedule-grid">
             {/* Team A Schedule */}
             <div className="schedule-column">

@@ -8,6 +8,7 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 import os
 from datetime import datetime
+from collections import defaultdict
 from dotenv import load_dotenv
 from team_abbreviations import to_canonical_abbr, to_hcl_abbr, sql_to_canonical_case
 
@@ -399,6 +400,166 @@ def get_team_games(team_abbr):
             'games': games
         })
         
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+@hcl_bp.route('/teams/<team_abbr>/sos', methods=['GET'])
+def get_team_strength_of_schedule(team_abbr):
+    """
+    Get weighted strength of schedule for a team in a season.
+
+    SOS definition:
+      - Opponent set is derived from completed games played by the team.
+      - Each opponent win% excludes games vs the requested team.
+      - Final SOS is weighted by times played (division opponents played twice count twice).
+    """
+    try:
+        requested_team_abbr = to_canonical_abbr(team_abbr)
+        db_team_abbr = to_hcl_abbr(requested_team_abbr)
+
+        conn = get_db_connection()
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        season = resolve_request_season(cur)
+
+        # Completed games only contribute to SOS.
+        cur.execute(
+            """
+            SELECT
+                CASE
+                    WHEN g.home_team = %s THEN g.away_team
+                    ELSE g.home_team
+                END AS opponent
+            FROM hcl.games g
+            WHERE g.season = %s
+              AND (g.home_team = %s OR g.away_team = %s)
+              AND g.home_score IS NOT NULL
+              AND g.away_score IS NOT NULL
+            ORDER BY g.week ASC
+            """,
+            (db_team_abbr, season, db_team_abbr, db_team_abbr)
+        )
+        completed_games = cur.fetchall()
+
+        if not completed_games:
+            cur.close()
+            conn.close()
+            return jsonify({
+                'success': True,
+                'season': season,
+                'team': requested_team_abbr,
+                'sos': None,
+                'opponents_record': '0-0',
+                'games_counted': 0,
+                'opponent_breakdown': [],
+                'note': f'{season} has no completed games for {requested_team_abbr} yet. SOS is available after games are played.'
+            })
+
+        opponent_counts = defaultdict(int)
+        for game in completed_games:
+            opponent_counts[game['opponent']] += 1
+
+        breakdown = []
+        weighted_win_pct_total = 0.0
+        games_counted = 0
+        weighted_wins = 0
+        weighted_losses = 0
+
+        for opponent, played in opponent_counts.items():
+            cur.execute(
+                """
+                SELECT
+                    SUM(
+                        CASE
+                            WHEN (g.home_team = %s AND g.home_score > g.away_score)
+                              OR (g.away_team = %s AND g.away_score > g.home_score)
+                            THEN 1 ELSE 0
+                        END
+                    ) AS wins,
+                    SUM(
+                        CASE
+                            WHEN (g.home_team = %s AND g.home_score < g.away_score)
+                              OR (g.away_team = %s AND g.away_score < g.home_score)
+                            THEN 1 ELSE 0
+                        END
+                    ) AS losses,
+                    SUM(
+                        CASE
+                            WHEN (g.home_team = %s OR g.away_team = %s)
+                              AND g.home_score = g.away_score
+                            THEN 1 ELSE 0
+                        END
+                    ) AS ties
+                FROM hcl.games g
+                WHERE g.season = %s
+                  AND g.home_score IS NOT NULL
+                  AND g.away_score IS NOT NULL
+                  AND (g.home_team = %s OR g.away_team = %s)
+                  AND NOT (
+                      (g.home_team = %s AND g.away_team = %s)
+                      OR
+                      (g.away_team = %s AND g.home_team = %s)
+                  )
+                """,
+                (
+                    opponent,
+                    opponent,
+                    opponent,
+                    opponent,
+                    opponent,
+                    opponent,
+                    season,
+                    opponent,
+                    opponent,
+                    db_team_abbr,
+                    opponent,
+                    db_team_abbr,
+                    opponent,
+                )
+            )
+            record = cur.fetchone() or {}
+            wins = int((record.get('wins') or 0))
+            losses = int((record.get('losses') or 0))
+            ties = int((record.get('ties') or 0))
+            games_for_pct = wins + losses + ties
+
+            win_pct = None
+            if games_for_pct > 0:
+                win_pct = (wins + (0.5 * ties)) / games_for_pct
+                weighted_win_pct_total += win_pct * played
+                games_counted += played
+                weighted_wins += wins * played
+                weighted_losses += losses * played
+
+            breakdown.append({
+                'opponent': to_canonical_abbr(opponent),
+                'win_pct': round(win_pct, 3) if win_pct is not None else None,
+                'played': played,
+            })
+
+        breakdown.sort(key=lambda item: (-item['played'], item['opponent']))
+        sos_value = round(weighted_win_pct_total / games_counted, 3) if games_counted > 0 else None
+
+        response_payload = {
+            'success': True,
+            'season': season,
+            'team': requested_team_abbr,
+            'sos': sos_value,
+            'opponents_record': f'{weighted_wins}-{weighted_losses}',
+            'games_counted': games_counted,
+            'opponent_breakdown': breakdown,
+        }
+
+        if sos_value is None:
+            response_payload['note'] = 'SOS is not yet available because opponents have no non-head-to-head completed games.'
+
+        cur.close()
+        conn.close()
+        return jsonify(response_payload)
+
     except Exception as e:
         return jsonify({
             'success': False,
