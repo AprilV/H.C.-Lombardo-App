@@ -800,8 +800,8 @@
             --header-line-c: rgba(10,22,40,0.14);
             --header-glow: rgba(1,51,105,0.08);
 
-            /* Brighter neutral background for stronger contrast across cards/forms */
-            background: linear-gradient(180deg, #f5f8fd 0%, #eef3fb 56%, #e8eef8 100%);
+            /* Neutral warm gray — easy on the eyes */
+            background: #c8cdd8;
             background-attachment: fixed;
             color: #0a1628;
         }
@@ -942,10 +942,12 @@
         }
 
         body.light .site-title {
-            background: none;
-            -webkit-text-fill-color: #0f2f58;
-            color: #0f2f58;
-            animation: none;
+            background: linear-gradient(135deg, #8B6914 0%, #B8860B 25%, #D4AF37 50%, #B8860B 75%, #8B6914 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: goldShine 4.5s linear infinite;
         }
 
         body.light .header-meta { color: #4a5568; }
@@ -1047,53 +1049,6 @@
         body.light .area-header span { color: #6b7280; }
         body.light .task-item:hover { background: rgba(1,51,105,0.03); }
         body.light .task-item.done .task-text { color: #aab0bc; }
-
-        /* Overview controls with inline dark defaults need explicit light overrides */
-        body.light #brand-context-line,
-        body.light #brand-project-title,
-        body.light #brand-role-a-name,
-        body.light #brand-role-b-name,
-        body.light #brand-role-c-name,
-        body.light #brand-target-date,
-        body.light #brand-suite-name,
-        body.light #brand-header-signature-input,
-        body.light #brand-live-app-url,
-        body.light #brand-methodology {
-            background: #ffffff !important;
-            color: #0a1628 !important;
-            border-color: rgba(1,51,105,0.24) !important;
-        }
-
-        body.light #brand-role-a-label,
-        body.light #brand-role-b-label,
-        body.light #brand-role-c-label,
-        body.light #brand-target-date-label {
-            background: #edf3fb !important;
-            color: #0f2f58 !important;
-            border-color: rgba(1,51,105,0.24) !important;
-        }
-
-        body.light label[for="brand-lock-toggle"] { color: #334155 !important; }
-        body.light #live-clock,
-        body.light #dash-last-updated { color: #0f172a !important; }
-
-        body.light #recent-updates-card {
-            background: rgba(37,99,235,0.08) !important;
-            border-color: rgba(37,99,235,0.3) !important;
-        }
-        body.light #recent-updates-card > div:first-child { color: #1e3a8a !important; }
-        body.light #recent-update-title { color: #0f2f58 !important; }
-        body.light #recent-update-text { color: #0f172a !important; }
-        body.light #recent-update-index { color: #475569 !important; }
-
-        body.light #dash-sprint-btn,
-        body.light #dash-sprint-list,
-        body.light #dash-sprint-list .dsd-opt {
-            background: #ffffff !important;
-            color: #0f172a !important;
-            border-color: rgba(1,51,105,0.24) !important;
-        }
-        body.light #dash-sprint-list .dsd-opt:hover { background: #edf4ff !important; }
 
         /* Backlog table */
         body.light .filter-btn { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.1); color: #6b7280; }
@@ -3366,7 +3321,7 @@
         <!-- Sprint 15 board -->
     <div id="sprint-board-15" style="display:none;">
         <div class="pm-panel">
-            <div class="pm-header"><div><h2>Sprint 15 - Prediction Reliability &amp; Validation</h2><p>Sprint 15 is completed and archived. Reliability-first execution (TA-055 -&gt; TA-076 -&gt; TA-077) and closeout evidence are retained for traceability.</p></div><div class="sprint-meta"><span class="meta-pill">May 18 - 27, 2026</span><span class="meta-pill" style="color:#10b981; border-color:#10b981;">Completed (Archived)</span></div></div>
+            <div class="pm-header"><div><h2>Sprint 15 - Prediction Reliability &amp; Validation</h2><p>Sprint 15 is active. Realigned execution order is prediction-first: TA-055 -&gt; TA-076 -&gt; TA-077, with completed foundation tickets retained for traceability.</p></div><div class="sprint-meta"><span class="meta-pill">May 18 - 27, 2026</span><span class="meta-pill" style="color:#10b981; border-color:#10b981;">Active</span></div></div>
 
             <div style="max-width:940px; margin:0 0 1rem;">
                 <div class="progress-label"><span>Sprint 15 Progress</span><span id="s15-pct">0%</span></div>
@@ -3437,7 +3392,7 @@
     <!-- Sprint 16 board -->
     <div id="sprint-board-16" style="display:none;">
         <div class="pm-panel">
-            <div class="pm-header"><div><h2>Sprint 16 — Hardening &amp; Release</h2><p>Sprint 16 is completed and archived. Board remains visible as final evidence sourced from Sprint 16 backlog tickets and subtasks.</p></div><div class="sprint-meta"><span class="meta-pill">May 28 – Jun 13, 2026</span><span class="meta-pill" style="color:#10b981; border-color:#10b981;">Completed (Archived)</span></div></div>
+            <div class="pm-header"><div><h2>Sprint 16 — Hardening &amp; Release</h2><p>Board auto-syncs from Sprint 16 backlog tickets and their subtasks. Changes in the tracker are reflected here.</p></div><div class="sprint-meta"><span class="meta-pill">May 28 – Jun 13, 2026</span><span class="meta-pill" style="color:#10b981; border-color:#10b981;">Active</span></div></div>
 
             <div style="max-width:940px; margin:0 0 1rem;">
                 <div class="progress-label"><span>Sprint 16 Progress</span><span id="s16-pct">0%</span></div>
@@ -3700,37 +3655,15 @@
         <div id="retro-content-16" style="max-width:900px; display:none; flex-direction:column; gap:1.25rem;">
             <div class="retro-card retro-good">
                 <div class="retro-label">What went well?</div>
-                <div class="retro-text">
-                    <p style="margin:0 0 0.6rem;">Sprint 16 closed at 100% with final hardening, governance, and release-readiness artifacts synchronized across dashboard evidence views.</p>
-                    <ul style="margin:0; padding-left:1.25rem; line-height:1.9;">
-                        <li>All Sprint 16 tickets closed with no remaining blocked or open Sprint 16 work</li>
-                        <li>Dashboard source-of-truth normalization completed for sprint metrics and chart consistency</li>
-                        <li>Closure evidence and parent-level resolution records were finalized for final sprint audit traceability</li>
-                        <li>Final release and advisor-facing readiness packet records were archived in Sprint 16 evidence paths</li>
-                    </ul>
-                </div>
+                <div class="retro-text"><p style="margin:0;">Placeholder — complete this section after Sprint 16 is finished.</p></div>
             </div>
             <div class="retro-card retro-bad">
                 <div class="retro-label">What didn't go well?</div>
-                <div class="retro-text">
-                    <p style="margin:0 0 0.6rem;">The final sprint uncovered process gaps around stale runtime variants and late-cycle governance completeness across secondary tabs.</p>
-                    <ul style="margin:0; padding-left:1.25rem; line-height:1.9;">
-                        <li>Mixed cached runtime variants temporarily made chart-truth validation inconsistent between tabs</li>
-                        <li>Retrospective closeout and supporting sections lagged behind ticket closure state</li>
-                        <li>Gantt completion was initially computed before dynamic Sprint 16 board hydration and showed stale percentages</li>
-                    </ul>
-                </div>
+                <div class="retro-text"><p style="margin:0;">Placeholder — complete this section after Sprint 16 is finished.</p></div>
             </div>
             <div class="retro-card retro-improve">
                 <div class="retro-label">What will we do differently next sprint?</div>
-                <div class="retro-text">
-                    <p style="margin:0 0 0.6rem;">Future reuse of this workspace will enforce complete-surface closeout in the same cycle as sprint closure, not as a follow-up pass.</p>
-                    <ul style="margin:0; padding-left:1.25rem; line-height:1.9;">
-                        <li>Run line-by-line sprint closure audit before and after any final sprint status change</li>
-                        <li>Require all dashboard tabs (retrospective, risk, hours, decisions, about) to pass completeness checks before publish</li>
-                        <li>Recompute and verify timeline visualizations after dynamic board/state hydration to avoid stale percentage displays</li>
-                    </ul>
-                </div>
+                <div class="retro-text"><p style="margin:0;">Placeholder — complete this section after Sprint 16 is finished.</p></div>
             </div>
         </div>
     </div>
@@ -4015,10 +3948,11 @@
             <div class="about-card">
                 <h3>Infrastructure</h3>
                 <ul>
-                    <li>Frontend: AWS Amplify (auto-deploy)</li>
+                    <li>Frontend: Netlify (auto-deploy from GitHub)</li>
                     <li>Backend: AWS EC2 (systemd service)</li>
                     <li>Database: PostgreSQL 18 on EC2</li>
-                    <li>CI/CD: GitHub → Amplify + EC2</li>
+                    <li>CI/CD: GitHub → Netlify + EC2</li>
+                    <li>Storage path: No active AWS S3 dependency in current production flow</li>
                     <li>Data: NFLverse (play-by-play) + ESPN API</li>
                 </ul>
             </div>
@@ -4044,15 +3978,15 @@
         <!-- Term Objectives (moved from old Overview) -->
         <div class="section-title" style="margin-bottom:1rem;">Term Objectives</div>
         <div class="objectives-list">
-            <div class="objective-item"><span class="check">✓</span><div class="objective-text">Full-stack NFL analytics app deployed to AWS (React + Flask + PostgreSQL)</div></div>
+            <div class="objective-item"><span class="check">✓</span><div class="objective-text">Full-stack NFL analytics app deployed to Netlify + AWS EC2 (React + Flask + PostgreSQL)</div></div>
             <div class="objective-item"><span class="check">✓</span><div class="objective-text">7,263 historical games with 64 stats per game including EPA metrics</div></div>
             <div class="objective-item"><span class="check">✓</span><div class="objective-text">XGBoost ML models trained on rolling features (no data leakage)</div></div>
             <div class="objective-item"><span class="check">✓</span><div class="objective-text">Elo rating system with live prediction capability</div></div>
             <div class="objective-item"><span class="check">✓</span><div class="objective-text">Production environment restored and fully verified (Sprint 12)</div></div>
             <div class="objective-item"><span class="check">✓</span><div class="objective-text">2025 season data loaded and models retrained (Sprint 13-14)</div></div>
-            <div class="objective-item"><span class="check">✓</span><div class="objective-text">All pages working in production, mobile-responsive (Sprint 15)</div></div>
-            <div class="objective-item"><span class="check">✓</span><div class="objective-text">Security hardened, rate limiting, and credential audit completed (Sprint 16)</div></div>
-            <div class="objective-item"><span class="check">✓</span><div class="objective-text">Public release readiness with final documentation and performance report artifacts</div></div>
+            <div class="objective-item"><span class="pending">○</span><div class="objective-text">All pages working in production, mobile-responsive (Sprint 15)</div></div>
+            <div class="objective-item"><span class="pending">○</span><div class="objective-text">Security hardened, rate limiting, no exposed credentials (Sprint 16)</div></div>
+            <div class="objective-item"><span class="pending">○</span><div class="objective-text">Public release with final documentation and performance report</div></div>
         </div>
 
     </div>
@@ -4317,7 +4251,7 @@ function normalizeLiveAppUrl(rawUrl) {
     }
 
     var host = getNormalizedLiveAppHost(url);
-    // Legacy hosts are automatically redirected to the current production URL.
+    // Legacy hosts automatically map to the current production URL.
     if (host && LEGACY_LIVE_APP_HOSTS[host]) {
         return PROD_LIVE_APP_URL;
     }
@@ -4449,7 +4383,7 @@ function persistBrandingEditorValues() {
     writeBrandingStorage(payload);
 }
 
-function migrateBrandingLiveAppUrl() {
+function migrateLiveAppUrlForLocalDashboard() {
     var liveInput = document.getElementById('brand-live-app-url');
     if (!liveInput) return;
 
@@ -4543,7 +4477,7 @@ window.applyBrandingToUI = applyBrandingToUI;
 
 function initBrandingEditor() {
     restoreBrandingEditorValues();
-    migrateBrandingLiveAppUrl();
+    migrateLiveAppUrlForLocalDashboard();
 
     BRAND_EDITABLE_IDS.forEach(function(id) {
         var el = document.getElementById(id);
@@ -5066,7 +5000,7 @@ function selectRetroSprint(sprintNum) {
         },
         '16': {
             title: 'Sprint 16 — Retrospective',
-            subtitle: 'Completed at final sprint close — Jun 13, 2026. Hardening/release closure evidence synchronized across dashboard sections.',
+            subtitle: 'Placeholder — retrospective is completed only after the sprint closes.',
             dates: 'May 28 – Jun 13, 2026'
         }
     };
@@ -7094,7 +7028,6 @@ function updateSprintBoardProgress(sprintNum, options) {
         }
     }
 
-    if (typeof window.refreshGantt === 'function') window.refreshGantt();
     if (!options.skipMetrics) syncDashMetrics();
     if (!options.skipTracker && !window.__TASK_STATE_SYNC_ACTIVE && typeof window.renderTaskTracker === 'function') {
         window.renderTaskTracker();
@@ -8944,7 +8877,6 @@ function initTasks() {
         syncDashMetrics();
     }
     if (typeof loadSprintDashboard === 'function') loadSprintDashboard(CURRENT_DASH_SPRINT);
-    if (typeof window.refreshGantt === 'function') window.refreshGantt();
 }
 
 
@@ -9065,8 +8997,8 @@ var SPRINT_SCHEDULE = [
     { num: 16, start: '2026-05-28', end: '2026-06-13', theme: 'Hardening & Release',   displayDates: 'May 28 – Jun 13'   }
 ];
 
-// Leave unset after final sprint close. Set to a sprint number only for temporary recovery/testing workflows.
-var MANUAL_CURRENT_SPRINT_OVERRIDE = null;
+// Manual override requested by PM: Sprint 16 is active immediately.
+var MANUAL_CURRENT_SPRINT_OVERRIDE = 16;
 
 function parseIsoDateLocal(value, endOfDay) {
     var raw = String(value || '').trim();
@@ -9122,42 +9054,6 @@ function formatScheduleDateLabel(isoDate) {
 
 var DASH_SPRINT_STORAGE_KEY = 'pmforge_dashboard_selected_sprint_v1';
 var DASH_SPRINT_FOLLOW_CURRENT_KEY = 'pmforge_dashboard_follow_current_sprint_v1';
-var DASHBOARD_BUILD_STAMP = 'e8c2d890|2026-06-16T21:29:36Z';
-var DASHBOARD_BUILD_STAMP_KEY = 'pmforge_dashboard_build_stamp_v1';
-
-function getDashboardBuildHash() {
-    var raw = String(DASHBOARD_BUILD_STAMP || '').trim();
-    if (!raw) return 'local';
-    var parts = raw.split('|');
-    return String(parts[0] || raw).trim() || 'local';
-}
-
-function enforceDashboardBuildFreshness() {
-    try {
-        if (!window.localStorage) return true;
-        var current = String(DASHBOARD_BUILD_STAMP || '').trim();
-        if (!current) {
-            localStorage.removeItem(DASHBOARD_BUILD_STAMP_KEY);
-            return true;
-        }
-
-        var prev = String(localStorage.getItem(DASHBOARD_BUILD_STAMP_KEY) || '').trim();
-        localStorage.setItem(DASHBOARD_BUILD_STAMP_KEY, current);
-        if (!prev || prev === current) return true;
-
-        var url = new URL(window.location.href);
-        if (!url.searchParams.get('cacheBust')) {
-            url.searchParams.set('cacheBust', String(Date.now()));
-            window.location.replace(url.toString());
-            return false;
-        }
-    } catch (e) {
-        return true;
-    }
-    return true;
-}
-
-enforceDashboardBuildFreshness();
 
 function getCurrentSprint() {
     if (!Array.isArray(SPRINT_SCHEDULE) || !SPRINT_SCHEDULE.length) {
@@ -9330,17 +9226,17 @@ var SPRINT_ARCHIVE = {
     },
     16: {
         label: 'Sprint 16 — Hardening & Release',
-        status: 'completed',
-        rag: { cls: 'green', label: 'COMPLETED — ARCHIVE', msg: 'Sprint 16 complete · Finalized · 95 of 95 effort points complete · 0 blocked · 0 open', detail: 'Updated: Jun 16, 2026 · Capstone term complete · final sprint closed Jun 13, 2026' },
-        metrics: { sprintNum: '16', sprintSub: 'of 16 total · Hardening &amp; Release', daysVal: '0', daysSub: 'Sprint closed Jun 13, 2026', taskPct: '100%', taskCount: '162 of 162 subtasks complete · 95 of 95 effort points complete' },
-        burndownTitle: 'Burndown (Effort Points) — Sprint 16',
-        burndownInsight: '<strong>S16 burndown unit:</strong> Effort points. 95 of 95 points complete, 0 remaining. 46 done effort points had no explicit completion timestamp, so they are distributed across sprint workdays for automated burndown rendering.',
+        status: 'upcoming',
+        rag: { cls: 'green', label: 'ON TRACK — GREEN', msg: 'Sprint 16 starts May 28 · Final hardening and release', detail: 'Starts: May 28, 2026 · Ends: Jun 13, 2026' },
+        metrics: { sprintNum: '16', sprintSub: 'of 16 total · Hardening &amp; Release', daysVal: '—', daysSub: 'Sprint ends Jun 13, 2026', taskPct: '0%', taskCount: 'Sprint Active' },
+        burndownTitle: 'Burndown — Sprint 16',
+        burndownInsight: '<strong>S16 status:</strong> Sprint activates May 28.',
         burndown: { ideal: null, actual: null, max: 10 },
-        burnupInsight: '<strong>S16 burnup unit:</strong> Effort points (XS=1, S=2, M=3, L=5, XL=8). 95 of 95 points are currently Done in S16. Cumulative line = prior total + done effort points per sprint.',
+        burnupInsight: '<strong>S16 scope:</strong> Final release sprint.',
         burnup: { labels: ['S1','S2','S3','S4','S5','S6','S7','S8','S9','S10','S11','S12','S13','S14','S15','S16*'], scope: [8,14,20,26,32,40,50,58,65,72,78,83,91,99,107,115], completed: [8,13,19,25,30,37,46,54,61,68,75,83,83,83,83,83] },
-        velocityInsight: '<strong>S16 velocity:</strong> 95 effort points currently marked Done in S16.',
+        velocityInsight: '<strong>S16 velocity:</strong> Sprint activates May 28.',
         velocity: { labels: ['S1','S2','S3','S4','S5','S6','S7','S8','S9','S10','S11','S12','S13','S14','S15','S16*'], data: [8,5,6,6,5,7,9,8,7,7,7,8,0,0,0,0], activeIndex: 15 },
-        severityInsight: '<strong>S16 severity mix:</strong> Open backlog by priority is P1 0, P2 0, P3 0, P4 0.',
+        severityInsight: '<strong>S16 focus:</strong> Hardening and release.',
         severity: [11,13,7,2],
         p1Count: null, openCount: null
     }
@@ -9699,158 +9595,6 @@ function getCommittedSprintTicketCounts(items, sprintNum) {
     };
 }
 
-function parseDashboardEvidenceDate(value) {
-    var raw = String(value || '').trim();
-    if (!raw) return null;
-    var parsed = new Date(raw);
-    if (!isNaN(parsed.getTime())) return parsed;
-    parsed = new Date(raw + 'T00:00:00');
-    return isNaN(parsed.getTime()) ? null : parsed;
-}
-
-function getTaskDetailCompletionDate(taskId) {
-    if (typeof TASK_DETAILS === 'undefined' || !TASK_DETAILS) return null;
-    var detail = TASK_DETAILS[String(taskId || '').trim()];
-    if (!detail) return null;
-    return parseDashboardEvidenceDate(detail.timestamp)
-        || parseDashboardEvidenceDate(detail.updatedAt)
-        || parseDashboardEvidenceDate(detail.at)
-        || parseDashboardEvidenceDate(detail.date);
-}
-
-function getTicketManualCompletionDate(ticket) {
-    if (!ticket) return null;
-    var completedSet = typeof COMPLETED_TASKS !== 'undefined' && Array.isArray(COMPLETED_TASKS)
-        ? new Set(COMPLETED_TASKS)
-        : new Set();
-
-    var fallbackSubtasks = [];
-    if (!Array.isArray(ticket.manualSubtasks) || !ticket.manualSubtasks.length) {
-        var ticketToken = String(ticket.id || 'ta').toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
-        fallbackSubtasks = [
-            { id: 'm_' + ticketToken + '_1' },
-            { id: 'm_' + ticketToken + '_2' },
-            { id: 'm_' + ticketToken + '_3' },
-            { id: 'm_' + ticketToken + '_4' }
-        ];
-    }
-
-    var subtasks = (Array.isArray(ticket.manualSubtasks) && ticket.manualSubtasks.length)
-        ? ticket.manualSubtasks
-        : fallbackSubtasks;
-
-    var latest = null;
-    subtasks.forEach(function(subtask, idx) {
-        var sid = String(subtask && subtask.id || ('m_ta_' + idx)).trim();
-        if (!sid || !completedSet.has(sid)) return;
-        var detailDate = getTaskDetailCompletionDate(sid);
-        if (detailDate && (!latest || detailDate > latest)) latest = detailDate;
-    });
-
-    return latest;
-}
-
-function getTicketDoneDate(ticket) {
-    if (!ticket || normalizeBacklogStatus(ticket.status) !== 'done') return null;
-
-    var latest = null;
-    var history = Array.isArray(ticket.history) ? ticket.history : [];
-    for (var i = 0; i < history.length; i++) {
-        var entry = history[i] || {};
-        var note = String(entry.note || '').toLowerCase();
-        if (note.indexOf('closed') === -1 && note.indexOf('complete') === -1) continue;
-        var stamp = entry.at || entry.timestamp || entry.date || null;
-        if (!stamp) continue;
-        var dt = parseDashboardEvidenceDate(stamp);
-        if (dt && (!latest || dt > latest)) latest = dt;
-    }
-
-    var manualDate = getTicketManualCompletionDate(ticket);
-    if (manualDate && (!latest || manualDate > latest)) latest = manualDate;
-
-    var closedAtDate = parseDashboardEvidenceDate(ticket.closedAt);
-    if (closedAtDate && (!latest || closedAtDate > latest)) latest = closedAtDate;
-
-    return latest;
-}
-
-function buildClosedSprintBurndownActual(sprintNum, totalPoints, dayCtx, items) {
-    if (!dayCtx || !Array.isArray(dayCtx.workdayDates) || !dayCtx.workdayDates.length) return null;
-    if (!(totalPoints > 0)) return null;
-
-    var sprintTag = 'S' + sprintNum;
-    var doneEvents = [];
-    var datedPoints = 0;
-    var undatedPoints = 0;
-    (items || []).forEach(function(ticket) {
-        if (String(ticket && ticket.sprint || '').trim().toUpperCase() !== sprintTag) return;
-        if (normalizeBacklogStatus(ticket && ticket.status) !== 'done') return;
-
-        var points = getEffortPoints(ticket && ticket.effort);
-        if (!(points > 0)) return;
-
-        var doneDate = getTicketDoneDate(ticket);
-        if (!doneDate) {
-            undatedPoints += points;
-            return;
-        }
-
-        doneDate.setHours(0, 0, 0, 0);
-        doneEvents.push({ date: doneDate, points: points });
-        datedPoints += points;
-    });
-
-    if (!doneEvents.length && undatedPoints <= 0) return null;
-
-    if (undatedPoints > 0 && dayCtx.workdayDates.length) {
-        var undatedIdeal = buildIdealBurndownSeries(undatedPoints, dayCtx.workdayDates.length);
-        var distributed = 0;
-        for (var u = 1; u < undatedIdeal.length; u++) {
-            var delta = Math.max(0, Math.round((undatedIdeal[u - 1] || 0) - (undatedIdeal[u] || 0)));
-            if (delta <= 0) continue;
-            var eventDay = new Date(dayCtx.workdayDates[u]);
-            eventDay.setHours(0, 0, 0, 0);
-            doneEvents.push({ date: eventDay, points: delta });
-            distributed += delta;
-        }
-
-        var remainingUndated = Math.max(0, Math.round(undatedPoints - distributed));
-        if (remainingUndated > 0) {
-            var lastDay = new Date(dayCtx.workdayDates[dayCtx.workdayDates.length - 1]);
-            lastDay.setHours(0, 0, 0, 0);
-            doneEvents.push({ date: lastDay, points: remainingUndated });
-        }
-    }
-
-    doneEvents.sort(function(a, b) { return a.date - b.date; });
-
-    var remaining = Number(totalPoints) || 0;
-    var idx = 0;
-    var series = [];
-
-    dayCtx.workdayDates.forEach(function(workday, index) {
-        if (index === 0) {
-            series.push(Math.max(0, Math.round(totalPoints)));
-            return;
-        }
-
-        var wd = new Date(workday);
-        wd.setHours(0, 0, 0, 0);
-        while (idx < doneEvents.length && doneEvents[idx].date <= wd) {
-            remaining -= Number(doneEvents[idx].points) || 0;
-            idx += 1;
-        }
-        series.push(Math.max(0, Math.round(remaining)));
-    });
-
-    if (series.length) series[series.length - 1] = 0;
-    return {
-        series: series,
-        undatedPoints: Math.max(0, Number(undatedPoints) || 0),
-        datedPoints: Math.max(0, Number(datedPoints) || 0)
-    };
-}
-
 function recomputeBurnupSeriesFromBacklog(snapshot, items) {
     if (!snapshot || !snapshot.burnup || !Array.isArray(snapshot.burnup.labels)) return;
 
@@ -10120,12 +9864,6 @@ function buildActiveSprintSnapshot(sprintNum, archiveSnapshot) {
         snapshot.metrics.daysSub = 'Sprint ends ' + endLabel + ' · weekends excluded' + noWorkSuffix;
     }
 
-    var hasArchivedBurndown = !!(archiveSnapshot
-        && archiveSnapshot.burndown
-        && Array.isArray(archiveSnapshot.burndown.actual)
-        && archiveSnapshot.burndown.actual.some(function(v) { return typeof v === 'number'; }));
-    var preserveArchivedSeries = isClosedCurrentSprint && hasArchivedBurndown;
-
     var legacyActual = Array.isArray(snapshot.burndown.actual) ? snapshot.burndown.actual : [];
     var idealLen = (dayCtx && dayCtx.totalDays) ? dayCtx.totalDays : (snapshot.burndown.ideal.length || 10);
     var actual = new Array(idealLen).fill(null);
@@ -10143,19 +9881,7 @@ function buildActiveSprintSnapshot(sprintNum, archiveSnapshot) {
     }
 
     var startAnchorActive = false;
-    var closedUndatedPoints = 0;
-    if (!preserveArchivedSeries && burndownProgress.total > 0) {
-        var closedSeries = null;
-        if (isClosedCurrentSprint) {
-            closedSeries = buildClosedSprintBurndownActual(sprintNum, burndownProgress.total, dayCtx, items);
-        }
-
-        if (closedSeries && Array.isArray(closedSeries.series) && closedSeries.series.length) {
-            actual = closedSeries.series.slice();
-            closedUndatedPoints = Number(closedSeries.undatedPoints || 0);
-            idealLen = actual.length;
-            snapshot.burndown.ideal = buildIdealBurndownSeries(burndownProgress.total, idealLen);
-        } else {
+    if (burndownProgress.total > 0) {
         var dayIndex = Math.max(0, Math.min(idealLen - 1, (dayCtx ? dayCtx.dayNum : 1) - 1));
 
         // Add a start anchor when early-sprint actuals are sparse so the chart
@@ -10175,14 +9901,11 @@ function buildActiveSprintSnapshot(sprintNum, archiveSnapshot) {
             for (var k = dayIndex + 1; k < idealLen; k++) actual[k] = null;
         }
 
-            snapshot.burndown.ideal = buildIdealBurndownSeries(burndownProgress.total, idealLen);
-        }
+        snapshot.burndown.ideal = buildIdealBurndownSeries(burndownProgress.total, idealLen);
     }
 
-    if (!preserveArchivedSeries) {
-        snapshot.burndown.actual = actual;
-        snapshot.burndown.max = Math.max(snapshot.burndown.max || 0, burndownProgress.total || 0, 10);
-    }
+    snapshot.burndown.actual = actual;
+    snapshot.burndown.max = Math.max(snapshot.burndown.max || 0, burndownProgress.total || 0, 10);
 
     recomputeBurnupSeriesFromBacklog(snapshot, items);
 
@@ -10213,10 +9936,7 @@ function buildActiveSprintSnapshot(sprintNum, archiveSnapshot) {
         ? (' Capacity adjusted by excluding ' + dayCtx.excludedWorkdayCount + ' planned no-work day' + (dayCtx.excludedWorkdayCount === 1 ? '' : 's') + '.')
         : '';
     if (usePointBurndown) {
-        var undatedNote = (isClosedCurrentSprint && closedUndatedPoints > 0)
-            ? (' ' + closedUndatedPoints + ' done effort points had no explicit completion timestamp, so they are distributed across sprint workdays for automated burndown rendering.')
-            : '';
-        snapshot.burndownInsight = '<strong>S' + sprintNum + ' burndown unit:</strong> Effort points. ' + pointProgress.done + ' of ' + pointProgress.total + ' points complete, ' + pointProgress.remaining + ' remaining.' + capacityDetail + undatedNote + (startAnchorActive ? ' Start-to-current anchor is shown so the burndown trace is visible early in the sprint.' : '');
+        snapshot.burndownInsight = '<strong>S' + sprintNum + ' burndown unit:</strong> Effort points. ' + pointProgress.done + ' of ' + pointProgress.total + ' points complete, ' + pointProgress.remaining + ' remaining.' + capacityDetail + (startAnchorActive ? ' Start-to-current anchor is shown so the burndown trace is visible early in the sprint.' : '');
     } else {
         snapshot.burndownInsight = '<strong>S' + sprintNum + ' status:</strong> ' + dayLabel + '. ' + progressBySubtasks.done + ' of ' + progressBySubtasks.total + (useTicketFallback ? ' sprint tickets complete (board subtasks not populated yet).' : ' subtasks complete.') + ' ' + progressBySubtasks.remaining + ' remaining.' + capacityDetail + (startAnchorActive ? ' Start-to-current anchor is shown so the burndown trace is visible early in the sprint.' : '');
     }
@@ -10240,9 +9960,6 @@ function getEffectiveSprintSnapshot(sprintNum) {
         var archived = cloneSprintSnapshot(archiveSnapshot) || createRuntimeSprintSnapshot(n);
         var liveItems = window.PB_ITEMS || [];
         var status = getSprintStatusByDate(n);
-        var boardCounts = getBoardCompletionCounts(n);
-        var ticketCounts = getCommittedSprintTicketCounts(liveItems, n);
-        var counts = computeLiveTaskCounts(n);
         var sprintMeta = (SPRINT_SCHEDULE || []).find(function(sp) { return sp.num === n; }) || null;
         var endLabel = sprintMeta ? new Date(sprintMeta.end).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' }) : '';
         var startLabel = sprintMeta ? new Date(sprintMeta.start).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' }) : '';
@@ -10265,19 +9982,6 @@ function getEffectiveSprintSnapshot(sprintNum) {
             archived.rag.detail = startLabel ? ('Starts: ' + startLabel) : 'Starts next';
             archived.metrics.daysVal = '—';
         }
-
-        if (boardCounts.total > 0) {
-            archived.metrics.taskPct = boardCounts.pct + '%';
-            archived.metrics.taskCount = boardCounts.done + ' of ' + boardCounts.total + ' subtasks complete';
-        } else if (ticketCounts.totalPoints > 0) {
-            archived.metrics.taskPct = ticketCounts.pctPoints + '%';
-            archived.metrics.taskCount = ticketCounts.donePoints + ' of ' + ticketCounts.totalPoints + ' effort points complete';
-        }
-
-        archived.p1Count = counts.p1Count;
-        archived.p1Sub = counts.p1Sub;
-        archived.openCount = counts.openCount;
-        archived.openSub = counts.openSub;
 
         recomputeBurnupSeriesFromBacklog(archived, liveItems);
         syncVelocitySeriesFromBacklog(archived, liveItems, n);
@@ -10659,7 +10363,7 @@ function loadSprintDashboard(num, options) {
         var activeSprint = (window.SPRINT_SCHEDULE || []).find(function(sp) {
             return sp && sp.num === activeSprintNum;
         });
-        lu.textContent = updDate + (activeSprint ? ' — S' + activeSprint.num + ': ' + activeSprint.theme : '') + ' · build ' + getDashboardBuildHash();
+        lu.textContent = updDate + (activeSprint ? ' — S' + activeSprint.num + ': ' + activeSprint.theme : '');
     }
 
     // Rebuild charts with this sprint's data
@@ -10910,8 +10614,8 @@ initTasks();
         { num:6,  dates:'May 11 – May 16', sprint:'S14', hours:23,  notes:'Sprint 14 closeout stabilization and governance pass. Applied P1 tracker fixes, reduced architecture motion blur, and fixed non-cycling live updates. Implemented and polished live architecture health monitoring with status-reactive connection visuals, repaired local dashboard/API CORS + probe behavior for reliable localhost operation, and finalized Sprint 14 retrospective plus DoD evidence alignment.' },
         { num:7,  dates:'May 18 – May 24', sprint:'S15', hours:27,  notes:'Sprint 15 execution week focused on multi-season reliability validation and evidence production. Completed TA-076/TA-077 sequence work including extraction reruns, guardrail analysis, and competitiveness diagnostics; captured artifacts for 2021-2025 evaluation and moved closure bookkeeping to fail-closed receipt workflow.' },
         { num:8,  dates:'May 25 – May 27', sprint:'S15', hours:30,  notes:'Sprint 15 closeout and governance normalization week. Finalized reconciliation hardening and backend verification chain checks, corrected dashboard metric source-of-truth drift, normalized S15 backlog split (0 in sprint, remaining in backlog), and completed Sprint 15 retrospective + DoD entries with closure-gate receipts and backup/hash evidence.' },
-        { num:9,  dates:'May 28 – Jun 3',  sprint:'S16', hours:30,  notes:'Sprint 16 hardening week. Completed release-readiness ticket closures, normalized dashboard sprint evidence, and finalized final-sprint governance artifacts.' },
-        { num:10, dates:'Jun 4 – Jun 13',  sprint:'S16', hours:30,  notes:'Final capstone closeout week. Completed archive/evidence pass across dashboard tabs, verified chart truth for historical sprints, and finalized advisor-facing release documentation records.' },
+        { num:9,  dates:'May 28 – Jun 3',  sprint:'S16', hours:0,   notes:'' },
+        { num:10, dates:'Jun 4 – Jun 13',  sprint:'S16', hours:0,   notes:'' },
     ];
 
     var hoursSaveTimers = {};
@@ -11079,7 +10783,7 @@ initTasks();
 })();
 
 /* ── GANTT CHART ── */
-function renderGanttChart() {
+(function buildGantt() {
     var container = document.getElementById('gantt-chart');
     if (!container) return;
 
@@ -11102,57 +10806,9 @@ function renderGanttChart() {
     var today = new Date(); today.setHours(0,0,0,0);
     var todayPct = Math.min(Math.max(((today - TERM_START) / 86400000) / TERM_DAYS * 100, 0), 100);
 
-    function getSprintCompletionFromBacklog(sprintNum) {
-        var sprintTag = 'S' + String(sprintNum);
-        var items = (window.PB_ITEMS || []).filter(function(item) {
-            return String(item && item.sprint || '').trim().toUpperCase() === sprintTag;
-        });
-
-        if (!items.length) return null;
-
-        var total = 0;
-        var done = 0;
-
-        items.forEach(function(item) {
-            var ticketStatus = normalizeBacklogStatus(item && item.status);
-            var ticketId = String(item && item.id || '').toLowerCase().replace(/[^a-z0-9]+/g, '_');
-            var subtasks = Array.isArray(item && item.manualSubtasks) && item.manualSubtasks.length
-                ? item.manualSubtasks
-                : [
-                    { id: 'm_' + ticketId + '_1' },
-                    { id: 'm_' + ticketId + '_2' },
-                    { id: 'm_' + ticketId + '_3' },
-                    { id: 'm_' + ticketId + '_4' }
-                ];
-
-            total += subtasks.length;
-            if (ticketStatus === 'done') {
-                done += subtasks.length;
-                return;
-            }
-
-            if (ticketStatus === 'blocked') return;
-
-            subtasks.forEach(function(subtask) {
-                var sid = String(subtask && subtask.id || '');
-                if (sid && Array.isArray(window.COMPLETED_TASKS) && window.COMPLETED_TASKS.indexOf(sid) !== -1) {
-                    done += 1;
-                }
-            });
-        });
-
-        return total > 0 ? Math.round(done / total * 100) : 0;
-    }
-
-    // Sprint completion from backlog truth; fallback to board checkboxes if needed.
+    // Sprint completion from board checkboxes
     var sprintCompletionPct = {};
     sprints.forEach(function(s) {
-        var backlogPct = getSprintCompletionFromBacklog(s.num);
-        if (backlogPct !== null) {
-            sprintCompletionPct[s.num] = backlogPct;
-            return;
-        }
-
         var boardCbs = document.querySelectorAll('#sprint' + s.num + '-board input[type="checkbox"]');
         var doneCount = 0;
         boardCbs.forEach(function(cb){ if (cb.checked) doneCount++; });
@@ -11212,10 +10868,7 @@ function renderGanttChart() {
         '</div>';
 
     container.innerHTML = '<div class="gantt-wrap">' + headerHTML + todayLineHTML + rowsHTML + '</div>';
-}
-
-window.refreshGantt = renderGanttChart;
-renderGanttChart();
+})();
 
 /* ── SPRINT RETROSPECTIVE ── */
 /* ── PRODUCT BACKLOG ── */
@@ -12180,14 +11833,14 @@ function showSprintView(view, btn) {
 /* ── RISK REGISTER ── */
 (function buildRiskRegister() {
     var DEFAULT_RISKS = [
-        { id:'R-01', risk:'EC2 instance inaccessible / Flask service down',           like:'H', impact:'H', mitigation:'Accepted at capstone closeout. Operational continuity runbook exists and service recovery path is documented for any future handoff reuse.', sprint:'S12', status:'accepted' },
+        { id:'R-01', risk:'EC2 instance inaccessible / Flask service down',           like:'H', impact:'H', mitigation:'SSH in immediately; systemctl restart hc-lombardo.service. Health-check endpoint monitors uptime.', sprint:'S12', status:'open' },
         { id:'R-02', risk:'Hardcoded credentials exposed in GitHub',                   like:'L', impact:'H', mitigation:'Fixed S12 — all hardcoded passwords removed from api_server.py, api_routes_hcl.py, api_routes_live_scores.py. Moved to environment variables.',          sprint:'S12', status:'resolved' },
-        { id:'R-03', risk:'2025 NFL data missing or malformed in NFLverse',            like:'M', impact:'H', mitigation:'Resolved in closeout. 2025 ingest and validation checks were completed and retained in sprint evidence artifacts.',          sprint:'S13', status:'resolved' },
-        { id:'R-04', risk:'ML model accuracy drops after retraining on 2025 data',     like:'M', impact:'M', mitigation:'Resolved in closeout. Multi-season validation and reliability evidence were completed and archived.', sprint:'S14', status:'resolved' },
-        { id:'R-05', risk:'CORS errors blocking frontend from hitting EC2 API',        like:'H', impact:'H', mitigation:'Resolved in delivery hardening. Endpoint reachability and app routing verification were completed in production workflow checks.',       sprint:'S12', status:'resolved' },
-        { id:'R-06', risk:'AWS Amplify build fails after a push',                      like:'M', impact:'M', mitigation:'Accepted at capstone closeout. Build/deploy procedures are documented for future maintenance cycles.',        sprint:'S12', status:'accepted' },
-        { id:'R-07', risk:'Project scope too large to complete by Jun 13',             like:'M', impact:'H', mitigation:'Resolved at term close. Scope was finalized across S12-S16 and deferred backlog was separated from committed sprint closure work.',        sprint:'All', status:'resolved' },
-        { id:'R-08', risk:'PostgreSQL data loss or schema corruption',                 like:'L', impact:'H', mitigation:'Accepted at capstone closeout with documented backup discipline and recovery guidance retained for future operation.',                            sprint:'S13', status:'accepted' },
+        { id:'R-03', risk:'2025 NFL data missing or malformed in NFLverse',            like:'M', impact:'H', mitigation:'Validate row counts and spot-check game data after ingest. Fall back to ESPN API if needed.',          sprint:'S13', status:'open' },
+        { id:'R-04', risk:'ML model accuracy drops after retraining on 2025 data',     like:'M', impact:'M', mitigation:'Compare accuracy to prior baseline before deploying. Document both results. Do not deploy if worse.', sprint:'S14', status:'open' },
+        { id:'R-05', risk:'CORS errors blocking frontend from hitting EC2 API',        like:'H', impact:'H', mitigation:'Confirm Amplify domain is whitelisted in Flask CORS config. Test every endpoint after deploy.',       sprint:'S12', status:'open' },
+        { id:'R-06', risk:'AWS Amplify build fails after a push',                      like:'M', impact:'M', mitigation:'Check Amplify build logs; most failures are env var or npm dependency problems. Fix and repush.',        sprint:'S12', status:'open' },
+        { id:'R-07', risk:'Project scope too large to complete by Jun 13',             like:'M', impact:'H', mitigation:'Sprints are fixed and linear. If behind, defer UI polish (S15) before cutting ML work (S14).',        sprint:'All', status:'open' },
+        { id:'R-08', risk:'PostgreSQL data loss or schema corruption',                 like:'L', impact:'H', mitigation:'pg_dump backup before any schema changes. EC2 snapshots via AWS console.',                            sprint:'S13', status:'open' },
         { id:'R-09', risk:'EC2 disk full — server crash or failed writes',            like:'H', impact:'H', mitigation:'Resolved in Sprint 14 TA-063 recovery execution. Cleanup evidence captured May 16 with post-cleanup root utilization reduced to 33% and validation services healthy after restart.', sprint:'S14', status:'resolved' },
         { id:'R-10', risk:'AWS console inaccessible — root MFA device lost',          like:'H', impact:'M', mitigation:'Resolved in Sprint 14 continuity recovery path. AWS operational access was restored and EC2 execution/deployment continuity was revalidated with post-recovery health checks and backup-path verification.', sprint:'S14', status:'resolved' },
         { id:'R-11', risk:'AI delivery failure from prior assistant created repeated errors, cost increase, and scope slippage in dashboard automation work', like:'H', impact:'H', mitigation:'Risk response implemented Apr 22, 2026: prior assistant was terminated and replaced with GPT-5.3-Codex. Controls now in effect: contract-first execution, no-assumption rule, per-task chat isolation, mandatory review before deploy, and explicit verification against requirements. Incident reference: dashboard navbar/logbook automation failure consumed ~16 hours and required ~2.5 days to recover, taking time away from core app delivery.', sprint:'All', status:'implemented' },
@@ -12334,20 +11987,6 @@ function showSprintView(view, btn) {
             chosen: 'Use canonical sprint keys in S# format (S12, S13, S14, S15, S16) across dashboard logs and evidence',
             considered: 'Mixed naming ("Sprint 14" only), ad-hoc labels, or non-standard aliases per section',
             why: 'A single S# convention improves traceability across Decision Log, Hours Log, Weekly Report, DoD, ticket history, and API records. This reduces ambiguity during closeout reviews and keeps local/UI labels aligned with persisted dashboard data fields.',
-        },
-        {
-            id: 'D-10', date: 'Jun 2026', sprint: 'S16',
-            title: 'Final sprint closed in archive/evidence mode',
-            chosen: 'Treat Sprint 16 as completed and preserve dashboard as immutable closure evidence',
-            considered: 'Keep Sprint 16 in active execution mode after term close',
-            why: 'Capstone delivery closed on Jun 13, 2026. Archive/evidence mode keeps reporting deterministic, prevents accidental drift, and maintains advisor-traceable closeout artifacts.',
-        },
-        {
-            id: 'D-11', date: 'Jun 2026', sprint: 'S16',
-            title: 'Full-surface sprint-close enforcement across all dashboard tabs',
-            chosen: 'Require retrospective, risk, hours, decisions, weekly, and about sections to be complete before final completion claims',
-            considered: 'Closing only board and chart metrics while leaving supporting tabs for later',
-            why: 'Sprint-close quality depends on end-to-end consistency, not partial completion. This rule prevents status mismatch between top metrics and governance/reporting tabs.',
         },
     ];
     var decisions = DEFAULT_DECISIONS.map(function(d) { return Object.assign({}, d); });
@@ -12549,66 +12188,12 @@ function showSprintView(view, btn) {
         });
     }
 
-    function getSprintTailDate(sprintKey) {
-        var target = normalizeSprintCode(sprintKey);
-        if (!target || target === 'TBD') return null;
-
-        var latest = null;
-        var sprintTicketIds = {};
-
-        function bumpLatest(value) {
-            var d = parseDateSafe(value);
-            if (!d) return;
-            if (!latest || d > latest) latest = d;
-        }
-
-        (window.PB_ITEMS || []).forEach(function(item) {
-            if (!item || normalizeSprintCode(item.sprint) !== target) return;
-
-            var id = String(item.id || '').trim().toUpperCase();
-            if (id) sprintTicketIds[id] = true;
-
-            bumpLatest(item.updatedAt);
-
-            (item.history || []).forEach(function(entry) {
-                bumpLatest(entry && entry.at);
-            });
-
-            (item.comments || []).forEach(function(comment) {
-                bumpLatest(comment && comment.at);
-            });
-        });
-
-        if (typeof TASK_DETAILS !== 'undefined' && TASK_DETAILS
-            && typeof TASK_TA_MAP !== 'undefined' && TASK_TA_MAP) {
-            Object.keys(TASK_DETAILS).forEach(function(taskKey) {
-                var mappedTicket = String(TASK_TA_MAP[taskKey] || '').trim().toUpperCase();
-                if (!mappedTicket || !sprintTicketIds[mappedTicket]) return;
-
-                var detail = TASK_DETAILS[taskKey] || {};
-                bumpLatest(detail.timestamp || detail.dateInput || detail.date);
-            });
-        }
-
-        return latest;
-    }
-
     function getWeekBounds(weekNum) {
         var meta = WEEK_META[parseInt(weekNum, 10) - 1];
         if (!meta) return null;
         var start = parseDateSafe(meta.start);
         var end = parseDateSafe(meta.end);
         if (!start || !end) return null;
-
-        var isFinalWeekOverall = meta.num === WEEK_META.length;
-
-        if (isFinalWeekOverall) {
-            var sprintTail = getSprintTailDate(meta.sprintKey);
-            if (sprintTail && sprintTail > end) {
-                end = new Date(sprintTail);
-            }
-        }
-
         start.setHours(0, 0, 0, 0);
         end.setHours(23, 59, 59, 999);
         return { start: start, end: end };
@@ -12630,22 +12215,9 @@ function showSprintView(view, btn) {
     function normalizeSprintCode(value) {
         var raw = String(value || '').trim().toUpperCase();
         if (!raw) return 'TBD';
-        var sprintCodeMatch = raw.match(/^S[-_\s]?(\d{1,2})$/);
-        if (sprintCodeMatch) return 'S' + parseInt(sprintCodeMatch[1], 10);
-        if (/^\d+$/.test(raw)) return 'S' + parseInt(raw, 10);
-        var sprintTextMatch = raw.match(/SPRINT\s*[-:]?\s*(\d{1,2})/);
-        if (sprintTextMatch) return 'S' + parseInt(sprintTextMatch[1], 10);
+        if (/^S\d+$/.test(raw)) return raw;
+        if (/^\d+$/.test(raw)) return 'S' + raw;
         return raw;
-    }
-
-    function normalizeStatusValue(value) {
-        var raw = String(value || '').trim().toLowerCase();
-        if (!raw) return '';
-        if (raw === 'done' || raw === 'complete' || raw === 'completed') return 'Done';
-        if (raw === 'blocked') return 'Blocked';
-        if (raw === 'in sprint' || raw === 'in progress' || raw === 'in-progress') return 'In Progress';
-        if (raw === 'to do' || raw === 'todo' || raw === 'backlog') return 'To Do';
-        return String(value || '').trim();
     }
 
     function getSprintDodSummary(sprintKey) {
@@ -12732,7 +12304,7 @@ function showSprintView(view, btn) {
             if (!item) return;
             var id = String(item.id || '').trim();
             if (!id) return;
-            var status = normalizeStatusValue(item.status);
+            var status = String(item.status || '').trim();
 
             if (status === 'Blocked') blockedSet[id] = true;
 
@@ -12781,9 +12353,8 @@ function showSprintView(view, btn) {
                 if (!isTimestampInBounds(stamp, bounds)) return;
 
                 updatedSet[mappedTicket] = true;
-                var mappedStatus = normalizeStatusValue(item.status);
-                if (mappedStatus === 'Done') doneSet[mappedTicket] = true;
-                if (mappedStatus === 'Blocked') blockedSet[mappedTicket] = true;
+                if (String(item.status || '').trim() === 'Done') doneSet[mappedTicket] = true;
+                if (String(item.status || '').trim() === 'Blocked') blockedSet[mappedTicket] = true;
 
                 evidenceCount += 1;
                 var resolution = compactReportText(detail.resolution || '', 120);
@@ -12829,7 +12400,7 @@ function showSprintView(view, btn) {
     // Build report-safe sprint ticket summary from Product Backlog data
     function getSprintTicketSummary(sprintKey) {
         var items = (window.PB_ITEMS || []).filter(function(item) {
-            return normalizeSprintCode(item && item.sprint) === normalizeSprintCode(sprintKey);
+            return item && item.sprint === sprintKey;
         });
         if (!items.length) {
             return { issues: '', prevention: '' };
@@ -12837,7 +12408,7 @@ function showSprintView(view, btn) {
 
         function summarizeByStatuses(statuses, maxCount) {
             var filtered = items.filter(function(item) {
-                return statuses.indexOf(normalizeStatusValue(item.status)) !== -1;
+                return statuses.indexOf(item.status) !== -1;
             });
             if (!filtered.length) {
                 return { count: 0, label: '', ids: '' };
@@ -12865,7 +12436,7 @@ function showSprintView(view, btn) {
         }
 
         var done = summarizeByStatuses(['Done'], 4);
-        var inProgress = summarizeByStatuses(['In Progress'], 3);
+        var inProgress = summarizeByStatuses(['In Sprint', 'In Progress'], 3);
         var blocked = summarizeByStatuses(['Blocked'], 3);
 
         var issueParts = [];
@@ -13194,7 +12765,6 @@ function showSprintView(view, btn) {
         window._reportPlainText = plain;
     }
 
-    window.renderReport = renderReport;
     window.generateReport = renderReport;
 
     window.copyReport = function() {
@@ -13239,11 +12809,10 @@ function showSprintView(view, btn) {
         win.print();
     };
 
-    // Build sprint summary report data (combines both weeks of a sprint)
-    function buildSprintSummaryData(sprintKey) {
+    // Build sprint summary report (combines both weeks of a sprint)
+    function buildSprintSummaryText(sprintKey) {
         var weeks = WEEK_META.filter(function(w) { return w.sprintKey === sprintKey; });
-        if (!weeks.length) return null;
-
+        if (!weeks.length) return '';
         var brand = getBrandingSnapshot();
         var hoursData = getHoursData();
         var sprintName = weeks[0].sprint;
@@ -13251,33 +12820,17 @@ function showSprintView(view, btn) {
         var totalHours = 0;
         var allNotes = [];
         var weeklySnapshots = [];
-        var totals = {
-            updated: 0,
-            done: 0,
-            comments: 0,
-            evidence: 0,
-            latestTs: null
-        };
 
         weeks.forEach(function(w) {
             var d = hoursData['w' + w.num] || {};
             var activity = getAutomatedWeekActivity(w.num, sprintKey);
-            var weekHours = parseFloat(d.hours || 0) || 0;
-            totalHours += weekHours;
+            totalHours += parseFloat(d.hours || 0) || 0;
             if (d.notes) allNotes.push('Week ' + w.num + ' (' + w.dates + '): ' + d.notes);
-
-            totals.updated += activity.updatedCount;
-            totals.done += activity.doneIds.length;
-            totals.comments += activity.commentCount;
-            totals.evidence += activity.evidenceCount;
-            if (activity.latestTs && (!totals.latestTs || new Date(activity.latestTs) > new Date(totals.latestTs))) {
-                totals.latestTs = activity.latestTs;
-            }
 
             weeklySnapshots.push({
                 num: w.num,
                 dates: w.dates,
-                hours: weekHours,
+                hours: parseFloat(d.hours || 0) || 0,
                 updated: activity.updatedCount,
                 done: activity.doneIds.length,
                 comments: activity.commentCount,
@@ -13289,50 +12842,29 @@ function showSprintView(view, btn) {
         var dodSummary = getSprintDodSummary(sprintKey);
         var decisionSummary = getSprintDecisionSummary(sprintKey);
         var riskSummary = getSprintRiskSummary(sprintKey);
-        var goals = NEXT_SPRINT_GOALS[sprintName] || [];
-
-        return {
-            sprintKey: sprintKey,
-            sprintName: sprintName,
-            sprintDates: sprintDates,
-            brand: brand,
-            totalHours: totalHours,
-            allNotes: allNotes,
-            weeklySnapshots: weeklySnapshots,
-            dodSummary: dodSummary,
-            decisionSummary: decisionSummary,
-            riskSummary: riskSummary,
-            goals: goals,
-            totals: totals,
-            generatedAt: new Date().toISOString()
-        };
-    }
-
-    function buildSprintSummaryText(summary) {
-        if (!summary) return '';
 
         var lines = [
             '═══════════════════════════════════════════════',
             'SPRINT SUMMARY REPORT',
-            summary.brand.suiteName + ' — ' + summary.brand.projectTitle,
+            brand.suiteName + ' — ' + brand.projectTitle,
             '═══════════════════════════════════════════════',
             '',
-            'Sprint:       ' + summary.sprintName,
-            'Sprint Dates: ' + summary.sprintDates,
-            'Developer:    ' + summary.brand.developerName,
-            summary.brand.roleALabel + ':      ' + summary.brand.roleAName,
-            'Context:      ' + summary.brand.contextLine,
+            'Sprint:       ' + sprintName,
+            'Sprint Dates: ' + sprintDates,
+            'Developer:    ' + brand.developerName,
+            brand.roleALabel + ':      ' + brand.roleAName,
+            'Context:      ' + brand.contextLine,
             '',
             '───────────────────────────────────────────────',
             'HOURS SUMMARY',
             '───────────────────────────────────────────────',
-            'Total hours this sprint: ' + summary.totalHours,
+            'Total hours this sprint: ' + totalHours,
             '',
-            'WEEKLY AUTOMATION SNAPSHOT',
-            '───────────────────────────────────────────────'
         ];
 
-        summary.weeklySnapshots.forEach(function(row) {
+        lines.push('WEEKLY AUTOMATION SNAPSHOT');
+        lines.push('───────────────────────────────────────────────');
+        weeklySnapshots.forEach(function(row) {
             lines.push('Week ' + row.num + ' (' + row.dates + '): '
                 + row.hours + ' hrs · '
                 + row.updated + ' tickets updated · '
@@ -13345,135 +12877,26 @@ function showSprintView(view, btn) {
 
         lines.push('GOVERNANCE SNAPSHOT');
         lines.push('───────────────────────────────────────────────');
-        lines.push('Decision entries (' + summary.sprintKey + '): ' + summary.decisionSummary.count + ' (' + summary.decisionSummary.ids + ')');
-        lines.push('DoD criteria active (' + summary.sprintKey + '): ' + summary.dodSummary.count);
-        lines.push('Risk snapshot (' + summary.sprintKey + ' + All): total ' + summary.riskSummary.total + ', open ' + summary.riskSummary.open + ', resolved ' + summary.riskSummary.resolved);
-        lines.push('DoD preview: ' + summary.dodSummary.preview);
+        lines.push('Decision entries (' + sprintKey + '): ' + decisionSummary.count + ' (' + decisionSummary.ids + ')');
+        lines.push('DoD criteria active (' + sprintKey + '): ' + dodSummary.count);
+        lines.push('Risk snapshot (' + sprintKey + ' + All): total ' + riskSummary.total + ', open ' + riskSummary.open + ', resolved ' + riskSummary.resolved);
+        lines.push('DoD preview: ' + dodSummary.preview);
         lines.push('');
 
-        if (summary.allNotes.length) {
+        if (allNotes.length) {
             lines.push('WORK LOG');
             lines.push('───────────────────────────────────────────────');
-            summary.allNotes.forEach(function(n) { lines.push(n); lines.push(''); });
+            allNotes.forEach(function(n) { lines.push(n); lines.push(''); });
         }
-
-        if (summary.goals.length) {
+        // Sprint goals
+        var goals = NEXT_SPRINT_GOALS[sprintName] || [];
+        if (goals.length) {
             lines.push('SPRINT GOALS');
             lines.push('───────────────────────────────────────────────');
-            summary.goals.forEach(function(g) { lines.push('• ' + g); });
+            goals.forEach(function(g) { lines.push('• ' + g); });
             lines.push('');
         }
-
         return lines.join('\n');
-    }
-
-    function renderSprintSummaryHtml(summary) {
-        if (!summary) {
-            return '<div style="background:#fff;color:#1e293b;border-radius:0.5rem;padding:1rem;border:1px solid #e2e8f0;">No sprint summary data is available.</div>';
-        }
-
-        var generatedLabel = formatDateTimeShort(summary.generatedAt) || new Date().toLocaleString();
-        var latestActivityLabel = formatDateTimeShort(summary.totals.latestTs) || 'No dated activity captured yet.';
-        var snum = 0;
-
-        function metricCell(value, label) {
-            return '<div style="min-width:140px;">'
-                + '<div style="font-size:1.25rem;font-weight:800;color:#0f172a;line-height:1;">' + escapeHtmlLite(String(value || '0')) + '</div>'
-                + '<div style="font-size:0.68rem;color:#64748b;margin-top:0.15rem;text-transform:uppercase;letter-spacing:0.06em;">' + escapeHtmlLite(label) + '</div>'
-                + '</div>';
-        }
-
-        function sec(title, body) {
-            snum++;
-            return '<div style="margin-bottom:1.6rem;">'
-                + '<div style="display:flex;align-items:baseline;gap:0.6rem;margin-bottom:0.55rem;padding-bottom:0.4rem;border-bottom:2px solid #e2e8f0;">'
-                +   '<span style="font-size:0.72rem;font-weight:800;color:#94a3b8;min-width:1.1rem;">' + snum + '.</span>'
-                +   '<span style="font-size:0.78rem;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:#334155;">' + title + '</span>'
-                + '</div>'
-                + body
-                + '</div>';
-        }
-
-        var hoursBody =
-            '<div style="display:flex;gap:2.5rem;flex-wrap:wrap;padding:0.75rem 1rem;background:#f8fafc;border-radius:0.4rem;border:1px solid #e2e8f0;">'
-            + metricCell(summary.totalHours, 'Total Hours This Sprint')
-            + metricCell(summary.weeklySnapshots.length, 'Weeks In This Sprint')
-            + '</div>';
-
-        var automationBody =
-            '<div style="display:flex;gap:1.5rem;flex-wrap:wrap;padding:0.75rem 1rem;background:#f8fafc;border-radius:0.4rem;border:1px solid #e2e8f0;">'
-            + metricCell(summary.totals.updated, 'Tickets Updated')
-            + metricCell(summary.totals.done, 'Moved To Done')
-            + metricCell(summary.totals.comments, 'Comments Logged')
-            + metricCell(summary.totals.evidence, 'Evidence Updates')
-            + '</div>'
-            + '<div style="margin-top:0.65rem;border:1px solid #e2e8f0;border-radius:0.4rem;background:#f8fafc;overflow:hidden;">'
-            + summary.weeklySnapshots.map(function(row) {
-                return '<div style="padding:0.55rem 0.8rem;border-bottom:1px solid #e2e8f0;">'
-                    + '<div style="font-size:0.82rem;font-weight:700;color:#334155;">Week ' + row.num + ' (' + escapeHtmlLite(row.dates) + ')</div>'
-                    + '<div style="font-size:0.78rem;color:#475569;line-height:1.7;">'
-                    + row.hours + ' hrs · '
-                    + row.updated + ' tickets updated · '
-                    + row.done + ' moved to Done · '
-                    + row.comments + ' comments · '
-                    + row.evidence + ' evidence updates'
-                    + '</div>'
-                    + (row.latest ? '<div style="font-size:0.74rem;color:#64748b;">Latest activity: ' + escapeHtmlLite(row.latest) + '</div>' : '')
-                    + '</div>';
-            }).join('')
-            + '</div>'
-            + '<p style="margin:0.55rem 0 0; font-size:0.8rem; color:#475569;"><strong>Latest dated sprint activity:</strong> ' + escapeHtmlLite(latestActivityLabel) + '</p>';
-
-        var governanceBody =
-            '<ul style="margin:0;padding-left:1.35rem;color:#1e293b;line-height:1.8;">'
-            + '<li>Decision entries (' + summary.sprintKey + '): ' + summary.decisionSummary.count + ' (' + escapeHtmlLite(summary.decisionSummary.ids) + ')</li>'
-            + '<li>DoD criteria active (' + summary.sprintKey + '): ' + summary.dodSummary.count + '</li>'
-            + '<li>Risk snapshot (' + summary.sprintKey + ' + All): total ' + summary.riskSummary.total + ', open ' + summary.riskSummary.open + ', resolved ' + summary.riskSummary.resolved + '</li>'
-            + '<li>DoD preview: ' + escapeHtmlLite(summary.dodSummary.preview) + '</li>'
-            + '<li>Report generated at: ' + escapeHtmlLite(generatedLabel) + '</li>'
-            + '</ul>';
-
-        var workLogBody = summary.allNotes.length
-            ? ('<ul style="margin:0;padding-left:1.4rem;color:#1e293b;line-height:1.85;">'
-                + summary.allNotes.map(function(note) { return '<li style="margin-bottom:0.2rem;">' + escapeHtmlLite(note) + '</li>'; }).join('')
-                + '</ul>')
-            : '<p style="margin:0;color:#64748b;">No sprint work-log notes were captured for this sprint.</p>';
-
-        var goalsBody = summary.goals.length
-            ? ('<ul style="margin:0;padding-left:1.4rem;color:#1e293b;line-height:1.85;">'
-                + summary.goals.map(function(goal) { return '<li style="margin-bottom:0.2rem;">' + escapeHtmlLite(goal) + '</li>'; }).join('')
-                + '</ul>')
-            : '<p style="margin:0;color:#64748b;">No sprint goals were configured for this sprint.</p>';
-
-        return ''
-            + '<div style="background:#fff;color:#1e293b;border-radius:0.5rem;font-family:Georgia,\'Times New Roman\',serif;font-size:0.9rem;line-height:1.7;overflow:hidden;">'
-            + '<div style="background:#0f172a;padding:1.25rem 1.75rem;display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:0.75rem;">'
-            +   '<div>'
-            +     '<div style="font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.14em;color:#94a3b8;font-family:\'Segoe UI\',system-ui,sans-serif;margin-bottom:0.2rem;">' + summary.brand.contextLine + '</div>'
-            +     '<div style="font-size:1.15rem;font-weight:700;color:#f8fafc;font-family:\'Segoe UI\',system-ui,sans-serif;">Sprint Summary Report</div>'
-            +   '</div>'
-            +   '<div style="text-align:right;">'
-            +     '<div style="font-size:0.78rem;font-weight:600;color:#f8fafc;font-family:\'Segoe UI\',system-ui,sans-serif;">' + escapeHtmlLite(summary.sprintKey) + '</div>'
-            +     '<div style="font-size:0.72rem;color:#94a3b8;font-family:\'Segoe UI\',system-ui,sans-serif;">' + escapeHtmlLite(summary.sprintDates) + '</div>'
-            +   '</div>'
-            + '</div>'
-            + '<div style="background:#f8fafc;border-bottom:1px solid #e2e8f0;padding:0.65rem 1.75rem;display:flex;flex-wrap:wrap;gap:1.5rem;font-family:\'Segoe UI\',system-ui,sans-serif;font-size:0.78rem;color:#475569;">'
-            +   '<div><span style="font-weight:700;color:#334155;">Developer:</span> ' + escapeHtmlLite(summary.brand.developerName) + '</div>'
-            +   '<div><span style="font-weight:700;color:#334155;">' + escapeHtmlLite(summary.brand.roleALabel) + ':</span> ' + escapeHtmlLite(summary.brand.roleAName) + '</div>'
-            +   '<div><span style="font-weight:700;color:#334155;">Sprint:</span> ' + escapeHtmlLite(summary.sprintName) + '</div>'
-            + '</div>'
-            + '<div style="padding:1.75rem 1.75rem 1.25rem;">'
-            + sec('Hours Summary', hoursBody)
-            + sec('Weekly Automation Snapshot', automationBody)
-            + sec('Governance Snapshot', governanceBody)
-            + sec('Work Log', workLogBody)
-            + sec('Sprint Goals', goalsBody)
-            + '</div>'
-            + '<div style="border-top:1px solid #e2e8f0;padding:0.6rem 1.75rem;background:#f8fafc;display:flex;justify-content:space-between;font-family:\'Segoe UI\',system-ui,sans-serif;font-size:0.7rem;color:#94a3b8;">'
-            +   '<span>' + escapeHtmlLite(summary.brand.suiteName) + ' · Sprint Summary</span>'
-            +   '<span>' + escapeHtmlLite(summary.brand.organization) + ' · ' + escapeHtmlLite(summary.brand.contextLine) + '</span>'
-            + '</div>'
-            + '</div>';
     }
 
     // Build dropdown options — filtered by sprint or show all
@@ -13506,7 +12929,7 @@ function showSprintView(view, btn) {
         if (sprintFilter && sprintFilter !== 'all') {
             sel.value = 'summary-' + sprintFilter;
         }
-        if (typeof window.renderReport === 'function') window.renderReport();
+        renderReport();
     }
 
     // Build sprint filter buttons
@@ -13545,28 +12968,22 @@ function showSprintView(view, btn) {
         var val = sel.value;
         if (val && val.indexOf('summary-') === 0) {
             var sprintKey = val.replace('summary-', '');
-            var summary = buildSprintSummaryData(sprintKey);
-            var text = buildSprintSummaryText(summary);
+            var text = buildSprintSummaryText(sprintKey);
             window._reportPlainText = text;
             var out = document.getElementById('report-output');
-            if (out) out.innerHTML = renderSprintSummaryHtml(summary);
+            if (out) out.innerHTML = '<pre style="background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:0.5rem;padding:1.5rem;font-family:monospace;font-size:0.82rem;color:#e2e8f0;white-space:pre-wrap;line-height:1.7;">' + text.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</pre>';
         } else {
             if (_origRenderReport) _origRenderReport();
         }
     };
-    window.generateReport = window.renderReport;
 
     // Init
     (function() {
         buildSprintFilterButtons();
         buildReportDropdown('all');
         var sel = document.getElementById('report-week-select');
-        if (sel) {
-            sel.addEventListener('change', function() {
-                if (typeof window.renderReport === 'function') window.renderReport();
-            });
-        }
-        if (typeof window.renderReport === 'function') window.renderReport();
+        if (sel) sel.addEventListener('change', renderReport);
+        renderReport();
     })();
 })();
 
