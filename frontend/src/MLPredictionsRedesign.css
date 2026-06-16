@@ -339,8 +339,11 @@
 
 .prediction-pick-row {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 0.46rem;
+  justify-content: center;
+  gap: 0.18rem;
+  width: 100%;
 }
 
 .prediction-pick-logo {
@@ -352,6 +355,8 @@
 .prediction-pick-copy {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  text-align: center;
   gap: 0.1rem;
 }
 
