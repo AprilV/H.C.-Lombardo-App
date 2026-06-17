@@ -241,6 +241,16 @@
         .tab-panel { display: none; }
         .tab-panel.active { display: block; animation: fadeIn 0.3s ease; }
 
+        /* Hide local-baseline / API-fallback status notices (data still loads from the
+           embedded baseline; this only removes the on-screen notice). */
+        #hours-sync-status,
+        #risk-sync-status,
+        #decision-sync-status,
+        #retro-editor-status,
+        #dod-editor-status {
+            display: none !important;
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
